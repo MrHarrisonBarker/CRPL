@@ -11,10 +11,16 @@ public class ContractDeployer<T> : IDisposable where T : ContractDeploymentMessa
     
     public ContractDeployer(string chainUrl, IAccount account)
     {
-        Web3 = new Web3(account, chainUrl);
+        Web3 = new Web3(account, chainUrl)
+        {
+            TransactionManager =
+            {
+                UseLegacyAsDefault = true
+            }
+        };
     }
 
-    public async Task<TransactionReceipt> Deploy(T contractDeployment)
+    public async Task<TransactionReceipt> DeployAsync(T contractDeployment)
     {
         try
         {
@@ -32,6 +38,5 @@ public class ContractDeployer<T> : IDisposable where T : ContractDeploymentMessa
     
     public void Dispose()
     {
-        throw new NotImplementedException();
     }
 }

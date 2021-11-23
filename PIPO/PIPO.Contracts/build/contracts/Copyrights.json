@@ -1,0 +1,205 @@
+{
+  "contractName": "Copyrights",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Copyrights.sol\":\"Copyrights\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/Copyrights.sol\":{\"keccak256\":\"0xde68fcd7f3d24c323488cb3a3b6d1ea6dc08b452c5a15b27847a45f6b2fb6ae9\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a22bb354a5c88c25d1d968c96dac658b034c48b0acf4c48de02857373dc16d8f\",\"dweb:/ipfs/QmXbRQFf7GwAZ4FX2fQsT92Q5TXkkb8d1cj8dJbLkD3Nta\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220d12a627e425a26de1bfbbc3616b7f0d3dd3c821017fdc364c6506e62f0b99f1264736f6c634300080a0033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220d12a627e425a26de1bfbbc3616b7f0d3dd3c821017fdc364c6506e62f0b99f1264736f6c634300080a0033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "66:52:0:-:0;;;90:26;;;;;;;;;;66:52;;;;;;",
+  "deployedSourceMap": "66:52:0:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity >=0.4.22 <0.9.0;\n\ncontract Copyrights {\n  constructor() public {\n  }\n}\n",
+  "sourcePath": "/Users/harrison/Desktop/CRPL/PIPO/PIPO.Contracts/contracts/Copyrights.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/Copyrights.sol",
+    "exportedSymbols": {
+      "Copyrights": [
+        6
+      ]
+    },
+    "id": 7,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:32:0"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Copyrights",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 6,
+        "linearizedBaseContracts": [
+          6
+        ],
+        "name": "Copyrights",
+        "nameLocation": "75:10:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 4,
+              "nodeType": "Block",
+              "src": "111:5:0",
+              "statements": []
+            },
+            "id": 5,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "101:2:0"
+            },
+            "returnParameters": {
+              "id": 3,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "111:0:0"
+            },
+            "scope": 6,
+            "src": "90:26:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 7,
+        "src": "66:52:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:87:0"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/Copyrights.sol",
+    "exportedSymbols": {
+      "Copyrights": [
+        6
+      ]
+    },
+    "id": 7,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:32:0"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "Copyrights",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 6,
+        "linearizedBaseContracts": [
+          6
+        ],
+        "name": "Copyrights",
+        "nameLocation": "75:10:0",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 4,
+              "nodeType": "Block",
+              "src": "111:5:0",
+              "statements": []
+            },
+            "id": 5,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "101:2:0"
+            },
+            "returnParameters": {
+              "id": 3,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "111:0:0"
+            },
+            "scope": 6,
+            "src": "90:26:0",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 7,
+        "src": "66:52:0",
+        "usedErrors": []
+      }
+    ],
+    "src": "32:87:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.10+commit.fc410830.Emscripten.clang"
+  },
+  "networks": {
+    "1637669228594": {
+      "events": {},
+      "links": {},
+      "address": "0x41B20c6fCb1A69af514a3022CD045E17e0a60290",
+      "transactionHash": "0x206cfeb0262aca736bc0c4e7f0d41494071adcdbd73f33ba668631c327165be0"
+    }
+  },
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-11-23T14:47:30.281Z",
+  "networkType": "ethereum",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

@@ -5,11 +5,11 @@ namespace PIPO.Interface;
 /// <summary>
 /// This class handles the deployment and definition (within .NET) of the copyright contract
 /// </summary>
-public class CopyrightContractDeployment : ContractDeploymentMessage
+public class CopyrightsContractDeployment : ContractDeploymentMessage
 {
     // private CompiledContract CompiledContract;
     
-    public CopyrightContractDeployment() : base(Utils.LoadContract("Copyright").ByteCode)
+    public CopyrightsContractDeployment() : base(Utils.LoadContract("Copyrights").ByteCode)
     {
     }
 }
