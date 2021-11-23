@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIPO.Contracts", "PIPO.Cont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIPO.Interface", "PIPO.Interface\PIPO.Interface.csproj", "{38DD4C85-3205-4A80-B6F1-1E433817E2CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PIPO.Interface.Test", "PIPO.Interface.Test\PIPO.Interface.Test.csproj", "{433AE80F-0D86-4DD3-8295-2BDEABFD8DD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{38DD4C85-3205-4A80-B6F1-1E433817E2CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38DD4C85-3205-4A80-B6F1-1E433817E2CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38DD4C85-3205-4A80-B6F1-1E433817E2CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{433AE80F-0D86-4DD3-8295-2BDEABFD8DD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{433AE80F-0D86-4DD3-8295-2BDEABFD8DD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{433AE80F-0D86-4DD3-8295-2BDEABFD8DD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{433AE80F-0D86-4DD3-8295-2BDEABFD8DD7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
