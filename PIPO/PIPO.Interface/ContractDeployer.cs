@@ -7,24 +7,18 @@ namespace PIPO.Interface;
 
 public class ContractDeployer<T> : IDisposable where T : ContractDeploymentMessage, new()
 {
-    private readonly Web3 Web3;
+    private readonly BlockChainConnection Connection;
     
-    public ContractDeployer(string chainUrl, IAccount account)
+    public ContractDeployer(BlockChainConnection connection)
     {
-        Web3 = new Web3(account, chainUrl)
-        {
-            TransactionManager =
-            {
-                UseLegacyAsDefault = true
-            }
-        };
+        Connection = connection;
     }
 
     public async Task<TransactionReceipt> DeployAsync(T contractDeployment)
     {
         try
         {
-            var deploymentHandler = Web3.Eth.GetContractDeploymentHandler<T>();
+            var deploymentHandler = Connection.Web3.Eth.GetContractDeploymentHandler<T>();
             var receipt = await deploymentHandler.SendRequestAndWaitForReceiptAsync(contractDeployment);
             
             return receipt;
@@ -38,5 +32,25 @@ public class ContractDeployer<T> : IDisposable where T : ContractDeploymentMessa
     
     public void Dispose()
     {
+    }
+}
+
+public class BlockChainConnection : IDisposable
+{
+    public Web3 Web3 { get; }
+
+    public BlockChainConnection(string chainUrl, IAccount account)
+    {
+        Web3 = new Web3(account, chainUrl)
+        {
+            TransactionManager =
+            {
+                UseLegacyAsDefault = true
+            }
+        };
+    }
+    public void Dispose()
+    {
+        // throw new NotImplementedException();
     }
 }

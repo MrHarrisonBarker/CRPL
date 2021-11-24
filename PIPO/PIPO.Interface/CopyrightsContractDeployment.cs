@@ -1,4 +1,6 @@
+using Nethereum.ABI.FunctionEncoding.Attributes;
 using Nethereum.Contracts;
+using System.Numerics;
 
 namespace PIPO.Interface;
 
@@ -12,4 +14,11 @@ public class CopyrightsContractDeployment : ContractDeploymentMessage
     public CopyrightsContractDeployment() : base(Utils.LoadContract("Copyrights").ByteCode)
     {
     }
+}
+
+[Function("simpleMint", "uint256")]
+public class SimpleMint : FunctionMessage
+{
+    [Parameter("address", "owner")]
+    public string Owner { get; set; }
 }
