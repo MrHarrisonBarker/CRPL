@@ -9,14 +9,14 @@ public class BlockChainConnection : IDisposable
 
     public BlockChainConnection(string chainUrl, IAccount account)
     {
-        Web3 = new Web3(account, chainUrl)
-        {
-            // TransactionManager =
-            // {
-            //     UseLegacyAsDefault = true
-            // }
-        };
+        Web3 = new Web3(account, chainUrl);
     }
+
+    public BlockChainConnection(string chainUrl)
+    {
+        Web3 = new Web3(chainUrl);
+    }
+    
     public void Dispose()
     {
         Web3 = null!;

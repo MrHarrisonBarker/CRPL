@@ -26,7 +26,7 @@ public class When_Interacting_With_SimpleOwnership
         var receipt = await new SimpleOwnershipService(connection.Web3, ContractAddress).SimpleMintRequestAndWaitForReceiptAsync(simpleMintMessage);
     
         receipt.Should().NotBeNull();
-        receipt.Status.Should().Be(1);
+        receipt.Status.Value.Should().Be(1);
         Console.WriteLine($"Status -> {receipt.Status}");
     }
     

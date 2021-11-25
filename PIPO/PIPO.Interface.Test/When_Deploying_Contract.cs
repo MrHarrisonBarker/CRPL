@@ -35,7 +35,7 @@ public class When_Deploying_Contract
         var receipt = await SimpleOwnershipService.DeployContractAndWaitForReceiptAsync(connection.Web3, new SimpleOwnershipDeployment() { Name = "Hello World" });
         
         receipt.Should().NotBeNull();
-        receipt.Status.Should().Be(1);
+        receipt.Status.Value.Should().Be(1);
         Console.WriteLine($"Contract address -> {receipt.ContractAddress}");
     }
 }
