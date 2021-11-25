@@ -12,8 +12,8 @@ public class When_Connecting_To_Blockchain
     [Test]
     public async Task Should_Have_Account()
     {
-        var web3 = new Web3(new Account(LawsOfNature.PrivateKey, LawsOfNature.ChainId), LawsOfNature.ChainUrl);
-        var accounts = await web3.Eth.Accounts.SendRequestAsync();
+        using var connection = new BlockChainConnection(LawsOfNature.ChainUrl, new Account(LawsOfNature.PrivateKey, LawsOfNature.ChainId));
+        var accounts = await connection.Web3.Eth.Accounts.SendRequestAsync();
         accounts.Length.Should().BeGreaterThan(0);
     }
 }
