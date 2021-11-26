@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace PIPO.Verify.Test.works;
+namespace PIPO.Verify.Test;
 
 [TestFixture]
 public class When_Comparing_Works
