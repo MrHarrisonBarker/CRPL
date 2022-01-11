@@ -1,4 +1,4 @@
-\documentclass[11pt]{report}
+\documentclass[12pt]{report}
 
 \usepackage[english]{babel}
 
@@ -10,6 +10,7 @@
 \title{CRPL: Initial Report}
 \author{Harrison Beau Barker}
 
+\setlength{\parskip}{1em}
 \begin{document}
 
 \maketitle
@@ -18,14 +19,14 @@
 \tableofcontents{}
 
 \chapter{Keywords}
-%TODO a selection of all the keywords used in this report, (blockchain, eth, smart contract, api, angular)
 
-\begin{itemize}
-  \item Blockchain
-  \item Ethereum
-  \item Smart Contract
-  \item Intellectual property
-\end{itemize}
+\begin{description}
+  \item[Blockchain] A blockchain is essentially an immutable data structure made of hashed \textit{blocks} not dissimilar to a linked list. Each block contains a timestamp, the actual data stored, and a hash (Ethereum uses Keccak-256 for hashing) of the previous block. this is what makes this data structure immutable and more importantly secure because once a block has been hashed you can't go back and change it otherwise the hash would be different, this also means the more blocks hashed on the chain the harder it is to change the past as new blocks depend on the validity of the previous.
+  \item[Ethereum] Ethereum simply is an open-source blockchain with its own cryptocurrency Ether, however its real claim to fame is its \textit{smart contract} functionality thanks to the Ethereum Virtual Machine (EVM) which allows for the existence of powerful concepts most importantly \textbf{state} and to be able to modify the current state. Ether is currently the second most valuable crypto currency in the world and the ethereum blockchain is the largest of its kind.
+  \item[Smart Contract] As talked about previously smart contracts are pieces of software stored within the Ethereum network, these programs have an address, Ether balance, and can transact. All smart contracts are "controlled" via transaction which of course are saved to the blockchain this interaction is therefore irreversible which allows for the changing of sate and the history of state to forever be recorded.
+  \item[Intellectual property] Is a blanket term describing any property created by the human intellect specifically intangible property eg; a carpenter who designs a new type of chair is only protected in terms of IP for the design or any unique building practices but not the physical chair itself which would be subject to other property laws.
+  \item[Copyright] Is therefore a specific type of Intellectual property law which pertains to the copying and distribution of a work, copyright is extremely important for the protection of works as it ratifies who can essentially make money from the work.
+\end{description}
 
 \chapter{Introduction}
 
