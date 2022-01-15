@@ -1,0 +1,104 @@
+\documentclass[12pt]{article}
+
+\title{CRPL: Architecture}
+\author{Harrison Beau Barker}
+
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+\begin{document}
+	\maketitle
+	
+	\section{.NET service architecture}
+	
+	\begin{description}
+		\item[Auth service] user authentication.
+			\begin{enumerate}
+				\item Auth
+			\end{enumerate}
+		\item[Wallet service] user ethereum wallet/account management.
+			\begin{enumerate}
+				\item CRUD
+			\end{enumerate}
+		\item[Issuing service] registering new copyrights to the blockchain.
+			\begin{enumerate}
+				\item Register
+			\end{enumerate}
+		\item[Verification service] verifying the authenticity and originality of a work.
+			\begin{enumerate}
+				\item VerifyWork
+				\item Hash
+				\item SignWork (maybe in the issuing)
+			\end{enumerate}
+		\item[General query service] querying the whole system mainly used for UI, copyright index and search.
+			\begin{enumerate}
+				\item Get all
+				\item Search
+				\item Get my work
+				\item Get work
+			\end{enumerate}
+		\item[Rights management service] modification, transfer of ownership.
+			\begin{enumerate}
+				\item Transfer ownership
+				\item UnRegister
+				\item ConvertRights
+			\end{enumerate}
+		\item[Dispute service] filing and resolving copyright disputes.
+			\begin{enumerate}
+				\item FileDispute
+				\item Resolve
+				\item Cancel
+			\end{enumerate}
+		\item[Contract management] deployment and monitoring of systems contracts
+		\item[Ping service] work "use" tracking
+			\begin{enumerate}
+				\item Ping
+				\item GetPings
+			\end{enumerate}
+	\end{description}
+	
+	\begin{description}
+		\item[Payment distribution service]	
+	\end{description}
+
+	\section{API}
+	
+	\begin{itemize}
+		\item /user
+			\begin{enumerate}
+				\item /auth
+				\item /wallet
+			\end{enumerate}
+		\item /rights
+			\begin{enumerate}
+				\item /register
+				\item /unregister
+				\item /modify
+				\item /transfer
+			\end{enumerate}
+		\item /q
+			\begin{enumerate}
+				\item /get/\#id
+				\item /get/all
+				\item /get/me
+				\item /search
+			\end{enumerate}
+		\item /dispute
+			\begin{enumerate}
+				\item /file
+				\item /resolve
+				\item /cancel
+			\end{enumerate}
+		\item /p
+
+	\end{itemize}
+	
+	\section{Copyright smart contract}
+	
+	\includegraphics[scale=0.5]{sc.png}
+	
+	\section{Database}
+	
+	\section{Angular}
+	
+\end{document}
