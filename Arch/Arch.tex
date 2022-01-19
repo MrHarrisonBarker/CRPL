@@ -65,30 +65,44 @@
 	
 	\begin{itemize}
 		\item /user
-			\begin{enumerate}
-				\item /auth
-				\item /wallet
-			\end{enumerate}
-		\item /rights
-			\begin{enumerate}
-				\item /register
-				\item /unregister
-				\item /modify
-				\item /transfer
-			\end{enumerate}
+			\begin{description}
+				\item [GET] /auth
+				\item [CRUD] /wallet
+			\end{description}
+		\item /cpy
+			\begin{description}
+				\item [POST] /submit/\#application-id (mint once the application has been accepted)
+			\end{description}
+		\item /forms (all applications and forms)
+			\begin{description}
+				\item [GET] /\#application-id
+				\item [DELETE] /\#application-id
+				\item [GET] /all
+				\item [POST] /cpy/register
+				\item [POST] /cpy/unregister
+				\item [POST] /cpy/transfer
+				\item [POST] /cpy/convert (convert copyright type)
+				\item [POST] /dispute/file
+				\item [POST] /dispute/resolve
+			\end{description}
+		\item /work
+			\begin{description}
+				\item [POST] /upload
+			\end{description}
 		\item /q
-			\begin{enumerate}
-				\item /get/\#id
-				\item /get/all
-				\item /get/me
-				\item /search
-			\end{enumerate}
+			\begin{description}
+				\item [GET] /\#id
+				\item [GET] /all
+				\item [GET] /search
+				\item [GET] /me
+				\item [GET] /\#id/work (users work)
+			\end{description}
 		\item /dispute
-			\begin{enumerate}
-				\item /file
-				\item /resolve
-				\item /cancel
-			\end{enumerate}
+			\begin{description}
+				\item [POST] /file/\#application-id (submit application)
+				\item [POST] /resolve/\#application-id (submit application)
+				\item [DELETE] /cancel/\#id
+			\end{description}
 		\item /p
 
 	\end{itemize}
@@ -100,5 +114,9 @@
 	\section{Database}
 	
 	\section{Angular}
+	
+	\section{Copyright registration flow}
+	
+	\includegraphics[scale=0.5]{reg.png}
 	
 \end{document}
