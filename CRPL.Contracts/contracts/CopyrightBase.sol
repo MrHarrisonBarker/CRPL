@@ -19,37 +19,44 @@ interface CopyrightBase is StructuredOwnership {
     /// @dev Emits after any modification
     event Modify(uint256 indexed rightId, bytes modification);
 
-    function Portfolio(address owner) external view returns (address[] memory);
+    // @notice gets all the rights held by address
+    /// @param owner portfolios owner address
+    // function Portfolio(address owner) external view returns (uint256[] memory);
 
+    // @notice gets the number of rights held by an address
+    /// @param owner portfolios owner address
+    function PortfolioSize(address owner) external view returns (uint256);
+
+    /// @notice 
     /// @param rightId The copyright id
-    function Author(uint256 rightId) external view returns (address);
+    // function Author(uint256 rightId) external view returns (address);
 
     /// @notice Approve address for the copyright
     /// @dev Must authorize shareholder
     /// @param approved Address to be approved
     /// @param rightId The copyright id
-    function ApproveOne(address approved, uint256 rightId) external payable;
+    // function ApproveOne(address approved, uint256 rightId) external payable;
 
     /// @notice Approve address to be manager of a users whole portfolio
     /// @dev Must authorize shareholder
     /// @param manager Address of the new manager
     /// @param hasApproval If the address has authority
-    function ApproveManager(address manager, bool hasApproval) external;
+    // function ApproveManager(address manager, bool hasApproval) external;
 
     /// @notice Gets the approved address for a copyright
     /// @dev
     /// @param rightId The copyright id
     /// @return The approved address
-    function GetApproved(uint256 rightId) external view returns (address);
+    // function GetApproved(uint256 rightId) external view returns (address);
 
     /// @notice Asks if address is a manager of a user/clients portfolio
     /// @dev
     /// @param client The address of the client in question
     /// @param manager The address of manager to be checked
     /// @return If the specific address (manager) has authority for client
-    function IsManager(address client, address manager) external view returns (bool);
+    // function IsManager(address client, address manager) external view returns (bool);
 
     //TODO: Dispute filing, cancelling and resolving
 } 
 
-// Implement EIP-165, see: https://eips.ethereum.org/EIPS/eip-165
+//TODO: Implement EIP-165, see: https://eips.ethereum.org/EIPS/eip-165
