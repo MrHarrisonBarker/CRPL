@@ -19,7 +19,8 @@ contract Copyleft is CopyrightWithMeta {
     // Freedom 3
     // the freedom to modify the work, and the freedom to distribute modified and therefore derivative works
 
-    constructor() CopyrightWithMeta("Copyleft", "s") payable {
-        // super("Copyleft");
-    }
+
+    // GPL license from https://www.gnu.org/licenses/gpl-3.0.html
+
+    constructor() CopyrightWithMeta("Copyleft", "https://www.gnu.org/licenses/gpl-3.0.html") payable {}
 }
