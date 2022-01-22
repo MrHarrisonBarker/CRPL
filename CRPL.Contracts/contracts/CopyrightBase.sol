@@ -11,7 +11,7 @@ interface CopyrightBase is StructuredOwnership {
     event Disputed(uint256 indexed rightId, address indexed by, bytes reason);
 
     /// @dev Emits when a new address is approved to a copyright
-    event Approved(uint256 indexed rightId, address indexed owner, address indexed approved);
+    event Approved(uint256 indexed rightId, address indexed approved);
 
     /// @dev Emits when a new manager has been approved
     event ApprovedManager(address indexed owner, address indexed manager, bool hasApproval);
@@ -27,34 +27,30 @@ interface CopyrightBase is StructuredOwnership {
     /// @param owner portfolios owner address
     function PortfolioSize(address owner) external view returns (uint256);
 
-    /// @notice 
-    /// @param rightId The copyright id
-    // function Author(uint256 rightId) external view returns (address);
-
     /// @notice Approve address for the copyright
     /// @dev Must authorize shareholder
     /// @param approved Address to be approved
     /// @param rightId The copyright id
-    // function ApproveOne(address approved, uint256 rightId) external payable;
+    function ApproveOne(uint256 rightId, address approved) external payable;
 
     /// @notice Approve address to be manager of a users whole portfolio
     /// @dev Must authorize shareholder
     /// @param manager Address of the new manager
     /// @param hasApproval If the address has authority
-    // function ApproveManager(address manager, bool hasApproval) external;
+    function ApproveManager(address manager, bool hasApproval) external;
 
     /// @notice Gets the approved address for a copyright
     /// @dev
     /// @param rightId The copyright id
     /// @return The approved address
-    // function GetApproved(uint256 rightId) external view returns (address);
+    function GetApproved(uint256 rightId) external view returns (address);
 
     /// @notice Asks if address is a manager of a user/clients portfolio
     /// @dev
     /// @param client The address of the client in question
     /// @param manager The address of manager to be checked
     /// @return If the specific address (manager) has authority for client
-    // function IsManager(address client, address manager) external view returns (bool);
+    function IsManager(address client, address manager) external view returns (bool);
 
     //TODO: Dispute filing, cancelling and resolving
 } 

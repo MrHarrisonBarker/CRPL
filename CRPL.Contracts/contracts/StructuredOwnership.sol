@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./OwnershipStructure.sol";
+import "./Structs/OwnershipStructure.sol";
 
 struct RestructureProposal {
     OwnershipStructure[] oldStructure;
