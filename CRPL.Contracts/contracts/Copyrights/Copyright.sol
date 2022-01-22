@@ -65,7 +65,7 @@ abstract contract Copyright is CopyrightBase {
         // registering copyright across all shareholders
         for (uint8 i = 0; i < to.length; i++) {
 
-            require(to[i].share == 0, INVALID_SHARE);
+            require(to[i].share > 0, INVALID_SHARE);
 
             _recordRight(to[i].owner);
             _shareholders[rightId].push(to[i]);
@@ -83,7 +83,7 @@ abstract contract Copyright is CopyrightBase {
         
         for (uint8 i = 0; i < restructured.length; i++) {
 
-            require(restructured[i].share == 0, INVALID_SHARE);
+            require(restructured[i].share > 0, INVALID_SHARE);
 
             _newHolders[rightId].push(restructured[i]);
         }   
