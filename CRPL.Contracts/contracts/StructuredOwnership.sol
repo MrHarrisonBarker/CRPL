@@ -8,6 +8,7 @@ struct RestructureProposal {
     OwnershipStructure[] newStructure;
 }
 
+/// @title Defintion of a multi party shareholder style ownership structure, with consensus voting
 interface StructuredOwnership {
     
     /// @dev Emits when a new copyright is registered

@@ -59,6 +59,11 @@ abstract contract Copyright is CopyrightBase {
         emit Registered(rightId, to);
     }
 
+    function _register (OwnershipStructure[] memory to) internal returns (uint256) {
+        Register(to);
+        return _copyCount.getCurrent();
+    }
+
     function ProposeRestructure(uint256 rightId, OwnershipStructure[] memory restructured) external override payable {
         
         for (uint8 i = 0; i < restructured.length; i++) {

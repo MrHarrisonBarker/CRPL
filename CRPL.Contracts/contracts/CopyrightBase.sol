@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 
 import "./StructuredOwnership.sol";
 
+/// @title Basic structure for interfacing with a copyright contract
 interface CopyrightBase is StructuredOwnership {
 
     /// @dev Emits when a copyright dispute has been registered
