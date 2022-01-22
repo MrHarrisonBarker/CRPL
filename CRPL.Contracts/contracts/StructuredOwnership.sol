@@ -20,6 +20,9 @@ interface StructuredOwnership {
     /// @dev Emits when a restructure is proposed
     event ProposedRestructure(uint256 indexed rightId, RestructureProposal proposal);
 
+    /// @dev Emits when a restructure vote fails
+    event FailedProposal(uint256 indexed rightId);
+
     /// @notice The current ownership structure of a copyright
     /// @dev
     /// @param rightId The copyright id
