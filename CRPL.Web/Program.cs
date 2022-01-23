@@ -1,6 +1,23 @@
+using CRPL.Data;
+using CRPL.Data.ContractDeployment;
 using CRPL.Web.StartUp;
+using Serilog;
+using Serilog.Events;
+using Serilog.Exceptions;
+using Serilog.Sinks.SystemConsole.Themes;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) => configuration
+        .MinimumLevel.Information()
+        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .Enrich.WithExceptionDetails()
+        .WriteTo.Console(theme: AnsiConsoleTheme.Code, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}")
+    // .WriteTo.Seq("http://localhost:80", apiKey: "UgrmhkMuEVCZxOX89WUm")
+);
 
 // Add services to the container.
 
@@ -13,6 +30,8 @@ builder.Services.AddDBPipeline(appSettings);
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+app.Services.GetService<IContractRepository>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -30,11 +49,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
-app.MapFallbackToFile("index.html");;
+app.MapFallbackToFile("index.html");
+;
 
 app.Run();
-
-public class AppSettings
-{
-    public string ConnectionString { get; set; }
-}

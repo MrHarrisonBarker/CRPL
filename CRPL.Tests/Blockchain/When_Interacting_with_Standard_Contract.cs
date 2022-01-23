@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CRPL.Contracts.Standard;
 using CRPL.Contracts.Standard.ContractDefinition;
+using CRPL.Contracts.Structs;
 using CRPL.Data;
 using CRPL.Data.BlockchainUtils;
 using FluentAssertions;
@@ -33,7 +34,7 @@ public class When_Interacting_with_Standard_Contract
 
         var receipt = await new StandardService(connection.Web3, ContractAddress).RegisterRequestAndWaitForReceiptAsync(new Register1Function()
         {
-            To = new List<StructOwnershipStructure>()
+            To = new List<OwnershipStructure>()
             {
               new()
               {
@@ -41,7 +42,7 @@ public class When_Interacting_with_Standard_Contract
                   Share = 100
               }  
             },
-            Def = new StructMeta()
+            Def = new Meta()
             {
                 Title = "Hello world",
                 Expires = 0,

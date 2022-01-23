@@ -1,3 +1,4 @@
+using CRPL.Data;
 using CRPL.Data.ContractDeployment;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +12,12 @@ public static class DBExtensions
     {
         public DBPipeline(IServiceCollection services, AppSettings appSettings)
         {
-            services.AddDbContextPool<ContractContext>(builder => 
-                builder.UseMySql(appSettings.ConnectionString, new MySqlServerVersion(new Version(8, 0, 23)), 
+            services.AddDbContextPool<ContractContext>(builder =>
+                builder.UseMySql(appSettings.ConnectionString, new MySqlServerVersion(new Version(8, 0, 23)),
                     optionsBuilder => optionsBuilder.MigrationsAssembly("CRPL.Web"))
-                );
+            );
+
+            services.AddSingleton<IContractRepository, ContractRepository>();
         }
     }
 }
