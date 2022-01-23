@@ -1,6 +1,14 @@
+using CRPL.Web.StartUp;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+var appSettingsSection = builder.Configuration.GetSection("AppSettings");
+builder.Services.Configure<AppSettings>(appSettingsSection);
+var appSettings = appSettingsSection.Get<AppSettings>();
+
+builder.Services.AddDBPipeline(appSettings);
 
 builder.Services.AddControllersWithViews();
 
@@ -25,3 +33,8 @@ app.MapControllerRoute(
 app.MapFallbackToFile("index.html");;
 
 app.Run();
+
+public class AppSettings
+{
+    public string ConnectionString { get; set; }
+}
