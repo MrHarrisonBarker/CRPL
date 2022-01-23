@@ -71,9 +71,19 @@ public class ContractRepository : IContractRepository
         return DeployedContracts[contract];
     }
 
-    private void getContracts(ContractContext contractContext)
+    private async void getContracts(ContractContext contractContext)
     {
         DeployedContracts = contractContext.DeployedContracts.ToDictionary(x => x.Type, x => x);
+        
+        // check if contracts can be found on the blockchain
+        foreach (var deployedContract in DeployedContracts.Values)
+        {
+            using var connection = new BlockchainConnection(AppSettings.ChainUrl, new Account(AppSettings.SystemAccount.PrivateKey, AppSettings.ChainIdInt()));
+
+            var result = await connection.Web3.Eth.GetCode.SendRequestAsync(deployedContract.Address);
+
+            if (result == null) throw new Exception("A saved contract doesn't exist on the blockchain");
+        }
     }
 
     private async void init()
