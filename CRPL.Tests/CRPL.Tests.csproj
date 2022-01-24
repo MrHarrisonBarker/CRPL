@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="6.4.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="NUnit" Version="3.13.2" />
     <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
@@ -18,10 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CRPL.Contracts\CRPL.Contracts.csproj" />
     <ProjectReference Include="..\CRPL.Data\CRPL.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services" />
+    <ProjectReference Include="..\CRPL.Web\CRPL.Web.csproj" />
   </ItemGroup>
 
 </Project>
