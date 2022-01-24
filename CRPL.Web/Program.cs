@@ -25,7 +25,10 @@ var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 var appSettings = appSettingsSection.Get<AppSettings>();
 
+builder.Services.AddAutoMapper(expression => expression.AddProfile(typeof(AutoMapping)));
+
 builder.Services.AddDBPipeline(appSettings);
+builder.Services.AddServicePipeline(appSettings);
 
 builder.Services.AddControllersWithViews();
 
