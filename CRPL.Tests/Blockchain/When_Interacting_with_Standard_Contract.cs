@@ -18,6 +18,7 @@ public class When_Interacting_with_Standard_Contract
     private string ContractAddress;
     
     [SetUp]
+    [Ignore("need ci blockchain")]
     public async Task SetUp()
     {
         // Deploy contract
@@ -28,6 +29,7 @@ public class When_Interacting_with_Standard_Contract
     }
     
     [Test]
+    [Ignore("need ci blockchain")]
     public async Task Should_Register_New_Copyright()
     {
         using var connection = TestConstants.PrivateTestConnection();

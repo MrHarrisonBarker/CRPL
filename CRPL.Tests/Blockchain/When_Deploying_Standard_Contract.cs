@@ -11,6 +11,7 @@ namespace CRPL.Tests.Blockchain;
 public class When_Deploying_Standard_Contract
 {
     [Test]
+    [Ignore("need ci blockchain")]
     public async Task Should_Deploy_Contract()
     {
         using var connection = TestConstants.PrivateTestConnection();

@@ -11,6 +11,7 @@ namespace CRPL.Tests.Blockchain;
 public class When_Connecting_To_Private_Blockchain
 {
     [Test]
+    [Ignore("need ci blockchain")]
     public async Task Should_Have_Account()
     {
         using var connection = TestConstants.PrivateTestConnection();
@@ -21,6 +22,7 @@ public class When_Connecting_To_Private_Blockchain
     }
 
     [Test]
+    [Ignore("need ci blockchain")]
     public async Task Account_Should_Have_Balance()
     {
         using var connection = TestConstants.PrivateTestConnection();
