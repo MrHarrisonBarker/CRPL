@@ -46,23 +46,18 @@ namespace CRPL.Web.Migrations.Application
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("RegisteredJurisdiction")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Status")
@@ -126,8 +121,7 @@ namespace CRPL.Web.Migrations.Application
                                 .HasForeignKey("UserAccountId");
                         });
 
-                    b.Navigation("DateOfBirth")
-                        .IsRequired();
+                    b.Navigation("DateOfBirth");
                 });
 
             modelBuilder.Entity("CRPL.Data.Account.UserWallet", b =>

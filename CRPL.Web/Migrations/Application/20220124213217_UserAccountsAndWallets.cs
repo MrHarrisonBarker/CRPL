@@ -17,18 +17,18 @@ namespace CRPL.Web.Migrations.Application
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    FirstName = table.Column<string>(type: "longtext", nullable: false)
+                    FirstName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    LastName = table.Column<string>(type: "longtext", nullable: false)
+                    LastName = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateOfBirth_Day = table.Column<int>(type: "int", nullable: false),
-                    DateOfBirth_Month = table.Column<int>(type: "int", nullable: false),
-                    DateOfBirth_Year = table.Column<int>(type: "int", nullable: false),
-                    RegisteredJurisdiction = table.Column<string>(type: "longtext", nullable: false)
+                    DateOfBirth_Day = table.Column<int>(type: "int", nullable: true),
+                    DateOfBirth_Month = table.Column<int>(type: "int", nullable: true),
+                    DateOfBirth_Year = table.Column<int>(type: "int", nullable: true),
+                    RegisteredJurisdiction = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "longtext", nullable: false)
+                    Email = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    PhoneNumber = table.Column<string>(type: "longtext", nullable: false)
+                    PhoneNumber = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Status = table.Column<int>(type: "int", nullable: false)
                 },

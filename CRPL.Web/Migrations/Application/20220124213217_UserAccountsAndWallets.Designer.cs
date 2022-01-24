@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRPL.Web.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220123215316_UserAccountsAndWallets")]
+    [Migration("20220124213217_UserAccountsAndWallets")]
     partial class UserAccountsAndWallets
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,23 +48,18 @@ namespace CRPL.Web.Migrations.Application
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("RegisteredJurisdiction")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Status")
@@ -128,8 +123,7 @@ namespace CRPL.Web.Migrations.Application
                                 .HasForeignKey("UserAccountId");
                         });
 
-                    b.Navigation("DateOfBirth")
-                        .IsRequired();
+                    b.Navigation("DateOfBirth");
                 });
 
             modelBuilder.Entity("CRPL.Data.Account.UserWallet", b =>
