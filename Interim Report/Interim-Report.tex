@@ -10,6 +10,9 @@
 \title{CRPL: Interim Report}
 \author{Harrison Beau Barker}
 
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
 \newcommand{\keyword}[1]{\textbf{\textit{#1}}}
 \newcommand{\q}[2]{\begin{quote} #1 \cite{#2} \end{quote}}
 
@@ -18,7 +21,9 @@
 \begin{document}
 
 \maketitle
-\abstract{This is the abstract}
+\abstract{This report is an overview of the work completed and required for the success of my project CRPL (Copyright on a public ledger). CRPL is an open-source decentralised platform aimed at removing barriers and complex legal issues from creators allowing them to create more freely without fear of copyright. 
+
+Within this document, I will discuss the background research necessary within key areas: Blockchain, Copyright law and the current market. Technical methods and development methodologies used in the construction of this project. 	My current progress and results in smart contract development and deployment.}
 
 \tableofcontents{}
 
@@ -149,23 +154,58 @@ This section outlines the methods to be used in the project both technical and t
 \end{description}
 
 \chapter{Results}
-%TODO user feedback (supervisor)
 
-\chapter{Analysis}
-%TODO has everything done so far backed up what was originally planned
+\section{Smart Contracts}
+
+A large majority of the work completed so far has been to do with smart contracts, This issue was the first and most project defining piece of work to be done as the functionality and success of the entire project is directly linked to the functionality and success of the copyright smart contracts. \href{https://github.com/MrHarrisonBarker/CRPL/commit/11c0e93bc92ad849c3cbea70db5ca637a320e5b2}{11c0e93} to \href{https://github.com/MrHarrisonBarker/CRPL/commit/2ccc3bbea3a7939e7f2012626ed91e4850a74d6f}{2ccc3bb}
+
+Construction of a smart contract started for me with defining an interface (an interface simply is a definition of how to interact with the contract and what events the contract emits) which resulted in two interfaces separated into \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/CopyrightBase.sol}{CopyrightBase.sol} for basic interaction with a token-esque contract and \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/StructuredOwnership.sol}{StructuredOwnership.sol} which handles multi party ownership and consensus voting for changes to the ownership structure (based on a limited company share structure). Once the target interactions where defined it was time for the implementation of the contract this was done as an abstract contract \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/Copyright.sol}{Copyright.sol} which can then be instantiated by a child for a specific type of copyright eg: \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/Permissive.sol}{Permissive}.
+
+% metadata
+
+\section{Contract Deployment}
+
+Once the contracts are written and compiled they then have to be "deployed" onto the \keyword{blockchain} so they can start being used. During development of the smart contracts I used \href{https://remix.ethereum.org}{Remix IDE} for compiling, deploying and transacting using their GUI but I need something programatic using .NET, the Nethereum library generates a useful API for sending deploy messages to the ethereum network so all I needed to do was connect to my local test chain and send the message. However these contracts will persist for longer than the current instance of the running software meaning I can't just keep the contract addresses in memory because if the program stops for any reason how will it know where the contracts are in the network. Therefore some persistent storage was needed in the form of a table within a MySQL database so a simple model was written to represent a \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/ContractDeployment/DeployedContract.cs}{deployed contract} and using \keyword{EFCore} a database \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Migrations/20220123013118_DeployedContracts.cs}{migration} was generated and applied.
+
+\section{Account Management}
+
+At the time of writing this report account management and user authentication is in the early stages of development with only basic \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/Account/UserAccount.cs}{UserAccount}, \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/Account/UserWallet.cs}{UserWallet} and \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/RegisteredWork.cs}{RegisteredWork} models written and \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Migrations/Application/20220123215316_UserAccountsAndWallets.cs}{migration} applied to the database. These models will be used to save user's information and most importantly their wallet address which will be used when registering and transferring copyrights to a user.
+
+\chapter{Discussion}
+
+The completion of these key project defining features (especially functional smart contracts) instills great confidence in my ability to implement all necessary functionality for a successful project outlined previously. One way of looking at this progress is a burndown chart:
+
+\begin{figure}
+	\caption{Sprint 1 burn down graph}
+	\includegraphics[width=1\textwidth]{images/sprint-1-Burn}
+\end{figure}
+
+The one problem with this graph is the perception and difference of difficulty per task, for the first four days it appears like no work is being done when in reality the first issue (CRPL-27 Copyright base interface) is the single most important issue with lots of technical and operational thinking needed, it's also the subject area I have the smallest technical knowledge.
+
+But what we can see is that work is progressing I believe all work in this first sprint will be finished on schedule with minimal issues raised and If the succeeding sprints continue at a similar pace the project will be finished before the current deadline.
+
 
 \chapter{Conclusion}
-%TODO main takeaways so far
+
+In terms of my background research it's clear blockchain technology is still in its infancy especially when is comes to practical and social solutions compared with the over saturation of financial based applications. It's also clear that copyright law itself is in need of change and that blockchain and decentralisation could be the solution it needs as this technology lends itself to implementations of law and social structures.
+
+My results are strong and show that this project is in fact technically and physically (in terms of time) possible with the creation of a copyright smart contract with multi party ownership and consensus voting built in, this key development allows the project to function and impact global copyright practices.
 
 \chapter{Progress and the future}
-%TODO what have i done so far (prototype, task backlog, design feedback), what needs to get done for the project to be finished
 
-% Have i needed to change the direction of the project?
-% Will I finish on time
+The vision and feature set of the project has not changed and all technical features are achievable within the set timeline with the current rate of progress. 
 
-\section{Backlog}
-%TODO What does my backlog look like
-
+\begin{table}[h!]
+\caption{Current sprint schedule}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Sprint & Start            & End              & Length  \\ \hline
+1      & 19 January 2022  & 2 February 2022  & 2 weeks \\ \hline
+2      & 4 February 2022  & 18 February 2022 & 2 weeks \\ \hline
+3      & 20 February 2022 & 27 February 2022 & 1 week  \\ \hline
+4      & 1 March 2022     & 8 March 2022     & 1 week  \\ \hline
+\end{tabular}
+\end{table}
 
 
 \bibliography{sources.bib}
