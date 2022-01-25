@@ -217,4 +217,15 @@ public class UserService : IUserService
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+
+    public async Task RevokeAuthentication(string token)
+    {
+        // null check
+        var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.AuthenticationToken == token);
+        if (user == null) throw new UserNotFoundException();
+
+        Context.UserAccounts.Update(user);
+        user.AuthenticationToken = null;
+        await Context.SaveChangesAsync();
+    }
 }

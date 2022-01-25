@@ -85,7 +85,22 @@ public class UserController : ControllerBase
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Exception thrown when authenticating signature");
+            Logger.LogError(e, "Exception thrown when authenticating token");
+            throw;
+        }
+    }
+    
+    [HttpDelete("auth")]
+    public async Task<ActionResult> RevokeAuthenticate(string token)
+    {
+        try
+        {
+            await UserService.RevokeAuthentication(token);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when revoking authentication");
             throw;
         }
     }
