@@ -74,4 +74,19 @@ public class UserController : ControllerBase
             throw;
         }
     }
+
+    [HttpGet("auth")]
+    public async Task<ActionResult> Authenticate(string token)
+    {
+        try
+        {
+            await UserService.Authenticate(token);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when authenticating signature");
+            throw;
+        }
+    }
 }

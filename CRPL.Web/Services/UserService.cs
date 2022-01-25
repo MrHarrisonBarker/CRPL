@@ -1,6 +1,7 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Unicode;
 using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
@@ -10,6 +11,8 @@ using CRPL.Data.Account.ViewModels;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Nethereum.Signer;
 
 namespace CRPL.Web.Services;
@@ -20,12 +23,14 @@ public class UserService : IUserService
     private readonly ILogger<UserService> Logger;
     private readonly ApplicationContext Context;
     private readonly IMapper Mapper;
+    private readonly AppSettings Options;
 
-    public UserService(ILogger<UserService> logger, ApplicationContext context, IMapper mapper)
+    public UserService(ILogger<UserService> logger, ApplicationContext context, IMapper mapper, IOptions<AppSettings> options)
     {
         Logger = logger;
         Context = context;
         Mapper = mapper;
+        Options = options.Value;
     }
 
     public async Task<UserAccountStatusModel> GetAccount(Guid id)
@@ -174,6 +179,8 @@ public class UserService : IUserService
 
         // if the wallet owner is not the signer
         if (verifiedAddress != user.Wallet.PublicAddress) throw new InvalidSignature();
+
+        user.AuthenticationToken = generateToken(user, 30);
         
         // refresh nonce once used for auth
         user.Wallet.Nonce = generateNonce();
@@ -181,8 +188,33 @@ public class UserService : IUserService
 
         return new AuthenticateResult
         {
-            Token = "Token",
+            Token = user.AuthenticationToken,
             Log = $"Verified user by {message}"
         };
+    }
+
+    public async Task Authenticate(string token)
+    {
+        // null check
+        var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.AuthenticationToken == token);
+        if (user == null) throw new UnauthorizedAccessException();
+    }
+    
+    private string generateToken(UserAccount user, int days)
+    {
+        var tokenHandler = new JwtSecurityTokenHandler();
+        var key = Encoding.ASCII.GetBytes(Options.EncryptionKey);
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Name, user.Id.ToString())
+            }),
+            Expires = DateTime.UtcNow.AddDays(days),
+            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature)
+        };
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        return tokenHandler.WriteToken(token);
     }
 }

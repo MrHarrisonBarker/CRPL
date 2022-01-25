@@ -5,6 +5,7 @@ namespace CRPL.Data;
 public class AppSettings
 {
     public string ConnectionString { get; set; }
+    public string EncryptionKey { get; set; }
     public string ChainUrl { get; set; }
     public string ChainId { get; set; }
     

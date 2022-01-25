@@ -1,6 +1,10 @@
+using System.Text;
 using CRPL.Data;
 using CRPL.Data.ContractDeployment;
+using CRPL.Web;
 using CRPL.Web.StartUp;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
@@ -30,8 +34,27 @@ builder.Services.AddAutoMapper(expression => expression.AddProfile(typeof(AutoMa
 builder.Services.AddDbPipeline(appSettings);
 builder.Services.AddServicePipeline(appSettings);
 
-builder.Services.AddControllersWithViews();
+var key = Encoding.ASCII.GetBytes(appSettings.EncryptionKey);
+builder.Services.AddAuthentication(x =>
+    {
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(x =>
+    {
+        x.RequireHttpsMetadata = false;
+        x.SaveToken = true;
+        x.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            LifetimeValidator = Utils.LifetimeValidator
+        };
+    });
 
+builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -51,6 +74,9 @@ app.UseSeeding();
 // app.UseHttpsRedirection();
 // app.UseStaticFiles();
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseSwagger();
 

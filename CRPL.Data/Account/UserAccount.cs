@@ -37,4 +37,6 @@ public class UserAccount
     public UserWallet Wallet { get; set; }
     
     public List<RegisteredWork> RegisteredWorks { get; set; }
+    
+    public string AuthenticationToken { get; set; }
 }

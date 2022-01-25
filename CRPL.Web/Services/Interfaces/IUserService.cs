@@ -24,4 +24,5 @@ public interface IUserService
     // +----------------------+
     public Task<byte[]> FetchNonce(string walletId);
     public Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel);
+    public Task Authenticate(string token);
 }
