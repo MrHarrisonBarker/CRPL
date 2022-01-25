@@ -19,11 +19,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPost]
-    public Task<UserAccountStatusModel> UpdateAccount(Guid accountId, AccountInputModel accountInputModel)
+    public async Task<UserAccountStatusModel> UpdateAccount(Guid accountId, AccountInputModel accountInputModel)
     {
         try
         {
-            return UserService.UpdateAccount(accountId, accountInputModel);
+            return await UserService.UpdateAccount(accountId, accountInputModel);
         }
         catch (Exception e)
         {
@@ -34,11 +34,11 @@ public class UserController : ControllerBase
 
     [HttpGet]
     // TODO: ownership needs to verified
-    public Task<UserAccountStatusModel> GetAccount(Guid id)
+    public async Task<UserAccountStatusModel> GetAccount(Guid id)
     {
         try
         {
-            return UserService.GetAccount(id);
+            return await UserService.GetAccount(id);
         }
         catch (Exception e)
         {
@@ -48,15 +48,29 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("nonce")]
-    public Task<byte[]> FetchNonce(string walletAddress)
+    public async Task<byte[]> FetchNonce(string walletAddress)
     {
         try
         {
-            return UserService.FetchNonce(walletAddress);
+            return await UserService.FetchNonce(walletAddress);
         }
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when fetching a nonce");
+            throw;
+        }
+    }
+
+    [HttpPost("sig")]
+    public async Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel)
+    {
+        try
+        {
+            return await UserService.AuthenticateSignature(authenticateInputModel);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when authenticating signature");
             throw;
         }
     }

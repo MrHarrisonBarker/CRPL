@@ -20,4 +20,11 @@ public class TestConstants
         { UserAccount.AccountStatus.Complete, new Guid("73C4FF17-1EF8-483C-BCDB-9A6191888F04") },
         { UserAccount.AccountStatus.Created, new Guid("8E9C6FB8-A8D7-459F-A39C-B06E68FE4E03") }
     };
+
+    public static Dictionary<UserAccount.AccountStatus, string> TestAccountWallets = new()
+    {
+        { UserAccount.AccountStatus.Incomplete, "test_1" },
+        { UserAccount.AccountStatus.Complete, "test_2" },
+        { UserAccount.AccountStatus.Created, "test_0" }
+    };
 }

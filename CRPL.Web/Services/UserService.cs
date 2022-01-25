@@ -1,4 +1,6 @@
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.Unicode;
 using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
@@ -8,6 +10,7 @@ using CRPL.Data.Account.ViewModels;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Nethereum.Signer;
 
 namespace CRPL.Web.Services;
 
@@ -79,7 +82,7 @@ public class UserService : IUserService
 
     private List<PartialField> getPartials(UserAccount userAccount)
     {
-        var ignoredProperties = new List<string> { "Wallet", "RegisteredWorks"};
+        var ignoredProperties = new List<string> { "Wallet", "RegisteredWorks" };
         var partials = new List<PartialField>();
 
         foreach (var property in typeof(UserAccount).GetProperties())
@@ -99,7 +102,7 @@ public class UserService : IUserService
 
     private bool isComplete(UserAccount userAccount)
     {
-        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet", "RegisteredWorks"};
+        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet", "RegisteredWorks" };
         var hasContact = 0;
         // checks each property is not null
         // user only needs one form of contact: email or phone
@@ -122,7 +125,7 @@ public class UserService : IUserService
     public async Task<byte[]> FetchNonce(string walletAddress)
     {
         Logger.LogInformation("Fetching {Id}'s nonce", walletAddress);
-        
+
         var user = await Context.UserAccounts.Include(x => x.Wallet).FirstOrDefaultAsync(x => x.Wallet.PublicAddress == walletAddress);
 
         // if new user
@@ -136,27 +139,50 @@ public class UserService : IUserService
                     PublicAddress = walletAddress
                 }
             };
+            await Context.UserAccounts.AddAsync(user);
         }
 
         user.Wallet.Nonce = generateNonce();
 
         await Context.SaveChangesAsync();
-        
+
         return user.Wallet.Nonce;
     }
 
     private byte[] generateNonce()
     {
         Logger.LogInformation("Generating new nonce");
-        
+
         var arr = new byte[32];
         using var random = RandomNumberGenerator.Create();
         random.GetBytes(arr);
         return arr;
     }
 
-    public Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel)
+    public async Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel)
     {
-        throw new NotImplementedException();
+        Logger.LogInformation("Authenticating a users signature");
+
+        // null check
+        var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.Wallet.PublicAddress == authenticateInputModel.WalletAddress);
+        if (user == null) throw new UserNotFoundException();
+
+        var message = $"Signing a unique nonce 0x{Convert.ToHexString(user.Wallet.Nonce)}";
+
+        // verifying signature
+        var verifiedAddress = new EthereumMessageSigner().EncodeUTF8AndEcRecover(message, authenticateInputModel.Signature);
+
+        // if the wallet owner is not the signer
+        if (verifiedAddress != user.Wallet.PublicAddress) throw new InvalidSignature();
+        
+        // refresh nonce once used for auth
+        user.Wallet.Nonce = generateNonce();
+        await Context.SaveChangesAsync();
+
+        return new AuthenticateResult
+        {
+            Token = "Token",
+            Log = $"Verified user by {message}"
+        };
     }
 }
