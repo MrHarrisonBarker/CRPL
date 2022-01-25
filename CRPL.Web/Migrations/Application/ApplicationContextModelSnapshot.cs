@@ -112,9 +112,9 @@ namespace CRPL.Web.Migrations.Application
                             b1.Property<Guid>("UserAccountId")
                                 .HasColumnType("char(36)");
 
-                            b1.Property<byte[]>("Nonce")
+                            b1.Property<string>("Nonce")
                                 .IsRequired()
-                                .HasColumnType("longblob");
+                                .HasColumnType("longtext");
 
                             b1.Property<string>("PublicAddress")
                                 .IsRequired()

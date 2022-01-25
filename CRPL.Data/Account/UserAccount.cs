@@ -38,5 +38,5 @@ public class UserAccount
     
     public List<RegisteredWork> RegisteredWorks { get; set; }
     
-    public string AuthenticationToken { get; set; }
+    public string? AuthenticationToken { get; set; }
 }

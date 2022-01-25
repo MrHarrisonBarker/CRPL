@@ -6,5 +6,5 @@ namespace CRPL.Data.Account;
 public class UserWallet
 {
     public string PublicAddress { get; set; }
-    public byte[] Nonce { get; set; } = new byte[32];
+    public string Nonce { get; set; }
 }

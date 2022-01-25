@@ -33,7 +33,7 @@ namespace CRPL.Web.Migrations.Application
                     Status = table.Column<int>(type: "int", nullable: false),
                     Wallet_PublicAddress = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Wallet_Nonce = table.Column<byte[]>(type: "longblob", nullable: false)
+                    Wallet_Nonce = table.Column<string>(type: "longtext", nullable: true)
                 },
                 constraints: table =>
                 {

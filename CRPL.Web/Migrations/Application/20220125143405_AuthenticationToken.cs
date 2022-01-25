@@ -12,7 +12,7 @@ namespace CRPL.Web.Migrations.Application
                 name: "AuthenticationToken",
                 table: "UserAccounts",
                 type: "longtext",
-                nullable: false)
+                nullable: true)
                 .Annotation("MySql:CharSet", "utf8mb4");
         }
 

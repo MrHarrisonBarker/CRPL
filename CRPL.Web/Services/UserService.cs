@@ -127,7 +127,7 @@ public class UserService : IUserService
     }
 
     // when no account exists create and save
-    public async Task<byte[]> FetchNonce(string walletAddress)
+    public async Task<string> FetchNonce(string walletAddress)
     {
         Logger.LogInformation("Fetching {Id}'s nonce", walletAddress);
 
@@ -141,7 +141,7 @@ public class UserService : IUserService
             {
                 Wallet = new UserWallet
                 {
-                    PublicAddress = walletAddress
+                    PublicAddress = walletAddress.ToLower()
                 }
             };
             await Context.UserAccounts.AddAsync(user);
@@ -154,14 +154,14 @@ public class UserService : IUserService
         return user.Wallet.Nonce;
     }
 
-    private byte[] generateNonce()
+    private string generateNonce()
     {
         Logger.LogInformation("Generating new nonce");
 
         var arr = new byte[32];
         using var random = RandomNumberGenerator.Create();
         random.GetBytes(arr);
-        return arr;
+        return Convert.ToHexString(arr);
     }
 
     public async Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel)
@@ -172,16 +172,18 @@ public class UserService : IUserService
         var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.Wallet.PublicAddress == authenticateInputModel.WalletAddress);
         if (user == null) throw new UserNotFoundException();
 
-        var message = $"Signing a unique nonce 0x{Convert.ToHexString(user.Wallet.Nonce)}";
+        var message = $"Signing a unique nonce {user.Wallet.Nonce}";
 
         // verifying signature
-        var verifiedAddress = new EthereumMessageSigner().EncodeUTF8AndEcRecover(message, authenticateInputModel.Signature);
+        var verifiedAddress = new EthereumMessageSigner().EncodeUTF8AndEcRecover(message, authenticateInputModel.Signature).ToLower();
+
+        Logger.LogInformation("verified address {VAddress} compared to {Address}", verifiedAddress, user.Wallet.PublicAddress);
 
         // if the wallet owner is not the signer
         if (verifiedAddress != user.Wallet.PublicAddress) throw new InvalidSignature();
 
         user.AuthenticationToken = generateToken(user, 30);
-        
+
         // refresh nonce once used for auth
         user.Wallet.Nonce = generateNonce();
         await Context.SaveChangesAsync();
@@ -199,7 +201,7 @@ public class UserService : IUserService
         var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.AuthenticationToken == token);
         if (user == null) throw new UnauthorizedAccessException();
     }
-    
+
     private string generateToken(UserAccount user, int days)
     {
         var tokenHandler = new JwtSecurityTokenHandler();

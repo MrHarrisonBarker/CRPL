@@ -2,16 +2,17 @@ using CRPL.Data.Account.InputModels;
 using CRPL.Data.Account.StatusModels;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace CRPL.Web.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> Logger;
     private readonly IUserService UserService;
-    
+
     public UserController(ILogger<UserController> logger, IUserService userService)
     {
         Logger = logger;
@@ -48,11 +49,11 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("nonce")]
-    public async Task<byte[]> FetchNonce(string walletAddress)
+    public async Task<ActionResult<string>> FetchNonce(string walletAddress)
     {
         try
         {
-            return await UserService.FetchNonce(walletAddress);
+            return Ok(JsonConvert.SerializeObject(await UserService.FetchNonce(walletAddress)));
         }
         catch (Exception e)
         {
@@ -89,7 +90,7 @@ public class UserController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpDelete("auth")]
     public async Task<ActionResult> RevokeAuthenticate(string token)
     {
