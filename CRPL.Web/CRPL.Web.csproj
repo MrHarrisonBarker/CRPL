@@ -34,10 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\Application" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\CRPL.Data\CRPL.Data.csproj" />
   </ItemGroup>
 

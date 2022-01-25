@@ -29,12 +29,16 @@ namespace CRPL.Web.Migrations.Application
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("WalletId")
+                    b.Property<Guid?>("UserAccountId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("WalletAddress")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("WalletId");
+                    b.HasIndex("UserAccountId");
 
                     b.ToTable("RegisteredWorks");
                 });
@@ -63,53 +67,20 @@ namespace CRPL.Web.Migrations.Application
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("WalletId")
-                        .HasColumnType("char(36)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("WalletId");
 
                     b.ToTable("UserAccounts");
                 });
 
-            modelBuilder.Entity("CRPL.Data.Account.UserWallet", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<long>("Nonce")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("PublicAddress")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("UserWallets");
-                });
-
             modelBuilder.Entity("CRPL.Data.Account.RegisteredWork", b =>
                 {
-                    b.HasOne("CRPL.Data.Account.UserWallet", "Wallet")
+                    b.HasOne("CRPL.Data.Account.UserAccount", null)
                         .WithMany("RegisteredWorks")
-                        .HasForeignKey("WalletId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Wallet");
+                        .HasForeignKey("UserAccountId");
                 });
 
             modelBuilder.Entity("CRPL.Data.Account.UserAccount", b =>
                 {
-                    b.HasOne("CRPL.Data.Account.UserWallet", "Wallet")
-                        .WithMany()
-                        .HasForeignKey("WalletId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.OwnsOne("CRPL.Data.Account.UserAccount+DOB", "DateOfBirth", b1 =>
                         {
                             b1.Property<Guid>("UserAccountId")
@@ -132,12 +103,34 @@ namespace CRPL.Web.Migrations.Application
                                 .HasForeignKey("UserAccountId");
                         });
 
+                    b.OwnsOne("CRPL.Data.Account.UserWallet", "Wallet", b1 =>
+                        {
+                            b1.Property<Guid>("UserAccountId")
+                                .HasColumnType("char(36)");
+
+                            b1.Property<byte[]>("Nonce")
+                                .IsRequired()
+                                .HasColumnType("longblob");
+
+                            b1.Property<string>("PublicAddress")
+                                .IsRequired()
+                                .HasColumnType("longtext");
+
+                            b1.HasKey("UserAccountId");
+
+                            b1.ToTable("UserAccounts");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserAccountId");
+                        });
+
                     b.Navigation("DateOfBirth");
 
-                    b.Navigation("Wallet");
+                    b.Navigation("Wallet")
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("CRPL.Data.Account.UserWallet", b =>
+            modelBuilder.Entity("CRPL.Data.Account.UserAccount", b =>
                 {
                     b.Navigation("RegisteredWorks");
                 });

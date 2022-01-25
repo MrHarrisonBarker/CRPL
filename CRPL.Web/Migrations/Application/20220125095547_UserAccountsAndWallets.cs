@@ -30,26 +30,14 @@ namespace CRPL.Web.Migrations.Application
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     PhoneNumber = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Status = table.Column<int>(type: "int", nullable: false)
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Wallet_PublicAddress = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Wallet_Nonce = table.Column<byte[]>(type: "longblob", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserAccounts", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "UserWallets",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    PublicAddress = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Nonce = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserWallets", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -60,24 +48,25 @@ namespace CRPL.Web.Migrations.Application
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     RightId = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    WalletId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
+                    WalletAddress = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    UserAccountId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RegisteredWorks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RegisteredWorks_UserWallets_WalletId",
-                        column: x => x.WalletId,
-                        principalTable: "UserWallets",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        name: "FK_RegisteredWorks_UserAccounts_UserAccountId",
+                        column: x => x.UserAccountId,
+                        principalTable: "UserAccounts",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RegisteredWorks_WalletId",
+                name: "IX_RegisteredWorks_UserAccountId",
                 table: "RegisteredWorks",
-                column: "WalletId");
+                column: "UserAccountId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -87,9 +76,6 @@ namespace CRPL.Web.Migrations.Application
 
             migrationBuilder.DropTable(
                 name: "UserAccounts");
-
-            migrationBuilder.DropTable(
-                name: "UserWallets");
         }
     }
 }
