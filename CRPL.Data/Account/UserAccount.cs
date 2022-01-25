@@ -33,4 +33,6 @@ public class UserAccount
         Incomplete,
         Complete
     }
+    
+    public UserWallet Wallet { get; set; }
 }

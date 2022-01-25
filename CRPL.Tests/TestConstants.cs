@@ -16,6 +16,8 @@ public class TestConstants
 
     public static Dictionary<UserAccount.AccountStatus, Guid> TestAccountIds = new()
     {
-        { UserAccount.AccountStatus.Incomplete, new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C") }
+        { UserAccount.AccountStatus.Incomplete, new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C") },
+        { UserAccount.AccountStatus.Complete, new Guid("73C4FF17-1EF8-483C-BCDB-9A6191888F04") },
+        { UserAccount.AccountStatus.Created, new Guid("8E9C6FB8-A8D7-459F-A39C-B06E68FE4E03") }
     };
 }

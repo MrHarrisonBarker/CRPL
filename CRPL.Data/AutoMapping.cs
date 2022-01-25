@@ -8,6 +8,8 @@ public class AutoMapping : Profile
 {
     public AutoMapping()
     {
-        CreateMap<UserAccount, UserAccountViewModel>();
+        CreateMap<UserAccount, UserAccountViewModel>()
+            .ForMember(model => model.WalletPublicAddress, x => 
+                x.MapFrom(a => a.Wallet.PublicAddress));
     }
 }

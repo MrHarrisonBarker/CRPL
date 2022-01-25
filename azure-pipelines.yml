@@ -2,10 +2,10 @@ trigger:
   batch: true
   branches:
     include:
-      - refs/tags/build
+      - refs/tags/build-*
 
 pool:
-  vmImage: 'Ubuntu-16.04'
+  vmImage: 'ubuntu-18.04'
   demands: npm
 
 variables:

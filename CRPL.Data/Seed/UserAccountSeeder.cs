@@ -24,7 +24,11 @@ public class UserAccountSeeder
                 LastName = "User",
                 PhoneNumber = null,
                 RegisteredJurisdiction = null,
-                DateOfBirth = null
+                DateOfBirth = null,
+                Wallet = new UserWallet()
+                {
+                    PublicAddress = "1"
+                }
             },
             new()
             {
@@ -38,6 +42,10 @@ public class UserAccountSeeder
                 DateOfBirth = new UserAccount.DOB()
                 {
                     Year = 2000, Month = 7, Day = 24
+                },
+                Wallet = new UserWallet()
+                {
+                    PublicAddress = "2"
                 }
             },
             new()
@@ -49,7 +57,11 @@ public class UserAccountSeeder
                 LastName = "",
                 PhoneNumber = "",
                 RegisteredJurisdiction = "",
-                DateOfBirth = new UserAccount.DOB()
+                DateOfBirth = new UserAccount.DOB(),
+                Wallet = new UserWallet()
+                {
+                    PublicAddress = "0"
+                }
             },
         };
 

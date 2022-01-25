@@ -18,4 +18,6 @@ public class UserAccountViewModel
     public string PhoneNumber { get; set; }
 
     public UserAccount.AccountStatus Status { get; set; }
+    
+    public string WalletPublicAddress { get; set; }
 }
