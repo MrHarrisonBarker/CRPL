@@ -24,9 +24,19 @@ public class UserService : IUserService
         Mapper = mapper;
     }
 
-    public Task<UserAccountStatusModel> GetAccount(Guid id)
+    public async Task<UserAccountStatusModel> GetAccount(Guid id)
     {
-        throw new NotImplementedException();
+        Logger.LogInformation("Getting account {Id}", id);
+
+        // null check
+        var user = await Context.UserAccounts.Include(x => x.Wallet).FirstOrDefaultAsync(x => x.Id == id);
+        if (user == null) throw new UserNotFoundException();
+
+        return new UserAccountStatusModel()
+        {
+            UserAccount = Mapper.Map<UserAccountViewModel>(user),
+            PartialFields = user.Status != UserAccount.AccountStatus.Complete ? getPartials(user) : null
+        };
     }
 
     public Task<UserWallet> GetWallet(Guid accountId)
@@ -72,7 +82,7 @@ public class UserService : IUserService
 
         foreach (var property in typeof(UserAccount).GetProperties())
         {
-            if (property.GetValue(userAccount) == null)
+            if (property.GetValue(userAccount) == null && property.Name != "Wallet")
             {
                 partials.Add(new PartialField
                 {
@@ -87,13 +97,14 @@ public class UserService : IUserService
 
     private bool isComplete(UserAccount userAccount)
     {
+        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet" };
         var hasContact = 0;
         // checks each property is not null
         // user only needs one form of contact: email or phone
         foreach (var property in typeof(UserAccount).GetProperties())
         {
             var val = property.GetValue(userAccount);
-            if (val == null && !(property.Name == "Email" || property.Name == "PhoneNumber")) return false;
+            if (val == null && !ignoredProperties.Contains(property.Name)) return false;
             if ((property.Name == "Email" || property.Name == "PhoneNumber") && val != null) hasContact++;
         }
 

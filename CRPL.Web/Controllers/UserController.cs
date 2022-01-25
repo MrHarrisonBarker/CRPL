@@ -27,7 +27,22 @@ public class UserController : ControllerBase
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Exception thrown when updating user account");
+            Logger.LogError(e, "Exception thrown when updating a user account");
+            throw;
+        }
+    }
+
+    [HttpGet]
+    // TODO: ownership needs to verified
+    public Task<UserAccountStatusModel> GetAccount(Guid id)
+    {
+        try
+        {
+            return UserService.GetAccount(id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when getting a user account");
             throw;
         }
     }
