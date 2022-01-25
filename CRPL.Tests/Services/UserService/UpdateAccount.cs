@@ -54,6 +54,7 @@ public class UpdateAccount
             var status = await userService.UpdateAccount(TestConstants.TestAccountIds[UserAccount.AccountStatus.Incomplete], new AccountInputModel
             {
                 Email = "test@test.co.uk",
+                PhoneNumber = "1",
                 RegisteredJurisdiction = "USA",
                 DateOfBirth = new UserAccount.DOB
                 {
