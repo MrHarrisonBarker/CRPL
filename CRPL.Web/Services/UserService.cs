@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
@@ -78,11 +79,12 @@ public class UserService : IUserService
 
     private List<PartialField> getPartials(UserAccount userAccount)
     {
+        var ignoredProperties = new List<string> { "Wallet", "RegisteredWorks"};
         var partials = new List<PartialField>();
 
         foreach (var property in typeof(UserAccount).GetProperties())
         {
-            if (property.GetValue(userAccount) == null && property.Name != "Wallet")
+            if (property.GetValue(userAccount) == null && !ignoredProperties.Contains(property.Name))
             {
                 partials.Add(new PartialField
                 {
@@ -97,7 +99,7 @@ public class UserService : IUserService
 
     private bool isComplete(UserAccount userAccount)
     {
-        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet" };
+        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet", "RegisteredWorks"};
         var hasContact = 0;
         // checks each property is not null
         // user only needs one form of contact: email or phone
@@ -116,14 +118,41 @@ public class UserService : IUserService
         throw new NotImplementedException();
     }
 
-    public Task<long> FetchNonce(Guid accountId)
+    // when no account exists create and save
+    public async Task<byte[]> FetchNonce(string walletAddress)
     {
-        throw new NotImplementedException();
+        Logger.LogInformation("Fetching {Id}'s nonce", walletAddress);
+        
+        var user = await Context.UserAccounts.Include(x => x.Wallet).FirstOrDefaultAsync(x => x.Wallet.PublicAddress == walletAddress);
+
+        // if new user
+        if (user == null)
+        {
+            Logger.LogInformation("New user found when fetching nonce");
+            user = new UserAccount
+            {
+                Wallet = new UserWallet
+                {
+                    PublicAddress = walletAddress
+                }
+            };
+        }
+
+        user.Wallet.Nonce = generateNonce();
+
+        await Context.SaveChangesAsync();
+        
+        return user.Wallet.Nonce;
     }
 
-    public Task<long> FetchNonce(Guid accountId, string walletAddress)
+    private byte[] generateNonce()
     {
-        throw new NotImplementedException();
+        Logger.LogInformation("Generating new nonce");
+        
+        var arr = new byte[32];
+        using var random = RandomNumberGenerator.Create();
+        random.GetBytes(arr);
+        return arr;
     }
 
     public Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel)

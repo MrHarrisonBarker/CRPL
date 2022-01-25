@@ -46,4 +46,18 @@ public class UserController : ControllerBase
             throw;
         }
     }
+
+    [HttpPost("nonce")]
+    public Task<byte[]> FetchNonce(string walletAddress)
+    {
+        try
+        {
+            return UserService.FetchNonce(walletAddress);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when fetching a nonce");
+            throw;
+        }
+    }
 }

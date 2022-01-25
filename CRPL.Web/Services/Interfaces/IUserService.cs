@@ -21,7 +21,7 @@ public interface IUserService
     // +----------------------+
     // +--- Authentication ---+
     // +----------------------+
-    public Task<long> FetchNonce(Guid accountId);
-    public Task<long> FetchNonce(Guid accountId, string walletAddress);
+    // +----------------------+
+    public Task<byte[]> FetchNonce(string walletId);
     public Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel);
 }
