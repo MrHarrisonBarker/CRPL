@@ -27,10 +27,13 @@ var appSettings = appSettingsSection.Get<AppSettings>();
 
 builder.Services.AddAutoMapper(expression => expression.AddProfile(typeof(AutoMapping)));
 
-builder.Services.AddDBPipeline(appSettings);
+builder.Services.AddDbPipeline(appSettings);
 builder.Services.AddServicePipeline(appSettings);
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -43,16 +46,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseSeeding();
+
+// app.UseHttpsRedirection();
+// app.UseStaticFiles();
 app.UseRouting();
 
+app.UseSwagger();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
 app.MapFallbackToFile("index.html");
-;
+
+app.UseSwaggerUI(x => x.SwaggerEndpoint("/swagger/v1/swagger.json", "CRPL"));
 
 app.Run();
