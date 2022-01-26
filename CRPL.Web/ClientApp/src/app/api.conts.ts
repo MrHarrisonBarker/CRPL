@@ -7,7 +7,8 @@ userPaths = {
   ...userPaths,
   FetchNonce: userPaths.BasePath + "/nonce",
   AuthenticateSignature: userPaths.BasePath + "/sig",
-  Auth: userPaths.BasePath + "/auth"
+  Auth: userPaths.BasePath + "/auth",
+  Account: userPaths.BasePath
 }
 
 interface UserPaths {

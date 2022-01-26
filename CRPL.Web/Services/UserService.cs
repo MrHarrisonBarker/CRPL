@@ -41,7 +41,7 @@ public class UserService : IUserService
         var user = await Context.UserAccounts.Include(x => x.Wallet).FirstOrDefaultAsync(x => x.Id == id);
         if (user == null) throw new UserNotFoundException();
 
-        return new UserAccountStatusModel()
+        return new UserAccountStatusModel
         {
             UserAccount = Mapper.Map<UserAccountViewModel>(user),
             PartialFields = user.Status != UserAccount.AccountStatus.Complete ? getPartials(user) : null
@@ -68,12 +68,23 @@ public class UserService : IUserService
         foreach (var property in typeof(AccountInputModel).GetProperties())
         {
             var prop = property.GetValue(accountInputModel);
-            if (prop != null)
+            if (prop != null && property.Name != "DateOfBirth")
             {
                 typeof(UserAccount).GetProperty(property.Name)?.SetValue(user, prop);
             }
         }
 
+        if (accountInputModel.DateOfBirth != null)
+        {
+            user.DateOfBirth = new UserAccount.DOB()
+            {
+                Year = accountInputModel.DateOfBirth.Year,
+                Month = accountInputModel.DateOfBirth.Month,
+                Day = accountInputModel.DateOfBirth.Day
+            };
+        }
+
+        if (user.Status == UserAccount.AccountStatus.Created) user.Status = UserAccount.AccountStatus.Incomplete;
         if (isComplete(user)) user.Status = UserAccount.AccountStatus.Complete;
 
         await Context.SaveChangesAsync();
@@ -92,7 +103,7 @@ public class UserService : IUserService
 
         foreach (var property in typeof(UserAccount).GetProperties())
         {
-            if (property.GetValue(userAccount) == null && !ignoredProperties.Contains(property.Name))
+            if (property.GetValue(userAccount) == null && !ignoredProperties.Contains(property.Name) || string.IsNullOrEmpty(property.GetValue(userAccount) as string))
             {
                 partials.Add(new PartialField
                 {

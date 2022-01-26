@@ -12,7 +12,7 @@ export interface UserAccountViewModel
   Id: string;
   FirstName: string;
   LastName: string;
-  DOB: DOB;
+  DateOfBirth: DOB;
   RegisteredJurisdiction: string;
   Email: string;
   PhoneNumber: string;

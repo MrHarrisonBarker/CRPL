@@ -1,0 +1,55 @@
+<p>wizard</p>
+<clr-wizard #wizard [clrWizardOpen]="open" (clrWizardOpenChange)="reset($event)" (clrWizardOnFinish)="finished($event)" [clrWizardPreventDefaultNext]="false">
+  <clr-wizard-title>Account Info</clr-wizard-title>
+
+  <clr-wizard-button [type]="'cancel'">Cancel</clr-wizard-button>
+  <clr-wizard-button [type]="'previous'">Back</clr-wizard-button>
+  <clr-wizard-button [type]="'next'">Next</clr-wizard-button>
+  <clr-wizard-button [type]="'finish'">Done</clr-wizard-button>
+
+  <clr-wizard-page #pageOne [clrWizardPageNextDisabled]="!formPageOneValid">
+    <ng-template clrPageTitle>Basic Information</ng-template>
+    <ng-template clrPageNavTitle>Basic Info</ng-template>
+
+    <form clrForm clrLayout="horizontal" [formGroup]="FirstPageModel">
+      <clr-input-container>
+        <label>First name</label> <input clrInput name="firstName" required formControlName="FirstName"/>
+        <clr-control-error>This field cannot be empty!</clr-control-error>
+      </clr-input-container>
+
+      <clr-input-container>
+        <label>Last name</label> <input clrInput name="lastName" required formControlName="LastName"/>
+        <clr-control-error>This field cannot be empty!</clr-control-error>
+      </clr-input-container>
+
+      <clr-date-container>
+        <label>Date of birth</label> <input type="date" clrDate name="DOB" formControlName="DOB"/>
+      </clr-date-container>
+
+      <clr-datalist-container>
+        <label>Registered Jurisdiction</label> <input clrDatalistInput formControlName="RegisteredJurisdiction" placeholder="GBR" name="registeredJurisdiction"/>
+        <datalist>
+          <option *ngFor="let country of countries" [value]="country.alpha3">{{country.country}}</option>
+        </datalist>
+      </clr-datalist-container>
+
+    </form>
+  </clr-wizard-page>
+
+  <clr-wizard-page #pageTwo [clrWizardPageNextDisabled]="!formPageTwoValid">
+    <ng-template clrPageTitle>Contact Information</ng-template>
+    <ng-template clrPageNavTitle>Contact Info</ng-template>
+
+    <form clrForm clrLayout="horizontal" [formGroup]="SecondPageMode">
+      <clr-input-container>
+        <label>Phone</label> <input clrInput type="tel" name="phoneNumber" formControlName="PhoneNumber"/>
+      </clr-input-container>
+
+      <clr-input-container>
+        <label>E-mail</label> <input clrInput type="email" name="email" formControlName="Email"/>
+      </clr-input-container>
+    </form>
+
+  </clr-wizard-page>
+
+</clr-wizard>
