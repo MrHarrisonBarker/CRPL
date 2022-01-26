@@ -9,6 +9,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Sinks.SystemConsole.Themes;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,7 +55,13 @@ builder.Services.AddAuthentication(x =>
         };
     });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+        options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+        options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+    }
+);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -72,7 +79,7 @@ if (!app.Environment.IsDevelopment())
 app.UseSeeding();
 
 // app.UseHttpsRedirection();
-// app.UseStaticFiles();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
