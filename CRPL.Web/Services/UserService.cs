@@ -195,11 +195,12 @@ public class UserService : IUserService
         };
     }
 
-    public async Task Authenticate(string token)
+    public async Task<UserAccountViewModel> Authenticate(string token)
     {
         Logger.LogInformation("Authenticating a token {Token}", token);
         var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.AuthenticationToken == token);
         if (user == null) throw new UnauthorizedAccessException();
+        return Mapper.Map<UserAccountViewModel>(user);
     }
 
     private string generateToken(UserAccount user, int days)

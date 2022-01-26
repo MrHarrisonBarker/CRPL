@@ -1,5 +1,6 @@
 using CRPL.Data.Account.InputModels;
 using CRPL.Data.Account.StatusModels;
+using CRPL.Data.Account.ViewModels;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -77,12 +78,11 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("auth")]
-    public async Task<ActionResult> Authenticate(string token)
+    public async Task<UserAccountViewModel> Authenticate(string token)
     {
         try
         {
-            await UserService.Authenticate(token);
-            return Ok();
+            return await UserService.Authenticate(token);
         }
         catch (Exception e)
         {
