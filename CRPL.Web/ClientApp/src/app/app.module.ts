@@ -12,6 +12,10 @@ import {FetchDataComponent} from './fetch-data/fetch-data.component';
 import {LoginButtonComponent} from './User/login-button/login-button.component';
 import {AuthInterceptor} from "./_Guards/auth.interceptor";
 import {AuthGuard} from "./_Guards/auth.guard";
+import {ClarityModule} from "@clr/angular";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {InfoWizardComponent} from './User/info-wizard/info-wizard.component';
+import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
 
 @NgModule({
   declarations: [
@@ -20,16 +24,21 @@ import {AuthGuard} from "./_Guards/auth.guard";
     HomeComponent,
     CounterComponent,
     FetchDataComponent,
-    LoginButtonComponent
+    LoginButtonComponent,
+    InfoWizardComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
+    BrowserAnimationsModule,
+    ClarityModule,
     HttpClientModule,
     FormsModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'counter', component: CounterComponent, canActivate: [AuthGuard]},
-      {path: 'fetch-data', component: FetchDataComponent},
+      {
+        path: 'fetch-data', canActivate: [CompleteUserAndAuthGuard], component: FetchDataComponent
+      },
     ])
   ],
   providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],

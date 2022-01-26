@@ -1,6 +1,6 @@
 import {DOB} from "./DOB";
 
-enum AccountStatus
+export enum AccountStatus
 {
   Created,
   Incomplete,

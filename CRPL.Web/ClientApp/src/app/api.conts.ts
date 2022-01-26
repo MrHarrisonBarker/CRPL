@@ -6,7 +6,8 @@ let userPaths : UserPaths = {
 userPaths = {
   ...userPaths,
   FetchNonce: userPaths.BasePath + "/nonce",
-  AuthenticateSignature: userPaths.BasePath + "/sig"
+  AuthenticateSignature: userPaths.BasePath + "/sig",
+  Auth: userPaths.BasePath + "/auth"
 }
 
 interface UserPaths {

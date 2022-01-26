@@ -1,11 +1,12 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {UserPaths} from "../api.conts";
-import {BehaviorSubject, from, Observable} from "rxjs";
+import {BehaviorSubject, from, Observable, of} from "rxjs";
 import {AuthenticateResult} from "../_Models/Account/AuthenticateResult";
 import {AuthenticateSignatureInputModel} from "../_Models/Account/AuthenticateSignatureInputModel";
-import {map, tap} from "rxjs/operators";
+import {finalize, map, tap} from "rxjs/operators";
 import jwtDecode, {JwtPayload} from "jwt-decode";
+import {UserAccountViewModel} from "../_Models/Account/UserAccountViewModel";
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class AuthService
   private AuthenticationToken: string = "";
   private Address: string = "";
 
+  public UserAccount: BehaviorSubject<UserAccountViewModel> = new BehaviorSubject<UserAccountViewModel>(null as any);
   public IsAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor (private http: HttpClient, @Inject('BASE_URL') baseUrl: string)
@@ -36,11 +38,10 @@ export class AuthService
       console.log("in date token found in local storage!");
 
       this.AuthenticationToken = token;
-      this.IsAuthenticated.next(true);
     }
   }
 
-  public getToken() : string
+  public getToken (): string
   {
     return this.AuthenticationToken;
   }
@@ -107,6 +108,7 @@ export class AuthService
       if (authResult.Token)
       {
         this.AuthenticationToken = authResult.Token;
+        if (authResult.Account) this.UserAccount.next(authResult.Account);
 
         let payload: JwtPayload = jwtDecode(this.AuthenticationToken);
 
@@ -118,5 +120,17 @@ export class AuthService
         }
       }
     }));
+  }
+
+  public Authenticate (token: string): Observable<UserAccountViewModel>
+  {
+    if (this.UserAccount.getValue() != null) return of(this.UserAccount.getValue());
+    return this.http.get<UserAccountViewModel>(this.BaseUrl + UserPaths.Auth, {
+      params: new HttpParams().set('token', token)
+    }).pipe(tap(account =>
+    {
+      console.log("got user account from auth", account);
+      this.UserAccount.next(account);
+    })).pipe(finalize(() => this.IsAuthenticated.next(true)));
   }
 }
