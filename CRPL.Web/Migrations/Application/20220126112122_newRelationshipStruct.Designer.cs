@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRPL.Web.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220125143405_AuthenticationToken")]
-    partial class AuthenticationToken
+    [Migration("20220126112122_newRelationshipStruct")]
+    partial class newRelationshipStruct
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,16 +31,7 @@ namespace CRPL.Web.Migrations.Application
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid?>("UserAccountId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("WalletAddress")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserAccountId");
 
                     b.ToTable("RegisteredWorks");
                 });
@@ -52,7 +43,6 @@ namespace CRPL.Web.Migrations.Application
                         .HasColumnType("char(36)");
 
                     b.Property<string>("AuthenticationToken")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Email")
@@ -78,11 +68,19 @@ namespace CRPL.Web.Migrations.Application
                     b.ToTable("UserAccounts");
                 });
 
-            modelBuilder.Entity("CRPL.Data.Account.RegisteredWork", b =>
+            modelBuilder.Entity("CRPL.Data.Account.UserWork", b =>
                 {
-                    b.HasOne("CRPL.Data.Account.UserAccount", null)
-                        .WithMany("RegisteredWorks")
-                        .HasForeignKey("UserAccountId");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("WorkId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("UserId", "WorkId");
+
+                    b.HasIndex("WorkId");
+
+                    b.ToTable("UserWorks");
                 });
 
             modelBuilder.Entity("CRPL.Data.Account.UserAccount", b =>
@@ -114,9 +112,9 @@ namespace CRPL.Web.Migrations.Application
                             b1.Property<Guid>("UserAccountId")
                                 .HasColumnType("char(36)");
 
-                            b1.Property<byte[]>("Nonce")
+                            b1.Property<string>("Nonce")
                                 .IsRequired()
-                                .HasColumnType("longblob");
+                                .HasColumnType("longtext");
 
                             b1.Property<string>("PublicAddress")
                                 .IsRequired()
@@ -136,9 +134,33 @@ namespace CRPL.Web.Migrations.Application
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CRPL.Data.Account.UserWork", b =>
+                {
+                    b.HasOne("CRPL.Data.Account.UserAccount", "UserAccount")
+                        .WithMany("UserWorks")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRPL.Data.Account.RegisteredWork", "RegisteredWork")
+                        .WithMany("UserWorks")
+                        .HasForeignKey("WorkId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RegisteredWork");
+
+                    b.Navigation("UserAccount");
+                });
+
+            modelBuilder.Entity("CRPL.Data.Account.RegisteredWork", b =>
+                {
+                    b.Navigation("UserWorks");
+                });
+
             modelBuilder.Entity("CRPL.Data.Account.UserAccount", b =>
                 {
-                    b.Navigation("RegisteredWorks");
+                    b.Navigation("UserWorks");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,5 +7,5 @@ public class RegisteredWork
     // maps from a bigInt aka uin256
     public string RightId { get; set; }
     
-    public string WalletAddress { get; set; }
+    public List<UserWork> UserWorks { get; set; }
 }

@@ -5,11 +5,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CRPL.Web.Migrations.Application
 {
-    public partial class UserAccountsAndWallets : Migration
+    public partial class newRelationshipStruct : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "RegisteredWorks",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    RightId = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RegisteredWorks", x => x.Id);
+                })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
@@ -34,6 +48,9 @@ namespace CRPL.Web.Migrations.Application
                     Wallet_PublicAddress = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Wallet_Nonce = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AuthenticationToken = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4")
                 },
                 constraints: table =>
                 {
@@ -42,35 +59,41 @@ namespace CRPL.Web.Migrations.Application
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "RegisteredWorks",
+                name: "UserWorks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    RightId = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    WalletAddress = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserAccountId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                    UserId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    WorkId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci")
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RegisteredWorks", x => x.Id);
+                    table.PrimaryKey("PK_UserWorks", x => new { x.UserId, x.WorkId });
                     table.ForeignKey(
-                        name: "FK_RegisteredWorks_UserAccounts_UserAccountId",
-                        column: x => x.UserAccountId,
+                        name: "FK_UserWorks_RegisteredWorks_WorkId",
+                        column: x => x.WorkId,
+                        principalTable: "RegisteredWorks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserWorks_UserAccounts_UserId",
+                        column: x => x.UserId,
                         principalTable: "UserAccounts",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RegisteredWorks_UserAccountId",
-                table: "RegisteredWorks",
-                column: "UserAccountId");
+                name: "IX_UserWorks_WorkId",
+                table: "UserWorks",
+                column: "WorkId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "UserWorks");
+
             migrationBuilder.DropTable(
                 name: "RegisteredWorks");
 
