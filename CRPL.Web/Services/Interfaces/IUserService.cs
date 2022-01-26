@@ -26,4 +26,5 @@ public interface IUserService
     public Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel);
     public Task Authenticate(string token);
     public Task RevokeAuthentication(string token);
+    public Task<bool> isShareholder(string address, string rightId);
 }

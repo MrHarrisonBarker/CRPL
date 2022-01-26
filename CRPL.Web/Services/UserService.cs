@@ -87,7 +87,7 @@ public class UserService : IUserService
 
     private List<PartialField> getPartials(UserAccount userAccount)
     {
-        var ignoredProperties = new List<string> { "Wallet", "RegisteredWorks" };
+        var ignoredProperties = new List<string> { "Wallet", "UserWorks", "AuthenticationToken" };
         var partials = new List<PartialField>();
 
         foreach (var property in typeof(UserAccount).GetProperties())
@@ -107,7 +107,7 @@ public class UserService : IUserService
 
     private bool isComplete(UserAccount userAccount)
     {
-        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet", "RegisteredWorks" };
+        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet", "UserWorks", "AuthenticationToken" };
         var hasContact = 0;
         // checks each property is not null
         // user only needs one form of contact: email or phone
@@ -197,13 +197,15 @@ public class UserService : IUserService
 
     public async Task Authenticate(string token)
     {
-        // null check
+        Logger.LogInformation("Authenticating a token {Token}", token);
         var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.AuthenticationToken == token);
         if (user == null) throw new UnauthorizedAccessException();
     }
 
     private string generateToken(UserAccount user, int days)
     {
+        Logger.LogInformation("Generating auth token for {Id}, lasting {Days} days", user.Wallet.PublicAddress, days);
+
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(Options.EncryptionKey);
         var tokenDescriptor = new SecurityTokenDescriptor
@@ -222,6 +224,8 @@ public class UserService : IUserService
 
     public async Task RevokeAuthentication(string token)
     {
+        Logger.LogInformation("Revoking authentication to {Token}", token);
+
         // null check
         var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.AuthenticationToken == token);
         if (user == null) throw new UserNotFoundException();
@@ -229,5 +233,19 @@ public class UserService : IUserService
         Context.UserAccounts.Update(user);
         user.AuthenticationToken = null;
         await Context.SaveChangesAsync();
+    }
+
+    public async Task<bool> isShareholder(string address, string rightId)
+    {
+        Logger.LogInformation("Checking if shareholder {Address}", address);
+
+        // null check
+        var user = await Context.UserAccounts
+            .Include(x => x.Wallet)
+            .Include(x => x.UserWorks).ThenInclude(x => x.RegisteredWork)
+            .FirstOrDefaultAsync(x => x.Wallet.PublicAddress == address);
+        if (user == null) throw new UserNotFoundException();
+
+        return user.UserWorks.Any(x => x.RegisteredWork.RightId == rightId);
     }
 }
