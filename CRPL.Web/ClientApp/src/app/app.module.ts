@@ -16,6 +16,7 @@ import {ClarityModule} from "@clr/angular";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {InfoWizardComponent} from './User/info-wizard/info-wizard.component';
 import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
+import { LogoutButtonComponent } from './User/logout-button/logout-button.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
     CounterComponent,
     FetchDataComponent,
     LoginButtonComponent,
-    InfoWizardComponent
+    InfoWizardComponent,
+    LogoutButtonComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

@@ -7,6 +7,7 @@ import {AuthenticateSignatureInputModel} from "../_Models/Account/AuthenticateSi
 import {finalize, map, tap} from "rxjs/operators";
 import jwtDecode, {JwtPayload} from "jwt-decode";
 import {UserAccountViewModel} from "../_Models/Account/UserAccountViewModel";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +23,7 @@ export class AuthService
   public UserAccount: BehaviorSubject<UserAccountViewModel> = new BehaviorSubject<UserAccountViewModel>(null as any);
   public IsAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor (private http: HttpClient, @Inject('BASE_URL') baseUrl: string)
+  constructor (private http: HttpClient, @Inject('BASE_URL') baseUrl: string, private router: Router)
   {
     this.BaseUrl = baseUrl;
     this.checkForToken();
@@ -69,7 +70,6 @@ export class AuthService
         });
       });
     });
-
   }
 
   private getWalletAddress (): Observable<string>
@@ -132,5 +132,14 @@ export class AuthService
       console.log("got user account from auth", account);
       this.UserAccount.next(account);
     })).pipe(finalize(() => this.IsAuthenticated.next(true)));
+  }
+
+  public Logout (): void
+  {
+    localStorage.removeItem("authentication_token");
+    localStorage.removeItem("expires_at");
+
+    // TODO: show notification/alert
+    this.router.navigate(["/"]);
   }
 }
