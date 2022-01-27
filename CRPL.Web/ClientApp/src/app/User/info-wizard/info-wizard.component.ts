@@ -8,6 +8,7 @@ import {AccountInputModel} from "../../_Models/Account/AccountInputModel";
 import {AuthService} from "../../_Services/auth.service";
 import {Router} from "@angular/router";
 import {catchError} from "rxjs/operators";
+import {ValidatorsService} from "../../_Services/validators.service";
 
 @Component({
   selector: 'info-wizard',
@@ -30,10 +31,15 @@ export class InfoWizardComponent implements OnInit
 
   public SecondPageMode: FormGroup = new FormGroup({
     Email: new FormControl('', [Validators.required]),
-    PhoneNumber: new FormControl('', [Validators.required])
+    PhoneNumber: new FormControl('', [Validators.required], [this.validators.phoneValidate()])
   });
 
-  constructor (private userService: UserService, private authService: AuthService, private router: Router)
+  constructor (
+    private userService: UserService,
+    private authService: AuthService,
+    private router: Router,
+    private validators: ValidatorsService
+  )
   {
   }
 

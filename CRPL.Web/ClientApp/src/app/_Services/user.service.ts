@@ -31,4 +31,14 @@ export class UserService
       this.authService.UserAccount.next(status.UserAccount);
     }));
   }
+
+  public PhoneExists (phone: string): Observable<boolean>
+  {
+    return this.http.get<boolean>(this.BaseUrl + UserPaths.PhoneExists, {params: new HttpParams().set('phone', phone)});
+  }
+
+  public EmailExists (email: string): Observable<boolean>
+  {
+    return this.http.get<boolean>(this.BaseUrl + UserPaths.EmailExists, {params: new HttpParams().set('email', email)});
+  }
 }

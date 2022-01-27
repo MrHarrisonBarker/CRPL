@@ -1,4 +1,5 @@
 let userPaths : UserPaths = {
+  EmailExists: "", PhoneExists: "",
   Account: "", Auth: "", AuthenticateSignature: "", FetchNonce: "", RevokeAuthenticate: "", Update: "",
   BasePath: "user"
 }
@@ -8,7 +9,9 @@ userPaths = {
   FetchNonce: userPaths.BasePath + "/nonce",
   AuthenticateSignature: userPaths.BasePath + "/sig",
   Auth: userPaths.BasePath + "/auth",
-  Account: userPaths.BasePath
+  Account: userPaths.BasePath,
+  PhoneExists: userPaths.BasePath + "/unique/phone",
+  EmailExists: userPaths.BasePath + "/unique/email"
 }
 
 interface UserPaths {
@@ -19,6 +22,8 @@ interface UserPaths {
   readonly AuthenticateSignature: string;
   readonly Account: string;
   readonly Update: string;
+  readonly PhoneExists: string;
+  readonly EmailExists: string;
 }
 
 export const UserPaths: UserPaths = userPaths;

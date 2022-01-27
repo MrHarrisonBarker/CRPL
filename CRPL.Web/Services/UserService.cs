@@ -55,11 +55,14 @@ public class UserService : IUserService
 
     public async Task<bool> IsUniquePhoneNumber(string phoneNumber)
     {
-        return !await Context.UserAccounts.AnyAsync(x => x.PhoneNumber == phoneNumber);
+        Logger.LogInformation("Checking is phone number '{Phone}' exists", phoneNumber);
+        // Logger.LogInformation("Found {Any}", any);
+        return !(await Context.UserAccounts.AnyAsync(x => x.PhoneNumber == phoneNumber));
     }
 
     public async Task<bool> IsUniqueEmail(string email)
     {
+        Logger.LogInformation("Checking is email '{Email}' exists", email);
         return !await Context.UserAccounts.AnyAsync(x => x.Email == email);
     }
 
