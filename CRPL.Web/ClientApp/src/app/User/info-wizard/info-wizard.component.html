@@ -43,10 +43,13 @@
     <form clrForm clrLayout="horizontal" [formGroup]="SecondPageMode">
       <clr-input-container>
         <label>Phone</label> <input clrInput name="phoneNumber" formControlName="PhoneNumber"/>
+        <clr-control-error *ngIf="SecondPageMode.controls.PhoneNumber.hasError('phoneExists')">This phone number is already in use</clr-control-error>
       </clr-input-container>
 
       <clr-input-container>
         <label>E-mail</label> <input clrInput type="email" name="email" formControlName="Email"/>
+        <clr-control-error *ngIf="SecondPageMode.controls.Email.hasError('emailExists')">This email is already in use</clr-control-error>
+
       </clr-input-container>
     </form>
 

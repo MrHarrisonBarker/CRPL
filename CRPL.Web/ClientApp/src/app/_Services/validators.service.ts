@@ -16,13 +16,21 @@ export class ValidatorsService
 
   public phoneValidate (): AsyncValidatorFn
   {
-    console.log("validating if phone exists")
     return (control: AbstractControl): Observable<ValidationErrors | null> =>
     {
-      console.log("checking if phone exists")
       return this.userService.PhoneExists(control.value).pipe(map(res => {
         console.log("phone is", res);
         return res ? null : {phoneExists: true}
+      }));
+    }
+  }
+
+  public emailValidate(): AsyncValidatorFn
+  {
+    return (control: AbstractControl): Observable<ValidationErrors | null> =>
+    {
+      return this.userService.EmailExists(control.value).pipe(map(res => {
+        return res ? null : {emailExists: true}
       }));
     }
   }

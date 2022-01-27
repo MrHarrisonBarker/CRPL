@@ -30,8 +30,8 @@ export class InfoWizardComponent implements OnInit
   });
 
   public SecondPageMode: FormGroup = new FormGroup({
-    Email: new FormControl('', [Validators.required]),
-    PhoneNumber: new FormControl('', [Validators.required], [this.validators.phoneValidate()])
+    Email: new FormControl('', [Validators.email], [this.validators.emailValidate()]),
+    PhoneNumber: new FormControl('', [], [this.validators.phoneValidate()])
   });
 
   constructor (
