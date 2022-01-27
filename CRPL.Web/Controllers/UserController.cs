@@ -105,4 +105,32 @@ public class UserController : ControllerBase
             throw;
         }
     }
+    
+    [HttpGet("unique/phone")]
+    public async Task<bool> IsUniquePhoneNumber(string phone)
+    {
+        try
+        {
+            return await UserService.IsUniquePhoneNumber(phone);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when checking uniqueness of phone number");
+            throw;
+        }
+    }
+    
+    [HttpGet("unique/email")]
+    public async Task<bool> IsUniqueEmail(string email)
+    {
+        try
+        {
+            return await UserService.IsUniqueEmail(email);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when checking uniqueness of phone number");
+            throw;
+        }
+    }
 }

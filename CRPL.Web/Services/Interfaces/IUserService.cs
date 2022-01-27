@@ -12,6 +12,8 @@ public interface IUserService
     // +----------------------+
     public Task<UserAccountStatusModel> GetAccount(Guid id);
     public Task<UserWallet> GetWallet(Guid accountId);
+    public Task<bool> IsUniquePhoneNumber(string phoneNumber);
+    public Task<bool> IsUniqueEmail(string email);
 
     // +----------------------+
     // -------- Updates ------+

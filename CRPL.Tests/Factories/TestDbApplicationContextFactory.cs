@@ -73,7 +73,8 @@ public class TestDbApplicationContextFactory : IDisposable
                 Wallet = new UserWallet()
                 {
                     PublicAddress = "test_2"
-                }
+                },
+                AuthenticationToken = "TEST_TOKEN"
             },
             new()
             {

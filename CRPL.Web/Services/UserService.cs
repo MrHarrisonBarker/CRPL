@@ -53,6 +53,16 @@ public class UserService : IUserService
         throw new NotImplementedException();
     }
 
+    public async Task<bool> IsUniquePhoneNumber(string phoneNumber)
+    {
+        return !await Context.UserAccounts.AnyAsync(x => x.PhoneNumber == phoneNumber);
+    }
+
+    public async Task<bool> IsUniqueEmail(string email)
+    {
+        return !await Context.UserAccounts.AnyAsync(x => x.Email == email);
+    }
+
     public async Task<UserAccountStatusModel> UpdateAccount(Guid accountId, AccountInputModel accountInputModel)
     {
         Logger.LogInformation("Updating account {Id}", accountId);
@@ -103,7 +113,7 @@ public class UserService : IUserService
 
         foreach (var property in typeof(UserAccount).GetProperties())
         {
-            if (property.GetValue(userAccount) == null && !ignoredProperties.Contains(property.Name) || string.IsNullOrEmpty(property.GetValue(userAccount) as string))
+            if (property.GetValue(userAccount) == null && !ignoredProperties.Contains(property.Name))
             {
                 partials.Add(new PartialField
                 {
