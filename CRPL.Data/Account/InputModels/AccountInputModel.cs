@@ -9,7 +9,7 @@ public class AccountInputModel
     // country code
     public string? RegisteredJurisdiction { get; set; }
     
-    // might not be needed
     public string? Email { get; set; }
+    public string? DialCode { get; set; }
     public string? PhoneNumber { get; set; }
 }

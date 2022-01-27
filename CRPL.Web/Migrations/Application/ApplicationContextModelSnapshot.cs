@@ -43,6 +43,9 @@ namespace CRPL.Web.Migrations.Application
                     b.Property<string>("AuthenticationToken")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("DialCode")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Email")
                         .HasColumnType("longtext");
 
@@ -111,7 +114,6 @@ namespace CRPL.Web.Migrations.Application
                                 .HasColumnType("char(36)");
 
                             b1.Property<string>("Nonce")
-                                .IsRequired()
                                 .HasColumnType("longtext");
 
                             b1.Property<string>("PublicAddress")

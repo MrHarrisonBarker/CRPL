@@ -7,5 +7,6 @@ export interface AccountInputModel
   DateOfBirth?: DOB;
   RegisteredJurisdiction?: string;
   Email?: string;
+  DialCode?: string;
   PhoneNumber?: string;
 }

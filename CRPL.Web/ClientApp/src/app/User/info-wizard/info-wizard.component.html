@@ -5,9 +5,9 @@
   <clr-wizard-button [type]="'cancel'">Cancel</clr-wizard-button>
   <clr-wizard-button [type]="'previous'">Back</clr-wizard-button>
   <clr-wizard-button [type]="'next'">Next</clr-wizard-button>
-  <clr-wizard-button [type]="'finish'">Done</clr-wizard-button>
+  <clr-wizard-button [type]="'finish'" (click)="FinishWizard()">Done</clr-wizard-button>
 
-  <clr-wizard-page #pageOne [clrWizardPageNextDisabled]="!formPageOneValid">
+  <clr-wizard-page #pageOne [clrWizardPageNextDisabled]="!FirstPageModel.valid">
     <ng-template clrPageTitle>Basic Information</ng-template>
     <ng-template clrPageNavTitle>Basic Info</ng-template>
 
@@ -33,24 +33,43 @@
         </datalist>
       </clr-datalist-container>
 
+      <clr-alert clrAlertType="danger" *ngIf="FirstPageErrMessage != ''">
+        <clr-alert-item>
+          <span class="alert-text">{{FirstPageErrMessage}}</span>
+        </clr-alert-item>
+      </clr-alert>
     </form>
   </clr-wizard-page>
 
-  <clr-wizard-page #pageTwo [clrWizardPageNextDisabled]="!formPageTwoValid">
+  <clr-wizard-page #pageTwo [clrWizardPageNextDisabled]="!SecondPageModel.valid">
     <ng-template clrPageTitle>Contact Information</ng-template>
     <ng-template clrPageNavTitle>Contact Info</ng-template>
 
-    <form clrForm clrLayout="horizontal" [formGroup]="SecondPageMode">
+    <form clrForm clrLayout="horizontal" [formGroup]="SecondPageModel">
+
+      <clr-datalist-container>
+        <label>Dial code</label> <input clrDatalistInput formControlName="DialCode" placeholder="44" name="dialCode"/>
+        <datalist>
+          <option *ngFor="let code of dialCode" [value]="code.dialCode">{{code.name}}</option>
+        </datalist>
+      </clr-datalist-container>
+
       <clr-input-container>
         <label>Phone</label> <input clrInput name="phoneNumber" formControlName="PhoneNumber"/>
-        <clr-control-error *ngIf="SecondPageMode.controls.PhoneNumber.hasError('phoneExists')">This phone number is already in use</clr-control-error>
+        <clr-control-error *ngIf="SecondPageModel.controls.PhoneNumber.hasError('phoneExists')">This phone number is already in use</clr-control-error>
       </clr-input-container>
 
       <clr-input-container>
         <label>E-mail</label> <input clrInput type="email" name="email" formControlName="Email"/>
-        <clr-control-error *ngIf="SecondPageMode.controls.Email.hasError('emailExists')">This email is already in use</clr-control-error>
+        <clr-control-error *ngIf="SecondPageModel.controls.Email.hasError('emailExists')">This email is already in use</clr-control-error>
 
       </clr-input-container>
+
+      <clr-alert clrAlertType="danger" *ngIf="SecondPageErrMessage != ''">
+        <clr-alert-item>
+          <span class="alert-text">{{SecondPageErrMessage}}</span>
+        </clr-alert-item>
+      </clr-alert>
     </form>
 
   </clr-wizard-page>

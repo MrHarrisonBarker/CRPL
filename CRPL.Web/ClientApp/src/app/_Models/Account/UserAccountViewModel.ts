@@ -15,6 +15,7 @@ export interface UserAccountViewModel
   DateOfBirth: DOB;
   RegisteredJurisdiction: string;
   Email: string;
+  DialCode: string;
   PhoneNumber: string;
   Status: AccountStatus;
   WalletPublicAddress: string;

@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-// const iso = require('iso-3166-1');
-import Index from 'iso-3166-1';
+import * as ISO3166 from 'iso-3166-1';
+import * as Dial from 'country-telephone-data';
 import {Country} from "iso-3166-1/dist/iso-3166";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../_Services/user.service";
@@ -17,10 +17,9 @@ import {ValidatorsService} from "../../_Services/validators.service";
 })
 export class InfoWizardComponent implements OnInit
 {
-  countries: Country[] = Index.all();
+  countries: Country[] = ISO3166.all();
+  dialCode: Dial.Country[] = Dial.allCountries;
   @Input() open: boolean = true;
-  formPageOneValid: boolean = true;
-  formPageTwoValid: boolean = false;
 
   public FirstPageModel: FormGroup = new FormGroup({
     FirstName: new FormControl('', [Validators.required]),
@@ -29,10 +28,14 @@ export class InfoWizardComponent implements OnInit
     DOB: new FormControl('', [Validators.required])
   });
 
-  public SecondPageMode: FormGroup = new FormGroup({
+  public SecondPageModel: FormGroup = new FormGroup({
     Email: new FormControl('', [Validators.email], [this.validators.emailValidate()]),
-    PhoneNumber: new FormControl('', [], [this.validators.phoneValidate()])
+    DialCode: new FormControl('44'),
+    PhoneNumber: new FormControl('', [Validators.pattern("^((\\\\+91-?)|0)?[0-9]{10}$")], [this.validators.phoneValidate()])
   });
+
+  SecondPageErrMessage: string = "";
+  FirstPageErrMessage: string = "";
 
   constructor (
     private userService: UserService,
@@ -52,8 +55,31 @@ export class InfoWizardComponent implements OnInit
     this.PopulateForms();
   }
 
+  private validateForms ()
+  {
+    this.SecondPageErrMessage = "";
+
+    let valid = true;
+
+    if(!this.validators.hasOneContactInfo(this.SecondPageModel))
+    {
+      valid = false;
+      this.SecondPageErrMessage += "You must have one way of contacting";
+    }
+
+    // if entered a phone number then country
+    // if (this.SecondPageModel.value.PhoneNumber != '')
+    // {
+    //
+    // }
+
+    return valid;
+  }
+
   public SaveForms ()
   {
+    if (!this.validateForms()) return;
+
     let accountInput: AccountInputModel = {};
 
     accountInput.FirstName = this.FirstPageModel.value.FirstName;
@@ -66,12 +92,13 @@ export class InfoWizardComponent implements OnInit
 
     accountInput.DateOfBirth = {
       Year: dob.getFullYear(),
-      Month: dob.getMonth()+1,
+      Month: dob.getMonth() + 1,
       Day: dob.getDate()
     }
 
-    accountInput.Email = this.SecondPageMode.value.Email;
-    accountInput.PhoneNumber = this.SecondPageMode.value.PhoneNumber;
+    accountInput.Email = this.SecondPageModel.value.Email;
+    accountInput.DialCode = this.SecondPageModel.value.DialCode;
+    accountInput.PhoneNumber = this.SecondPageModel.value.PhoneNumber;
 
     this.userService.UpdateAccount(accountInput).pipe(catchError(err => err)).subscribe();
   }
@@ -87,8 +114,9 @@ export class InfoWizardComponent implements OnInit
       DOB: `${user.DateOfBirth.Month}/${user.DateOfBirth.Day}/${user.DateOfBirth.Year}`
     });
 
-    this.SecondPageMode.setValue({
+    this.SecondPageModel.setValue({
       Email: user.Email,
+      DialCode: user.DialCode,
       PhoneNumber: user.PhoneNumber
     });
   }
@@ -96,12 +124,18 @@ export class InfoWizardComponent implements OnInit
   public reset ($event: boolean)
   {
     this.open = false;
-    console.log($event, this.FirstPageModel.value, this.SecondPageMode.value);
-    this.SaveForms();
+    console.log($event, this.FirstPageModel.value, this.SecondPageModel.value);
+    // this.SaveForms();
   }
 
   public finished ($event: any)
   {
     console.log($event);
+  }
+
+  public FinishWizard ()
+  {
+    console.log("the wizard has been finished", this.FirstPageModel, this.SecondPageModel)
+    console.log("valids", this.FirstPageModel.valid, this.SecondPageModel.valid, this.SecondPageModel.controls.PhoneNumber.valid);
   }
 }

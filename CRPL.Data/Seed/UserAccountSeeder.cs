@@ -37,7 +37,8 @@ public class UserAccountSeeder
                 Status = UserAccount.AccountStatus.Complete,
                 FirstName = "Complete",
                 LastName = "User",
-                PhoneNumber = "+4407852276048",
+                DialCode = "+44",
+                PhoneNumber = "07852276048",
                 RegisteredJurisdiction = "GBR",
                 DateOfBirth = new UserAccount.DOB()
                 {
