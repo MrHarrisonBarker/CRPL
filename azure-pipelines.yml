@@ -5,7 +5,7 @@ trigger:
       - refs/tags/build-*
 
 pool:
-  vmImage: 'ubuntu-18.04'
+  vmImage: 'windows-latest'
   demands: npm
 
 variables:

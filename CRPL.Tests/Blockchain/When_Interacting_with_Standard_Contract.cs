@@ -40,7 +40,7 @@ public class When_Interacting_with_Standard_Contract
             {
               new()
               {
-                  Owner = TestConstants.TestAccountId,
+                  Owner = TestConstants.TestAccountAddress,
                   Share = 100
               }  
             },

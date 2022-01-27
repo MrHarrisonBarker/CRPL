@@ -16,7 +16,7 @@ public class UserServiceFactory
 
         var appSettings = Options.Create(new AppSettings()
         {
-            EncryptionKey = "Test key"
+            EncryptionKey = "Bj3PtC818hVHkNH3nzI0HN8wJXY0oHdo"
         });
 
         return new UserService(new Logger<UserService>(new LoggerFactory()), context, mapper, appSettings);

@@ -91,6 +91,26 @@ public class TestDbApplicationContextFactory : IDisposable
                     PublicAddress = "test_0"
                 }
             },
+            new()
+            {
+                Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
+                Email = "test@user.co.uk",
+                Status = UserAccount.AccountStatus.Complete,
+                FirstName = "Complete",
+                LastName = "User",
+                PhoneNumber = "99999999999",
+                RegisteredJurisdiction = "GBR",
+                DateOfBirth = new UserAccount.DOB()
+                {
+                    Year = 2000, Month = 7, Day = 24
+                },
+                Wallet = new UserWallet
+                {
+                    PublicAddress = TestConstants.TestAccountAddress,
+                    Nonce = "NONCE"
+                },
+                AuthenticationToken = null
+            }
         };
         
         context.UserAccounts.AddRange(userAccounts);

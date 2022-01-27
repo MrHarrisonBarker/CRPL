@@ -26,7 +26,7 @@ public class When_Connecting_To_Private_Blockchain
     public async Task Account_Should_Have_Balance()
     {
         using var connection = TestConstants.PrivateTestConnection();
-        var balance = await connection.Web3.Eth.GetBalance.SendRequestAsync(TestConstants.TestAccountId);
+        var balance = await connection.Web3.Eth.GetBalance.SendRequestAsync(TestConstants.TestAccountAddress);
 
         balance.Value.Should().BeGreaterThan(0);
         
