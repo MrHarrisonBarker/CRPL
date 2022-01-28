@@ -9,6 +9,7 @@ import {AuthService} from "../../_Services/auth.service";
 import {Router} from "@angular/router";
 import {catchError} from "rxjs/operators";
 import {ValidatorsService} from "../../_Services/validators.service";
+import {AlertService} from "../../_Services/alert.service";
 
 @Component({
   selector: 'info-wizard',
@@ -29,7 +30,7 @@ export class InfoWizardComponent implements OnInit
   });
 
   public SecondPageModel: FormGroup = new FormGroup({
-    Email: new FormControl('', [Validators.email], [this.validators.emailValidate()]),
+    Email: new FormControl('', [this.validators.hasOneContactInfo(), Validators.email], [this.validators.emailValidate()]),
     DialCode: new FormControl('44'),
     PhoneNumber: new FormControl('', [Validators.pattern("^((\\\\+91-?)|0)?[0-9]{10}$")], [this.validators.phoneValidate()])
   });
@@ -41,7 +42,8 @@ export class InfoWizardComponent implements OnInit
     private userService: UserService,
     private authService: AuthService,
     private router: Router,
-    private validators: ValidatorsService
+    private validators: ValidatorsService,
+    private alertService: AlertService
   )
   {
   }
@@ -55,30 +57,8 @@ export class InfoWizardComponent implements OnInit
     this.PopulateForms();
   }
 
-  private validateForms ()
-  {
-    this.SecondPageErrMessage = "";
-
-    let valid = true;
-
-    if(!this.validators.hasOneContactInfo(this.SecondPageModel))
-    {
-      valid = false;
-      this.SecondPageErrMessage += "You must have one way of contacting";
-    }
-
-    // if entered a phone number then country
-    // if (this.SecondPageModel.value.PhoneNumber != '')
-    // {
-    //
-    // }
-
-    return valid;
-  }
-
   public SaveForms ()
   {
-    if (!this.validateForms()) return;
 
     let accountInput: AccountInputModel = {};
 
@@ -100,7 +80,14 @@ export class InfoWizardComponent implements OnInit
     accountInput.DialCode = this.SecondPageModel.value.DialCode;
     accountInput.PhoneNumber = this.SecondPageModel.value.PhoneNumber;
 
-    this.userService.UpdateAccount(accountInput).pipe(catchError(err => err)).subscribe();
+    this.userService.UpdateAccount(accountInput).pipe(catchError(err => err)).subscribe(res => {
+      if (res) {
+        this.alertService.Alert({
+          Message: "Updated account",
+          Type: "success"
+        });
+      }
+    });
   }
 
   public PopulateForms ()
@@ -111,7 +98,7 @@ export class InfoWizardComponent implements OnInit
       FirstName: user.FirstName,
       LastName: user.LastName,
       RegisteredJurisdiction: user.RegisteredJurisdiction,
-      DOB: `${user.DateOfBirth.Month}/${user.DateOfBirth.Day}/${user.DateOfBirth.Year}`
+      DOB: user.DateOfBirth != null ? `${user.DateOfBirth.Month}/${user.DateOfBirth.Day}/${user.DateOfBirth.Year}` : null
     });
 
     this.SecondPageModel.setValue({
@@ -126,11 +113,13 @@ export class InfoWizardComponent implements OnInit
     this.open = false;
     console.log($event, this.FirstPageModel.value, this.SecondPageModel.value);
     // this.SaveForms();
+
   }
 
   public finished ($event: any)
   {
     console.log($event);
+    this.SaveForms();
   }
 
   public FinishWizard ()

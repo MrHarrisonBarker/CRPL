@@ -3,6 +3,7 @@ import {AbstractControl, AsyncValidatorFn, FormGroup, ValidationErrors, Validato
 import {Observable, of} from "rxjs";
 import {UserService} from "./user.service";
 import {map} from "rxjs/operators";
+import {isEmptyInputValue} from "../utils";
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class ValidatorsService
   {
     return (control: AbstractControl): Observable<ValidationErrors | null> =>
     {
-      if (control.value == null || control.value == '') return of(null);
+      if (isEmptyInputValue(control.value)) return of(null);
       return this.userService.PhoneExists(control.value).pipe(map(res =>
       {
         console.log("phone is", res);
@@ -31,7 +32,7 @@ export class ValidatorsService
   {
     return (control: AbstractControl): Observable<ValidationErrors | null> =>
     {
-      if (control.value == null || control.value == '') return of(null);
+      if (isEmptyInputValue(control.value)) return of(null);
       return this.userService.EmailExists(control.value).pipe(map(res =>
       {
         return res ? null : {emailExists: true}
@@ -39,9 +40,15 @@ export class ValidatorsService
     }
   }
 
-  public hasOneContactInfo (group: FormGroup): boolean
+  public hasOneContactInfo (): ValidatorFn
   {
-      return group.value.PhoneNumber != "" || group.value.PhoneNumber != ""
+    return (control: AbstractControl): { [key: string]: any } | null =>
+    {
+      if (control.parent) {
+        console.log("checking if one")
+        return isEmptyInputValue(control.value) && isEmptyInputValue(control.parent.value.PhoneNumber) ? {hasNoContact: true} : null;
+      }
+      return null;
+    };
   }
-
 }

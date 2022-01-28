@@ -62,8 +62,16 @@
       <clr-input-container>
         <label>E-mail</label> <input clrInput type="email" name="email" formControlName="Email"/>
         <clr-control-error *ngIf="SecondPageModel.controls.Email.hasError('emailExists')">This email is already in use</clr-control-error>
-
       </clr-input-container>
+
+      <clr-control-error *ngIf="SecondPageModel.controls.Email.hasError('hasNoContact')">You must have one way of contacting</clr-control-error>
+
+      <clr-alert clrAlertType="danger" *ngIf="SecondPageModel.controls.Email.hasError('hasNoContact') && !SecondPageModel.controls.PhoneNumber.pristine || !SecondPageModel.controls.Email.pristine">
+        <clr-alert-item>
+          <span class="alert-text">You must have one way of contacting</span>
+        </clr-alert-item>
+      </clr-alert>
+
 
       <clr-alert clrAlertType="danger" *ngIf="SecondPageErrMessage != ''">
         <clr-alert-item>
