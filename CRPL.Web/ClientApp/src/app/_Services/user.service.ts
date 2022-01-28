@@ -1,11 +1,12 @@
 import {Inject, Injectable} from '@angular/core';
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {UserAccountStatusModel} from "../_Models/Account/UserAccountStatusModel";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {UserPaths} from "../api.conts";
 import {AuthService} from "./auth.service";
 import {AccountInputModel} from "../_Models/Account/AccountInputModel";
-import {tap} from "rxjs/operators";
+import {catchError, tap} from "rxjs/operators";
+import {AlertService} from "./alert.service";
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,11 @@ export class UserService
 {
   private readonly BaseUrl: string;
 
-  constructor (private authService: AuthService, private http: HttpClient, @Inject('BASE_URL') baseUrl: string)
+  constructor (
+    private authService: AuthService,
+    private http: HttpClient,
+    @Inject('BASE_URL') baseUrl: string,
+    private alertService: AlertService)
   {
     this.BaseUrl = baseUrl;
   }
@@ -34,7 +39,11 @@ export class UserService
 
   public PhoneExists (phone: string): Observable<boolean>
   {
-    return this.http.get<boolean>(this.BaseUrl + UserPaths.PhoneExists, {params: new HttpParams().set('phone', phone)});
+    return this.http.get<boolean>(this.BaseUrl + UserPaths.PhoneExists, {params: new HttpParams().set('phone', phone)})
+               .pipe(catchError(err => {
+                 this.alertService.Alert({Type: "danger", Message: err})
+                 return of(err);
+               }));
   }
 
   public EmailExists (email: string): Observable<boolean>

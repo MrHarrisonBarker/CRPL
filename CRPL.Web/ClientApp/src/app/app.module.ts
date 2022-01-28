@@ -17,6 +17,7 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {InfoWizardComponent} from './User/info-wizard/info-wizard.component';
 import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
 import { LogoutButtonComponent } from './User/logout-button/logout-button.component';
+import { AlertComponent } from './alert/alert.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { LogoutButtonComponent } from './User/logout-button/logout-button.compon
     FetchDataComponent,
     LoginButtonComponent,
     InfoWizardComponent,
-    LogoutButtonComponent
+    LogoutButtonComponent,
+    AlertComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
