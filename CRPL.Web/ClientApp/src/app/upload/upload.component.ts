@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {WorksService} from "../_Services/works.service";
+import {HttpEventType} from "@angular/common/http";
 
 @Component({
   selector: 'file-upload',
@@ -9,6 +10,8 @@ import {WorksService} from "../_Services/works.service";
 export class UploadComponent implements OnInit
 {
   public CurrentFile: File = null as any;
+  public CurrentProgress: number = 0;
+  public FinishedUpload: boolean = false;
 
   constructor (private worksService: WorksService)
   {
@@ -33,7 +36,14 @@ export class UploadComponent implements OnInit
   {
     if (this.CurrentFile != null)
     {
-      this.worksService.UploadWork(this.CurrentFile).subscribe();
+      this.worksService.UploadWork(this.CurrentFile).subscribe(event => {
+        if (event.type == HttpEventType.UploadProgress) {
+          this.CurrentProgress = Math.round((event.loaded / event.total) * 100);
+        } else if (event.type == HttpEventType.Response) {
+          this.CurrentProgress = 100;
+          this.FinishedUpload = true;
+        }
+      });
     }
   }
 }
