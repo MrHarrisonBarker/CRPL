@@ -18,6 +18,7 @@ import {InfoWizardComponent} from './User/info-wizard/info-wizard.component';
 import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
 import { LogoutButtonComponent } from './User/logout-button/logout-button.component';
 import { AlertComponent } from './alert/alert.component';
+import { UploadComponent } from './upload/upload.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { AlertComponent } from './alert/alert.component';
     LoginButtonComponent,
     InfoWizardComponent,
     LogoutButtonComponent,
-    AlertComponent
+    AlertComponent,
+    UploadComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

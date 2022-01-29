@@ -4,6 +4,10 @@ let userPaths : UserPaths = {
   BasePath: "user"
 }
 
+let worksPaths: WorksPaths = {
+  BasePath: "works"
+}
+
 userPaths = {
   ...userPaths,
   FetchNonce: userPaths.BasePath + "/nonce",
@@ -26,4 +30,9 @@ interface UserPaths {
   readonly EmailExists: string;
 }
 
+interface WorksPaths {
+  readonly BasePath: string;
+}
+
 export const UserPaths: UserPaths = userPaths;
+export const WorksPaths: WorksPaths = worksPaths;
