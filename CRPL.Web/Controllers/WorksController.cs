@@ -17,20 +17,18 @@ public class WorksController : ControllerBase
     }
 
     [HttpPost, DisableRequestSizeLimit]
-    public async Task<IActionResult> Upload()
+    public async Task<byte[]> Upload()
     {
         try
         {
             var formCollection = await Request.ReadFormAsync();
             var file = formCollection.Files.First();
-            Ok(await WorksVerificationService.Upload(file));
+            return await WorksVerificationService.Upload(file);
         }
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when uploading work");
             throw;
         }
-
-        return Ok();
     }
 }
