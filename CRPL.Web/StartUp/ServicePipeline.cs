@@ -13,6 +13,7 @@ public static class ServiceExtensions
         public ServicePipeline(IServiceCollection services, AppSettings appSettings)
         {
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IWorksVerificationService, WorksVerificationService>();
         }
     }
 }

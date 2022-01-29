@@ -2,6 +2,7 @@ using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.ContractDeployment;
 using CRPL.Data.Seed;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.StartUp;
@@ -38,5 +39,11 @@ public class DbPipelineBuilder
         );
 
         services.AddSingleton<IContractRepository, ContractRepository>();
+        
+        services.Configure<FormOptions>(o => {
+            o.ValueLengthLimit = int.MaxValue;
+            o.MultipartBodyLengthLimit = int.MaxValue;
+            o.MemoryBufferThreshold = int.MaxValue;
+        });
     }
 }
