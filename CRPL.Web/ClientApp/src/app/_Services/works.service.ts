@@ -1,9 +1,10 @@
 import {Inject, Injectable} from '@angular/core';
 import {AuthService} from "./auth.service";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpEvent, HttpParams, HttpRequest} from "@angular/common/http";
 import {AlertService} from "./alert.service";
 import {WorksPaths} from "../api.conts";
 import {Observable} from "rxjs";
+import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -26,5 +27,17 @@ export class WorksService
     let data = new FormData();
     data.append("file", file, file.name);
     return this.http.post(this.BaseUrl + WorksPaths.BasePath, data, {reportProgress: true, observe: 'events'});
+  }
+
+  public GetSignedWork (hash: string): Observable<Blob>
+  {
+    let encodedHash = hash.replace('+', '.')
+    console.log(hash, encodedHash);
+
+    return this.http.get(this.BaseUrl + WorksPaths.BasePath, {
+      params: new HttpParams().set("hash", encodedHash),
+      reportProgress: true,
+      responseType: 'blob'
+    });
   }
 }

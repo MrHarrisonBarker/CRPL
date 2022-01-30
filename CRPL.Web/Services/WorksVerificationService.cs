@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using CRPL.Data.Account;
 using CRPL.Data.Workds;
+using CRPL.Data.Works;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,11 +11,13 @@ public class WorksVerificationService : IWorksVerificationService
 {
     private readonly ILogger<WorksVerificationService> Logger;
     private readonly ApplicationContext Context;
+    private readonly ICachedWorkRepository CachedWorkRepository;
 
-    public WorksVerificationService(ILogger<WorksVerificationService> logger, ApplicationContext context)
+    public WorksVerificationService(ILogger<WorksVerificationService> logger, ApplicationContext context, ICachedWorkRepository cachedWorkRepository)
     {
         Logger = logger;
         Context = context;
+        CachedWorkRepository = cachedWorkRepository;
     }
 
     public async Task<VerificationResult> VerifyWork(byte[] hash)
@@ -37,17 +40,30 @@ public class WorksVerificationService : IWorksVerificationService
 
         Logger.LogInformation("Uploaded file of length {Length}", stream.Length);
 
-        var hash = await HashWork(stream);
+        var work = stream.GetBuffer();
+
+        var hash = HashWork(work);
+
+        CachedWorkRepository.Set(hash, work, file.ContentType);
 
         Logger.LogInformation("hashed {Name} into {Hash}", file.FileName, hash);
 
         return hash;
     }
 
-    private async Task<byte[]> HashWork(Stream stream)
+    public CachedWork Sign(byte[] hash)
+    {
+        Logger.LogInformation("Signing work {Hash}", hash);
+
+        var work = CachedWorkRepository.Get(hash);
+
+        return work;
+    }
+
+    private byte[] HashWork(byte[] work)
     {
         using var hashAlgorithm = SHA512.Create();
 
-        return await hashAlgorithm.ComputeHashAsync(stream);
+        return hashAlgorithm.ComputeHash(work);
     }
 }

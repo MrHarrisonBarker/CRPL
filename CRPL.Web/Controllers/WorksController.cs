@@ -23,11 +23,30 @@ public class WorksController : ControllerBase
         {
             var formCollection = await Request.ReadFormAsync();
             var file = formCollection.Files.First();
+
             return await WorksVerificationService.Upload(file);
         }
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when uploading work");
+            throw;
+        }
+    }
+
+    [HttpGet]
+    public IActionResult SignWork(string hash)
+    {
+        try
+        {
+            // .Replace('_','/').Replace('-','=')
+            var decodedHash = Convert.FromBase64String(hash.Replace('.','+'));
+            var work = WorksVerificationService.Sign(decodedHash);
+
+            return File(work.Work, work.ContentType, "name.jpg");
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when signing work");
             throw;
         }
     }
