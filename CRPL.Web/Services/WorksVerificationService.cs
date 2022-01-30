@@ -3,6 +3,7 @@ using CRPL.Data.Account;
 using CRPL.Data.Workds;
 using CRPL.Data.Works;
 using CRPL.Web.Services.Interfaces;
+using CRPL.Web.WorkSigners;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.Services;
@@ -57,7 +58,7 @@ public class WorksVerificationService : IWorksVerificationService
 
         var work = CachedWorkRepository.Get(hash);
 
-        return work;
+        return new UniversalSigner().Sign(work);
     }
 
     private byte[] HashWork(byte[] work)

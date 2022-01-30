@@ -37,9 +37,3 @@ public class CachedWorkRepository : ICachedWorkRepository
         });
     }
 }
-
-public struct CachedWork
-{
-    public byte[] Work;
-    public string ContentType;
-}
