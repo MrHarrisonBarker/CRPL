@@ -14,8 +14,8 @@ export class UploadComponent implements OnInit
   public CurrentProgress: number = 0;
   public FinishedUpload: boolean = false;
   public WorkHash: string = "";
-  UploadError: string = "";
-  DownloadError: string = "";
+  public UploadError: string = "";
+  public DownloadError: string = "";
 
   constructor (private worksService: WorksService)
   {
