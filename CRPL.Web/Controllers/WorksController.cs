@@ -34,13 +34,13 @@ public class WorksController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult SignWork(string hash)
+    public IActionResult SignWork(string hash, string signature)
     {
         try
         {
             // .Replace('_','/').Replace('-','=')
             var decodedHash = Convert.FromBase64String(hash.Replace('.','+'));
-            var work = WorksVerificationService.Sign(decodedHash);
+            var work = WorksVerificationService.Sign(decodedHash, signature);
 
             return File(work.Work, work.ContentType, "name.jpg");
         }

@@ -52,7 +52,7 @@ public class WorksVerificationService : IWorksVerificationService
         return hash;
     }
 
-    public CachedWork Sign(byte[] hash)
+    public CachedWork Sign(byte[] hash, string signature)
     {
         Logger.LogInformation("Signing work {Hash}", hash);
 
@@ -61,20 +61,20 @@ public class WorksVerificationService : IWorksVerificationService
         switch (work.ContentType)
         {
             case var type when type.Contains("image"):
-                work = new ImageSigner().Sign(work);
+                work = new ImageSigner(signature).Sign(work);
                 break;
             case "application/pdf":
-                work = new TextSigner().Sign(work);
+                work = new TextSigner(signature).Sign(work);
                 break;
             case "audio/mpeg":
-                work = new SoundSigner().Sign(work);
+                work = new SoundSigner(signature).Sign(work);
                 break;
             case var type when type.Contains("video"):
-                work = new VideoSigner().Sign(work);
+                work = new VideoSigner(signature).Sign(work);
                 break;
         }
 
-        return new UniversalSigner().Sign(work);
+        return new UniversalSigner(signature).Sign(work);
     }
 
     private byte[] HashWork(byte[] work)

@@ -3,12 +3,16 @@ using CRPL.Data.Works;
 
 namespace CRPL.Web.WorkSigners;
 
-public class UniversalSigner : IWorkSigner
+public class UniversalSigner : WorkSigner, IWorkSigner
 {
+    public UniversalSigner(string signature) : base(signature)
+    {
+    }
+
     public CachedWork Sign(CachedWork work)
     {
-        byte[] signature = Encoding.UTF8.GetBytes("COPYRIGHT REGISTERED BY CRPL");
-        
+        byte[] signature = Encoding.UTF8.GetBytes(Signature);
+
         return new CachedWork
         {
             Work = work.Work.Concat(signature).ToArray(),

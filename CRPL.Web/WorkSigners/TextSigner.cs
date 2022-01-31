@@ -5,8 +5,12 @@ using iTextSharp.xmp;
 
 namespace CRPL.Web.WorkSigners;
 
-public class TextSigner : IWorkSigner
+public class TextSigner : WorkSigner, IWorkSigner
 {
+    public TextSigner(string signature) : base(signature)
+    {
+    }
+
     public CachedWork Sign(CachedWork work)
     {
         using var saveStream = new MemoryStream();
@@ -18,15 +22,16 @@ public class TextSigner : IWorkSigner
             using (MemoryStream msXmp = new MemoryStream())
             {
                 XmpWriter xmp = new XmpWriter(msXmp, info);
-                xmp.SetProperty(XmpConst.NS_XMP, "Identifier", "COPYRIGHT REGISTERED BY CRPL");
+                xmp.SetProperty(XmpConst.NS_XMP, "Identifier", Signature);
 
                 xmp.Close();
                 stamper.XmpMetadata = msXmp.ToArray();
             }
+
             stamper.Close();
         }
-        
-        
+
+
         return new CachedWork
         {
             ContentType = work.ContentType,
