@@ -63,6 +63,9 @@ public class WorksVerificationService : IWorksVerificationService
             case var type when type.Contains("image"):
                 work = new ImageSigner().Sign(work);
                 break;
+            case "application/pdf":
+                work = new TextSigner().Sign(work);
+                break;
         }
 
         return new UniversalSigner().Sign(work);
