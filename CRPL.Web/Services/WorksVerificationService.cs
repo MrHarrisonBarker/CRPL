@@ -58,6 +58,13 @@ public class WorksVerificationService : IWorksVerificationService
 
         var work = CachedWorkRepository.Get(hash);
 
+        switch (work.ContentType)
+        {
+            case var type when type.Contains("image"):
+                work = new ImageSigner().Sign(work);
+                break;
+        }
+
         return new UniversalSigner().Sign(work);
     }
 
