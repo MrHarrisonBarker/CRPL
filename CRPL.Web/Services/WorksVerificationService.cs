@@ -69,6 +69,9 @@ public class WorksVerificationService : IWorksVerificationService
             case "audio/mpeg":
                 work = new SoundSigner().Sign(work);
                 break;
+            case var type when type.Contains("video"):
+                work = new VideoSigner().Sign(work);
+                break;
         }
 
         return new UniversalSigner().Sign(work);
