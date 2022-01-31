@@ -1,5 +1,6 @@
 using System.Text;
 using CRPL.Data;
+using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Web;
 using CRPL.Web.StartUp;
@@ -31,6 +32,8 @@ builder.Services.Configure<AppSettings>(appSettingsSection);
 var appSettings = appSettingsSection.Get<AppSettings>();
 
 builder.Services.AddAutoMapper(expression => expression.AddProfile(typeof(AutoMapping)));
+
+builder.Services.AddScoped<IBlockchainConnection, BlockchainConnection>();
 
 builder.Services.AddDbPipeline(appSettings);
 builder.Services.AddServicePipeline(appSettings);

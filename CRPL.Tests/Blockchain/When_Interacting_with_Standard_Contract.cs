@@ -7,6 +7,8 @@ using CRPL.Contracts.Structs;
 using CRPL.Data;
 using CRPL.Data.BlockchainUtils;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Nethereum.Model;
 using NUnit.Framework;
 
@@ -16,14 +18,36 @@ namespace CRPL.Tests.Blockchain;
 public class When_Interacting_with_Standard_Contract
 {
     private string ContractAddress;
+    private BlockchainConnection BlockchainConnection;
     
     [SetUp]
     [Ignore("need ci blockchain")]
     public async Task SetUp()
     {
+        var appSettings = Options.Create(new AppSettings()
+        {
+            Chains = new List<Chain>()
+            {
+                new()
+                {
+                    Name = "LOCAL",
+                    Url = "http://localhost:8545",
+                    Id = "444444444500"
+                }
+            },
+            SystemAccount = new SystemAccount()
+            {
+                AccountId = TestConstants.TestAccountAddress,
+                PrivateKey = TestConstants.TestAccountPrivateKey
+            }
+        });
+        
+        Environment.SetEnvironmentVariable("CURRENT_CHAIN","LOCAL");
+        
+        BlockchainConnection = new BlockchainConnection(new Logger<BlockchainConnection>(new LoggerFactory()), appSettings);
+        
         // Deploy contract
-        using var connection = TestConstants.PrivateTestConnection();
-        var receipt = await StandardService.DeployContractAndWaitForReceiptAsync(connection.Web3, new StandardDeployment());
+        var receipt = await StandardService.DeployContractAndWaitForReceiptAsync(BlockchainConnection.Web3(), new StandardDeployment());
         receipt.Status.Value.Should().Be(1);
         ContractAddress = receipt.ContractAddress;
     }
@@ -32,9 +56,7 @@ public class When_Interacting_with_Standard_Contract
     [Ignore("need ci blockchain")]
     public async Task Should_Register_New_Copyright()
     {
-        using var connection = TestConstants.PrivateTestConnection();
-
-        var receipt = await new StandardService(connection.Web3, ContractAddress).RegisterRequestAndWaitForReceiptAsync(new Register1Function()
+        var receipt = await new StandardService(BlockchainConnection.Web3(), ContractAddress).RegisterRequestAndWaitForReceiptAsync(new Register1Function()
         {
             To = new List<OwnershipStructure>()
             {

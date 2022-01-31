@@ -39,6 +39,7 @@ public class ContractRepository : IContractRepository
     private readonly IServiceProvider ServiceProvider;
     private readonly AppSettings AppSettings;
     private readonly ILogger<ContractRepository> Logger;
+    private readonly IBlockchainConnection BlockchainConnection;
 
     private Dictionary<CopyrightContract, DeployedContract> DeployedContracts;
 
@@ -52,6 +53,8 @@ public class ContractRepository : IContractRepository
 
         using var scope = ServiceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ContractContext>();
+
+        BlockchainConnection = scope.ServiceProvider.GetRequiredService<IBlockchainConnection>();
 
         getContracts(context);
 
@@ -78,9 +81,8 @@ public class ContractRepository : IContractRepository
         // check if contracts can be found on the blockchain
         foreach (var deployedContract in DeployedContracts.Values)
         {
-            using var connection = new BlockchainConnection(AppSettings.ChainUrl, new Nethereum.Web3.Accounts.Account(AppSettings.SystemAccount.PrivateKey, AppSettings.ChainIdInt()));
 
-            var result = await connection.Web3.Eth.GetCode.SendRequestAsync(deployedContract.Address);
+            var result = await BlockchainConnection.Web3().Eth.GetCode.SendRequestAsync(deployedContract.Address);
 
             if (result == null) throw new Exception("A saved contract doesn't exist on the blockchain");
         }
@@ -88,12 +90,10 @@ public class ContractRepository : IContractRepository
 
     private async void init()
     {
-        using var connection = new BlockchainConnection(AppSettings.ChainUrl, new Nethereum.Web3.Accounts.Account(AppSettings.SystemAccount.PrivateKey, AppSettings.ChainIdInt()));
-
         // runs with a clear workspace to deploy all contracts needed
         foreach (CopyrightContract contractType in Enum.GetValues<CopyrightContract>())
         {
-            await deployContract(contractType, connection.Web3);
+            await deployContract(contractType, BlockchainConnection.Web3());
         }
     }
 
