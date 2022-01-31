@@ -52,7 +52,8 @@ export class UploadComponent implements OnInit
           this.WorkHash = event.body;
           console.log("Current work hash", this.WorkHash);
         }
-      }, error => {
+      }, error =>
+      {
         console.log(error);
         this.UploadError = error.error
       });

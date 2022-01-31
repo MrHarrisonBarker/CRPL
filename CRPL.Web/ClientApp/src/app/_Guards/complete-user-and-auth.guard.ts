@@ -4,6 +4,7 @@ import {Observable, of} from 'rxjs';
 import {AuthService} from "../_Services/auth.service";
 import {catchError, map, switchMap} from "rxjs/operators";
 import {AccountStatus} from "../_Models/Account/UserAccountViewModel";
+import {AlertService} from "../_Services/alert.service";
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,10 @@ import {AccountStatus} from "../_Models/Account/UserAccountViewModel";
 export class CompleteUserAndAuthGuard implements CanActivate
 {
 
-  constructor (private authService: AuthService, private router: Router)
+  constructor (
+    private authService: AuthService,
+    private router: Router,
+    private alertService: AlertService)
   {
   }
 
@@ -27,28 +31,35 @@ export class CompleteUserAndAuthGuard implements CanActivate
         return of(true);
       }
 
-      if (!this.authService.getToken())
+      let token = this.authService.getToken();
+
+      if (!token)
       {
         console.log("no token found so navigating away");
-        // TODO: show error message
-        this.router.navigate(['/']);
+        this.alertService.Alert({Message: "Session expired log back in", Type: "danger"});
+        this.router.navigate(['/']).then(r => null);
         return of(false);
       }
 
-      return this.authService.Authenticate(this.authService.getToken()).pipe(map(authenticatedUser =>
+      return this.authService.Authenticate(token).pipe(map(authenticatedUser =>
       {
         console.log("got user now checking status", authenticatedUser);
         if (authenticatedUser == null) return false;
         if (authenticatedUser.Status == AccountStatus.Complete) return true;
 
         console.log("the user has not complete their profile navigating to wizard");
-        this.router.navigate(['/user/info']);
+
+        this.alertService.Alert({Message: "You have not completed the signup process yet, complete to gain access", Type: "information"});
+        this.router.navigate(['/user/info']).then(r => null);
 
         return false;
       })).pipe(catchError(err =>
       {
-        // TODO: show error message
-        this.router.navigate(['/']);
+        this.alertService.Alert({Message: "There was a problem when authenticating your account", Type: "danger"});
+
+        // logout if authentication fails
+        this.authService.Logout();
+        this.router.navigate(['/']).then(r => null);
         return of(false);
       }));
     }));

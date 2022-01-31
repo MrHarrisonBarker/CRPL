@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../_Services/auth.service";
+import {AlertService} from "../../_Services/alert.service";
 
 @Component({
   selector: 'login-button',
@@ -10,7 +11,9 @@ export class LoginButtonComponent implements OnInit
 {
   public HasMetaMask: boolean = false;
 
-  constructor (private authService: AuthService)
+  constructor (
+    private authService: AuthService,
+    private alertService: AlertService)
   {
     this.HasMetaMask = (window as any).ethereum;
   }
@@ -21,11 +24,16 @@ export class LoginButtonComponent implements OnInit
 
   public Login ()
   {
-    if (!(window as any).ethereum) {
+    if (!(window as any).ethereum)
+    {
       window.alert('Please install MetaMask first.');
       return;
     }
 
-    this.authService.LoginWithMetaMask();
+    this.authService.LoginWithMetaMask().subscribe(res =>
+    {
+      if (res.Account) this.alertService.Alert({Message: "Successfully logged in!", Type: "success"});
+      if (!res.Account) this.alertService.Alert({Message: res.Log, Type: "danger"});
+    }, error => this.alertService.Alert({Message: error.error, Type: "danger"}));
   }
 }

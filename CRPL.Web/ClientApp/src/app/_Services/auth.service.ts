@@ -4,10 +4,11 @@ import {UserPaths} from "../api.conts";
 import {BehaviorSubject, from, Observable, of} from "rxjs";
 import {AuthenticateResult} from "../_Models/Account/AuthenticateResult";
 import {AuthenticateSignatureInputModel} from "../_Models/Account/AuthenticateSignatureInputModel";
-import {finalize, map, tap} from "rxjs/operators";
+import {finalize, map, switchMap, tap} from "rxjs/operators";
 import jwtDecode, {JwtPayload} from "jwt-decode";
 import {UserAccountViewModel} from "../_Models/Account/UserAccountViewModel";
 import {Router} from "@angular/router";
+import {AlertService} from "./alert.service";
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +18,17 @@ export class AuthService
   private Ethereum = (window as any).ethereum;
   private readonly BaseUrl;
 
-  private AuthenticationToken: string = "";
-  private Address: string = "";
+  private AuthenticationToken?: string = "";
+  private Address?: string = "";
 
   public UserAccount: BehaviorSubject<UserAccountViewModel> = new BehaviorSubject<UserAccountViewModel>(null as any);
   public IsAuthenticated: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor (private http: HttpClient, @Inject('BASE_URL') baseUrl: string, private router: Router)
+  constructor (
+    private http: HttpClient,
+    @Inject('BASE_URL') baseUrl: string,
+    private router: Router,
+    private alertService: AlertService)
   {
     this.BaseUrl = baseUrl;
     this.checkForToken();
@@ -42,34 +47,50 @@ export class AuthService
     }
   }
 
-  public getToken (): string
+  public getToken (): string | null
   {
-    return this.AuthenticationToken;
+    if (this.AuthenticationToken) return this.AuthenticationToken
+    return null;
   }
 
-  public LoginWithMetaMask (): void
+  public LoginWithMetaMask (): Observable<AuthenticateResult>
   {
     console.log("Logging in with Meta Mask");
 
-    this.getWalletAddress().subscribe(a =>
+    return this.getWalletAddress().pipe(switchMap(walletAddress =>
     {
-      console.log("address found", a);
-      if (a != null) this.fetchNonce().subscribe(nonce =>
+      console.log("address found", walletAddress);
+
+      if (this.Address)
       {
-        console.log("Got nonce", nonce);
-        this.signMessage(nonce).subscribe(signature =>
+        return this.fetchNonce().pipe(switchMap(nonce =>
         {
-          console.log("Signed message", signature);
-          this.authenticateSignature({
-            Signature: signature,
-            WalletAddress: this.Address
-          }).subscribe(auth =>
+          console.log("Got nonce", nonce);
+
+          if (nonce)
           {
-            console.log("Authentication result", auth);
-          });
-        });
-      });
-    });
+            return this.signMessage(nonce).pipe(switchMap(signature =>
+            {
+              console.log("Signed message", signature);
+
+              if (signature)
+              {
+                if (this.Address) return this.authenticateSignature({
+                  Signature: signature,
+                  WalletAddress: this.Address
+                });
+              }
+
+              return of({Log: "There was a problem signing the message!"});
+            }));
+          }
+
+          return of({Log: "Your account's nonce was not found!"});
+        }));
+      }
+
+      return of({Log: "No wallet address was found! Make sure you have MetaMask setup."});
+    }));
   }
 
   private getWalletAddress (): Observable<string>
@@ -87,7 +108,8 @@ export class AuthService
   private fetchNonce (): Observable<string>
   {
     console.log("Fetching nonce from server");
-    return this.http.post<string>(this.BaseUrl + UserPaths.FetchNonce, {}, {params: new HttpParams().set('walletAddress', this.Address)});
+    if (this.Address) return this.http.post<string>(this.BaseUrl + UserPaths.FetchNonce, {}, {params: new HttpParams().set('walletAddress', this.Address)});
+    throw new Error("Can't find public wallet address");
   }
 
   private signMessage (nonce: string): Observable<string>
@@ -108,7 +130,11 @@ export class AuthService
       if (authResult.Token)
       {
         this.AuthenticationToken = authResult.Token;
-        if (authResult.Account) this.UserAccount.next(authResult.Account);
+        if (authResult.Account)
+        {
+          this.UserAccount.next(authResult.Account);
+          this.IsAuthenticated.next(true);
+        }
 
         let payload: JwtPayload = jwtDecode(this.AuthenticationToken);
 
@@ -139,7 +165,12 @@ export class AuthService
     localStorage.removeItem("authentication_token");
     localStorage.removeItem("expires_at");
 
-    // TODO: show notification/alert
-    this.router.navigate(["/"]);
+    this.IsAuthenticated.next(false);
+    this.UserAccount.next(null as any);
+    this.Address = undefined;
+    this.AuthenticationToken = undefined;
+
+    this.alertService.Alert({Message: "Successfully logged out! See you soon", Type: "success"})
+    this.router.navigate(["/"]).then(r => null);
   }
 }

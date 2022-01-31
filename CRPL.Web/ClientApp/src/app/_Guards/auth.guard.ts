@@ -2,7 +2,8 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {Observable, of} from 'rxjs';
 import {AuthService} from "../_Services/auth.service";
-import {map, switchMap} from "rxjs/operators";
+import {catchError, map, switchMap} from "rxjs/operators";
+import {AlertService} from "../_Services/alert.service";
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,10 @@ import {map, switchMap} from "rxjs/operators";
 export class AuthGuard implements CanActivate
 {
 
-  constructor (private authService: AuthService, private router: Router)
+  constructor (
+    private authService: AuthService,
+    private router: Router,
+    private alertService: AlertService)
   {
   }
 
@@ -25,14 +29,20 @@ export class AuthGuard implements CanActivate
         return of(true);
       }
 
-      if (!this.authService.getToken())
+      let token = this.authService.getToken();
+
+      if (!token)
       {
         console.log("no token found so navigating away")
-        this.router.navigate(['/']);
+        this.router.navigate(['/']).then(r => null);
         return of(false);
       }
 
-      return this.authService.Authenticate(this.authService.getToken()).pipe(map(usr => usr == null));
+      return this.authService.Authenticate(token).pipe(map(usr => usr == null)).pipe(catchError(err =>
+      {
+        this.alertService.Alert({Message: "There was a problem when authenticating your account", Type: "danger"});
+        return of(false);
+      }));
     }));
   }
 }

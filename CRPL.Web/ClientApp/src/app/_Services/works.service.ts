@@ -1,10 +1,9 @@
 import {Inject, Injectable} from '@angular/core';
 import {AuthService} from "./auth.service";
-import {HttpClient, HttpEvent, HttpParams, HttpRequest} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {AlertService} from "./alert.service";
 import {WorksPaths} from "../api.conts";
 import {Observable} from "rxjs";
-import {tap} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'

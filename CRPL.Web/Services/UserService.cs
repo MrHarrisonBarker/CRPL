@@ -214,7 +214,8 @@ public class UserService : IUserService
         return new AuthenticateResult
         {
             Token = user.AuthenticationToken,
-            Log = $"Verified user by {message}"
+            Log = $"Verified user by {message}",
+            Account = Mapper.Map<UserAccountViewModel>(user)
         };
     }
 

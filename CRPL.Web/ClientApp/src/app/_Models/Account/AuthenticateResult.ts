@@ -2,7 +2,7 @@ import {UserAccountViewModel} from "./UserAccountViewModel";
 
 export interface AuthenticateResult
 {
-  Token: string;
+  Token?: string;
   Log: string;
-  Account: UserAccountViewModel;
+  Account?: UserAccountViewModel;
 }
