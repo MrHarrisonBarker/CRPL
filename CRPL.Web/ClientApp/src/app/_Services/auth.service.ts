@@ -56,6 +56,7 @@ export class AuthService
   public LoginWithMetaMask (): Observable<AuthenticateResult>
   {
     console.log("Logging in with Meta Mask");
+    this.alertService.StartLoading();
 
     return this.getWalletAddress().pipe(switchMap(walletAddress =>
     {

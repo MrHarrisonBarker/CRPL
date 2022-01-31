@@ -10,15 +10,13 @@ import {AlertMeta, AlertService} from "../_Services/alert.service";
 export class AlertComponent implements OnInit
 {
 
-  public alertSub : AlertMeta = null as any;
+  public loadingSub: boolean = false;
+  public alertSub: AlertMeta = null as any;
 
   constructor (public alertService: AlertService)
   {
-    alertService.alert.subscribe(a =>
-    {
-      console.log("got alert!", a);
-      this.alertSub = a;
-    });
+    alertService.alert.subscribe(a => this.alertSub = a);
+    alertService.loading.subscribe(l => this.loadingSub = l);
   }
 
   ngOnInit (): void

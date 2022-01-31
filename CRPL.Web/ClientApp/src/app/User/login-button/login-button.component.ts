@@ -12,7 +12,7 @@ export class LoginButtonComponent implements OnInit
   public HasMetaMask: boolean = false;
 
   constructor (
-    private authService: AuthService,
+    public authService: AuthService,
     private alertService: AlertService)
   {
     this.HasMetaMask = (window as any).ethereum;
@@ -34,6 +34,6 @@ export class LoginButtonComponent implements OnInit
     {
       if (res.Account) this.alertService.Alert({Message: "Successfully logged in!", Type: "success"});
       if (!res.Account) this.alertService.Alert({Message: res.Log, Type: "danger"});
-    }, error => this.alertService.Alert({Message: error.error, Type: "danger"}));
+    }, error => this.alertService.Alert({Message: error.error, Type: "danger"}), () => this.alertService.StopLoading());
   }
 }

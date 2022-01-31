@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Subject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 
 export interface AlertMeta
 {
@@ -12,15 +12,35 @@ export interface AlertMeta
 })
 export class AlertService
 {
+  get loading (): BehaviorSubject<boolean>
+  {
+    return this._loading;
+  }
 
-  public alert: Subject<AlertMeta> = new Subject<AlertMeta>();
+  get alert (): Subject<AlertMeta>
+  {
+    return this._alert;
+  }
+
+  private _alert: Subject<AlertMeta> = new Subject<AlertMeta>();
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor ()
   {
   }
 
-  public Alert(meta: AlertMeta): void
+  public Alert (meta: AlertMeta): void
   {
-    this.alert.next(meta);
+    this._alert.next(meta);
+  }
+
+  public StartLoading (): void
+  {
+    this._loading.next(true);
+  }
+
+  public StopLoading (): void
+  {
+    this._loading.next(false);
   }
 }

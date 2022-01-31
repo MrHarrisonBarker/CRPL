@@ -16,9 +16,9 @@ import {ClarityModule} from "@clr/angular";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {InfoWizardComponent} from './User/info-wizard/info-wizard.component';
 import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
-import { LogoutButtonComponent } from './User/logout-button/logout-button.component';
-import { AlertComponent } from './alert/alert.component';
-import { UploadComponent } from './upload/upload.component';
+import {LogoutButtonComponent} from './User/logout-button/logout-button.component';
+import {AlertComponent} from './alert/alert.component';
+import {UploadComponent} from './upload/upload.component';
 
 @NgModule({
   declarations: [
@@ -42,9 +42,8 @@ import { UploadComponent } from './upload/upload.component';
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'counter', component: CounterComponent, canActivate: [AuthGuard]},
-      {
-        path: 'fetch-data', canActivate: [CompleteUserAndAuthGuard], component: FetchDataComponent
-      },
+      {path: 'fetch-data', canActivate: [CompleteUserAndAuthGuard], component: FetchDataComponent},
+      {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent}
     ]),
     ReactiveFormsModule
   ],

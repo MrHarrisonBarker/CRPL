@@ -1,4 +1,4 @@
-<button class="btn" (click)="Login()" [disabled]="!HasMetaMask">
+<button class="btn" (click)="Login()" [disabled]="!HasMetaMask || authService.IsAuthenticated.getValue()">
   <div>
     <span *ngIf="!HasMetaMask">Install MetaMask To Login</span>
     <span *ngIf="HasMetaMask">Login with MetaMask</span>

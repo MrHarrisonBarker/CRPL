@@ -18,9 +18,10 @@ import {AlertService} from "../../_Services/alert.service";
 })
 export class InfoWizardComponent implements OnInit
 {
-  countries: Country[] = ISO3166.all();
-  dialCode: Dial.Country[] = Dial.allCountries;
   @Input() open: boolean = true;
+
+  public countries: Country[] = ISO3166.all();
+  public dialCode: Dial.Country[] = Dial.allCountries;
 
   public FirstPageModel: FormGroup = new FormGroup({
     FirstName: new FormControl('', [Validators.required]),
@@ -35,8 +36,7 @@ export class InfoWizardComponent implements OnInit
     PhoneNumber: new FormControl('', [Validators.pattern("^((\\\\+91-?)|0)?[0-9]{10}$")], [this.validators.phoneValidate()])
   });
 
-  SecondPageErrMessage: string = "";
-  FirstPageErrMessage: string = "";
+  public FirstPageErrMessage: string = "";
 
   constructor (
     private userService: UserService,
@@ -50,16 +50,14 @@ export class InfoWizardComponent implements OnInit
 
   ngOnInit (): void
   {
-    console.log("[info wizard] init");
-
     if (!this.authService.IsAuthenticated.getValue()) throw new Error("The user is not authenticated!");
 
     this.PopulateForms();
   }
 
-  public SaveForms ()
+  public SaveForms (): void
   {
-
+    this.alertService.StartLoading();
     let accountInput: AccountInputModel = {};
 
     accountInput.FirstName = this.FirstPageModel.value.FirstName;
@@ -80,17 +78,19 @@ export class InfoWizardComponent implements OnInit
     accountInput.DialCode = this.SecondPageModel.value.DialCode;
     accountInput.PhoneNumber = this.SecondPageModel.value.PhoneNumber;
 
-    this.userService.UpdateAccount(accountInput).pipe(catchError(err => err)).subscribe(res => {
-      if (res) {
-        this.alertService.Alert({
-          Message: "Updated account",
-          Type: "success"
-        });
+    this.userService.UpdateAccount(accountInput).subscribe(res =>
+    {
+      if (res)
+      {
+        this.alertService.Alert({Message: "Saved changes", Type: "success"});
       }
-    });
+    }, error => this.alertService.Alert({
+      Message: "There was an error updating your information",
+      Type: "danger"
+    }), () => this.alertService.StopLoading());
   }
 
-  public PopulateForms ()
+  public PopulateForms (): void
   {
     let user = this.authService.UserAccount.getValue();
 
@@ -108,23 +108,49 @@ export class InfoWizardComponent implements OnInit
     });
   }
 
-  public reset ($event: boolean)
+  public Closed (): void
   {
     this.open = false;
-    console.log($event, this.FirstPageModel.value, this.SecondPageModel.value);
-    // this.SaveForms();
-
+    if (this.hasChanged()) this.SaveForms();
   }
 
-  public finished ($event: any)
+  public Finished (): void
   {
-    console.log($event);
     this.SaveForms();
   }
 
-  public FinishWizard ()
+  public WizardFinished (): void
   {
-    console.log("the wizard has been finished", this.FirstPageModel, this.SecondPageModel)
-    console.log("valids", this.FirstPageModel.valid, this.SecondPageModel.valid, this.SecondPageModel.controls.PhoneNumber.valid);
+    console.log("the wizard has been finished", this.FirstPageModel, this.SecondPageModel);
+  }
+
+  private hasChanged (): boolean
+  {
+    let user = this.authService.UserAccount.getValue();
+
+    if (this.FirstPageModel.value.FirstName != user.FirstName) return true;
+    if (this.FirstPageModel.value.LastName != user.LastName) return true;
+    if (this.FirstPageModel.value.RegisteredJurisdiction != user.RegisteredJurisdiction) return true;
+
+    let dob = new Date(this.FirstPageModel.value.DOB)
+
+    let dateOfBirth = {
+      Year: dob.getFullYear(),
+      Month: dob.getMonth() + 1,
+      Day: dob.getDate()
+    }
+
+    if (this.FirstPageModel.value.DateOfBirth != dateOfBirth) return true;
+
+    if (this.SecondPageModel.value.Email != user.Email) return true;
+    if (this.SecondPageModel.value.DialCode != user.DialCode) return true;
+    if (this.SecondPageModel.value.PhoneNumber != user.PhoneNumber) return true;
+
+    return false;
+  }
+
+  public PageChange (): void
+  {
+    if (this.hasChanged()) this.SaveForms();
   }
 }

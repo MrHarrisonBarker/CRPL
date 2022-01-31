@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {WorksService} from "../_Services/works.service";
 import {HttpEventType} from "@angular/common/http";
 import {DownloadFile} from "../utils";
+import {AlertService} from "../_Services/alert.service";
 
 @Component({
   selector: 'file-upload',
@@ -17,7 +18,9 @@ export class UploadComponent implements OnInit
   public UploadError: string = "";
   public DownloadError: string = "";
 
-  constructor (private worksService: WorksService)
+  constructor (
+    private worksService: WorksService,
+    private alertService: AlertService)
   {
   }
 
@@ -40,6 +43,7 @@ export class UploadComponent implements OnInit
   {
     if (this.CurrentFile != null)
     {
+      this.alertService.StartLoading();
       this.worksService.UploadWork(this.CurrentFile).subscribe(event =>
       {
         if (event.type == HttpEventType.UploadProgress)
@@ -52,11 +56,7 @@ export class UploadComponent implements OnInit
           this.WorkHash = event.body;
           console.log("Current work hash", this.WorkHash);
         }
-      }, error =>
-      {
-        console.log(error);
-        this.UploadError = error.error
-      });
+      }, error => this.UploadError = error.error, () => this.alertService.StopLoading());
     }
   }
 
@@ -64,11 +64,12 @@ export class UploadComponent implements OnInit
   {
     if (this.FinishedUpload && this.WorkHash)
     {
+      this.alertService.StartLoading();
       this.worksService.GetSignedWork(this.WorkHash).subscribe(data =>
       {
         DownloadFile(this.CurrentFile.name, data);
         console.log(data);
-      }, error => this.DownloadError = error.error);
+      }, error => this.DownloadError = error.error, () => this.alertService.StopLoading());
     }
   }
 }
