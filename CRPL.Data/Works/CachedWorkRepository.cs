@@ -5,7 +5,7 @@ namespace CRPL.Data.Works;
 public interface ICachedWorkRepository
 {
     public CachedWork Get(byte[] hash);
-    public void Set(byte[] hash, byte[] work, string contentType);
+    public void Set(byte[] hash, byte[] work, string contentType, string name);
 }
 
 public class CachedWorkRepository : ICachedWorkRepository
@@ -23,17 +23,17 @@ public class CachedWorkRepository : ICachedWorkRepository
     {
         Logger.LogInformation("Getting a cached work {Hash}", hash);
         if (!CachedWorks.TryGetValue(Convert.ToBase64String(hash), out var work)) throw new Exception($"File already exists, {Convert.ToBase64String(hash)}");
-        // var work = CachedWorks[Convert.ToBase64String(hash)];
         return work;
     }
 
-    public void Set(byte[] hash, byte[] work, string contentType)
+    public void Set(byte[] hash, byte[] work, string contentType, string name)
     {
         Logger.LogInformation("caching work {Hash}", hash);
         CachedWorks.Add(Convert.ToBase64String(hash), new CachedWork()
         {
             Work = work,
-            ContentType = contentType
+            ContentType = contentType,
+            FileName = name
         });
     }
 }

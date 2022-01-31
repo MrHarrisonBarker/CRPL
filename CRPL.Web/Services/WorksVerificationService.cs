@@ -45,7 +45,7 @@ public class WorksVerificationService : IWorksVerificationService
 
         var hash = HashWork(work);
 
-        CachedWorkRepository.Set(hash, work, file.ContentType);
+        CachedWorkRepository.Set(hash, work, file.ContentType, file.FileName);
 
         Logger.LogInformation("hashed {Name} into {Hash}", file.FileName, hash);
 
@@ -65,6 +65,9 @@ public class WorksVerificationService : IWorksVerificationService
                 break;
             case "application/pdf":
                 work = new TextSigner().Sign(work);
+                break;
+            case "audio/mpeg":
+                work = new SoundSigner().Sign(work);
                 break;
         }
 

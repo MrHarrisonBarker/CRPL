@@ -31,7 +31,7 @@ export class WorksService
 
   public GetSignedWork (hash: string): Observable<Blob>
   {
-    let encodedHash = hash.replace('+', '.')
+    let encodedHash = hash.replace(/\+/g, '.')
     console.log(hash, encodedHash);
 
     return this.http.get(this.BaseUrl + WorksPaths.BasePath, {

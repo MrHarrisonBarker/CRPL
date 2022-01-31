@@ -4,4 +4,5 @@ public struct CachedWork
 {
     public byte[] Work;
     public string ContentType;
+    public string FileName;
 }
