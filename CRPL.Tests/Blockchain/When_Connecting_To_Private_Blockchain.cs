@@ -17,7 +17,7 @@ public class When_Connecting_To_Private_Blockchain
     private BlockchainConnection BlockchainConnection;
     
     [SetUp]
-    // [Ignore("need ci blockchain")]
+    [Ignore("need ci blockchain")]
     public async Task SetUp()
     {
         var appSettings = Options.Create(new AppSettings()
@@ -44,7 +44,7 @@ public class When_Connecting_To_Private_Blockchain
     }
 
     [Test]
-    // [Ignore("need ci blockchain")]
+    [Ignore("need ci blockchain")]
     public async Task Should_Have_Account()
     {
         var accounts = await BlockchainConnection.Web3().Eth.Accounts.SendRequestAsync();
@@ -54,7 +54,7 @@ public class When_Connecting_To_Private_Blockchain
     }
 
     [Test]
-    // [Ignore("need ci blockchain")]
+    [Ignore("need ci blockchain")]
     public async Task Account_Should_Have_Balance()
     {
         var balance = await BlockchainConnection.Web3().Eth.GetBalance.SendRequestAsync(TestConstants.TestAccountAddress);

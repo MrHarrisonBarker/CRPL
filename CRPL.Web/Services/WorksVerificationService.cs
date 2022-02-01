@@ -35,6 +35,8 @@ public class WorksVerificationService : IWorksVerificationService
     {
         Logger.LogInformation("Uploading file {FileName}", file.FileName);
 
+        if (file.Length == 0) throw new Exception("File needs to have content");
+
         await using var stream = new MemoryStream();
 
         await file.CopyToAsync(stream);

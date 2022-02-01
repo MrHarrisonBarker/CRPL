@@ -23,4 +23,8 @@
     <ProjectReference Include="..\CRPL.Web\CRPL.Web.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Blockchain\ContractRepository" />
+  </ItemGroup>
+
 </Project>

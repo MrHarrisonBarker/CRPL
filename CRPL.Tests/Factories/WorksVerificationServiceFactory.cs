@@ -10,7 +10,10 @@ public class WorksVerificationServiceFactory
 {
     public WorksVerificationService Create(ApplicationContext context)
     {
-        var MockCachedWorksRepo = new Mock<ICachedWorkRepository>();
-        return new WorksVerificationService(new Logger<WorksVerificationService>(new LoggerFactory()), context, MockCachedWorksRepo.Object);
+        var cachedWorkRepository = new CachedWorkRepository(new Logger<CachedWorkRepository>(new LoggerFactory()));
+        
+        cachedWorkRepository.Set(new byte[]{0}, new byte[]{0}, "","");
+        
+        return new WorksVerificationService(new Logger<WorksVerificationService>(new LoggerFactory()), context, cachedWorkRepository);
     }
 }
