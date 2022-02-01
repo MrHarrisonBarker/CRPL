@@ -23,11 +23,11 @@ public class WorksVerificationService : IWorksVerificationService
 
     public async Task<VerificationResult> VerifyWork(byte[] hash)
     {
-        var collisions = await Context.RegisteredWorks.Where(x => x.Hash == hash).Select(x => x.RightId).ToListAsync();
-        return new VerificationResult()
+        var collision = await Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Hash == hash);
+        return new VerificationResult
         {
-            IsAuthentic = collisions.Count == 0,
-            Collisions = collisions
+            IsAuthentic = collision == null,
+            Collision = collision?.RightId
         };
     }
 

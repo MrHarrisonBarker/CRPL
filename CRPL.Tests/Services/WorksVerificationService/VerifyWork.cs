@@ -18,7 +18,7 @@ public class VerifyWork
             var result = await worksVerificationService.VerifyWork(new byte[] { 1, 1, 1 });
 
             result.IsAuthentic.Should().BeTrue();
-            result.Collisions.Count.Should().Be(0);
+            result.Collision.Should().BeNull();
         }
     }
 
@@ -32,7 +32,8 @@ public class VerifyWork
             var result = await worksVerificationService.VerifyWork(new byte[] { 0 });
 
             result.IsAuthentic.Should().BeFalse();
-            result.Collisions.Count.Should().Be(1);
+            result.Collision.Should().NotBeNull();
+            result.Collision.Should().BeEquivalentTo("1");
         }
     }
 }
