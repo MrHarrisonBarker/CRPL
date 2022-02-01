@@ -106,7 +106,7 @@ export class AuthService
     })).pipe(map(s => s[0]));
   }
 
-  private fetchNonce (): Observable<string>
+  public fetchNonce (): Observable<string>
   {
     console.log("Fetching nonce from server");
     if (this.Address) return this.http.post<string>(this.BaseUrl + UserPaths.FetchNonce, {}, {params: new HttpParams().set('walletAddress', this.Address)});
