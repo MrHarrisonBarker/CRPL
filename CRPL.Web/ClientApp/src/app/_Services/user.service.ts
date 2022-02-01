@@ -1,5 +1,5 @@
 import {Inject, Injectable} from '@angular/core';
-import {Observable, of} from "rxjs";
+import {Observable, of, throwError} from "rxjs";
 import {UserAccountStatusModel} from "../_Models/Account/UserAccountStatusModel";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {UserPaths} from "../api.conts";
@@ -27,7 +27,8 @@ export class UserService
   // Guid accountId, AccountInputModel accountInputModel
   public UpdateAccount (accountInput: AccountInputModel): Observable<UserAccountStatusModel>
   {
-    if (!this.authService.IsAuthenticated.value) throw new Error("The user is not authenticated!");
+    if (!this.authService.IsAuthenticated.value) return throwError(new Error("The user is not authenticated!"));
+
     return this.http.post<UserAccountStatusModel>(this.BaseUrl + UserPaths.Account, accountInput, {
       params: new HttpParams().set('accountId', this.authService.UserAccount.value.Id)
     }).pipe(tap(status =>
@@ -39,11 +40,7 @@ export class UserService
 
   public PhoneExists (phone: string): Observable<boolean>
   {
-    return this.http.get<boolean>(this.BaseUrl + UserPaths.PhoneExists, {params: new HttpParams().set('phone', phone)})
-               .pipe(catchError(err => {
-                 this.alertService.Alert({Type: "danger", Message: err})
-                 return of(err);
-               }));
+    return this.http.get<boolean>(this.BaseUrl + UserPaths.PhoneExists, {params: new HttpParams().set('phone', phone)});
   }
 
   public EmailExists (email: string): Observable<boolean>

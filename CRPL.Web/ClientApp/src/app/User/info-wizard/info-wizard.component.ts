@@ -84,10 +84,14 @@ export class InfoWizardComponent implements OnInit
       {
         this.alertService.Alert({Message: "Saved changes", Type: "success"});
       }
-    }, error => this.alertService.Alert({
-      Message: "There was an error updating your information",
-      Type: "danger"
-    }), () => this.alertService.StopLoading());
+    }, error =>
+    {
+      console.log("error while updating", error);
+      this.alertService.Alert({
+        Message: "There was an error updating your information",
+        Type: "danger"
+      });
+    }, () => this.alertService.StopLoading());
   }
 
   public PopulateForms (): void
