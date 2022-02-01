@@ -29,7 +29,7 @@
     <Folder Include="WorkSigners\TestAssets" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+  <ItemGroup>
     <None Update="WorkSigners/TestAssets/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

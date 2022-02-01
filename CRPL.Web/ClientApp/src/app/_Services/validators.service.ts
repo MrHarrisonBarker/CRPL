@@ -19,8 +19,9 @@ export class ValidatorsService
   {
     return (control: AbstractControl): Observable<ValidationErrors | null> =>
     {
+      console.log(control.value);
       if (isEmptyInputValue(control.value)) return of(null);
-      return this.userService.PhoneExists(control.value).pipe(map(res =>
+      return this.userService.IsPhoneUnique(control.value).pipe(map(res =>
       {
         console.log("phone is", res);
         return res ? null : {phoneExists: true}
@@ -33,7 +34,7 @@ export class ValidatorsService
     return (control: AbstractControl): Observable<ValidationErrors | null> =>
     {
       if (isEmptyInputValue(control.value)) return of(null);
-      return this.userService.EmailExists(control.value).pipe(map(res =>
+      return this.userService.IsEmailUnique(control.value).pipe(map(res =>
       {
         return res ? null : {emailExists: true}
       }));
