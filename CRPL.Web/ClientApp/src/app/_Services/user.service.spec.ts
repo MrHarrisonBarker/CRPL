@@ -71,7 +71,7 @@ describe('UserService', () =>
         expect(authMock.UserAccount.getValue()).toEqual(mockUser);
       });
 
-      let request = httpMock.expectOne("user?accountId=" + mockUser.Id);
+      let request = httpMock.expectOne('user?accountId=' + mockUser.Id);
 
       expect(request.request.responseType).toEqual('json');
       expect(request.cancelled).toBeFalsy();
@@ -97,7 +97,7 @@ describe('UserService', () =>
       let mockPhone = "PHONE NUMBER";
       let mockResponse = true;
 
-      userService.PhoneExists(mockPhone).subscribe(answer =>
+      userService.IsPhoneUnique(mockPhone).subscribe(answer =>
       {
         expect(answer).toBeTruthy();
       });
@@ -117,7 +117,7 @@ describe('UserService', () =>
       let mockEmail = "EMAIL";
       let mockResponse = true;
 
-      userService.EmailExists(mockEmail).subscribe(answer =>
+      userService.IsEmailUnique(mockEmail).subscribe(answer =>
       {
         expect(answer).toBeTruthy();
       });

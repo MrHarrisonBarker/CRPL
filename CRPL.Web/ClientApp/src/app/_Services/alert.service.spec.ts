@@ -1,16 +1,20 @@
-import { TestBed } from '@angular/core/testing';
+import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 
-import { AlertService } from './alert.service';
+import {AlertMeta, AlertService} from './alert.service';
+import {BehaviorSubject, Subject} from "rxjs";
 
-describe('AlertService', () => {
+describe('AlertService', () =>
+{
   let service: AlertService;
 
-  beforeEach(() => {
+  beforeEach(() =>
+  {
     TestBed.configureTestingModule({});
     service = TestBed.inject(AlertService);
   });
 
-  it('should be created', () => {
+  it('should be created', () =>
+  {
     expect(service).toBeTruthy();
   });
 
@@ -30,5 +34,23 @@ describe('AlertService', () => {
     service.StartLoading();
     service.StopLoading();
     expect(service.loading.getValue()).toBeFalsy();
+  });
+
+  it('should return alert subject', () =>
+  {
+    expect(service.alert).toEqual(new Subject<AlertMeta>())
+  });
+
+  it('should alert', () =>
+  {
+    let mockAlert: AlertMeta = {
+      Message: 'MESSAGE',
+      Type: 'danger'
+    }
+    service.Alert(mockAlert);
+    service.alert.subscribe(a =>
+    {
+      expect(a).toEqual(mockAlert);
+    });
   });
 });
