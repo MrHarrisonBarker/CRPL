@@ -19,6 +19,7 @@ public class FetchNonce
             var nonce = await userService.FetchNonce("test_2");
 
             nonce.Should().NotBeNull();
+            nonce.Length.Should().Be(64);
         }
     }
     
@@ -34,6 +35,7 @@ public class FetchNonce
             var nonce = context.UserAccounts.First(x => x.Wallet.PublicAddress == "test_2").Wallet.Nonce;
             
             nonce.Should().NotBeNull();
+            nonce.Length.Should().Be(64);
         }
     }
 
@@ -47,6 +49,10 @@ public class FetchNonce
             var nonce = await userService.FetchNonce("random_address");
             
             nonce.Should().NotBeNull();
+
+            var user = context.UserAccounts.First(x => x.Wallet.PublicAddress == "random_address");
+
+            user.Should().NotBeNull();
         }
     }
 }

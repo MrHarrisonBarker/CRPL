@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using CRPL.Tests.Factories;
 using CRPL.Web.Exceptions;
@@ -17,7 +16,7 @@ public class Authenticate
         {
             var userService = new UserServiceFactory().Create(context);
 
-            await FluentActions.Invoking(async () => await userService.Authenticate("")).Should().ThrowAsync<UnauthorizedAccessException>();
+            await FluentActions.Invoking(async () => await userService.Authenticate("")).Should().ThrowAsync<InvalidAuthenticationException>();
         }
     }
 

@@ -1,8 +1,10 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using CRPL.Data.Account;
 using CRPL.Data.Account.InputModels;
 using CRPL.Tests.Factories;
+using CRPL.Web.Exceptions;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -85,6 +87,17 @@ public class UpdateAccount
 
             status.PartialFields.Count().Should().BePositive();
             status.PartialFields.First(x => x.Field == "RegisteredJurisdiction").Type.Should().BeEquivalentTo("string");
+        }
+    }
+
+    [Test]
+    public async Task Should_Throw_Not_Found()
+    {
+        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        {
+            var userService = new UserServiceFactory().Create(context);
+            
+            await FluentActions.Invoking(async () => await userService.UpdateAccount(Guid.Empty, new AccountInputModel())).Should().ThrowAsync<UserNotFoundException>();
         }
     }
 }

@@ -152,14 +152,14 @@ public class UserService : IUserService
     // when no account exists create and save
     public async Task<string> FetchNonce(string walletAddress)
     {
-        Logger.LogInformation("Fetching {Id}'s nonce", walletAddress);
+        Logger.LogInformation("Fetching {Address}'s nonce", walletAddress);
 
         var user = await Context.UserAccounts.Include(x => x.Wallet).FirstOrDefaultAsync(x => x.Wallet.PublicAddress == walletAddress);
 
         // if new user
         if (user == null)
         {
-            Logger.LogInformation("New user found when fetching nonce");
+            Logger.LogInformation("New user {Address} found when fetching nonce", walletAddress);
             user = new UserAccount
             {
                 Wallet = new UserWallet
@@ -189,11 +189,11 @@ public class UserService : IUserService
 
     public async Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel)
     {
-        Logger.LogInformation("Authenticating a users signature");
+        Logger.LogInformation("Authenticating the signature: {Sig} for {Address}", authenticateInputModel.Signature, authenticateInputModel.WalletAddress);
 
         // null check
         var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.Wallet.PublicAddress == authenticateInputModel.WalletAddress);
-        if (user == null) throw new UserNotFoundException();
+        if (user == null) throw new UserNotFoundException(authenticateInputModel.WalletAddress);
 
         var message = $"Signing a unique nonce {user.Wallet.Nonce}";
 
@@ -203,7 +203,8 @@ public class UserService : IUserService
         Logger.LogInformation("verified address {VAddress} compared to {Address}", verifiedAddress, user.Wallet.PublicAddress);
 
         // if the wallet owner is not the signer
-        if (verifiedAddress != user.Wallet.PublicAddress) throw new InvalidSignature();
+        if (!string.Equals(verifiedAddress, user.Wallet.PublicAddress, StringComparison.Ordinal))
+            throw new InvalidSignatureException(authenticateInputModel.Signature, authenticateInputModel.WalletAddress);
 
         user.AuthenticationToken = generateToken(user, 30);
 
@@ -223,7 +224,7 @@ public class UserService : IUserService
     {
         Logger.LogInformation("Authenticating a token {Token}", token);
         var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.AuthenticationToken == token);
-        if (user == null) throw new UnauthorizedAccessException();
+        if (user == null) throw new InvalidAuthenticationException(token);
         return Mapper.Map<UserAccountViewModel>(user);
     }
 
