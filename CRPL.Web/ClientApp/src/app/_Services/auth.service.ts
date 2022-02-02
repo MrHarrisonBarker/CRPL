@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {UserPaths} from "../api.conts";
-import {BehaviorSubject, from, Observable, of} from "rxjs";
+import {BehaviorSubject, from, Observable, of, throwError} from "rxjs";
 import {AuthenticateResult} from "../_Models/Account/AuthenticateResult";
 import {AuthenticateSignatureInputModel} from "../_Models/Account/AuthenticateSignatureInputModel";
 import {finalize, map, switchMap, tap} from "rxjs/operators";
@@ -99,18 +99,25 @@ export class AuthService
     console.log("Getting users wallets from MM");
     return from<string>(this.Ethereum.request({
       method: 'eth_requestAccounts'
-    })).pipe(tap(accounts =>
+    })).pipe(map(accounts =>
     {
-      if (accounts == null) throw new Error("NO ACCOUNTS FOUND");
+      if (accounts == null || accounts.length == 0) throw new Error("NO ACCOUNTS FOUND");
+
+      // if some accounts exist take the first one
       this.Address = accounts[0];
-    })).pipe(map(s => s[0]));
+      return accounts[0];
+    }));
   }
 
   public fetchNonce (): Observable<string>
   {
     console.log("Fetching nonce from server");
-    if (this.Address) return this.http.post<string>(this.BaseUrl + UserPaths.FetchNonce, {}, {params: new HttpParams().set('walletAddress', this.Address)});
-    throw new Error("Can't find public wallet address");
+    if (this.Address)
+    {
+      return this.http.post<string>(this.BaseUrl + UserPaths.FetchNonce, {}, {params: new HttpParams().set('walletAddress', this.Address)});
+    }
+
+    return throwError(new Error("Can't find public wallet address"));
   }
 
   private signMessage (nonce: string): Observable<string>
@@ -151,7 +158,7 @@ export class AuthService
 
   public Authenticate (token: string): Observable<UserAccountViewModel>
   {
-    if (this.UserAccount.getValue() != null) return of(this.UserAccount.getValue());
+    if (this.UserAccount.getValue()) return of(this.UserAccount.getValue());
     return this.http.get<UserAccountViewModel>(this.BaseUrl + UserPaths.Auth, {
       params: new HttpParams().set('token', token)
     }).pipe(tap(account =>

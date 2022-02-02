@@ -1,24 +1,26 @@
-import {TestBed} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {WorksService} from './works.service';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
 import {AuthService} from "./auth.service";
 import {AlertService} from "./alert.service";
 import {Router} from "@angular/router";
+import {UserService} from "./user.service";
 
 describe('WorksService', () =>
 {
   let service: WorksService;
+  let routerMock = jasmine.createSpyObj('router', ['navigate']);
+  let alertMock = jasmine.createSpyObj('alertMock', ['Alert'])
+  let authMock = jasmine.createSpyObj('AuthService', [''], ['IsAuthenticated', 'UserAccount'])
 
   beforeEach(() =>
   {
-    let routerMock = jasmine.createSpyObj('router', ['navigate']);
-    let alertMock = jasmine.createSpyObj('alertMock', ['Alert'])
-
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        AuthService,
+        WorksService,
+        {provide: AuthService, useValue: authMock},
         {provide: AlertService, useValue: alertMock},
         {provide: Router, useValue: routerMock},
         {provide: 'BASE_URL', useValue: ''}]
@@ -30,4 +32,35 @@ describe('WorksService', () =>
   {
     expect(service).toBeTruthy();
   });
+
+  // it('should upload', inject(
+  //   [HttpTestingController, UserService],
+  //   (httpMock: HttpTestingController, worksService: WorksService) =>
+  //   {
+  //     let mockFile: File = new File([''], 'test-file.pdf');
+  //
+  //     service.UploadWork(mockFile).subscribe(result => {
+  //       expect(result).toEqual({type: 0});
+  //     });
+  //
+  //     let request = httpMock.expectOne('works');
+  //
+  //     request.flush(null);
+  //   }));
+
+  it('should get signed work', inject(
+    [HttpTestingController, WorksService],
+    (httpMock: HttpTestingController, worksService: WorksService) =>
+    {
+      let mockHash = 'TEST HASH';
+      let mockResponse = new Blob(['1','1','1']);
+
+      worksService.GetSignedWork(mockHash).subscribe(response => {
+        expect(response).toEqual(mockResponse);
+      });
+
+      let request = httpMock.expectOne('works?hash=' + encodeURI(mockHash));
+
+      request.flush(mockResponse);
+    }));
 });
