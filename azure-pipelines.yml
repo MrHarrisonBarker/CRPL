@@ -1,3 +1,5 @@
+name: CRPL-$(Build.BuildId)-$(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
+  
 trigger:
   batch: true
   branches:

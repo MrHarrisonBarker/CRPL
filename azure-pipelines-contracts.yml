@@ -1,0 +1,36 @@
+#https://medium.com/southworks/continuous-integration-for-smart-contracts-4a8b78d387c
+#https://github.com/nbellocam/hardhat-pipeline/blob/main/azure-pipelines.yml
+
+name: CRPL.Contracts-$(Build.BuildId)-$(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '14.x'
+    displayName: 'Install Node.js'
+
+  - script: |
+      npm ci --also=dev
+    displayName: 'Install dependencies'
+    
+  - script: |
+      npm run compile
+    displayName: 'Compile contracts'
+    
+  - script: |
+      npm run coverage
+    displayName: 'Run tests and coverage'
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: coverage/cobertura-coverage.xml
