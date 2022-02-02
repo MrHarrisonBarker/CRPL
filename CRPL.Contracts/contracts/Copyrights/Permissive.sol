@@ -8,5 +8,5 @@ import "../Utils/IdCounters.sol";
 contract Permissive is CopyrightWithMeta {
     using IdCounters for IdCounters.IdCounter;
 
-    constructor() CopyrightWithMeta("Standard Copyright", "https://creativecommons.org/licenses/by/2.0/") payable {}
+    constructor() CopyrightWithMeta("Standard Copyright", "https://creativecommons.org/licenses/by/2.0") payable {}
 }

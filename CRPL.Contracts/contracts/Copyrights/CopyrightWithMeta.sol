@@ -2,20 +2,22 @@
 pragma solidity ^0.8.0;
 
 import "./Copyright.sol";
-import "../CopyrightMeta.sol";
+import "../ICopyrightMeta.sol";
 import "../Structs/Meta.sol";
 
-abstract contract CopyrightWithMeta is Copyright, CopyrightMeta {
+abstract contract CopyrightWithMeta is Copyright, ICopyrightMeta {
 
     string internal _legalDefinition;
 
     mapping (uint256 => Meta) _metadata;
 
-    constructor(string memory name, string memory legalDef) Copyright(name) {
+    constructor(string memory name, string memory legalDef) Copyright(name) 
+    {
         _legalDefinition = legalDef;
     }
 
-    function Register(OwnershipStructure[] memory to, Meta memory def) public {
+    function RegisterWithMeta(OwnershipStake[] memory to, Meta memory def) external 
+    {
         uint256 rightId = super._register(to);
         _metadata[rightId] = def;
     }

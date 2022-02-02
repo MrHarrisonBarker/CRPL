@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "../CopyrightBase.sol";
-import "../Structs/CopyrightState.sol";
-import "../Structs/OwnershipStructure.sol";
+import "../ICopyright.sol";
+import "../Structs/OwnershipStake.sol";
 import "../Structs/ProposalVote.sol";
 import "../Utils/IdCounters.sol";
 
-abstract contract Copyright is CopyrightBase {
+abstract contract Copyright is ICopyright {
     using IdCounters for IdCounters.IdCounter;
 
     bool internal _locked;
@@ -24,13 +23,13 @@ abstract contract Copyright is CopyrightBase {
     string constant ALREADY_VOTED = "ALREADY_VOTED";
 
     // rightId -> ownership structures
-    mapping (uint256 => OwnershipStructure[]) internal _shareholders;
+    mapping (uint256 => OwnershipStake[]) internal _shareholders;
 
     // owner -> number of copyrights
     mapping (address => uint256) internal _numOfRights;
 
     // rightId -> new ownership
-    mapping (uint256 => OwnershipStructure[]) internal _newHolders;
+    mapping (uint256 => OwnershipStake[]) internal _newHolders;
 
     // rightId -> shareholder -> bool (prop vote)
     mapping (uint256 => ProposalVote[]) internal _proposalVotes;
@@ -50,7 +49,7 @@ abstract contract Copyright is CopyrightBase {
         _name = name;
     }
 
-    function OwnershipOf(uint256 rightId) external override validId(rightId) view returns (OwnershipStructure[] memory) {       
+    function OwnershipOf(uint256 rightId) external override validId(rightId) view returns (OwnershipStake[] memory) {       
         return _shareholders[rightId];
     }
 
@@ -58,7 +57,7 @@ abstract contract Copyright is CopyrightBase {
         return _numOfRights[owner];
     }
 
-    function Register(OwnershipStructure[] memory to) public validShareholders(to) {
+    function Register(OwnershipStake[] memory to) public validShareholders(to) {
 
         uint256 rightId = _copyCount.next();
 
@@ -74,12 +73,12 @@ abstract contract Copyright is CopyrightBase {
         emit Registered(rightId, to);
     }
 
-    function _register (OwnershipStructure[] memory to) internal validShareholders(to) returns (uint256) {
+    function _register (OwnershipStake[] memory to) internal validShareholders(to) returns (uint256) {
         Register(to);
         return _copyCount.getCurrent();
     }
 
-    function ProposeRestructure(uint256 rightId, OwnershipStructure[] memory restructured) external override validId(rightId) validShareholders(restructured) isShareholder(rightId, msg.sender) payable {
+    function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external override validId(rightId) validShareholders(restructured) isShareholder(rightId, msg.sender) payable {
         
         for (uint8 i = 0; i < restructured.length; i++) {
 
@@ -105,7 +104,7 @@ abstract contract Copyright is CopyrightBase {
 
         for (uint8 i = 0; i < _proposalVotes[rightId].length; i ++) 
         {
-            if (!_proposalVotes[rightId][i].appected) 
+            if (!_proposalVotes[rightId][i].accepted) 
             {
                 _resetProposal(rightId);
                 emit FailedProposal(rightId);
@@ -170,7 +169,7 @@ abstract contract Copyright is CopyrightBase {
 
     function _resetProposal(uint256 rightId) internal {        
 
-        OwnershipStructure[] memory holdersWhoVoted = _shareholders[rightId];
+        OwnershipStake[] memory holdersWhoVoted = _shareholders[rightId];
 
         for (uint8 i = 0; i < holdersWhoVoted.length; i++) {
             delete(_proposalVotes[rightId]);
@@ -215,7 +214,7 @@ abstract contract Copyright is CopyrightBase {
 
     }
 
-    modifier validShareholders(OwnershipStructure[] memory holders) 
+    modifier validShareholders(OwnershipStake[] memory holders) 
     {
         require(holders.length > 0, NO_SHAREHOLDERS);
 

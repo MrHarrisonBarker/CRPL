@@ -8,5 +8,5 @@ import "../Utils/IdCounters.sol";
 contract Standard is CopyrightWithMeta {
     using IdCounters for IdCounters.IdCounter;
 
-    constructor() CopyrightWithMeta("Standard Copyright", "") payable {}
+    constructor() CopyrightWithMeta("Standard Copyright", "Standard Copyright legal definition") payable {}
 }

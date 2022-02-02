@@ -1,18 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./Structs/OwnershipStructure.sol";
-
-struct RestructureProposal {
-    OwnershipStructure[] oldStructure;
-    OwnershipStructure[] newStructure;
-}
+import "./Structs/OwnershipStake.sol";
+import "./Structs/RestructureProposal.sol";
 
 /// @title Defintion of a multi party shareholder style ownership structure, with consensus voting
-interface StructuredOwnership {
+interface IStructuredOwnership {
     
     /// @dev Emits when a new copyright is registered
-    event Registered(uint256 indexed rightId, OwnershipStructure[] to);
+    event Registered(uint256 indexed rightId, OwnershipStake[] to);
 
     /// @dev Emits when a copyright has been restructured and bound
     event Restructured(uint256 indexed rightId, RestructureProposal proposal);
@@ -26,14 +22,14 @@ interface StructuredOwnership {
     /// @notice The current ownership structure of a copyright
     /// @dev
     /// @param rightId The copyright id
-    function OwnershipOf(uint256 rightId) external view returns (OwnershipStructure[] memory);
+    function OwnershipOf(uint256 rightId) external view returns (OwnershipStake[] memory);
 
     /// @notice Proposes a restructure of the ownership share of a copyright contract, this change must be bound by all share holders
     /// @dev 
     /// @param rightId The copyright id
     /// @param restructured The new owernship shares
     //  @param notes Any notes written concerning restructure for public record
-    function ProposeRestructure(uint256 rightId, OwnershipStructure[] memory restructured) external payable;
+    function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external payable;
 
     /// @notice The current restructure proposal for a copyright
     /// @dev

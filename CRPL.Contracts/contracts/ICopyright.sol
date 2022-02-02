@@ -3,10 +3,10 @@ pragma solidity ^0.8.0;
 
 // Influenced by EIP-712, see: https://eips.ethereum.org/EIPS/eip-721
 
-import "./StructuredOwnership.sol";
+import "./IStructuredOwnership.sol";
 
 /// @title Basic structure for interfacing with a copyright contract
-interface CopyrightBase is StructuredOwnership {
+interface ICopyright is IStructuredOwnership {
 
     /// @dev Emits when a copyright dispute has been registered
     event Disputed(uint256 indexed rightId, address indexed by, bytes reason);

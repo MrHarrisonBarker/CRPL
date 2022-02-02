@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 /// @title Copyright meta and legal data
-interface CopyrightMeta {
+interface ICopyrightMeta {
 
     /// @notice title of work
     function Title(uint256 rightId) external view returns (string memory);
