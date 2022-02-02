@@ -6,6 +6,7 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
+  demands: npm
 
 variables:
   solution: '**/*.sln'
@@ -14,23 +15,50 @@ variables:
 
 steps:
   - task: UseDotNet@2
+    condition: succeeded()
     inputs:
       version: '6.0.x'
       includePreviewVersions: true
 
   - task: DotNetCoreCLI@2
+    condition: succeeded()
     displayName: 'dotnet build'
     inputs:
       command: 'build'
       configuration: $(buildConfiguration)
 
   - task: DotNetCoreCLI@2
+    condition: succeededOrFailed()
     displayName: 'dotnet test'
     inputs:
       command: 'test'
       arguments: '--configuration $(buildConfiguration) --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura'
       publishTestResults: true
       projects: './CRPL.Tests' # update with your test project directory
+    
+  - task: Npm@1
+      condition: succeededOrFailed()
+      displayName: "npm install"
+      inputs:
+        command: install
+        workingDir: 'CRPL.Web/ClientApp'
+        
+  - task: Npm@1
+      displayName: 'Tests (Angular Application)'
+      condition: succeededOrFailed()
+      inputs:
+        command: custom
+        customCommand: run test -- --watch=false --code-coverage --browsers=ChromeHeadless
+        workingDir: 'CRPL.Web/ClientApp'
+        
+  - task: reportgenerator@4
+      displayName: 'Combine code coverage reports'
+      condition: succeededOrFailed()
+      inputs:
+        reports: '$(Build.SourcesDirectory)/CRPL.Web/ClientApp/coverage/**/cobertura-coverage.xml;$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+        targetdir: '$(Build.SourcesDirectory)/CodeCoverage'
+        reporttypes: 'HtmlInline_AzurePipelines;Cobertura;Badges'
+
 
   - task: PublishCodeCoverageResults@1
     displayName: 'Publish code coverage report'
