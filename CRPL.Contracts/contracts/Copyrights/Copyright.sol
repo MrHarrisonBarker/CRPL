@@ -130,7 +130,7 @@ abstract contract Copyright is ICopyright {
 
     }
 
-    function ApproveOne(uint256 rightId, address approved) external override validId(rightId) validAddress(approved) isShareholder(rightId, msg.sender) isApproved(rightId, msg.sender) payable {
+    function ApproveOne(uint256 rightId, address approved) external override validId(rightId) validAddress(approved) isShareholder(rightId, msg.sender) payable {
         // check approved is not owner of copyright
 
         _approvedAddress[rightId] = approved;
@@ -209,9 +209,8 @@ abstract contract Copyright is ICopyright {
     // TODO: could cause a problem
     modifier validId(uint256 rightId)
     {
-        require(_shareholders[rightId][0].owner != address(0), NOT_VALID_RIGHT);
+        require(_shareholders[rightId].length == 0 || _shareholders[rightId][0].owner != address(0), NOT_VALID_RIGHT);
         _;
-
     }
 
     modifier validShareholders(OwnershipStake[] memory holders) 
