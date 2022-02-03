@@ -44,7 +44,11 @@ export class CompleteUserAndAuthGuard implements CanActivate
       return this.authService.Authenticate(token).pipe(map(authenticatedUser =>
       {
         console.log("got user now checking status", authenticatedUser);
-        if (authenticatedUser == null) return false;
+        if (authenticatedUser == null)
+        {
+          this.router.navigate(['/']).then(r => null);
+          return false;
+        }
         if (authenticatedUser.Status == AccountStatus.Complete) return true;
 
         console.log("the user has not complete their profile navigating to wizard");

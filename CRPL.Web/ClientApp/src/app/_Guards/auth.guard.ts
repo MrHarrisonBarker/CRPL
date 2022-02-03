@@ -38,9 +38,13 @@ export class AuthGuard implements CanActivate
         return of(false);
       }
 
-      return this.authService.Authenticate(token).pipe(map(usr => usr == null)).pipe(catchError(err =>
+      return this.authService.Authenticate(token).pipe(map(usr => {
+        console.log(usr);
+        return usr != null;
+      })).pipe(catchError(err =>
       {
         this.alertService.Alert({Message: "There was a problem when authenticating your account", Type: "danger"});
+        this.router.navigate(['/']).then(r => null);
         return of(false);
       }));
     }));

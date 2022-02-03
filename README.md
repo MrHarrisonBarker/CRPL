@@ -1,13 +1,11 @@
 # CRPL
 
 CRPL or **C**opy**r**ight on a **p**ublic **l**edger is an open platform for registering and managing the copyrights of
-a creators intellectual property secured on the pub- licly distributed ledger Ethereum. The immutability and public
+a creators intellectual property secured on the publicly distributed ledger Ethereum. The immutability and public
 distribution of a blockchain is the essential component to the success of this platform and allows copyright
-registration to be placed in everyones hands.
+registration to be placed in everyone's hands.
 
 ## How to run
-
----
 
 ### Prerequisites
 
@@ -20,8 +18,6 @@ Install the .NET6 SDK from Microsoft [download](https://dotnet.microsoft.com/en-
 Install the latest version of Node.js [download](https://nodejs.org/en/download/)
 
 ## Usage
-
----
 
 ### Build, run and test
 
@@ -46,9 +42,7 @@ $ npm install // install dependences
 $ npx hardhat test // run smart contract tests
 ```
 
-## Sprint Reports
-
----
+## Sprint Reviews
 
 ### Sprint 1 (19th Jan – 2nd Feb)
 
@@ -110,19 +104,13 @@ fill out personal info, upload work and download a digitally signed master file.
 
 ## Licence
 
----
-
 Distributed under the MIT License. See `LICENSE` for more information.
 
 ## Contact
 
----
-
 Harrison Barker --- mail@harrisonbarker.co.uk
 
 ## Acknowledgments
-
----
 
 * https://angular.io/
 * https://dotnet.microsoft.com/en-us/apps/aspnet
