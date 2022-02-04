@@ -8,5 +8,6 @@ public abstract class Application
 
     public DateTime Created { get; set; }
     public DateTime Modified { get; set; }
+    public ApplicationStatus Status { get; set; }
     public List<UserApplication> AssociatedUsers { get; set; }
 }
