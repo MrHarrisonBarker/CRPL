@@ -110,7 +110,7 @@ public class UserService : IUserService
 
     private List<PartialField> getPartials(UserAccount userAccount)
     {
-        var ignoredProperties = new List<string> { "Wallet", "UserWorks", "AuthenticationToken" };
+        var ignoredProperties = new List<string> { "Wallet", "UserWorks", "AuthenticationToken", "Applications" };
         var partials = new List<PartialField>();
 
         foreach (var property in typeof(UserAccount).GetProperties())
@@ -130,7 +130,7 @@ public class UserService : IUserService
 
     private bool isComplete(UserAccount userAccount)
     {
-        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet", "UserWorks", "AuthenticationToken" };
+        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet", "UserWorks", "AuthenticationToken", "Applications" };
         var hasContact = 0;
         // checks each property is not null
         // user only needs one form of contact: email or phone

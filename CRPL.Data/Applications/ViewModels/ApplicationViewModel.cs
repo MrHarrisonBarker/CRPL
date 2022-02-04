@@ -6,4 +6,5 @@ public abstract class ApplicationViewModel
 
     public DateTime Created { get; set; }
     public DateTime Modified { get; set; }
+    public ApplicationStatus Status { get; set; }
 }

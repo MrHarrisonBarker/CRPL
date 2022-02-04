@@ -4,11 +4,9 @@ using CRPL.Data.Account;
 using CRPL.Web.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NUnit.Framework;
 
 namespace CRPL.Tests.Factories;
 
-[TestFixture]
 public class FormsServiceFactory
 {
     public FormsService Create(ApplicationContext context)
