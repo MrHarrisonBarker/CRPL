@@ -1,3 +1,4 @@
+using CRPL.Data.Applications;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Data.Account;
@@ -39,4 +40,6 @@ public class UserAccount
     public List<UserWork>? UserWorks { get; set; }
     
     public string? AuthenticationToken { get; set; }
+    
+    public List<UserApplication>? Applications { get; set; }
 }

@@ -1,3 +1,4 @@
+using CRPL.Data.Applications;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Data.Account;
@@ -7,6 +8,9 @@ public class ApplicationContext : DbContext
     public DbSet<UserAccount> UserAccounts { get; set; }
     public DbSet<RegisteredWork> RegisteredWorks { get; set; }
     public DbSet<UserWork> UserWorks { get; set; }
+    public DbSet<Application> Applications { get; set; }
+    public DbSet<UserApplication> UserApplications { get; set; }
+    public DbSet<PartialField> Fields { get; set; }
 
     public ApplicationContext(DbContextOptions<ApplicationContext> dbContextOptions) : base(dbContextOptions)
     {
@@ -14,6 +18,8 @@ public class ApplicationContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        //// UserAccount <-> Work
+        
         modelBuilder.Entity<UserWork>()
             .HasKey(t => new {t.UserId, t.WorkId});
 
@@ -26,5 +32,20 @@ public class ApplicationContext : DbContext
             .HasOne(pt => pt.RegisteredWork)
             .WithMany(t => t.UserWorks)
             .HasForeignKey(pt => pt.WorkId);
+        
+        //// UserAccount <-> Application
+        
+        modelBuilder.Entity<UserApplication>()
+            .HasKey(t => new {t.UserId, t.ApplicationId});
+
+        modelBuilder.Entity<UserApplication>()
+            .HasOne(pt => pt.UserAccount)
+            .WithMany(p => p.Applications)
+            .HasForeignKey(pt => pt.UserId);
+
+        modelBuilder.Entity<UserApplication>()
+            .HasOne(pt => pt.Application)
+            .WithMany(t => t.AssociatedUsers)
+            .HasForeignKey(pt => pt.ApplicationId);
     }
 }
