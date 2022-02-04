@@ -37,9 +37,11 @@ public class FormsService : IFormsService
         throw new NotImplementedException();
     }
 
-    public Task<List<ApplicationViewModel>> GetAllApplications(Guid userId)
+    public async Task<List<ApplicationViewModel>> GetMyApplications(Guid userId)
     {
-        throw new NotImplementedException();
+        return await Context.Applications.Include(x => x.AssociatedUsers)
+            .Where(x => x.AssociatedUsers.Any(u => u.UserId == userId))
+            .Select(x => x.Map(Mapper)).ToListAsync();
     }
 
     public Task<ApplicationViewModel> Update(ApplicationInputModel inputModel)

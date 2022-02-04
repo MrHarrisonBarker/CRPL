@@ -17,12 +17,26 @@ public class FormsController : ControllerBase
         FormsService = formsService;
     }
 
-    [HttpGet]
+    [HttpGet("#id")]
     public async Task<ApplicationViewModel> Get(Guid id)
     {
         try
         {
             return await FormsService.GetApplication(id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when getting application");
+            throw;
+        }
+    }
+
+    [HttpGet("users/#id")]
+    public async Task<List<ApplicationViewModel>> GetMy(Guid id)
+    {
+        try
+        {
+            return await FormsService.GetMyApplications(id);
         }
         catch (Exception e)
         {

@@ -16,9 +16,9 @@ public class GetApplication
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var userService = new FormsServiceFactory().Create(context);
+            var formsService = new FormsServiceFactory().Create(context);
 
-            var application = await userService.GetApplication(new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"));
+            var application = await formsService.GetApplication(new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"));
 
             application.Should().NotBeNull();
             application.Should().BeOfType<CopyrightRegistrationViewModel>();
@@ -30,9 +30,9 @@ public class GetApplication
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var userService = new FormsServiceFactory().Create(context);
+            var formsService = new FormsServiceFactory().Create(context);
 
-            var application = await userService.GetApplication(new Guid("83EB5EDF-43BA-4F34-B14F-219F85B0FF5F"));
+            var application = await formsService.GetApplication(new Guid("83EB5EDF-43BA-4F34-B14F-219F85B0FF5F"));
 
             application.Should().NotBeNull();
             application.Should().BeOfType<OwnershipRestructureViewModel>();

@@ -152,7 +152,11 @@ public class TestDbApplicationContextFactory : IDisposable
                 Legal = "LEGAL META",
                 Title = "HELLO WORLD",
                 WorkHash = "HASH",
-                WorkUri = "URI"
+                WorkUri = "URI",
+                AssociatedUsers = new List<UserApplication>()
+                {
+                    new() { UserId = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C") }
+                }
             },
             new OwnershipRestructureApplication()
             {
