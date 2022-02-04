@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Tests.Factories;
 using FluentAssertions;
@@ -21,6 +22,20 @@ public class GetApplication
 
             application.Should().NotBeNull();
             application.Should().BeOfType<CopyrightRegistrationViewModel>();
+        }
+    }
+    
+    [Test]
+    public async Task Should_Map_To_Ownership()
+    {
+        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        {
+            var userService = new FormsServiceFactory().Create(context);
+
+            var application = await userService.GetApplication(new Guid("83EB5EDF-43BA-4F34-B14F-219F85B0FF5F"));
+
+            application.Should().NotBeNull();
+            application.Should().BeOfType<OwnershipRestructureViewModel>();
         }
     }
 }

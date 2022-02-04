@@ -153,6 +153,15 @@ public class TestDbApplicationContextFactory : IDisposable
                 Title = "HELLO WORLD",
                 WorkHash = "HASH",
                 WorkUri = "URI"
+            },
+            new OwnershipRestructureApplication()
+            {
+                Created = DateTime.Now,
+                Modified = DateTime.Now,
+                Id = new Guid("83EB5EDF-43BA-4F34-B14F-219F85B0FF5F"),
+                ApplicationType = ApplicationType.OwnershipRestructure,
+                CurrentStructure = "ADDRESS!50;ANOTHER_ADDRESS!50",
+                ProposedStructure = "ADDRESS!90;ANOTHER_ADDRESS!10",
             }
         };
 

@@ -12,7 +12,7 @@ public static class ApplicationMapper
             case ApplicationType.CopyrightRegistration:
                 return mapper.Map<CopyrightRegistrationApplication, CopyrightRegistrationViewModel>((CopyrightRegistrationApplication)application);
             case ApplicationType.OwnershipRestructure:
-                break;
+                return mapper.Map<OwnershipRestructureApplication, OwnershipRestructureViewModel>((OwnershipRestructureApplication)application);
             case ApplicationType.CopyrightTypeChange:
                 break;
             case ApplicationType.Dispute:
@@ -23,7 +23,7 @@ public static class ApplicationMapper
 
         throw new Exception();
     }
-    
+
     public static List<OwnershipStake> Decode(this string src)
     {
         var stakes = src.Split(';').ToList();

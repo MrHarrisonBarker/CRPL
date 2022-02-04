@@ -11,7 +11,8 @@ public class ApplicationContext : DbContext
     public DbSet<UserWork> UserWorks { get; set; }
     public DbSet<Application> Applications { get; set; }
     public DbSet<CopyrightRegistrationApplication> CopyrightRegistrationApplications { get; set; }
-    
+    public DbSet<OwnershipRestructureApplication> OwnershipRestructureApplications { get; set; }
+
     public DbSet<UserApplication> UserApplications { get; set; }
 
     public ApplicationContext(DbContextOptions<ApplicationContext> dbContextOptions) : base(dbContextOptions)
