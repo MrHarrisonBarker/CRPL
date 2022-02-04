@@ -1,4 +1,5 @@
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Data.Account;
@@ -9,8 +10,9 @@ public class ApplicationContext : DbContext
     public DbSet<RegisteredWork> RegisteredWorks { get; set; }
     public DbSet<UserWork> UserWorks { get; set; }
     public DbSet<Application> Applications { get; set; }
+    public DbSet<CopyrightRegistrationApplication> CopyrightRegistrationApplications { get; set; }
+    
     public DbSet<UserApplication> UserApplications { get; set; }
-    public DbSet<PartialField> Fields { get; set; }
 
     public ApplicationContext(DbContextOptions<ApplicationContext> dbContextOptions) : base(dbContextOptions)
     {

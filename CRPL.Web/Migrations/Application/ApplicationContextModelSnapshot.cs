@@ -100,12 +100,18 @@ namespace CRPL.Web.Migrations.Application
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("Modified")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Applications");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Application");
                 });
 
             modelBuilder.Entity("CRPL.Data.Applications.UserApplication", b =>
@@ -123,32 +129,31 @@ namespace CRPL.Web.Migrations.Application
                     b.ToTable("UserApplications");
                 });
 
-            modelBuilder.Entity("CRPL.Data.PartialField", b =>
+            modelBuilder.Entity("CRPL.Data.Applications.ViewModels.CopyrightRegistrationApplication", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
+                    b.HasBaseType("CRPL.Data.Applications.Application");
 
-                    b.Property<Guid>("ApplicationId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Field")
+                    b.Property<string>("Legal")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Type")
+                    b.Property<string>("OwnershipStakes")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Value")
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                    b.Property<string>("WorkHash")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.HasIndex("ApplicationId");
+                    b.Property<string>("WorkUri")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.ToTable("Fields");
+                    b.HasDiscriminator().HasValue("CopyrightRegistrationApplication");
                 });
 
             modelBuilder.Entity("CRPL.Data.Account.UserAccount", b =>
@@ -239,17 +244,6 @@ namespace CRPL.Web.Migrations.Application
                     b.Navigation("UserAccount");
                 });
 
-            modelBuilder.Entity("CRPL.Data.PartialField", b =>
-                {
-                    b.HasOne("CRPL.Data.Applications.Application", "Application")
-                        .WithMany("Fields")
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Application");
-                });
-
             modelBuilder.Entity("CRPL.Data.Account.RegisteredWork", b =>
                 {
                     b.Navigation("UserWorks");
@@ -265,8 +259,6 @@ namespace CRPL.Web.Migrations.Application
             modelBuilder.Entity("CRPL.Data.Applications.Application", b =>
                 {
                     b.Navigation("AssociatedUsers");
-
-                    b.Navigation("Fields");
                 });
 #pragma warning restore 612, 618
         }

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRPL.Web.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220129135306_hashOnWork")]
-    partial class hashOnWork
+    [Migration("20220204160100_refactor")]
+    partial class refactor
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -90,6 +90,74 @@ namespace CRPL.Web.Migrations.Application
                     b.ToTable("UserWorks");
                 });
 
+            modelBuilder.Entity("CRPL.Data.Applications.Application", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("ApplicationType")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("Modified")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Applications");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Application");
+                });
+
+            modelBuilder.Entity("CRPL.Data.Applications.UserApplication", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ApplicationId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("UserId", "ApplicationId");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("UserApplications");
+                });
+
+            modelBuilder.Entity("CRPL.Data.Applications.ViewModels.CopyrightRegistrationApplication", b =>
+                {
+                    b.HasBaseType("CRPL.Data.Applications.Application");
+
+                    b.Property<string>("Legal")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("OwnershipStakes")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("WorkHash")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("WorkUri")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasDiscriminator().HasValue("CopyrightRegistrationApplication");
+                });
+
             modelBuilder.Entity("CRPL.Data.Account.UserAccount", b =>
                 {
                     b.OwnsOne("CRPL.Data.Account.UserAccount+DOB", "DateOfBirth", b1 =>
@@ -159,6 +227,25 @@ namespace CRPL.Web.Migrations.Application
                     b.Navigation("UserAccount");
                 });
 
+            modelBuilder.Entity("CRPL.Data.Applications.UserApplication", b =>
+                {
+                    b.HasOne("CRPL.Data.Applications.Application", "Application")
+                        .WithMany("AssociatedUsers")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CRPL.Data.Account.UserAccount", "UserAccount")
+                        .WithMany("Applications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+
+                    b.Navigation("UserAccount");
+                });
+
             modelBuilder.Entity("CRPL.Data.Account.RegisteredWork", b =>
                 {
                     b.Navigation("UserWorks");
@@ -166,7 +253,14 @@ namespace CRPL.Web.Migrations.Application
 
             modelBuilder.Entity("CRPL.Data.Account.UserAccount", b =>
                 {
+                    b.Navigation("Applications");
+
                     b.Navigation("UserWorks");
+                });
+
+            modelBuilder.Entity("CRPL.Data.Applications.Application", b =>
+                {
+                    b.Navigation("AssociatedUsers");
                 });
 #pragma warning restore 612, 618
         }
