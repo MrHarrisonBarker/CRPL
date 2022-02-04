@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using CRPL.Data;
 using CRPL.Data.Account;
+using CRPL.Data.Applications;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -135,8 +137,29 @@ public class TestDbApplicationContextFactory : IDisposable
             }
         };
 
+        List<Application> applications = new List<Application>()
+        {
+            new()
+            {
+                Created = DateTime.Now,
+                Modified = DateTime.Now,
+                Id = new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"),
+                ApplicationType = ApplicationType.CopyrightRegistration,
+                Fields = new List<PartialField>
+                {
+                    new()
+                    {
+                        Field = "Title",
+                        Type = "string",
+                        Value = "Hello world"
+                    }
+                }
+            }
+        };
+
         context.UserAccounts.AddRange(userAccounts);
         context.RegisteredWorks.AddRange(registeredWorks);
+        context.Applications.AddRange(applications);
         context.SaveChanges();
     }
 
