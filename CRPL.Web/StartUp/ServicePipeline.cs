@@ -14,6 +14,7 @@ public static class ServiceExtensions
         {
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IWorksVerificationService, WorksVerificationService>();
+            services.AddScoped<IFormsService, FormsService>();
         }
     }
 }

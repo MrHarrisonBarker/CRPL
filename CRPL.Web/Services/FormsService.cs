@@ -3,6 +3,7 @@ using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
+using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -27,7 +28,7 @@ public class FormsService : IFormsService
     public async Task<ApplicationViewModel> GetApplication(Guid id)
     {
         var application = await Context.Applications.FirstOrDefaultAsync(x => x.Id == id);
-        if (application == null) throw new Exception();
+        if (application == null) throw new ApplicationNotFoundException(id);
         return application.Map(Mapper);
     }
 
