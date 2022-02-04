@@ -1,16 +1,16 @@
+using AutoMapper;
+using CRPL.Data.StructuredOwnership;
+
 namespace CRPL.Data.Applications.ViewModels;
 
 public static class ApplicationMapper
 {
-    public static ApplicationViewModel Map(this Application application)
+    public static ApplicationViewModel Map(this Application application, IMapper mapper)
     {
-        ApplicationViewModel viewModel = null;
-
         switch (application.ApplicationType)
         {
             case ApplicationType.CopyrightRegistration:
-                viewModel = new CopyrightRegistrationViewModel();
-                break;
+                return mapper.Map<CopyrightRegistrationApplication, CopyrightRegistrationViewModel>((CopyrightRegistrationApplication)application);
             case ApplicationType.OwnershipRestructure:
                 break;
             case ApplicationType.CopyrightTypeChange:
@@ -21,26 +21,24 @@ public static class ApplicationMapper
                 throw new ArgumentOutOfRangeException();
         }
 
-        if (viewModel == null)
+        throw new Exception();
+    }
+    
+    public static List<OwnershipStake> Decode(this string src)
+    {
+        var stakes = src.Split(';').ToList();
+
+        List<OwnershipStake> ownershipStakes = new List<OwnershipStake>();
+
+        foreach (var stake in stakes)
         {
-            throw new Exception();
+            ownershipStakes.Add(new OwnershipStake()
+            {
+                Owner = stake.Split('!')[0],
+                Share = Convert.ToInt32(stake.Split('!')[1])
+            });
         }
 
-        if (application?.Fields == null)
-        {
-            throw new Exception();
-        }
-
-        foreach (var field in application.Fields)
-        {
-            var property = viewModel.GetType().GetProperty(field.Field);
-            if (property != null) property.SetValue(viewModel, Convert.ChangeType(field.Value, property.PropertyType));
-        }
-
-        viewModel.Created = application.Created;
-        viewModel.Modified = application.Modified;
-        viewModel.Id = application.Id;
-
-        return viewModel;
+        return ownershipStakes;
     }
 }

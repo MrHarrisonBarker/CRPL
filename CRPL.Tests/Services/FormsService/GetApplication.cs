@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using CRPL.Data.Applications.ViewModels;
 using CRPL.Tests.Factories;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace CRPL.Tests.Services.FormsService;
@@ -16,6 +18,9 @@ public class GetApplication
             var userService = new FormsServiceFactory().Create(context);
 
             var application = await userService.GetApplication(new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"));
+
+            application.Should().NotBeNull();
+            application.Should().BeOfType<CopyrightRegistrationViewModel>();
         }
     }
 }

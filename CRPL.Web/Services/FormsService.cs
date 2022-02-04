@@ -26,9 +26,9 @@ public class FormsService : IFormsService
 
     public async Task<ApplicationViewModel> GetApplication(Guid id)
     {
-        var application = await Context.Applications.Include(x => x.Fields).FirstOrDefaultAsync(x => x.Id == id);
+        var application = await Context.Applications.FirstOrDefaultAsync(x => x.Id == id);
         if (application == null) throw new Exception();
-        return application.Map();
+        return application.Map(Mapper);
     }
 
     public Task DeleteApplication(Guid id)

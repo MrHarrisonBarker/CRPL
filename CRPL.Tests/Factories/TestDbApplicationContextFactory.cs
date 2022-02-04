@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.ViewModels;
+using CRPL.Data.StructuredOwnership;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -139,21 +142,17 @@ public class TestDbApplicationContextFactory : IDisposable
 
         List<Application> applications = new List<Application>()
         {
-            new()
+            new CopyrightRegistrationApplication()
             {
                 Created = DateTime.Now,
                 Modified = DateTime.Now,
                 Id = new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"),
                 ApplicationType = ApplicationType.CopyrightRegistration,
-                Fields = new List<PartialField>
-                {
-                    new()
-                    {
-                        Field = "Title",
-                        Type = "string",
-                        Value = "Hello world"
-                    }
-                }
+                OwnershipStakes = "ADDRESS!50;ANOTHER_ADDRESS!50",
+                Legal = "LEGAL META",
+                Title = "HELLO WORLD",
+                WorkHash = "HASH",
+                WorkUri = "URI"
             }
         };
 
