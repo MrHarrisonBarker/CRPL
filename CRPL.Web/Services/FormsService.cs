@@ -31,18 +31,24 @@ public class FormsService : IFormsService
 
     public async Task<ApplicationViewModel> GetApplication(Guid id)
     {
+        Logger.LogInformation("Getting application '{Id}'", id);
         var application = await Context.Applications.FirstOrDefaultAsync(x => x.Id == id);
         if (application == null) throw new ApplicationNotFoundException(id);
         return application.Map(Mapper);
     }
 
-    public Task DeleteApplication(Guid id)
+    public async Task CancelApplication(Guid id)
     {
-        throw new NotImplementedException();
+        Logger.LogInformation("Canceling application '{Id}'", id);
+        var application = await Context.Applications.FirstOrDefaultAsync(x => x.Id == id);
+        if (application == null) throw new ApplicationNotFoundException(id);
+        Context.Applications.Remove(application);
+        await Context.SaveChangesAsync();
     }
 
     public async Task<List<ApplicationViewModel>> GetMyApplications(Guid userId)
     {
+        Logger.LogInformation("Getting all application for {Id}", userId);
         return await Context.Applications.Include(x => x.AssociatedUsers)
             .Where(x => x.AssociatedUsers.Any(u => u.UserId == userId))
             .Select(x => x.Map(Mapper)).ToListAsync();
@@ -50,7 +56,7 @@ public class FormsService : IFormsService
 
     public async Task<T> Update<T>(ApplicationInputModel inputModel) where T : ApplicationViewModel
     {
-        Logger.LogInformation("Updating an application");
+        Logger.LogInformation("Updating application '{Id}'", inputModel.Id);
 
         var application = inputModel.Id == Guid.Empty ? null : await Context.Applications.FirstOrDefaultAsync(x => x.Id == inputModel.Id);
 

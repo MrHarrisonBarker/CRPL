@@ -73,4 +73,19 @@ public class FormsController : ControllerBase
             throw;
         }
     }
+
+    [HttpDelete("#id")]
+    public async Task<ActionResult> Cancel(Guid id)
+    {
+        try
+        {
+            await FormsService.CancelApplication(id);
+            return Ok($"Canceled application {id}");
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when canceling application");
+            throw;
+        }
+    }
 }
