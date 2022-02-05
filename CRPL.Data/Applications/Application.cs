@@ -1,3 +1,5 @@
+using CRPL.Data.Applications.ViewModels;
+
 namespace CRPL.Data.Applications;
 
 public abstract class Application
@@ -13,5 +15,7 @@ public abstract class Application
     public Application(ApplicationType applicationType)
     {
         ApplicationType = applicationType;
+        Status = ApplicationStatus.Incomplete;
+        Created = DateTime.Now;
     }
 }

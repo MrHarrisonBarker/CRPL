@@ -1,4 +1,3 @@
-using System.Data;
 using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
@@ -18,21 +17,29 @@ public class FormsService : IFormsService
     private readonly ApplicationContext Context;
     private readonly IMapper Mapper;
     private readonly IUserService UserService;
+    private readonly IRegistrationService RegistrationService;
     private readonly AppSettings Options;
 
-    public FormsService(ILogger<FormsService> logger, ApplicationContext context, IMapper mapper, IOptions<AppSettings> options, IUserService userService)
+    public FormsService(
+        ILogger<FormsService> logger,
+        ApplicationContext context,
+        IMapper mapper,
+        IOptions<AppSettings> options,
+        IUserService userService,
+        IRegistrationService registrationService)
     {
         Logger = logger;
         Context = context;
         Mapper = mapper;
         UserService = userService;
+        RegistrationService = registrationService;
         Options = options.Value;
     }
 
     public async Task<ApplicationViewModel> GetApplication(Guid id)
     {
         Logger.LogInformation("Getting application '{Id}'", id);
-        var application = await Context.Applications.FirstOrDefaultAsync(x => x.Id == id);
+        var application = await Context.Applications.Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount).FirstOrDefaultAsync(x => x.Id == id);
         if (application == null) throw new ApplicationNotFoundException(id);
         return application.Map(Mapper);
     }
@@ -75,14 +82,28 @@ public class FormsService : IFormsService
             }
 
             if (application == null) throw new Exception("Could not determine the application type!");
-            // if (application != null) await Context.Applications.AddAsync(application);
         }
 
         Context.Applications.Update(application);
         application.Update(inputModel, Mapper, UserService);
+        application.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();
 
         return (T)application.Map(Mapper);
+    }
+
+    public async Task<O> Submit<T, O>(Guid id) where T : Application where O : ApplicationViewModel
+    {
+        var application = (T)(await Context.Applications.FirstOrDefaultAsync(x => x.Id == id))!;
+
+        if (application == null) throw new ApplicationNotFoundException(id);
+
+        var submittedApplication = (T)application.Submit(RegistrationService);
+        submittedApplication.Modified = DateTime.Now;
+
+        await Context.SaveChangesAsync();
+
+        return (O)submittedApplication.Map(Mapper);
     }
 }

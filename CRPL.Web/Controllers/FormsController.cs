@@ -18,8 +18,8 @@ public class FormsController : ControllerBase
         FormsService = formsService;
     }
 
-    [HttpGet("#id")]
-    public async Task<ApplicationViewModel> Get(Guid id)
+    [HttpGet("{id}")]
+    public async Task<ApplicationViewModel> Get([FromRoute]Guid id)
     {
         try
         {
@@ -32,7 +32,7 @@ public class FormsController : ControllerBase
         }
     }
 
-    [HttpGet("users/#id")]
+    [HttpGet("users/{id}")]
     public async Task<List<ApplicationViewModel>> GetMy(Guid id)
     {
         try
@@ -55,7 +55,7 @@ public class FormsController : ControllerBase
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Exception thrown when updating application");
+            Logger.LogError(e, "Exception thrown when updating copyright registration application");
             throw;
         }
     }
@@ -69,12 +69,12 @@ public class FormsController : ControllerBase
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Exception thrown when updating application");
+            Logger.LogError(e, "Exception thrown when updating ownership application");
             throw;
         }
     }
 
-    [HttpDelete("#id")]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> Cancel(Guid id)
     {
         try
@@ -88,4 +88,19 @@ public class FormsController : ControllerBase
             throw;
         }
     }
+    
+    [HttpPost("copyright/submit/registration/{id}")]
+    public async Task<CopyrightRegistrationViewModel> SubmitCopyrightRegistration(Guid id)
+    {
+        try
+        {
+            return await FormsService.Submit<CopyrightRegistrationApplication, CopyrightRegistrationViewModel>(id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when submitting copyright registration application");
+            throw;
+        }
+    }
+    
 }

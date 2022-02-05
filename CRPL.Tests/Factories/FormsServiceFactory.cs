@@ -19,6 +19,10 @@ public class FormsServiceFactory
             EncryptionKey = "Bj3PtC818hVHkNH3nzI0HN8wJXY0oHdo"
         });
 
-        return new FormsService(new Logger<FormsService>(new LoggerFactory()), context, mapper, appSettings, new UserServiceFactory().Create(context));
+        return new FormsService(
+            new Logger<FormsService>(new LoggerFactory()), 
+            context, mapper, appSettings, 
+            new UserServiceFactory().Create(context),
+            new RegistrationServiceFactory().Create(context));
     }
 }
