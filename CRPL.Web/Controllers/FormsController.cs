@@ -1,3 +1,4 @@
+using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -41,6 +42,34 @@ public class FormsController : ControllerBase
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when getting application");
+            throw;
+        }
+    }
+
+    [HttpPost("copyright/registration")]
+    public async Task<CopyrightRegistrationViewModel> UpdateCopyrightRegistration(CopyrightRegistrationInputModel inputModel)
+    {
+        try
+        {
+            return await FormsService.Update<CopyrightRegistrationViewModel>(inputModel);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when updating application");
+            throw;
+        }
+    }
+    
+    [HttpPost("copyright/ownership")]
+    public async Task<OwnershipRestructureViewModel> Update(OwnershipRestructureInputModel inputModel)
+    {
+        try
+        {
+            return await FormsService.Update<OwnershipRestructureViewModel>(inputModel);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when updating application");
             throw;
         }
     }

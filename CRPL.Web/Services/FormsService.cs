@@ -63,12 +63,15 @@ public class FormsService : IFormsService
                 case "CopyrightRegistrationViewModel":
                     application = new CopyrightRegistrationApplication { Id = new Guid() };
                     break;
+                case "OwnershipRestructureViewModel":
+                    application = new OwnershipRestructureApplication { Id = new Guid() };
+                    break;
             }
 
             if (application == null) throw new Exception("Could not determine the application type!");
             // if (application != null) await Context.Applications.AddAsync(application);
         }
-        
+
         Context.Applications.Update(application);
         application.Update(inputModel, Mapper, UserService);
 

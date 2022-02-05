@@ -35,6 +35,36 @@ public class Update
     }
 
     [Test]
+    public async Task Should_Update_Ownership_Structure()
+    {
+        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        {
+            var formsService = new FormsServiceFactory().Create(context);
+
+            var currentStructure = new List<OwnershipStake>
+            {
+                new() { Owner = "test_0", Share = 100 }
+            };
+            
+            var proposedStructure = new List<OwnershipStake>
+            {
+                new() { Owner = "test_0", Share = 300 },
+                new() { Owner = "test_1", Share = 10 }
+            };
+            
+            var updatedApplication = await formsService.Update<OwnershipRestructureViewModel>(new OwnershipRestructureInputModel()
+            {
+                CurrentStructure = currentStructure,
+                ProposedStructure = proposedStructure
+            });
+
+            updatedApplication.Should().NotBeNull();
+            updatedApplication.CurrentStructure.Should().BeEquivalentTo(currentStructure);
+            updatedApplication.ProposedStructure.Should().BeEquivalentTo(proposedStructure);
+        }
+    }
+
+    [Test]
     public async Task Should_Save_Updates()
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
