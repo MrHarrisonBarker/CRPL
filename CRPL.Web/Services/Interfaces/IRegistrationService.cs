@@ -1,8 +1,9 @@
+using CRPL.Data.Account;
 using CRPL.Data.Applications.ViewModels;
 
 namespace CRPL.Web.Services.Interfaces;
 
 public interface IRegistrationService
 {
-    public Task StartRegistration(CopyrightRegistrationApplication application);
+    public RegisteredWork StartRegistration(CopyrightRegistrationApplication application);
 }

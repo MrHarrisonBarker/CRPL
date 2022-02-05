@@ -3,6 +3,7 @@ using System;
 using CRPL.Data.Account;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRPL.Web.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20220205173832_hashToByteOnApplicaiton")]
+    partial class hashToByteOnApplicaiton
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,12 +31,14 @@ namespace CRPL.Web.Migrations.Application
                         .HasColumnType("datetime(6)");
 
                     b.Property<byte[]>("Hash")
+                        .IsRequired()
                         .HasColumnType("longblob");
 
                     b.Property<DateTime?>("Registered")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("RightId")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Status")

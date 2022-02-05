@@ -1,3 +1,4 @@
+using CRPL.Data.Account;
 using CRPL.Data.Applications.ViewModels;
 
 namespace CRPL.Data.Applications;
@@ -11,6 +12,7 @@ public abstract class Application
     public DateTime Modified { get; set; }
     public ApplicationStatus Status { get; set; }
     public List<UserApplication> AssociatedUsers { get; set; }
+    public RegisteredWork? AssociatedWork { get; set; }
 
     public Application(ApplicationType applicationType)
     {

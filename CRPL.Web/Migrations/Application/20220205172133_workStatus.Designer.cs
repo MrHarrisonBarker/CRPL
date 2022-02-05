@@ -3,6 +3,7 @@ using System;
 using CRPL.Data.Account;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRPL.Web.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20220205172133_workStatus")]
+    partial class workStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,12 +31,14 @@ namespace CRPL.Web.Migrations.Application
                         .HasColumnType("datetime(6)");
 
                     b.Property<byte[]>("Hash")
+                        .IsRequired()
                         .HasColumnType("longblob");
 
-                    b.Property<DateTime?>("Registered")
+                    b.Property<DateTime>("Registered")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("RightId")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int>("Status")
@@ -104,9 +108,6 @@ namespace CRPL.Web.Migrations.Application
                     b.Property<int>("ApplicationType")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("AssociatedWorkId")
-                        .HasColumnType("char(36)");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime(6)");
 
@@ -121,8 +122,6 @@ namespace CRPL.Web.Migrations.Application
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AssociatedWorkId");
 
                     b.ToTable("Applications");
 
@@ -175,9 +174,9 @@ namespace CRPL.Web.Migrations.Application
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<byte[]>("WorkHash")
+                    b.Property<string>("WorkHash")
                         .IsRequired()
-                        .HasColumnType("longblob");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("WorkUri")
                         .IsRequired()
@@ -255,15 +254,6 @@ namespace CRPL.Web.Migrations.Application
                     b.Navigation("UserAccount");
                 });
 
-            modelBuilder.Entity("CRPL.Data.Applications.Application", b =>
-                {
-                    b.HasOne("CRPL.Data.Account.RegisteredWork", "AssociatedWork")
-                        .WithMany("AssociatedApplication")
-                        .HasForeignKey("AssociatedWorkId");
-
-                    b.Navigation("AssociatedWork");
-                });
-
             modelBuilder.Entity("CRPL.Data.Applications.UserApplication", b =>
                 {
                     b.HasOne("CRPL.Data.Applications.Application", "Application")
@@ -285,8 +275,6 @@ namespace CRPL.Web.Migrations.Application
 
             modelBuilder.Entity("CRPL.Data.Account.RegisteredWork", b =>
                 {
-                    b.Navigation("AssociatedApplication");
-
                     b.Navigation("UserWorks");
                 });
 

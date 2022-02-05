@@ -95,7 +95,9 @@ public class FormsService : IFormsService
 
     public async Task<O> Submit<T, O>(Guid id) where T : Application where O : ApplicationViewModel
     {
-        var application = (T)(await Context.Applications.FirstOrDefaultAsync(x => x.Id == id))!;
+        var application = (T)(await Context.Applications
+            .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
+            .FirstOrDefaultAsync(x => x.Id == id))!;
 
         if (application == null) throw new ApplicationNotFoundException(id);
 

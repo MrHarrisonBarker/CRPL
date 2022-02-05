@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Text;
 using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
@@ -151,7 +152,7 @@ public class TestDbApplicationContextFactory : IDisposable
                 OwnershipStakes = "ADDRESS!50;ANOTHER_ADDRESS!50",
                 Legal = "LEGAL META",
                 Title = "HELLO WORLD",
-                WorkHash = "HASH",
+                WorkHash = Encoding.UTF8.GetBytes("HASH"),
                 WorkUri = "URI",
                 AssociatedUsers = new List<UserApplication>()
                 {
