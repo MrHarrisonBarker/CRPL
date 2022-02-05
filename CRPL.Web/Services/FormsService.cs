@@ -1,6 +1,8 @@
+using System.Data;
 using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
+using CRPL.Data.Applications;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Exceptions;
@@ -15,13 +17,15 @@ public class FormsService : IFormsService
     private readonly ILogger<FormsService> Logger;
     private readonly ApplicationContext Context;
     private readonly IMapper Mapper;
+    private readonly IUserService UserService;
     private readonly AppSettings Options;
 
-    public FormsService(ILogger<FormsService> logger, ApplicationContext context, IMapper mapper, IOptions<AppSettings> options)
+    public FormsService(ILogger<FormsService> logger, ApplicationContext context, IMapper mapper, IOptions<AppSettings> options, IUserService userService)
     {
         Logger = logger;
         Context = context;
         Mapper = mapper;
+        UserService = userService;
         Options = options.Value;
     }
 
@@ -44,8 +48,32 @@ public class FormsService : IFormsService
             .Select(x => x.Map(Mapper)).ToListAsync();
     }
 
-    public Task<ApplicationViewModel> Update(ApplicationInputModel inputModel)
+    public async Task<T> Update<T>(ApplicationInputModel inputModel) where T : ApplicationViewModel
     {
-        throw new NotImplementedException();
+        Logger.LogInformation("Updating an application");
+
+        var application = inputModel.Id == Guid.Empty ? null : await Context.Applications.FirstOrDefaultAsync(x => x.Id == inputModel.Id);
+
+        if (application == null)
+        {
+            Logger.LogInformation("Didn't find application so making a new one");
+
+            switch (typeof(T).Name)
+            {
+                case "CopyrightRegistrationViewModel":
+                    application = new CopyrightRegistrationApplication { Id = new Guid() };
+                    break;
+            }
+
+            if (application == null) throw new Exception("Could not determine the application type!");
+            // if (application != null) await Context.Applications.AddAsync(application);
+        }
+        
+        Context.Applications.Update(application);
+        application.Update(inputModel, Mapper, UserService);
+
+        await Context.SaveChangesAsync();
+
+        return (T)application.Map(Mapper);
     }
 }

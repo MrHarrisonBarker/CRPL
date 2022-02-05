@@ -8,5 +8,5 @@ public interface IFormsService
     public Task<ApplicationViewModel> GetApplication(Guid id);
     public Task DeleteApplication(Guid id);
     public Task<List<ApplicationViewModel>> GetMyApplications(Guid userId);
-    public Task<ApplicationViewModel> Update(ApplicationInputModel inputModel);
+    public Task<T> Update<T>(ApplicationInputModel inputModel) where T : ApplicationViewModel;
 }

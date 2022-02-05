@@ -8,6 +8,7 @@ using CRPL.Data.Account;
 using CRPL.Data.Account.InputModels;
 using CRPL.Data.Account.StatusModels;
 using CRPL.Data.Account.ViewModels;
+using CRPL.Data.Applications;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -63,6 +64,12 @@ public class UserService : IUserService
     {
         Logger.LogInformation("Checking is email '{Email}' exists", email);
         return !(await Context.UserAccounts.AnyAsync(x => x.Email == email));
+    }
+
+    public bool AreUsersReal(List<string> userAddresses)
+    {
+        var userAccounts = Context.UserAccounts.Where(x => userAddresses.Contains(x.Wallet.PublicAddress)).ToList();
+        return userAccounts.Count == userAddresses.Count;
     }
 
     public async Task<UserAccountStatusModel> UpdateAccount(Guid accountId, AccountInputModel accountInputModel)
@@ -147,6 +154,23 @@ public class UserService : IUserService
     public Task<string> UpdateWallet(Guid accountId, WalletInputModel walletInputModel)
     {
         throw new NotImplementedException();
+    }
+
+    public void AssignToApplication(string address, Guid applicationId)
+    {
+        var user = Context.UserAccounts.Include(x => x.Applications).FirstOrDefault(x => x.Wallet.PublicAddress == address);
+        if (user == null) throw new UserNotFoundException(address);
+
+        Context.UserAccounts.Update(user);
+
+        if (user.Applications == null) user.Applications = new List<UserApplication>();
+        
+        user.Applications.Add(new UserApplication()
+        {
+            ApplicationId = applicationId
+        });
+
+        Context.SaveChanges();
     }
 
     // when no account exists create and save

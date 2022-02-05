@@ -14,12 +14,14 @@ public interface IUserService
     public Task<UserWallet> GetWallet(Guid accountId);
     public Task<bool> IsUniquePhoneNumber(string phoneNumber);
     public Task<bool> IsUniqueEmail(string email);
+    public bool AreUsersReal(List<string> userAddresses);
 
     // +----------------------+
     // -------- Updates ------+
     // +----------------------+
     public Task<UserAccountStatusModel> UpdateAccount(Guid accountId, AccountInputModel accountInputModel);
     public Task<string> UpdateWallet(Guid accountId, WalletInputModel walletInputModel);
+    public void AssignToApplication(string address, Guid applicationId);
     
     // +----------------------+
     // +--- Authentication ---+

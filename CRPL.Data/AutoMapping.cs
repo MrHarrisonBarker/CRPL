@@ -14,12 +14,19 @@ public class AutoMapping : Profile
             .ForMember(model => model.WalletPublicAddress, x =>
                 x.MapFrom(a => a.Wallet.PublicAddress));
 
-        CreateMap<Application, ApplicationViewModel>();
+        CreateMap<UserAccount, UserAccountMinimalViewModel>();
+
+        CreateMap<Application, ApplicationViewModel>()
+            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)));
+
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModel>()
             .ForMember(model => model.OwnershipStakes, x =>
-                x.MapFrom(src => src.OwnershipStakes.Decode()));
+                x.MapFrom(src => src.OwnershipStakes.Decode()))
+            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)));
+
         CreateMap<OwnershipRestructureApplication, OwnershipRestructureViewModel>()
             .ForMember(model => model.CurrentStructure, x => x.MapFrom(src => src.CurrentStructure.Decode()))
-            .ForMember(model => model.ProposedStructure, x => x.MapFrom(src => src.ProposedStructure.Decode()));
+            .ForMember(model => model.ProposedStructure, x => x.MapFrom(src => src.ProposedStructure.Decode()))
+            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)));
     }
 }

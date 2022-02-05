@@ -32,13 +32,28 @@ public static class ApplicationMapper
 
         foreach (var stake in stakes)
         {
-            ownershipStakes.Add(new OwnershipStake()
+            if (stake.Length > 0)
             {
-                Owner = stake.Split('!')[0],
-                Share = Convert.ToInt32(stake.Split('!')[1])
-            });
+                ownershipStakes.Add(new OwnershipStake()
+                {
+                    Owner = stake.Split('!')[0],
+                    Share = Convert.ToInt32(stake.Split('!')[1])
+                });
+            }
         }
 
         return ownershipStakes;
+    }
+
+    public static string Encode(this List<OwnershipStake> src)
+    {
+        var stakes = "";
+
+        foreach (var stake in src)
+        {
+            stakes += $"{stake.Owner}!{stake.Share};";
+        }
+
+        return stakes;
     }
 }
