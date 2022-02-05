@@ -1,0 +1,11 @@
+<div id="drop-div">
+  <select clrSelect name="options" [(ngModel)]="selected">
+    <option value="reg">Register</option>
+    <option value="restruct">Restructure</option>
+  </select>
+</div>
+
+<div id="application-container">
+  <cpy-registration *ngIf="selected == 'reg'"></cpy-registration>
+  <cpy-restructure *ngIf="selected == 'restruct'"></cpy-restructure>
+</div>

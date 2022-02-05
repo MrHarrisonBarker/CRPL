@@ -1,0 +1,55 @@
+<div id="form-wrapper">
+  <form clrForm clrLayout="compact" [formGroup]="RegistrationForm">
+    <clr-input-container>
+      <label class="clr-control-label">Title</label> <input clrInput name="title" required formControlName="Title"/>
+      <clr-control-error>This field cannot be empty!</clr-control-error>
+    </clr-input-container>
+
+    <clr-input-container type="compact">
+      <label class="clr-control-label">Uri to work</label> <input clrInput name="uri" formControlName="WorkUri"/>
+    </clr-input-container>
+
+    <clr-range-container [clrRangeHasProgress]="true">
+      <label>Length of protection</label> <input type="range" min="1" max="100" clrRange name="expires" formControlName="Expires"/>
+      <clr-control-helper>Protection for this work will last {{RegistrationForm.value.Expires}} year(s)</clr-control-helper>
+    </clr-range-container>
+
+    <clr-textarea-container>
+      <label>Legal notes</label> <textarea clrTextarea formControlName="Legal" name="legal" required></textarea>
+    </clr-textarea-container>
+    <clr-control-error>This field cannot be empty!</clr-control-error>
+
+    <clr-select-container>
+      <label>Type of protection</label> <select clrSelect name="options" formControlName="ProtectionType" (ngModelChange)="ChangeCopyrightType()">
+      <option value="Standard">Standard</option>
+      <option value="Copyleft">Copyleft</option>
+      <option value="Permissive">Permissive</option>
+    </select>
+    </clr-select-container>
+
+    <div id="right-matrix" formGroupName="Rights">
+      <clr-checkbox-wrapper *ngFor="let right of Rights">
+        <input type="checkbox" clrCheckbox name="ula" required [value]="right.Name" [formControlName]="right.Name"/> <label>{{right.Name}}
+        <clr-signpost>
+          <clr-signpost-content>
+            <p>{{right.Description}}</p>
+          </clr-signpost-content>
+        </clr-signpost>
+      </label>
+      </clr-checkbox-wrapper>
+    </div>
+
+    <clr-select-container>
+      <label>Type of work</label> <select clrSelect name="options" formControlName="WorkType" (ngModelChange)="ChangeWorkType()">
+      <option [value]="type" *ngFor="let type of WorkTypes">{{type}}</option>
+    </select>
+    </clr-select-container>
+
+  </form>
+
+  <file-upload></file-upload>
+
+  <clr-checkbox-wrapper>
+    <input type="checkbox" clrCheckbox name="ula" required value="ula" [(ngModel)]="AcceptedUla"/> <label>accept ula</label>
+  </clr-checkbox-wrapper>
+</div>

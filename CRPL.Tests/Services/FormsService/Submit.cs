@@ -33,7 +33,7 @@ public class Submit
         {
             var formsService = new FormsServiceFactory().Create(context);
 
-            await FluentActions.Invoking(async () => formsService.Submit<CopyrightRegistrationApplication, CopyrightRegistrationViewModel>(Guid.Empty)).Should()
+            await FluentActions.Invoking(async () => await formsService.Submit<CopyrightRegistrationApplication, CopyrightRegistrationViewModel>(Guid.Empty)).Should()
                 .ThrowAsync<ApplicationNotFoundException>();
         }
     }

@@ -7,31 +7,34 @@ import {RouterModule} from '@angular/router';
 import {AppComponent} from './app.component';
 import {NavMenuComponent} from './nav-menu/nav-menu.component';
 import {HomeComponent} from './home/home.component';
-import {CounterComponent} from './counter/counter.component';
-import {FetchDataComponent} from './fetch-data/fetch-data.component';
 import {LoginButtonComponent} from './User/login-button/login-button.component';
 import {AuthInterceptor} from "./_Guards/auth.interceptor";
 import {AuthGuard} from "./_Guards/auth.guard";
 import {ClarityModule} from "@clr/angular";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {InfoWizardComponent} from './User/info-wizard/info-wizard.component';
-import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
 import {LogoutButtonComponent} from './User/logout-button/logout-button.component';
 import {AlertComponent} from './alert/alert.component';
 import {UploadComponent} from './upload/upload.component';
+import { ApplicationsComponent } from './Forms/applications/applications.component';
+import { CpyRegistrationComponent } from './Forms/cpy-registration/cpy-registration.component';
+import { CpyRestructureComponent } from './Forms/cpy-restructure/cpy-restructure.component';
+import { OwnershipStakeComponent } from './Forms/ownership-stake/ownership-stake.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent,
     LoginButtonComponent,
     InfoWizardComponent,
     LogoutButtonComponent,
     AlertComponent,
-    UploadComponent
+    UploadComponent,
+    ApplicationsComponent,
+    CpyRegistrationComponent,
+    CpyRestructureComponent,
+    OwnershipStakeComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -41,8 +44,9 @@ import {UploadComponent} from './upload/upload.component';
     FormsModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
-      {path: 'counter', component: CounterComponent, canActivate: [AuthGuard]},
-      {path: 'fetch-data', canActivate: [CompleteUserAndAuthGuard], component: FetchDataComponent},
+      {path: 'apps', component: ApplicationsComponent},
+      // {path: 'counter', canActivate: [AuthGuard]},
+      // {path: 'fetch-data', canActivate: [CompleteUserAndAuthGuard]},
       {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent}
     ]),
     ReactiveFormsModule
