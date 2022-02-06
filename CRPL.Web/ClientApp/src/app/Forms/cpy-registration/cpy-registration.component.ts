@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {AbstractControl, FormBuilder, FormGroup} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {AuthService} from "../../_Services/auth.service";
+import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
 
 interface RightMeta
 {
@@ -43,7 +45,16 @@ export class CpyRegistrationComponent implements OnInit
   public CopyleftRights: string[] = ["authorship", "reproduce"];
   public WorkTypes: string[] = ["Image", "Video", "Sound", "PDF"];
 
-  constructor (private formBuilder: FormBuilder)
+  public OwnershipStakes: OwnershipStake[] = [];
+  OwnershipStake: FormControl = new FormControl([this.DefaultOwnershipStake()]);
+  external: OwnershipStake | null = null;
+  strings: string[] = ["", ""];
+
+  trackByIdx(index: number, obj: any): any {
+    return index;
+  }
+
+  constructor (private formBuilder: FormBuilder, public authService: AuthService)
   {
     this.RegistrationForm = formBuilder.group({
       Title: [''],
@@ -66,6 +77,8 @@ export class CpyRegistrationComponent implements OnInit
   ngOnInit (): void
   {
     this.selectRights(this.StandardRights);
+    this.OwnershipStakes.push(this.DefaultOwnershipStake());
+    this.OwnershipStakes.push({Owner: "", Share: 0});
   }
 
   private selectRights (rights: string[])
@@ -97,5 +110,24 @@ export class CpyRegistrationComponent implements OnInit
   ChangeWorkType ()
   {
 
+  }
+
+  DefaultOwnershipStake (): OwnershipStake
+  {
+    return {
+      Owner: this.authService.UserAccount.getValue().WalletPublicAddress,
+      Share: 100
+    }
+  }
+
+  PrintForm ()
+  {
+    console.log(this.RegistrationForm, this.OwnershipStake);
+  }
+
+  UpdateStake (index: number, stake: OwnershipStake)
+  {
+    console.log(index, stake, this.OwnershipStakes, this.OwnershipStakes[index]);
+    this.OwnershipStakes[index] = stake;
   }
 }

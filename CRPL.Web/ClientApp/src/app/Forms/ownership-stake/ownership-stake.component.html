@@ -1,0 +1,18 @@
+<div id="form-wrapper">
+  <form clrForm clrLayout="compact">
+    <clr-datalist-container>
+      <label>Sharholders address (wallet public address)</label>
+      <input clrDatalistInput [(ngModel)]="Owner" placeholder="wallet address" name="owner" />
+      <datalist>
+<!--        <option *ngFor="let item of items" [value]="item"></option>-->
+      </datalist>
+    </clr-datalist-container>
+
+    <clr-range-container [clrRangeHasProgress]="true">
+      <label>Number of shares</label> <input type="range" min="1" [max]="MaximumShares" clrRange name="share" [(ngModel)]="Share"/>
+      <clr-control-helper>{{Share}} share(s)</clr-control-helper>
+    </clr-range-container>
+  </form>
+</div>
+
+{{OwnershipStake | json}}

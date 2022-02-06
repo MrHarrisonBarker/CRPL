@@ -16,10 +16,10 @@ import {InfoWizardComponent} from './User/info-wizard/info-wizard.component';
 import {LogoutButtonComponent} from './User/logout-button/logout-button.component';
 import {AlertComponent} from './alert/alert.component';
 import {UploadComponent} from './upload/upload.component';
-import { ApplicationsComponent } from './Forms/applications/applications.component';
-import { CpyRegistrationComponent } from './Forms/cpy-registration/cpy-registration.component';
-import { CpyRestructureComponent } from './Forms/cpy-restructure/cpy-restructure.component';
-import { OwnershipStakeComponent } from './Forms/ownership-stake/ownership-stake.component';
+import {ApplicationsComponent} from './Forms/applications/applications.component';
+import {CpyRegistrationComponent} from './Forms/cpy-registration/cpy-registration.component';
+import {CpyRestructureComponent} from './Forms/cpy-restructure/cpy-restructure.component';
+import {OwnershipStakeComponent} from './Forms/ownership-stake/ownership-stake.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +44,7 @@ import { OwnershipStakeComponent } from './Forms/ownership-stake/ownership-stake
     FormsModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
-      {path: 'apps', component: ApplicationsComponent},
+      {path: 'apps', component: ApplicationsComponent, canActivate: [AuthGuard]},
       // {path: 'counter', canActivate: [AuthGuard]},
       // {path: 'fetch-data', canActivate: [CompleteUserAndAuthGuard]},
       {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent}
