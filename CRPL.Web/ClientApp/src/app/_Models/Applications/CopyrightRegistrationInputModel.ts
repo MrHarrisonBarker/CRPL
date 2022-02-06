@@ -1,5 +1,7 @@
 import {ApplicationInputModel} from "./ApplicationInputModel";
 import {OwnershipStake} from "../StructuredOwnership/OwnershipStake";
+import { CopyrightType } from "../CopyrightType";
+import { WorkType } from "../WorkType";
 
 export interface CopyrightRegistrationInputModel extends ApplicationInputModel
 {
@@ -8,4 +10,7 @@ export interface CopyrightRegistrationInputModel extends ApplicationInputModel
   WorkUri?: string;
   Legal?: string;
   OwnershipStakes?: OwnershipStake[];
+  Expires?: number;
+  CopyrightType?: CopyrightType;
+  WorkType?: WorkType;
 }
