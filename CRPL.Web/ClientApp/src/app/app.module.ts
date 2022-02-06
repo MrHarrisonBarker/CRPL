@@ -20,6 +20,7 @@ import {ApplicationsComponent} from './Forms/applications/applications.component
 import {CpyRegistrationComponent} from './Forms/cpy-registration/cpy-registration.component';
 import {CpyRestructureComponent} from './Forms/cpy-restructure/cpy-restructure.component';
 import {OwnershipStakeComponent} from './Forms/ownership-stake/ownership-stake.component';
+import { OwnershipStructureComponent } from './Forms/ownership-structure/ownership-structure.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import {OwnershipStakeComponent} from './Forms/ownership-stake/ownership-stake.c
     ApplicationsComponent,
     CpyRegistrationComponent,
     CpyRestructureComponent,
-    OwnershipStakeComponent
+    OwnershipStakeComponent,
+    OwnershipStructureComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

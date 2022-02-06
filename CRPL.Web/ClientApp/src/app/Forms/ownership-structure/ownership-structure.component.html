@@ -1,0 +1,24 @@
+<div id="total-shares">
+  <h4>There are a total of</h4>
+  <input clrInput name="totalShares" [(ngModel)]="TotalShares" type="=number"/>
+  <h4>shares avaliable</h4>
+</div>
+<p class="p3 text-muted"><em><b>(You need to use all shares for a valid ownership structure)</b></em></p>
+
+<ownership-stake-input [isDefault]="i == 0" [MaximumShares]="CalculateMaximumShares(i)" (ngModelChange)="StakeChanged(i)" [ngModel]="OwnershipStakes[i]" *ngFor="let x of OwnershipStakes; let i = index;trackBy:trackByIdx" (DestroyEmit)="DestroyStake(i)"></ownership-stake-input>
+
+<button (click)="AddStake()" class="btn">Add</button>
+
+<clr-alert clrAlertType="danger" [clrAlertClosable]="false" *ngIf="!IsOwnershipValid()">
+  <clr-alert-item>
+    <span class="alert-text">This share structure is invalid, make sure all shares are allocated</span>
+  </clr-alert-item>
+</clr-alert>
+
+<clr-alert clrAlertType="success" [clrAlertClosable]="false" *ngIf="IsOwnershipValid()">
+  <clr-alert-item>
+    <span class="alert-text">Share structure is valid all shares allocated</span>
+  </clr-alert-item>
+</clr-alert>
+
+{{OwnershipStakes | json}}

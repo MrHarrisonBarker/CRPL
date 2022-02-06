@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
-import {OwnershipStake, OwnershipStakeInput} from "../../_Models/StructuredOwnership/OwnershipStake";
+import {OwnershipStakeInput} from "../../_Models/StructuredOwnership/OwnershipStake";
 
 interface RightMeta
 {
@@ -44,14 +44,7 @@ export class CpyRegistrationComponent implements OnInit
   public PermissiveRights: string[] = ["authorship"];
   public CopyleftRights: string[] = ["authorship", "reproduce"];
   public WorkTypes: string[] = ["Image", "Video", "Sound", "PDF"];
-
   public OwnershipStakes: OwnershipStakeInput[] = [];
-  public TotalShares: number = 100;
-
-  public trackByIdx (index: number, obj: any): any
-  {
-    return index;
-  }
 
   constructor (private formBuilder: FormBuilder, public authService: AuthService)
   {
@@ -76,8 +69,6 @@ export class CpyRegistrationComponent implements OnInit
   public ngOnInit (): void
   {
     this.selectRights(this.StandardRights);
-    this.OwnershipStakes.push(this.DefaultOwnershipStake());
-    this.OwnershipStakes.push({Owner: "", Share: 1, Locked: false});
   }
 
   private selectRights (rights: string[]): void
@@ -109,51 +100,5 @@ export class CpyRegistrationComponent implements OnInit
   public ChangeWorkType (): void
   {
 
-  }
-
-  private DefaultOwnershipStake (): OwnershipStakeInput
-  {
-    return {
-      Owner: this.authService.UserAccount.getValue().WalletPublicAddress,
-      Share: 100,
-      Locked: false
-    }
-  }
-
-  public AddStake (): void
-  {
-    this.OwnershipStakes.push({Owner: "", Share: 1, Locked: false});
-  }
-
-  public DestroyStake (i: number): void
-  {
-    this.OwnershipStakes.splice(i, 1);
-    console.log("destroying", i, this.OwnershipStakes);
-  }
-
-  public IsOwnershipValid (): boolean
-  {
-    let count = 0;
-    for (let ownershipStake of this.OwnershipStakes)
-    {
-      count += ownershipStake.Share;
-    }
-    return count == this.TotalShares;
-  }
-
-  CalculateMaximumShares (i: number): number
-  {
-    if (this.OwnershipStakes[i].Locked) return this.OwnershipStakes[i].Share;
-
-    let areSomeLocked = this.OwnershipStakes.find(x => x.Locked);
-
-    if (areSomeLocked)
-    {
-      let lockedShares = this.OwnershipStakes.filter(x => x.Locked).map(x => x.Share);
-      let totalLockedShares = lockedShares.reduce((sum, current) => sum + current, 0);
-      return (this.TotalShares - totalLockedShares) - ((this.OwnershipStakes.length - lockedShares.length) - 1);
-    }
-
-    return this.TotalShares - (this.OwnershipStakes.length - 1);
   }
 }

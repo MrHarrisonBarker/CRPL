@@ -16,8 +16,8 @@
 
     <clr-textarea-container>
       <label>Legal notes</label> <textarea clrTextarea formControlName="Legal" name="legal" required></textarea>
+      <clr-control-error>This field cannot be empty!</clr-control-error>
     </clr-textarea-container>
-    <clr-control-error>This field cannot be empty!</clr-control-error>
 
     <clr-select-container>
       <label>Type of protection</label> <select clrSelect name="options" formControlName="ProtectionType" (ngModelChange)="ChangeCopyrightType()">
@@ -47,22 +47,16 @@
 
   </form>
 
+  <file-upload></file-upload>
+
   <h3>Ownership structure</h3>
   <hr>
 
-  <h4>There are a total of {{TotalShares}} shares avaliable</h4>
-  <p class="p3 text-muted"><em><b>(You need to use all shares for a valid ownership structure)</b></em></p>
+  <ownership-structure-input [(ngModel)]="OwnershipStakes"></ownership-structure-input>
 
-  <ownership-stake-input [isDefault]="i == 0" [MaximumShares]="CalculateMaximumShares(i)" [(ngModel)]="OwnershipStakes[i]" *ngFor="let x of OwnershipStakes; let i = index;trackBy:trackByIdx" (DestroyEmit)="DestroyStake(i)"></ownership-stake-input>
-  <button (click)="AddStake()" class="btn">Add</button>
-
-  <file-upload></file-upload>
+  {{OwnershipStakes | json}}
 
   <clr-checkbox-wrapper>
     <input type="checkbox" clrCheckbox name="ula" required value="ula" [(ngModel)]="AcceptedUla"/> <label>accept ula</label>
   </clr-checkbox-wrapper>
-
-  <span>{{RegistrationForm.value | json}}</span>
-  <span>{{OwnershipStakes | json}}</span>
-  <h1>{{IsOwnershipValid()}}</h1>
 </div>
