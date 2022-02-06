@@ -1,7 +1,7 @@
 <form [formGroup]="Form">
   <div id="total-shares">
     <h4>There are a total of</h4>
-    <input clrInput name="totalShares" type="=number"/>
+    <input clrInput name="totalShares" type="=number" formControlName="TotalShares"/>
     <h4>shares avaliable</h4>
   </div>
   <p class="p3 text-muted"><em><b>(You need to use all shares for a valid ownership structure)</b></em></p>
@@ -14,13 +14,13 @@
 
   <button (click)="AddStake()" class="btn">Add</button>
 
-  <clr-alert clrAlertType="danger" [clrAlertClosable]="false" *ngIf="StakeArray.invalid">
+  <clr-alert clrAlertType="danger" [clrAlertClosable]="false" *ngIf="StakeArray.hasError('InvalidShareStructure')">
     <clr-alert-item>
       <span class="alert-text">This share structure is invalid, make sure all shares are allocated</span>
     </clr-alert-item>
   </clr-alert>
 
-  <clr-alert clrAlertType="success" [clrAlertClosable]="false" *ngIf="StakeArray.valid">
+  <clr-alert clrAlertType="success" [clrAlertClosable]="false" *ngIf="!StakeArray.hasError('InvalidShareStructure')">
     <clr-alert-item>
       <span class="alert-text">Share structure is valid all shares allocated</span>
     </clr-alert-item>
@@ -33,3 +33,5 @@
 errors
 
 {{Form.errors | json}}
+
+{{StakeArray.errors | json}}
