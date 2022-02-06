@@ -1,5 +1,5 @@
 <div id="form-wrapper">
-  <form clrForm clrLayout="compact" [formGroup]="RegistrationForm">
+  <form clrForm clrLayout="compact" [formGroup]="RegistrationForm" clrLabelSize="4">
     <clr-input-container>
       <label class="clr-control-label">Title</label> <input clrInput name="title" required formControlName="Title"/>
       <clr-control-error>This field cannot be empty!</clr-control-error>
@@ -47,7 +47,14 @@
 
   </form>
 
-  <ownership-stake-input [(ngModel)]="OwnershipStakes[i]" *ngFor="let x of OwnershipStakes; let i = index;trackBy:trackByIdx"></ownership-stake-input>
+  <h3>Ownership structure</h3>
+  <hr>
+
+  <h4>There are a total of {{TotalShares}} shares avaliable</h4>
+  <p class="p3 text-muted"><em><b>(You need to use all shares for a valid ownership structure)</b></em></p>
+
+  <ownership-stake-input [isDefault]="i == 0" [MaximumShares]="CalculateMaximumShares(i)" [(ngModel)]="OwnershipStakes[i]" *ngFor="let x of OwnershipStakes; let i = index;trackBy:trackByIdx" (DestroyEmit)="DestroyStake(i)"></ownership-stake-input>
+  <button (click)="AddStake()" class="btn">Add</button>
 
   <file-upload></file-upload>
 
@@ -55,8 +62,7 @@
     <input type="checkbox" clrCheckbox name="ula" required value="ula" [(ngModel)]="AcceptedUla"/> <label>accept ula</label>
   </clr-checkbox-wrapper>
 
-  <button (click)="PrintForm()">Print</button>
-
   <span>{{RegistrationForm.value | json}}</span>
   <span>{{OwnershipStakes | json}}</span>
+  <h1>{{IsOwnershipValid()}}</h1>
 </div>

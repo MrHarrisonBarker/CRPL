@@ -1,18 +1,21 @@
 <div id="form-wrapper">
-  <form clrForm clrLayout="compact">
+  <form clrForm clrLayout="compact" clrLabelSize="4">
     <clr-datalist-container>
       <label>Sharholders address (wallet public address)</label>
-      <input clrDatalistInput [(ngModel)]="Owner" placeholder="wallet address" name="owner" />
+      <input clrDatalistInput [(ngModel)]="Owner" placeholder="wallet address" name="owner" [disabled]="OwnershipStake.Locked"/>
       <datalist>
 <!--        <option *ngFor="let item of items" [value]="item"></option>-->
       </datalist>
     </clr-datalist-container>
 
     <clr-range-container [clrRangeHasProgress]="true">
-      <label>Number of shares</label> <input type="range" min="1" [max]="MaximumShares" clrRange name="share" [(ngModel)]="Share"/>
+      <label>Number of shares</label> <input type="range" min="1" [max]="MaximumShares" clrRange name="share" [(ngModel)]="Share" [disabled]="OwnershipStake.Locked"/>
       <clr-control-helper>{{Share}} share(s)</clr-control-helper>
     </clr-range-container>
   </form>
+  <button [disabled]="isDefault" (click)="Remove()" class="btn btn-danger">-</button>
+  <button (click)="Lock()" class="btn" [disabled]="OwnershipStake.Locked">Lock</button>
+  <button (click)="UnLock()" class="btn" [disabled]="!OwnershipStake.Locked">Un-Lock</button>
 </div>
 
 {{OwnershipStake | json}}

@@ -18,3 +18,7 @@ code {
 .alert {
   z-index: 999999;
 }
+
+.text-muted {
+  color: #999999 !important;
+}

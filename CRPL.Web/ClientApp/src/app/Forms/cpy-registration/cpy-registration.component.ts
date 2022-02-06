@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
-import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
+import {OwnershipStake, OwnershipStakeInput} from "../../_Models/StructuredOwnership/OwnershipStake";
 
 interface RightMeta
 {
@@ -45,12 +45,11 @@ export class CpyRegistrationComponent implements OnInit
   public CopyleftRights: string[] = ["authorship", "reproduce"];
   public WorkTypes: string[] = ["Image", "Video", "Sound", "PDF"];
 
-  public OwnershipStakes: OwnershipStake[] = [];
-  OwnershipStake: FormControl = new FormControl([this.DefaultOwnershipStake()]);
-  external: OwnershipStake | null = null;
-  strings: string[] = ["", ""];
+  public OwnershipStakes: OwnershipStakeInput[] = [];
+  public TotalShares: number = 100;
 
-  trackByIdx(index: number, obj: any): any {
+  public trackByIdx (index: number, obj: any): any
+  {
     return index;
   }
 
@@ -74,14 +73,14 @@ export class CpyRegistrationComponent implements OnInit
     });
   }
 
-  ngOnInit (): void
+  public ngOnInit (): void
   {
     this.selectRights(this.StandardRights);
     this.OwnershipStakes.push(this.DefaultOwnershipStake());
-    this.OwnershipStakes.push({Owner: "", Share: 0});
+    this.OwnershipStakes.push({Owner: "", Share: 1, Locked: false});
   }
 
-  private selectRights (rights: string[])
+  private selectRights (rights: string[]): void
   {
     this.RegistrationForm.controls['Rights'].reset();
     for (let right in rights)
@@ -91,7 +90,7 @@ export class CpyRegistrationComponent implements OnInit
     }
   }
 
-  public ChangeCopyrightType ()
+  public ChangeCopyrightType (): void
   {
     switch (this.RegistrationForm.value.ProtectionType)
     {
@@ -107,27 +106,54 @@ export class CpyRegistrationComponent implements OnInit
     }
   }
 
-  ChangeWorkType ()
+  public ChangeWorkType (): void
   {
 
   }
 
-  DefaultOwnershipStake (): OwnershipStake
+  private DefaultOwnershipStake (): OwnershipStakeInput
   {
     return {
       Owner: this.authService.UserAccount.getValue().WalletPublicAddress,
-      Share: 100
+      Share: 100,
+      Locked: false
     }
   }
 
-  PrintForm ()
+  public AddStake (): void
   {
-    console.log(this.RegistrationForm, this.OwnershipStake);
+    this.OwnershipStakes.push({Owner: "", Share: 1, Locked: false});
   }
 
-  UpdateStake (index: number, stake: OwnershipStake)
+  public DestroyStake (i: number): void
   {
-    console.log(index, stake, this.OwnershipStakes, this.OwnershipStakes[index]);
-    this.OwnershipStakes[index] = stake;
+    this.OwnershipStakes.splice(i, 1);
+    console.log("destroying", i, this.OwnershipStakes);
+  }
+
+  public IsOwnershipValid (): boolean
+  {
+    let count = 0;
+    for (let ownershipStake of this.OwnershipStakes)
+    {
+      count += ownershipStake.Share;
+    }
+    return count == this.TotalShares;
+  }
+
+  CalculateMaximumShares (i: number): number
+  {
+    if (this.OwnershipStakes[i].Locked) return this.OwnershipStakes[i].Share;
+
+    let areSomeLocked = this.OwnershipStakes.find(x => x.Locked);
+
+    if (areSomeLocked)
+    {
+      let lockedShares = this.OwnershipStakes.filter(x => x.Locked).map(x => x.Share);
+      let totalLockedShares = lockedShares.reduce((sum, current) => sum + current, 0);
+      return (this.TotalShares - totalLockedShares) - ((this.OwnershipStakes.length - lockedShares.length) - 1);
+    }
+
+    return this.TotalShares - (this.OwnershipStakes.length - 1);
   }
 }

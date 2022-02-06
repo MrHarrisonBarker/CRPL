@@ -57,7 +57,7 @@ describe('AuthGuard', () =>
 
     guard.canActivate({} as ActivatedRouteSnapshot, <RouterStateSnapshot>{url: 'testUrl'}).subscribe(res =>
     {
-      expect(routerMock.navigate).toHaveBeenCalledOnceWith(['/']);
+      expect(routerMock.navigate).toHaveBeenCalledWith(['/']);
       expect(res).toBeFalsy();
     });
 
