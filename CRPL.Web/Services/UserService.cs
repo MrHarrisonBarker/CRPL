@@ -72,6 +72,11 @@ public class UserService : IUserService
         return userAccounts.Count == userAddresses.Count;
     }
 
+    public async Task<List<UserAccountMinimalViewModel>> SearchUsers(string address)
+    {
+        return await Context.UserAccounts.Where(x => x.Wallet.PublicAddress.Contains(address.ToLower())).Select(x => Mapper.Map<UserAccountMinimalViewModel>(x)).ToListAsync();
+    }
+
     public async Task<UserAccountStatusModel> UpdateAccount(Guid accountId, AccountInputModel accountInputModel)
     {
         Logger.LogInformation("Updating account {Id}", accountId);

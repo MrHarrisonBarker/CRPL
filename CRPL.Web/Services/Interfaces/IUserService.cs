@@ -15,6 +15,7 @@ public interface IUserService
     public Task<bool> IsUniquePhoneNumber(string phoneNumber);
     public Task<bool> IsUniqueEmail(string email);
     public bool AreUsersReal(List<string> userAddresses);
+    public Task<List<UserAccountMinimalViewModel>> SearchUsers(string address);
 
     // +----------------------+
     // -------- Updates ------+

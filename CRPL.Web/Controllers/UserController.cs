@@ -133,4 +133,18 @@ public class UserController : ControllerBase
             throw;
         }
     }
+
+    [HttpGet("search/{address}")]
+    public async Task<List<UserAccountMinimalViewModel>> Search(string address)
+    {
+        try
+        {
+            return await UserService.SearchUsers(address);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when searching for users by address");
+            throw;
+        }
+    }
 }

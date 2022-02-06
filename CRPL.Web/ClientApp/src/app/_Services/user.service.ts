@@ -7,6 +7,7 @@ import {AuthService} from "./auth.service";
 import {AccountInputModel} from "../_Models/Account/AccountInputModel";
 import {catchError, tap} from "rxjs/operators";
 import {AlertService} from "./alert.service";
+import {UserAccountMinimalViewModel} from "../_Models/Account/UserAccountMinimalViewModel";
 
 @Injectable({
   providedIn: 'root'
@@ -46,5 +47,10 @@ export class UserService
   public IsEmailUnique (email: string): Observable<boolean>
   {
     return this.http.get<boolean>(this.BaseUrl + UserPaths.EmailExists, {params: new HttpParams().set('email', email)});
+  }
+
+  public Search(address: string) : Observable<UserAccountMinimalViewModel[]>
+  {
+    return this.http.get<UserAccountMinimalViewModel[]>(this.BaseUrl + UserPaths.Search + "/" + encodeURI(address));
   }
 }
