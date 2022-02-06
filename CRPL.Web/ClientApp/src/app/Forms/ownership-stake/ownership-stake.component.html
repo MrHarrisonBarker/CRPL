@@ -1,21 +1,25 @@
 <div id="form-wrapper">
-  <form clrForm clrLayout="compact" clrLabelSize="4" [formGroup]="Form">
-    <clr-datalist-container>
-      <label>Sharholders address (wallet public address)</label>
-      <input clrDatalistInput formControlName="Owner" placeholder="wallet address" name="owner" autocomplete="off" required/>
-      <datalist>
-<!--        <option *ngFor="let user of LikeUsers" [value]="user.WalletPublicAddress">{{user.FirstName}} {{user.LastName}}</option>-->
-      </datalist>
-      <clr-control-error>This field cannot be empty!</clr-control-error>
-    </clr-datalist-container>
+  <form clrForm clrLayout="compact" [formGroup]="Form" clrLabelSize="4">
+    <clr-input-container>
+      <label class="clr-control-label">Sharholders address (wallet public address)</label>
+      <input clrInput placeholder="Wallet address" name="owner" formControlName="Owner" autocomplete="off" required/>
+      <clr-control-error *ngIf="Form.controls['Owner'].hasError('required')">This field cannot be empty!</clr-control-error>
+      <clr-control-error *ngIf="Form.controls['Owner'].hasError('NotRealShareholder')">The address has to be registered with us!</clr-control-error>
+    </clr-input-container>
+
+    {{Form.controls['Owner'].errors | json}}
 
     <clr-range-container [clrRangeHasProgress]="true">
-      <label>Number of shares</label> <input type="range" min="1" [max]="MaximumShares" clrRange name="share" formControlName="Share" required/>
+      <label class="clr-control-label">Number of shares</label> <input type="range" min="1" [max]="MaximumShares" clrRange name="share" formControlName="Share" required/>
       <clr-control-helper>{{Form.value['Share']}} share(s)</clr-control-helper>
     </clr-range-container>
+
+    {{Form.controls['Share'].errors | json}}
   </form>
 
   <button [disabled]="isDefault" (click)="Remove()" class="btn btn-danger">-</button>
   <button (click)="Lock()" class="btn" [disabled]="Form.disabled">Lock</button>
   <button (click)="UnLock()" class="btn" [disabled]="Form.enabled">Un-Lock</button>
 </div>
+
+{{Form.errors | json}}

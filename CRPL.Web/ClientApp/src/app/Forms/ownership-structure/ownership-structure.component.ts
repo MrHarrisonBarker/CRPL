@@ -1,10 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../_Services/auth.service";
 import {
-  AbstractControl,
-  Form,
-  FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators
+  AbstractControl, FormArray,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
 } from "@angular/forms";
+import {ValidatorsService} from "../../_Services/validators.service";
 
 function ShareStructureValidator() : ValidatorFn
 {
@@ -26,7 +30,7 @@ export class OwnershipStructureComponent implements OnInit
 {
   public Form: FormGroup;
 
-  constructor (private authService: AuthService, private fb: FormBuilder)
+  constructor (private authService: AuthService, private fb: FormBuilder, private validatorService: ValidatorsService)
   {
     this.Form = fb.group({
       TotalShares: [100, [Validators.required]],
@@ -37,7 +41,7 @@ export class OwnershipStructureComponent implements OnInit
   private constructStakeGroup (owner: string = ''): FormGroup
   {
     return this.fb.group({
-      Owner: [owner, [Validators.required]],
+      Owner: [owner, [Validators.required], [this.validatorService.RealShareholderValidator()]],
       Share: [1, [Validators.required]]
     })
   }

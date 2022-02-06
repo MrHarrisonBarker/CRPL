@@ -45,11 +45,21 @@ export class ValidatorsService
   {
     return (control: AbstractControl): { [key: string]: any } | null =>
     {
-      if (control.parent) {
+      if (control.parent)
+      {
         console.log("checking if one")
         return isEmptyInputValue(control.value) && isEmptyInputValue(control.parent.value.PhoneNumber) ? {hasNoContact: true} : null;
       }
       return null;
     };
+  }
+
+  public RealShareholderValidator (): AsyncValidatorFn
+  {
+    return (control: AbstractControl): Observable<ValidationErrors | null> =>
+    {
+      console.log("validating shareholder");
+      return this.userService.Search(control.value).pipe(map(x => x.length == 1 ? null : {'NotRealShareholder': true}));
+    }
   }
 }

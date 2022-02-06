@@ -1,12 +1,5 @@
-import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {
-  AbstractControl,
-  ControlValueAccessor, FormArray, FormGroup,
-  NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors
-} from "@angular/forms";
-import {OwnershipStake, OwnershipStakeInput} from "../../_Models/StructuredOwnership/OwnershipStake";
-import {UserService} from "../../_Services/user.service";
-import {UserAccountMinimalViewModel} from "../../_Models/Account/UserAccountMinimalViewModel";
+import {Component, Input, OnInit} from '@angular/core';
+import {FormArray, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'ownership-stake-input',
@@ -15,24 +8,20 @@ import {UserAccountMinimalViewModel} from "../../_Models/Account/UserAccountMini
 })
 export class OwnershipStakeComponent implements OnInit
 {
-  @Input() Index!: number;
+  @Input() public Index!: number;
   @Input() public Form!: FormGroup;
-
-  @Input() isDefault: boolean = false;
-  @Input() MaximumShares: number = 100;
-
-  // @Output() DestroyEmit: EventEmitter<any> = new EventEmitter<any>();
+  @Input() public isDefault: boolean = false;
 
   ngOnInit (): void
   {
     console.log("loaded stake!", this.Form)
   }
 
-  constructor (private userService: UserService)
+  constructor ()
   {
   }
 
-  get IsValid()
+  get IsValid ()
   {
     return false;
   }
@@ -52,5 +41,10 @@ export class OwnershipStakeComponent implements OnInit
   {
     this.Form.enable();
     console.log(this.Form);
+  }
+
+  get MaximumShares ()
+  {
+    return ((this.Form.parent as FormArray).parent as FormGroup).value.TotalShares;
   }
 }
