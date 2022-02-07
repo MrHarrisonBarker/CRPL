@@ -13,3 +13,8 @@ public class CopyrightRegistrationViewModel : ApplicationViewModel
     public int YearsExpire { get; set; }
     public List<OwnershipStake> OwnershipStakes { get; set; }
 }
+
+public class CopyrightRegistrationViewModelWithoutAssociated : ApplicationViewModelWithoutAssociated
+{
+    
+}

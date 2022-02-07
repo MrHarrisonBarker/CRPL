@@ -1,5 +1,6 @@
 using AutoMapper;
 using CRPL.Data.Account;
+using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,13 +19,14 @@ public class CopyrightService : ICopyrightService
         Mapper = mapper;
     }
 
-    public async Task<List<RegisteredWorkViewModel>> GetUsersWorks(Guid id)
+    public async Task<List<RegisteredWorkWithAppsViewModel>> GetUsersWorks(Guid id)
     {
         Logger.LogInformation("Getting {Id}'s works", id);
         var works = await Context.RegisteredWorks
+            .Include(x => x.AssociatedApplication)
             .Include(x => x.UserWorks)
             .Where(x => x.UserWorks.Any(u => u.UserId == id)).ToListAsync();
-
-        return works.Select(x => Mapper.Map<RegisteredWorkViewModel>(x)).ToList();
+        
+        return works.Select(x => Mapper.Map<RegisteredWorkWithAppsViewModel>(x)).ToList();
     }
 }

@@ -1,5 +1,6 @@
 import {UserAccountMinimalViewModel} from "../Account/UserAccountMinimalViewModel";
 import {ApplicationStatus} from "./ApplicationStatus";
+import {RegisteredWorkViewModel} from "../Works/RegisteredWork";
 
 export enum ApplicationType
 {
@@ -17,4 +18,5 @@ export interface ApplicationViewModel
   Modified: Date;
   Status: ApplicationStatus;
   AssociatedUsers: UserAccountMinimalViewModel[];
+  AssociatedWork?: RegisteredWorkViewModel;
 }

@@ -56,7 +56,9 @@ public class FormsService : IFormsService
     public async Task<List<ApplicationViewModel>> GetMyApplications(Guid userId)
     {
         Logger.LogInformation("Getting all application for {Id}", userId);
-        return await Context.Applications.Include(x => x.AssociatedUsers)
+        return await Context.Applications
+            .Include(x => x.AssociatedWork)
+            .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
             .Where(x => x.AssociatedUsers.Any(u => u.UserId == userId))
             .Select(x => x.Map(Mapper)).ToListAsync();
     }

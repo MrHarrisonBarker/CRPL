@@ -23,7 +23,7 @@ public class RegisteredWork
     public List<Application> AssociatedApplication { get; set; }
 }
 
-public class RegisteredWorkViewModel
+public class RegisteredWorkWithAppsViewModel
 {
     public Guid Id { get; set; }
     public DateTime Created { get; set; }
@@ -32,5 +32,5 @@ public class RegisteredWorkViewModel
     public string? RightId { get; set; }
     public byte[]? Hash { get; set; }
     public string? RegisteredTransactionId { get; set; }
-    public List<ApplicationViewModel> AssociatedApplication { get; set; }
+    public List<ApplicationViewModelWithoutAssociated> AssociatedApplication { get; set; }
 }

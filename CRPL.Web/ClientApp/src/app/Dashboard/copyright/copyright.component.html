@@ -1,4 +1,4 @@
-<p>copyright works!</p>{{Copyright | json}}
+{{Copyright | json}}
 <div id="copyright-card">
   <div class="card">
     <div class="card-header">
@@ -7,12 +7,16 @@
     <div class="card-block">
       <div class="card-title">{{Copyright.Id}}</div>
       <div class="card-text" id="copyright-info">
+        <span>{{Copyright.RegisteredTransactionId}}</span>
         <span><b>Work hash</b> {{Copyright.Hash | slice:0:20}}...</span>
         <span><em><b>Registered on</b> {{Copyright.Registered | date}}</em></span>
         <span><b>Copyright id</b> {{Copyright.RightId}}</span>
         <br>
         GET data from blockchain and inject
       </div>
+
+      {{Copyright.AssociatedApplication | json}}
+
     </div>
     <div class="card-footer">
       <button class="btn btn-sm">Restructure ownership</button>

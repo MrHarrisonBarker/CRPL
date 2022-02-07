@@ -34,7 +34,7 @@ public class CopyrightController : ControllerBase
     }
 
     [HttpGet("my/{id}")]
-    public async Task<List<RegisteredWorkViewModel>> GetMy(Guid id)
+    public async Task<List<RegisteredWorkWithAppsViewModel>> GetMy(Guid id)
     {
         try
         {
