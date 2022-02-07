@@ -5,7 +5,7 @@
       <clr-control-error>This field cannot be empty!</clr-control-error>
     </clr-input-container>
 
-    <clr-input-container type="compact">
+    <clr-input-container>
       <label class="clr-control-label">Uri to work</label> <input clrInput name="uri" formControlName="WorkUri"/>
     </clr-input-container>
 
@@ -45,20 +45,20 @@
     </select>
     </clr-select-container>
 
+    <file-upload [Form]="WorkHash"></file-upload>
+
+    <h3>Ownership structure</h3>
+    <hr>
+
+    <ownership-structure-input [Form]="OwnershipStructure"></ownership-structure-input>
+
+    {{RegistrationForm.value | json}}
+
+    <clr-checkbox-wrapper>
+      <input type="checkbox" clrCheckbox name="ula" required value="ula" formControlName="AcceptedUla"/> <label>accept ula</label>
+    </clr-checkbox-wrapper>
+
+    <button (click)="Update()" class="btn">Save</button>
+    <button class="btn btn-primary" [disabled]="RegistrationForm.invalid">Submit</button>
   </form>
-
-  <file-upload></file-upload>
-
-  <h3>Ownership structure</h3>
-  <hr>
-
-  <ownership-structure-input></ownership-structure-input>
-
-  {{OwnershipStakes | json}}
-
-  <clr-checkbox-wrapper>
-    <input type="checkbox" clrCheckbox name="ula" required value="ula" [(ngModel)]="AcceptedUla"/> <label>accept ula</label>
-  </clr-checkbox-wrapper>
-
-  <button (click)="Update()" class="btn">Update</button>
 </div>

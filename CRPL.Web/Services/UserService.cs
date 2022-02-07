@@ -169,6 +169,12 @@ public class UserService : IUserService
         Context.UserAccounts.Update(user);
 
         if (user.Applications == null) user.Applications = new List<UserApplication>();
+
+        if (user.Applications.FirstOrDefault(x => x.ApplicationId == applicationId) != null)
+        {
+            Logger.LogInformation("User already assigned, skipping...");
+            return;
+        }
         
         user.Applications.Add(new UserApplication()
         {

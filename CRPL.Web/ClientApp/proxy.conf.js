@@ -7,7 +7,8 @@ const PROXY_CONFIG = [
   {
     context: [
       "/user",
-      "/works"
+      "/works",
+      "/forms"
    ],
     target: target,
     secure: false

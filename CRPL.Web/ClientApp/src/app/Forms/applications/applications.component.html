@@ -1,3 +1,7 @@
+<div id="application-list">
+  <a *ngFor="let application of Applications" [routerLink]="['/application',application.Id]">{{application.Id}}</a>
+</div>
+
 <div id="drop-div">
   <select clrSelect name="options" [(ngModel)]="selected">
     <option value="reg">Register</option>

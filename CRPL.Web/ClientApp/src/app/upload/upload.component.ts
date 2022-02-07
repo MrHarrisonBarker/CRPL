@@ -1,8 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {WorksService} from "../_Services/works.service";
 import {HttpEventType} from "@angular/common/http";
 import {DownloadFile} from "../utils";
 import {AlertService} from "../_Services/alert.service";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'file-upload',
@@ -11,6 +12,8 @@ import {AlertService} from "../_Services/alert.service";
 })
 export class UploadComponent implements OnInit
 {
+  @Input() public Form!: FormControl;
+
   public CurrentFile: File = null as any;
   public CurrentProgress: number = 0;
   public FinishedUpload: boolean = false;
@@ -26,6 +29,7 @@ export class UploadComponent implements OnInit
 
   ngOnInit (): void
   {
+    console.log("loaded upload", this.Form);
   }
 
   public onFileChange (fileInputEvent: Event): void
@@ -54,6 +58,7 @@ export class UploadComponent implements OnInit
           this.CurrentProgress = 100;
           this.FinishedUpload = true;
           this.WorkHash = event.body;
+          this.Form.setValue(this.WorkHash);
           console.log("Current work hash", this.WorkHash);
         }
       }, error => this.UploadError = error.error, () => this.alertService.StopLoading());

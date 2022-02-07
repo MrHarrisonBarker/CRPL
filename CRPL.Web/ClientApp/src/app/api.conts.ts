@@ -9,6 +9,7 @@ let worksPaths: WorksPaths = {
 }
 
 let formsPaths: FormsPaths = {
+  GetMy: "",
   CopyrightRegistrationSubmit: "",
   CopyrightRegistration: "",
   BasePath: "forms"
@@ -17,7 +18,8 @@ let formsPaths: FormsPaths = {
 formsPaths = {
   ...formsPaths,
   CopyrightRegistration: formsPaths.BasePath + "/copyright/registration",
-  CopyrightRegistrationSubmit: formsPaths.BasePath + "/copyright/submit/registration"
+  CopyrightRegistrationSubmit: formsPaths.BasePath + "/copyright/submit/registration",
+  GetMy: formsPaths.BasePath + "/users"
 }
 
 userPaths = {
@@ -52,6 +54,7 @@ interface FormsPaths {
   readonly BasePath: string;
   readonly CopyrightRegistration: string;
   readonly CopyrightRegistrationSubmit: string;
+  readonly GetMy: string;
 }
 
 export const UserPaths: UserPaths = userPaths;

@@ -1,11 +1,13 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {Form, FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
-import {OwnershipStake, OwnershipStakeInput} from "../../_Models/StructuredOwnership/OwnershipStake";
+import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
 import {FormsService} from "../../_Services/forms.service";
 import {WorkType} from "../../_Models/WorkType";
-import {CopyrightType} from "../../_Models/CopyrightType";
 import {CopyrightRegistrationInputModel} from "../../_Models/Applications/CopyrightRegistrationInputModel";
+import {ValidatorsService} from "../../_Services/validators.service";
+import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
+import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 
 interface RightMeta
 {
@@ -20,7 +22,7 @@ interface RightMeta
 })
 export class CpyRegistrationComponent implements OnInit
 {
-  @Input() ExistingApplication: string | undefined;
+  @Input() ExistingApplication!: ApplicationViewModel;
   public RegistrationForm: FormGroup;
   public AcceptedUla: boolean = false;
 
@@ -48,17 +50,20 @@ export class CpyRegistrationComponent implements OnInit
   public PermissiveRights: string[] = ["authorship"];
   public CopyleftRights: string[] = ["authorship", "reproduce"];
   public WorkTypes: string[] = Object.values(WorkType).filter(value => typeof value != 'number') as string[];
-  public OwnershipStakes: OwnershipStakeInput[] = [];
 
-  constructor (private formBuilder: FormBuilder, public authService: AuthService, private formsService: FormsService)
+  constructor (
+    private formBuilder: FormBuilder,
+    public authService: AuthService,
+    private formsService: FormsService,
+    private validatorService: ValidatorsService)
   {
     this.RegistrationForm = formBuilder.group({
-      Title: [''],
-      WorkHash: [''],
-      WorkUri: [''],
+      Title: ['', [Validators.required]],
+      WorkHash: ['', [Validators.required]],
+      WorkUri: ['', [Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?')]],
       Legal: [''],
-      Expires: [100],
-      ProtectionType: ['Standard'],
+      Expires: [100, [Validators.required, Validators.max(100), Validators.min(1)]],
+      ProtectionType: ['Standard', [Validators.required]],
       Rights: formBuilder.group({
         authorship: [false],
         reproduce: [false],
@@ -66,12 +71,38 @@ export class CpyRegistrationComponent implements OnInit
         adapt: [false],
         changeOfOwnership: [false]
       }),
-      WorkType: ['Image']
+      WorkType: ['Image', [Validators.required]],
+      OwnershipStructure: this.formBuilder.group({
+        TotalShares: [100, [Validators.required]],
+        Stakes: this.formBuilder.array([this.formBuilder.group({
+          Owner: ['', [Validators.required], [this.validatorService.RealShareholderValidator()]],
+          Share: [1, [Validators.required, Validators.min(1)]]
+        })], [this.validatorService.ShareStructureValidator()])
+      }),
+      AcceptedUla: [false, [Validators.required]]
     });
+  }
+
+  get OwnershipStructure (): FormGroup
+  {
+    return this.RegistrationForm.controls.OwnershipStructure as FormGroup;
+  }
+
+  get WorkHash (): FormControl
+  {
+    return this.RegistrationForm.controls.WorkHash as FormControl;
   }
 
   public ngOnInit (): void
   {
+    if (this.ExistingApplication)
+    {
+      console.log("application is existing", this.ExistingApplication);
+      this.populateForm();
+    } else {
+      (this.OwnershipStructure.controls.Stakes as FormArray).patchValue([{Owner: this.authService.UserAccount.getValue().WalletPublicAddress, Share: 100}])
+    }
+
     this.selectRights(this.StandardRights);
   }
 
@@ -108,18 +139,45 @@ export class CpyRegistrationComponent implements OnInit
 
   public Update (): void
   {
+    let ownership: OwnershipStake[] = this.OwnershipStructure.controls.Stakes.value;
+
+    console.log(ownership);
+
     let inputModel: CopyrightRegistrationInputModel = {
       Title: this.RegistrationForm.value.Title,
       WorkUri: this.RegistrationForm.value.WorkUri,
-      Id: this.ExistingApplication != undefined ? this.ExistingApplication : undefined,
-      OwnershipStakes: this.OwnershipStakes.map(x => ({Owner: x.Owner, Share: x.Share}) as OwnershipStake),
+      Id: this.ExistingApplication != undefined ? this.ExistingApplication.Id : undefined,
+      OwnershipStakes: ownership,
       WorkType: this.RegistrationForm.value.WorkType,
       Expires: this.RegistrationForm.value.Expires,
-      CopyrightType: this.RegistrationForm.value.ProtectionType
+      CopyrightType: this.RegistrationForm.value.ProtectionType,
+      Legal: this.RegistrationForm.value.Legal,
+      WorkHash: this.RegistrationForm.value.WorkHash
     }
 
     console.log(inputModel);
 
-    // this.formsService.UpdateCopyrightRegistration().subscribe(x => console.log("updated copyright registration form", x))
+    this.formsService.UpdateCopyrightRegistration(inputModel).subscribe(x => console.log("updated copyright registration form", x))
+  }
+
+  private populateForm (): void
+  {
+    let model = this.ExistingApplication = this.ExistingApplication as CopyrightRegistrationViewModel;
+    this.RegistrationForm.patchValue({
+      Title: model.Title,
+      WorkHash: model.WorkHash,
+      WorkUri: model.WorkUri,
+      Legal: model.Legal,
+      Expires: 0,
+      ProtectionType: model.CopyrightType,
+      WorkType: model.WorkType,
+    });
+
+    this.OwnershipStructure.patchValue({
+      TotalShares: model.OwnershipStakes.map(x => x.Share).reduce((previousValue, currentValue) => previousValue + currentValue),
+      Stakes: model.OwnershipStakes
+    });
+
+    console.log('populated form', this.RegistrationForm.value);
   }
 }

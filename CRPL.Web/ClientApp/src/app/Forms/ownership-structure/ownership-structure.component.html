@@ -1,12 +1,10 @@
 <form [formGroup]="Form">
-  <div id="total-shares">
-    <h4>There are a total of</h4>
-    <input clrInput name="totalShares" type="=number" formControlName="TotalShares"/>
-    <h4>shares avaliable</h4>
-  </div>
-  <p class="p3 text-muted"><em><b>(You need to use all shares for a valid ownership structure)</b></em></p>
 
-<!--  <ownership-stake-input [isDefault]="i == 0" [MaximumShares]="CalculateMaximumShares(i)" (ngModelChange)="StakeChanged(i)" [ngModel]="OwnershipStakes[i]" *ngFor="let x of OwnershipStakes; let i = index;trackBy:trackByIdx" (DestroyEmit)="DestroyStake(i)"></ownership-stake-input>-->
+  <clr-input-container>
+    <label class="clr-control-label">Total shares</label> <input clrInput name="totalShares" type="=number" formControlName="TotalShares"/>
+  </clr-input-container>
+
+  <p class="p3 text-muted"><em><b>(You need to use all shares for a valid ownership structure)</b></em></p>
 
   <div formArrayName="Stakes" *ngFor="let stake of Stakes; let i = index">
     <ownership-stake-input [isDefault]="i==0" [Index]="i" [Form]="stake"></ownership-stake-input>

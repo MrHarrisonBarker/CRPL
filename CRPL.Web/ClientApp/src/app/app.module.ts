@@ -21,6 +21,7 @@ import {CpyRegistrationComponent} from './Forms/cpy-registration/cpy-registratio
 import {CpyRestructureComponent} from './Forms/cpy-restructure/cpy-restructure.component';
 import {OwnershipStakeComponent} from './Forms/ownership-stake/ownership-stake.component';
 import { OwnershipStructureComponent } from './Forms/ownership-structure/ownership-structure.component';
+import { ApplicationComponent } from './Forms/application/application.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { OwnershipStructureComponent } from './Forms/ownership-structure/ownersh
     CpyRegistrationComponent,
     CpyRestructureComponent,
     OwnershipStakeComponent,
-    OwnershipStructureComponent
+    OwnershipStructureComponent,
+    ApplicationComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -47,9 +49,8 @@ import { OwnershipStructureComponent } from './Forms/ownership-structure/ownersh
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'apps', component: ApplicationsComponent, canActivate: [AuthGuard]},
-      // {path: 'counter', canActivate: [AuthGuard]},
-      // {path: 'fetch-data', canActivate: [CompleteUserAndAuthGuard]},
-      {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent}
+      {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent},
+      {path: 'application/:id', canActivate: [AuthGuard], component: ApplicationComponent}
     ]),
     ReactiveFormsModule
   ],

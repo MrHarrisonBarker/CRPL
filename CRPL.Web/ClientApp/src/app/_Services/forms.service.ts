@@ -6,6 +6,7 @@ import {Observable, throwError} from "rxjs";
 import {CopyrightRegistrationInputModel} from "../_Models/Applications/CopyrightRegistrationInputModel";
 import {CopyrightRegistrationViewModel} from "../_Models/Applications/CopyrightRegistrationViewModel";
 import {FormsPaths} from "../api.conts";
+import {ApplicationViewModel} from "../_Models/Applications/ApplicationViewModel";
 
 @Injectable({
   providedIn: 'root'
@@ -36,5 +37,15 @@ export class FormsService
   public SubmitCopyrightRegistration (id: string): Observable<CopyrightRegistrationViewModel>
   {
     return this.http.post<CopyrightRegistrationViewModel>(this.BaseUrl + FormsPaths.CopyrightRegistrationSubmit + "/" + id, null);
+  }
+
+  public GetMyApplications(): Observable<ApplicationViewModel[]>
+  {
+    return this.http.get<ApplicationViewModel[]>(this.BaseUrl + FormsPaths.GetMy + "/" + this.authService.UserAccount.getValue().Id);
+  }
+
+  public GetApplication(id: string): Observable<ApplicationViewModel>
+  {
+    return this.http.get<ApplicationViewModel>(this.BaseUrl + FormsPaths.BasePath + "/" + id);
   }
 }
