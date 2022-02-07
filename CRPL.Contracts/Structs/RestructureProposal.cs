@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 
 namespace CRPL.Contracts.Structs
@@ -7,8 +8,8 @@ namespace CRPL.Contracts.Structs
     public class RestructureProposalBase 
     {
         [Parameter("tuple[]", "oldStructure", 1)]
-        public virtual List<OwnershipStructure> OldStructure { get; set; }
+        public virtual List<OwnershipStake> OldStructure { get; set; }
         [Parameter("tuple[]", "newStructure", 2)]
-        public virtual List<OwnershipStructure> NewStructure { get; set; }
+        public virtual List<OwnershipStake> NewStructure { get; set; }
     }
 }
