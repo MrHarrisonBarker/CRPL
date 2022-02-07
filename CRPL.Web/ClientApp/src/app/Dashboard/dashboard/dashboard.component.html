@@ -36,6 +36,7 @@
             {{Selected | json}}
             <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="PropertyInSelected('RegisteredTransactionId')"></copyright-view>
             <cpy-registration-view [Application]="SelectedAsCopyrightRegistration" *ngIf="PropertyInSelected('YearsExpire')"></cpy-registration-view>
+            <cpy-registration-submitted [Application]="SelectedAsCopyrightRegistration" *ngIf="PropertyInSelected('YearsExpire') && Selected['Status'] == 2"></cpy-registration-submitted>
           </div>
         </div>
       </clr-tab-content>

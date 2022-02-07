@@ -1,0 +1,19 @@
+<div id="copyright-card">
+  <div class="card">
+    <div class="card-header">
+      {{Application.Title}} <span class="badge badge-info">{{Application.Status}}</span>
+    </div>
+    <div class="card-block">
+      <div class="card-title">{{Application.Id}}</div>
+      <div class="card-text" id="copyright-info">
+
+      </div>
+
+      <copyright-view *ngIf="Application.AssociatedWork" [Copyright]="Application.AssociatedWork"></copyright-view>
+
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-sm">Register Only if verified</button>
+    </div>
+  </div>
+</div>
