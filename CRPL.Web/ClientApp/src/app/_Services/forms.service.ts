@@ -39,12 +39,12 @@ export class FormsService
     return this.http.post<CopyrightRegistrationViewModel>(this.BaseUrl + FormsPaths.CopyrightRegistrationSubmit + "/" + id, null);
   }
 
-  public GetMyApplications(): Observable<ApplicationViewModel[]>
+  public GetMyApplications (): Observable<ApplicationViewModel[]>
   {
     return this.http.get<ApplicationViewModel[]>(this.BaseUrl + FormsPaths.GetMy + "/" + this.authService.UserAccount.getValue().Id);
   }
 
-  public GetApplication(id: string): Observable<ApplicationViewModel>
+  public GetApplication (id: string): Observable<ApplicationViewModel>
   {
     return this.http.get<ApplicationViewModel>(this.BaseUrl + FormsPaths.BasePath + "/" + id);
   }

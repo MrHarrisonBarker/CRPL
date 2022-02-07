@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Form, FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
@@ -8,6 +8,9 @@ import {CopyrightRegistrationInputModel} from "../../_Models/Applications/Copyri
 import {ValidatorsService} from "../../_Services/validators.service";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
+import {debounceTime, switchMap, takeUntil} from "rxjs/operators";
+import {Observable, Subject} from "rxjs";
+import {AlertService} from "../../_Services/alert.service";
 
 interface RightMeta
 {
@@ -20,7 +23,7 @@ interface RightMeta
   templateUrl: './cpy-registration.component.html',
   styleUrls: ['./cpy-registration.component.css']
 })
-export class CpyRegistrationComponent implements OnInit
+export class CpyRegistrationComponent implements OnInit, OnDestroy
 {
   @Input() ExistingApplication!: ApplicationViewModel;
   public RegistrationForm: FormGroup;
@@ -55,7 +58,8 @@ export class CpyRegistrationComponent implements OnInit
     private formBuilder: FormBuilder,
     public authService: AuthService,
     private formsService: FormsService,
-    private validatorService: ValidatorsService)
+    private validatorService: ValidatorsService,
+    private alertService: AlertService)
   {
     this.RegistrationForm = formBuilder.group({
       Title: ['', [Validators.required]],
@@ -93,17 +97,41 @@ export class CpyRegistrationComponent implements OnInit
     return this.RegistrationForm.controls.WorkHash as FormControl;
   }
 
+  private unsubscribe = new Subject<void>();
+
   public ngOnInit (): void
   {
     if (this.ExistingApplication)
     {
       console.log("application is existing", this.ExistingApplication);
       this.populateForm();
-    } else {
-      (this.OwnershipStructure.controls.Stakes as FormArray).patchValue([{Owner: this.authService.UserAccount.getValue().WalletPublicAddress, Share: 100}])
+    } else
+    {
+      (this.OwnershipStructure.controls.Stakes as FormArray).patchValue([{
+        Owner: this.authService.UserAccount.getValue().WalletPublicAddress,
+        Share: 100
+      }])
     }
 
     this.selectRights(this.StandardRights);
+
+    this.RegistrationForm.valueChanges.pipe(
+      debounceTime(1500),
+      switchMap(formValue => this.save()),
+      takeUntil(this.unsubscribe)
+    ).subscribe(res =>
+    {
+      if (res)
+      {
+        this.alertService.Alert({Message: "Saved changes", Type: "success"});
+      }
+      this.alertService.StopLoading();
+    }, error => console.error(error))
+  }
+
+  public ngOnDestroy (): void
+  {
+    this.unsubscribe.next()
   }
 
   private selectRights (rights: string[]): void
@@ -137,11 +165,10 @@ export class CpyRegistrationComponent implements OnInit
 
   }
 
-  public Update (): void
+  public save (): Observable<CopyrightRegistrationViewModel>
   {
+    this.alertService.StartLoading();
     let ownership: OwnershipStake[] = this.OwnershipStructure.controls.Stakes.value;
-
-    console.log(ownership);
 
     let inputModel: CopyrightRegistrationInputModel = {
       Title: this.RegistrationForm.value.Title,
@@ -155,9 +182,7 @@ export class CpyRegistrationComponent implements OnInit
       WorkHash: this.RegistrationForm.value.WorkHash
     }
 
-    console.log(inputModel);
-
-    this.formsService.UpdateCopyrightRegistration(inputModel).subscribe(x => console.log("updated copyright registration form", x))
+    return this.formsService.UpdateCopyrightRegistration(inputModel);
   }
 
   private populateForm (): void
@@ -168,7 +193,7 @@ export class CpyRegistrationComponent implements OnInit
       WorkHash: model.WorkHash,
       WorkUri: model.WorkUri,
       Legal: model.Legal,
-      Expires: 0,
+      Expires: model.YearsExpire,
       ProtectionType: model.CopyrightType,
       WorkType: model.WorkType,
     });

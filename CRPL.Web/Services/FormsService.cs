@@ -95,6 +95,7 @@ public class FormsService : IFormsService
 
     public async Task<O> Submit<T, O>(Guid id) where T : Application where O : ApplicationViewModel
     {
+        Logger.LogInformation("Submitting {ApplicationType}", typeof(T).Name);
         var application = (await Context.Applications
             .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
             .FirstOrDefaultAsync(x => x.Id == id))!;

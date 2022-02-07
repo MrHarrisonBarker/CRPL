@@ -68,12 +68,14 @@ public class UserService : IUserService
 
     public bool AreUsersReal(List<string> userAddresses)
     {
+        Logger.LogInformation("are these users real? {Users}", string.Join(",", userAddresses));
         var userAccounts = Context.UserAccounts.Where(x => userAddresses.Contains(x.Wallet.PublicAddress)).ToList();
         return userAccounts.Count == userAddresses.Count;
     }
 
     public async Task<List<UserAccountMinimalViewModel>> SearchUsers(string address)
     {
+        Logger.LogInformation("Searching for users with address like: {Address}", address);
         return await Context.UserAccounts.Where(x => x.Wallet.PublicAddress.Contains(address.ToLower())).Select(x => Mapper.Map<UserAccountMinimalViewModel>(x)).ToListAsync();
     }
 
@@ -142,6 +144,7 @@ public class UserService : IUserService
 
     private bool isComplete(UserAccount userAccount)
     {
+        Logger.LogInformation("Checking if a user has completed sign up, {Id}", userAccount.Id);
         var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet", "UserWorks", "AuthenticationToken", "Applications" };
         var hasContact = 0;
         // checks each property is not null
@@ -163,6 +166,8 @@ public class UserService : IUserService
 
     public void AssignToApplication(string address, Guid applicationId)
     {
+        Logger.LogInformation("Assigning {Address} to {Id}", address, applicationId);
+        
         var user = Context.UserAccounts.Include(x => x.Applications).FirstOrDefault(x => x.Wallet.PublicAddress == address);
         if (user == null) throw new UserNotFoundException(address);
 
@@ -175,7 +180,7 @@ public class UserService : IUserService
             Logger.LogInformation("User already assigned, skipping...");
             return;
         }
-        
+
         user.Applications.Add(new UserApplication()
         {
             ApplicationId = applicationId

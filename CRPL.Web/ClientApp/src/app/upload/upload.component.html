@@ -19,6 +19,12 @@
       </clr-alert-item>
     </clr-alert>
 
+    <clr-alert clrAlertType="danger" *ngIf="Form.valid">
+      <clr-alert-item>
+        <span class="alert-text">A work has been uploaded for this application</span>
+      </clr-alert-item>
+    </clr-alert>
+
     <clr-alert clrAlertType="danger" *ngIf="UploadError">
       <clr-alert-item>
         <span class="alert-text">{{UploadError}}</span>

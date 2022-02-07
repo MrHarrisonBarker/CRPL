@@ -21,6 +21,8 @@ public class RegistrationService : IRegistrationService
 
     public RegisteredWork StartRegistration(CopyrightRegistrationApplication application)
     {
+        Logger.LogInformation("Started a copyright registration {Id}", application.Id);
+        
         var registeredWork = new RegisteredWork()
         {
             AssociatedApplication = new List<Application>()
