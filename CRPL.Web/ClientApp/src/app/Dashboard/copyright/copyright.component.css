@@ -1,0 +1,8 @@
+#copyright-card {
+  margin: 1rem;
+}
+
+#copyright-info {
+  display: flex;
+  flex-direction: column;
+}
