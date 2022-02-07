@@ -23,6 +23,8 @@ import {OwnershipStakeComponent} from './Forms/ownership-stake/ownership-stake.c
 import { OwnershipStructureComponent } from './Forms/ownership-structure/ownership-structure.component';
 import { ApplicationComponent } from './Forms/application/application.component';
 import { DashboardComponent } from './Dashboard/dashboard/dashboard.component';
+import { CopyrightComponent } from './Dashboard/copyright/copyright.component';
+import {CpyRegistrationComponentView} from "./Dashboard/cpy-registration/cpy-registration.component";
 
 @NgModule({
   declarations: [
@@ -40,7 +42,9 @@ import { DashboardComponent } from './Dashboard/dashboard/dashboard.component';
     OwnershipStakeComponent,
     OwnershipStructureComponent,
     ApplicationComponent,
-    DashboardComponent
+    DashboardComponent,
+    CopyrightComponent,
+    CpyRegistrationComponentView
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

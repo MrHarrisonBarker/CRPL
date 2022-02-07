@@ -1,42 +1,44 @@
-<div class="content-container" *ngIf="Loaded">
-  <nav class="sidenav">
-    <section class="sidenav-content">
-      <a href="javascript:void(0)" class="nav-link active">
-        Nav Element 1
-      </a>
-      <section class="nav-group collapsible">
-        <input id="copyrightsNav" type="checkbox" />
-        <label for="copyrightsNav">Copyrights</label>
-        <ul class="nav-list">
-          <li *ngFor="let right of RegisteredCopyrights"><a class="nav-link" (click)="Select(right)">{{right.Id}}</a></li>
-        </ul>
-      </section>
-      <section class="nav-group collapsible">
-        <input id="ApplicationsNav" type="checkbox" />
-        <label for="ApplicationsNav">Submitted Applications</label>
-        <ul class="nav-list">
-          <li *ngFor="let application of SubmittedApplications"><a class="nav-link" (click)="Select(application)">{{application.Id}}</a></li>
-        </ul>
-      </section>
-      <section class="nav-group collapsible">
-        <input id="PartialApplicationsNav" type="checkbox" />
-        <label for="PartialApplicationsNav">Partial Applications</label>
-        <ul class="nav-list">
-          <li *ngFor="let application of PartialApplications"><a class="nav-link" (click)="Select(application)">{{application.Id}}</a></li>
-        </ul>
-      </section>
-      <section class="nav-group collapsible">
-        <input id="CompletedApplicationsNav" type="checkbox" />
-        <label for="CompletedApplicationsNav">Completed Applications</label>
-        <ul class="nav-list">
-          <li *ngFor="let application of CompletedApplications"><a class="nav-link" (click)="Select(application)">{{application.Id}}</a></li>
-        </ul>
-      </section>
-    </section>
-  </nav>
-  <div class="content-area">
-<!--    {{MyApplications | json}}-->
-<!--    {{Works | json}}-->
-    {{Selected | json}}
-  </div>
+<div id="contain" *ngIf="Loaded">
+  <clr-tabs>
+    <clr-tab>
+      <button clrTabLink>Copyrights</button>
+      <clr-tab-content *clrIfActive="true">
+        <div class="content-container">
+          <nav class="sidenav">
+            <section class="sidenav-content">
+              <section class="nav-group collapsible">
+                <input id="copyrightsNav" type="checkbox"/> <label for="copyrightsNav">Copyrights</label>
+                <ul class="nav-list">
+                  <li *ngFor="let right of RegisteredCopyrights"><a class="nav-link" (click)="Select(right)">{{right.Id}}</a></li>
+                </ul>
+              </section>
+              <section class="nav-group collapsible">
+                <input id="ApplicationsNav" type="checkbox"/> <label for="ApplicationsNav">Submitted Applications</label>
+                <ul class="nav-list">
+                  <li *ngFor="let application of SubmittedApplications"><a class="nav-link" (click)="Select(application)">{{application.Id}}</a></li>
+                </ul>
+              </section>
+              <section class="nav-group collapsible">
+                <input id="PartialApplicationsNav" type="checkbox"/> <label for="PartialApplicationsNav">Partial Applications</label>
+                <ul class="nav-list">
+                  <li *ngFor="let application of PartialApplications"><a class="nav-link" (click)="Select(application)">{{application.Id}}</a></li>
+                </ul>
+              </section>
+              <section class="nav-group collapsible">
+                <input id="CompletedApplicationsNav" type="checkbox"/> <label for="CompletedApplicationsNav">Completed Applications</label>
+                <ul class="nav-list">
+                  <li *ngFor="let application of CompletedApplications"><a class="nav-link" (click)="Select(application)">{{application.Id}}</a></li>
+                </ul>
+              </section>
+            </section>
+          </nav>
+          <div class="content-area">
+            {{Selected | json}}
+            <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="PropertyInSelected('RegisteredTransactionId')"></copyright-view>
+            <cpy-registration-view [Application]="SelectedAsCopyrightRegistration" *ngIf="PropertyInSelected('YearsExpire')"></cpy-registration-view>
+          </div>
+        </div>
+      </clr-tab-content>
+    </clr-tab>
+  </clr-tabs>
 </div>

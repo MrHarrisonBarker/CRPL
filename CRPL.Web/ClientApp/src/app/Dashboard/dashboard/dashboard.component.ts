@@ -6,6 +6,7 @@ import {RegisteredWorkStatus, RegisteredWorkViewModel} from "../../_Models/Works
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
 import {forkJoin} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
+import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 
 @Component({
   selector: 'app-dashboard',
@@ -59,7 +60,23 @@ export class DashboardComponent implements OnInit
     return this.MyApplications.filter(x => x.Status == ApplicationStatus.Submitted);
   }
 
-  public Select(selected: ApplicationViewModel | RegisteredWorkViewModel) : void
+  get SelectedAsCopyright ()
+  {
+    return (this.Selected as RegisteredWorkViewModel);
+  }
+
+  get SelectedAsCopyrightRegistration ()
+  {
+    return (this.Selected as CopyrightRegistrationViewModel);
+  }
+
+  public PropertyInSelected (prop: string): boolean
+  {
+    if (this.Selected) return prop in this.Selected;
+    return false;
+  }
+
+  public Select (selected: ApplicationViewModel | RegisteredWorkViewModel): void
   {
     this.Selected = selected;
   }
