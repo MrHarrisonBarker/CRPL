@@ -30,5 +30,7 @@ public class AutoMapping : Profile
             .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)));
 
         CreateMap<CRPL.Data.StructuredOwnership.OwnershipStake, CRPL.Contracts.Structs.OwnershipStake>();
+
+        CreateMap<RegisteredWork, RegisteredWorkViewModel>();
     }
 }

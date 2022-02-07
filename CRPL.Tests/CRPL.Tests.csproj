@@ -37,4 +37,10 @@
     <None Update="WorkSigners/TestAssets/**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="CRPL.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>bin\Debug\net6.0\CRPL.Contracts.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -17,6 +17,7 @@ public static class ServiceExtensions
             services.AddScoped<IWorksVerificationService, WorksVerificationService>();
             services.AddScoped<IFormsService, FormsService>();
             services.AddScoped<IRegistrationService, RegistrationService>();
+            services.AddScoped<ICopyrightService, CopyrightService>();
             
             services.AddHostedService<BlockchainEventListener>();
             services.AddHostedService<EventProcessingService>();

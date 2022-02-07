@@ -1,4 +1,5 @@
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.ViewModels;
 
 namespace CRPL.Data.Account;
 
@@ -20,4 +21,16 @@ public class RegisteredWork
     public string? RegisteredTransactionId { get; set; }
     public List<UserWork> UserWorks { get; set; }
     public List<Application> AssociatedApplication { get; set; }
+}
+
+public class RegisteredWorkViewModel
+{
+    public Guid Id { get; set; }
+    public DateTime Created { get; set; }
+    public DateTime? Registered { get; set; }
+    public RegisteredWorkStatus Status { get; set; }
+    public string? RightId { get; set; }
+    public byte[]? Hash { get; set; }
+    public string? RegisteredTransactionId { get; set; }
+    public List<ApplicationViewModel> AssociatedApplication { get; set; }
 }

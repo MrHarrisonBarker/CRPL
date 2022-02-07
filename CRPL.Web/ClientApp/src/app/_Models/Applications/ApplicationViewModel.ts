@@ -1,7 +1,7 @@
 import {UserAccountMinimalViewModel} from "../Account/UserAccountMinimalViewModel";
 import {ApplicationStatus} from "./ApplicationStatus";
 
-enum ApplicationType
+export enum ApplicationType
 {
   CopyrightRegistration,
   OwnershipRestructure,

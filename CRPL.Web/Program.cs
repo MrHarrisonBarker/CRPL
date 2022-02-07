@@ -62,7 +62,7 @@ builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
         options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-        options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+        // options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
     }
 );
 builder.Services.AddEndpointsApiExplorer();

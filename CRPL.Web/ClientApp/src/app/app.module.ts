@@ -22,6 +22,7 @@ import {CpyRestructureComponent} from './Forms/cpy-restructure/cpy-restructure.c
 import {OwnershipStakeComponent} from './Forms/ownership-stake/ownership-stake.component';
 import { OwnershipStructureComponent } from './Forms/ownership-structure/ownership-structure.component';
 import { ApplicationComponent } from './Forms/application/application.component';
+import { DashboardComponent } from './Dashboard/dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { ApplicationComponent } from './Forms/application/application.component'
     CpyRestructureComponent,
     OwnershipStakeComponent,
     OwnershipStructureComponent,
-    ApplicationComponent
+    ApplicationComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -50,7 +52,8 @@ import { ApplicationComponent } from './Forms/application/application.component'
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'apps', component: ApplicationsComponent, canActivate: [AuthGuard]},
       {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent},
-      {path: 'application/:id', canActivate: [AuthGuard], component: ApplicationComponent}
+      {path: 'application/:id', canActivate: [AuthGuard], component: ApplicationComponent},
+      {path: 'dashboard', canActivate: [AuthGuard], component: DashboardComponent}
     ]),
     ReactiveFormsModule
   ],
