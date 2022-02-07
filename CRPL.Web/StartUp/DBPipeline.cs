@@ -3,6 +3,7 @@ using CRPL.Data.Account;
 using CRPL.Data.ContractDeployment;
 using CRPL.Data.Seed;
 using CRPL.Data.Works;
+using CRPL.Web.Services.Background;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,6 +42,7 @@ public class DbPipelineBuilder
 
         services.AddSingleton<IContractRepository, ContractRepository>();
         services.AddSingleton<ICachedWorkRepository, CachedWorkRepository>();
+        services.AddSingleton<IEventQueue, EventQueue>();
         
         services.Configure<FormOptions>(o => {
             o.ValueLengthLimit = int.MaxValue;

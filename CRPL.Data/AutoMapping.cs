@@ -28,5 +28,7 @@ public class AutoMapping : Profile
             .ForMember(model => model.CurrentStructure, x => x.MapFrom(src => src.CurrentStructure.Decode()))
             .ForMember(model => model.ProposedStructure, x => x.MapFrom(src => src.ProposedStructure.Decode()))
             .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)));
+
+        CreateMap<CRPL.Data.StructuredOwnership.OwnershipStake, CRPL.Contracts.Structs.OwnershipStake>();
     }
 }
