@@ -102,6 +102,8 @@ public class FormsService : IFormsService
 
         if (application == null) throw new ApplicationNotFoundException(id);
 
+        if (application.Status == ApplicationStatus.Submitted) throw new Exception("The application has already been submitted");
+
         var submittedApplication = (T)application.Submit(RegistrationService);
         submittedApplication.Modified = DateTime.Now;
 

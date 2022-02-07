@@ -8,9 +8,10 @@ import {CopyrightRegistrationInputModel} from "../../_Models/Applications/Copyri
 import {ValidatorsService} from "../../_Services/validators.service";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
-import {debounceTime, switchMap, takeUntil} from "rxjs/operators";
+import {debounceTime, switchMap, takeUntil, tap} from "rxjs/operators";
 import {Observable, Subject} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
+import { Router } from '@angular/router';
 
 interface RightMeta
 {
@@ -59,7 +60,8 @@ export class CpyRegistrationComponent implements OnInit, OnDestroy
     public authService: AuthService,
     private formsService: FormsService,
     private validatorService: ValidatorsService,
-    private alertService: AlertService)
+    private alertService: AlertService,
+    private router: Router)
   {
     this.RegistrationForm = formBuilder.group({
       Title: ['', [Validators.required]],
@@ -165,7 +167,7 @@ export class CpyRegistrationComponent implements OnInit, OnDestroy
 
   }
 
-  public save (): Observable<CopyrightRegistrationViewModel>
+  private save (): Observable<CopyrightRegistrationViewModel>
   {
     this.alertService.StartLoading();
     let ownership: OwnershipStake[] = this.OwnershipStructure.controls.Stakes.value;
@@ -182,7 +184,7 @@ export class CpyRegistrationComponent implements OnInit, OnDestroy
       WorkHash: this.RegistrationForm.value.WorkHash
     }
 
-    return this.formsService.UpdateCopyrightRegistration(inputModel);
+    return this.formsService.UpdateCopyrightRegistration(inputModel).pipe(tap(crp => this.ExistingApplication = crp));
   }
 
   private populateForm (): void
@@ -204,5 +206,14 @@ export class CpyRegistrationComponent implements OnInit, OnDestroy
     });
 
     console.log('populated form', this.RegistrationForm.value);
+  }
+
+  public Submit():void
+  {
+    this.formsService.SubmitCopyrightRegistration(this.ExistingApplication.Id).subscribe(x =>
+    {
+      // if submitted route away to dashboard
+      if (x) this.router.navigate(['/dashboard']);
+    }, error => this.alertService.Alert({Type: 'danger', Message: error.error}))
   }
 }
