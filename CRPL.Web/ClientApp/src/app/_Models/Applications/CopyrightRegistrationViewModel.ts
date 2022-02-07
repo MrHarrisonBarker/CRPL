@@ -12,4 +12,5 @@ export interface CopyrightRegistrationViewModel extends ApplicationViewModel
   Legal: string;
   CopyrightType: CopyrightType;
   OwnershipStakes: OwnershipStake[];
+  YearsExpire?: number;
 }

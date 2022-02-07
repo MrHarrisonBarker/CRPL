@@ -3,6 +3,7 @@ using System;
 using CRPL.Data.Account;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CRPL.Web.Migrations.Application
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20220207004045_extraCpyRegFields")]
+    partial class extraCpyRegFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,9 +190,6 @@ namespace CRPL.Web.Migrations.Application
                     b.Property<string>("WorkUri")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<int>("YearsExpire")
-                        .HasColumnType("int");
 
                     b.HasDiscriminator().HasValue("CopyrightRegistrationApplication");
                 });

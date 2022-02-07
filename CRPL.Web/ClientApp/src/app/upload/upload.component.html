@@ -13,6 +13,12 @@
       <progress [value]="CurrentProgress" max="100"></progress>
     </div>
 
+    <clr-alert clrAlertType="danger" *ngIf="Form.invalid">
+      <clr-alert-item>
+        <span class="alert-text">You need to upload the final version of your work to be signed and mastered</span>
+      </clr-alert-item>
+    </clr-alert>
+
     <clr-alert clrAlertType="danger" *ngIf="UploadError">
       <clr-alert-item>
         <span class="alert-text">{{UploadError}}</span>

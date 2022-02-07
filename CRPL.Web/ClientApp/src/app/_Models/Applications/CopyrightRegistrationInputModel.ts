@@ -10,7 +10,7 @@ export interface CopyrightRegistrationInputModel extends ApplicationInputModel
   WorkUri?: string;
   Legal?: string;
   OwnershipStakes?: OwnershipStake[];
-  Expires?: number;
+  YearsExpire?: number;
   CopyrightType?: CopyrightType;
   WorkType?: WorkType;
 }

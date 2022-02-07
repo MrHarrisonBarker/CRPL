@@ -149,7 +149,7 @@ export class CpyRegistrationComponent implements OnInit
       Id: this.ExistingApplication != undefined ? this.ExistingApplication.Id : undefined,
       OwnershipStakes: ownership,
       WorkType: this.RegistrationForm.value.WorkType,
-      Expires: this.RegistrationForm.value.Expires,
+      YearsExpire: this.RegistrationForm.value.Expires,
       CopyrightType: this.RegistrationForm.value.ProtectionType,
       Legal: this.RegistrationForm.value.Legal,
       WorkHash: this.RegistrationForm.value.WorkHash
