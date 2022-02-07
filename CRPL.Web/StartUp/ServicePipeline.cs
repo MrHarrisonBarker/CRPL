@@ -1,5 +1,6 @@
 using CRPL.Data;
 using CRPL.Web.Services;
+using CRPL.Web.Services.Background;
 using CRPL.Web.Services.Interfaces;
 
 namespace CRPL.Web.StartUp;
@@ -16,6 +17,9 @@ public static class ServiceExtensions
             services.AddScoped<IWorksVerificationService, WorksVerificationService>();
             services.AddScoped<IFormsService, FormsService>();
             services.AddScoped<IRegistrationService, RegistrationService>();
+            
+            services.AddHostedService<BlockchainEventListener>();
+            services.AddHostedService<EventProcessingService>();
         }
     }
 }
