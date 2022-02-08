@@ -14,7 +14,7 @@ export interface ApplicationViewModel
 {
   Id: string;
   ApplicationType: ApplicationType;
-  Creates: Date;
+  Created: Date;
   Modified: Date;
   Status: ApplicationStatus;
   AssociatedUsers: UserAccountMinimalViewModel[];

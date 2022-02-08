@@ -1,3 +1,4 @@
-<cpy-registration-view [Application]="ApplicationAsCopyrightRegistration" *ngIf="PropertyInSelected('YearsExpire')"></cpy-registration-view>
+<cpy-registration-view [Application]="ApplicationAsCopyrightRegistration" *ngIf="PropertyInSelected('YearsExpire') && (!ShowForms || Application['Status'] == 1)"></cpy-registration-view>
+<cpy-registration [ExistingApplication]="ApplicationAsCopyrightRegistration" *ngIf="PropertyInSelected('YearsExpire') && ShowForms && Application['Status'] == 0"></cpy-registration>
 <cpy-registration-submitted [Application]="ApplicationAsCopyrightRegistration" *ngIf="PropertyInSelected('YearsExpire') && Application['Status'] == 2"></cpy-registration-submitted>
 {{Application | json}}

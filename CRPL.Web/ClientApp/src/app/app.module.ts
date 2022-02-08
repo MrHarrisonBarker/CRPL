@@ -27,6 +27,8 @@ import { CopyrightComponent } from './Dashboard/copyright/copyright.component';
 import {CpyRegistrationComponentView} from "./Dashboard/cpy-registration/cpy-registration.component";
 import { SubmittedComponent } from './Dashboard/cpy-registration/submitted/submitted.component';
 import { ApplicationsViewComponent } from './Dashboard/applications-view/applications-view.component';
+import { ApplicationStatusComponent } from './Core/application-status/application-status.component';
+import { CopyrightStatusComponent } from './Core/copyright-status/copyright-status.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +50,9 @@ import { ApplicationsViewComponent } from './Dashboard/applications-view/applica
     CopyrightComponent,
     CpyRegistrationComponentView,
     SubmittedComponent,
-    ApplicationsViewComponent
+    ApplicationsViewComponent,
+    ApplicationStatusComponent,
+    CopyrightStatusComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

@@ -1,1 +1,16 @@
-{{Application | json}}
+<div id="application-card">
+  <div class="card">
+    <div class="card-header">
+      {{Application.Title}} <application-status [status]="Application.Status"></application-status>
+    </div>
+    <div class="card-block">
+      <div class="card-title">{{Application.Id}}</div>
+      <div class="card-text">
+        {{Application | json}}
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-sm">Restructure ownership</button>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,33 @@
+<clr-timeline>
+  <clr-timeline-step [clrState]="timelineSuccess">
+    <clr-timeline-step-header>{{Application.Created | date:'short'}}</clr-timeline-step-header>
+    <clr-timeline-step-title>Fill in applicaiton</clr-timeline-step-title>
+    <!-- clr-timeline-step-description -->
+  </clr-timeline-step>
+
+  <clr-timeline-step [clrState]="timelineSuccess">
+    <clr-timeline-step-header>{{Application.Modified | date:'short'}}</clr-timeline-step-header>
+    <clr-timeline-step-title>Submit application</clr-timeline-step-title>
+    <!-- clr-timeline-step-description -->
+  </clr-timeline-step>
+
+  <clr-timeline-step [clrState]="timelineProcessing">
+    <clr-timeline-step-header>Now</clr-timeline-step-header>
+    <clr-timeline-step-title>Verification</clr-timeline-step-title>
+    <!-- clr-timeline-step-description -->
+  </clr-timeline-step>
+
+  <clr-timeline-step [clrState]="timelineNot">
+    <clr-timeline-step-header>Not too long :)</clr-timeline-step-header>
+    <clr-timeline-step-title>Copyright registered</clr-timeline-step-title>
+    <!-- clr-timeline-step-description -->
+  </clr-timeline-step>
+</clr-timeline>
+
 <div id="copyright-card">
   <div class="card">
     <div class="card-header">
-      {{Application.Title}} <span class="badge badge-info">{{Application.Status}}</span>
+      {{Application.Title}} <application-status [status]="Application.Status"></application-status>
     </div>
     <div class="card-block">
       <div class="card-title">{{Application.Id}}</div>

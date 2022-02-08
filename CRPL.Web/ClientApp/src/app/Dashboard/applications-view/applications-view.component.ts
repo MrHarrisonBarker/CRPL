@@ -4,13 +4,14 @@ import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 
 @Component({
-  selector: 'applications-view [Application]',
+  selector: 'applications-view [Application] [ShowForms]',
   templateUrl: './applications-view.component.html',
   styleUrls: ['./applications-view.component.css']
 })
 export class ApplicationsViewComponent implements OnInit
 {
   @Input() Application!: ApplicationViewModel | RegisteredWorkViewModel;
+  @Input() ShowForms: boolean = false;
 
   constructor ()
   {

@@ -2,7 +2,7 @@
 <div id="copyright-card">
   <div class="card">
     <div class="card-header">
-      Work title <span class="badge badge-info">{{Copyright.Status}}</span>
+      Work title <copyright-status [status]="Copyright.Status"></copyright-status>
     </div>
     <div class="card-block">
       <div class="card-title">{{Copyright.Id}}</div>
@@ -15,7 +15,7 @@
         GET data from blockchain and inject
       </div>
 
-      <applications-view [Application]="application" *ngFor="let application of Copyright.AssociatedApplication"></applications-view>
+      <applications-view [Application]="application" [ShowForms]="false" *ngFor="let application of Copyright.AssociatedApplication"></applications-view>
 
     </div>
     <div class="card-footer">

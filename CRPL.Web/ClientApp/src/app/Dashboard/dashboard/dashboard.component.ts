@@ -37,8 +37,6 @@ export class DashboardComponent implements OnInit
       this.Loaded = true;
       this.alertService.StopLoading();
     });
-    // .subscribe(x => this.MyApplications = x);
-    // .subscribe(x=> this.Works = x);
   }
 
   get RegisteredCopyrights (): RegisteredWorkViewModel[]
