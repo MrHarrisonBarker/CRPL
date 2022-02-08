@@ -15,7 +15,7 @@
         GET data from blockchain and inject
       </div>
 
-      {{Copyright.AssociatedApplication | json}}
+      <applications-view [Application]="application" *ngFor="let application of Copyright.AssociatedApplication"></applications-view>
 
     </div>
     <div class="card-footer">

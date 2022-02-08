@@ -20,6 +20,7 @@ export class DashboardComponent implements OnInit
   public Works!: RegisteredWorkViewModel[];
   public Loaded: boolean = false;
   public Selected!: ApplicationViewModel | RegisteredWorkViewModel;
+  public IsApplication: boolean = false;
 
   constructor (private formsService: FormsService, private copyrightService: CopyrightService, private alertService: AlertService)
   {
@@ -65,19 +66,9 @@ export class DashboardComponent implements OnInit
     return (this.Selected as RegisteredWorkViewModel);
   }
 
-  get SelectedAsCopyrightRegistration ()
-  {
-    return (this.Selected as CopyrightRegistrationViewModel);
-  }
-
-  public PropertyInSelected (prop: string): boolean
-  {
-    if (this.Selected) return prop in this.Selected;
-    return false;
-  }
-
-  public Select (selected: ApplicationViewModel | RegisteredWorkViewModel): void
+  public Select (selected: ApplicationViewModel | RegisteredWorkViewModel, isApplication: boolean): void
   {
     this.Selected = selected;
+    this.IsApplication = isApplication;
   }
 }

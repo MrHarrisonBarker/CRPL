@@ -16,5 +16,5 @@ export interface RegisteredWorkViewModel
   RightId?: string,
   Hash?: string,
   RegisteredTransactionId: string,
-  AssociatedApplication: ApplicationViewModel
+  AssociatedApplication: ApplicationViewModel[]
 }

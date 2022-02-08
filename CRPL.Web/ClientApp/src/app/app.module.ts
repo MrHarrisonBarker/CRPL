@@ -26,6 +26,7 @@ import { DashboardComponent } from './Dashboard/dashboard/dashboard.component';
 import { CopyrightComponent } from './Dashboard/copyright/copyright.component';
 import {CpyRegistrationComponentView} from "./Dashboard/cpy-registration/cpy-registration.component";
 import { SubmittedComponent } from './Dashboard/cpy-registration/submitted/submitted.component';
+import { ApplicationsViewComponent } from './Dashboard/applications-view/applications-view.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { SubmittedComponent } from './Dashboard/cpy-registration/submitted/submi
     DashboardComponent,
     CopyrightComponent,
     CpyRegistrationComponentView,
-    SubmittedComponent
+    SubmittedComponent,
+    ApplicationsViewComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
