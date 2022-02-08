@@ -5,7 +5,6 @@ using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts.ContractHandlers;
 using System.Threading;
 using CRPL.Contracts.Standard.ContractDefinition;
-using CRPL.Contracts.Structs;
 
 namespace CRPL.Contracts.Standard
 {
@@ -31,7 +30,7 @@ namespace CRPL.Contracts.Standard
 
         public ContractHandler ContractHandler { get; }
 
-        private StandardService(Nethereum.Web3.Web3 web3, string contractAddress)
+        public StandardService(Nethereum.Web3.Web3 web3, string contractAddress)
         {
             Web3 = web3;
             ContractHandler = web3.Eth.GetContractHandler(contractAddress);

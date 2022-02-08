@@ -2,7 +2,6 @@ using System.Numerics;
 using System.Text;
 using AutoMapper;
 using CRPL.Contracts.Standard.ContractDefinition;
-using CRPL.Contracts.Structs;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
@@ -11,7 +10,6 @@ using CRPL.Data.ContractDeployment;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
 
 namespace CRPL.Web.Services;
 

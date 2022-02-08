@@ -7,6 +7,14 @@
 <div id="form-wrapper" *ngIf="!NoWork">
   <form clrForm clrLayout="compact" [formGroup]="RestructureForm" clrLabelSize="4">
 
+    <clr-alert clrAlertType="danger" [clrAlertClosable]="false" *ngIf="!CurrentStructure">
+      <clr-alert-item>
+        <span class="alert-text">No current ownership structure found!</span>
+      </clr-alert-item>
+    </clr-alert>
+
+    <ownership-structure-view [OwnershipStructure]="RegisteredWork?.OwnershipStructure" *ngIf="RegisteredWork.OwnershipStructure"></ownership-structure-view>
+
     <ownership-structure-input [Form]="ProposedStructure"></ownership-structure-input>
 
     {{RestructureForm.value | json}}

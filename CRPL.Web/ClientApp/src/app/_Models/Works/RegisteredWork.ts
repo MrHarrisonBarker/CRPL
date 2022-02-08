@@ -1,4 +1,5 @@
 import {ApplicationViewModel} from "../Applications/ApplicationViewModel";
+import {OwnershipStake} from "../StructuredOwnership/OwnershipStake";
 
 export enum RegisteredWorkStatus
 {
@@ -16,5 +17,6 @@ export interface RegisteredWorkViewModel
   RightId?: string,
   Hash?: string,
   RegisteredTransactionId: string,
+  OwnershipStructure?: OwnershipStake[],
   AssociatedApplication: ApplicationViewModel[]
 }

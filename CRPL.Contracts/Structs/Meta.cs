@@ -1,7 +1,7 @@
 using System.Numerics;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 
-namespace CRPL.Contracts.Structs
+namespace CRPL.Contracts.Standard.ContractDefinition
 {
     public partial class Meta : MetaBase { }
 

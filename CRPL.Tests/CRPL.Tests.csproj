@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CRPL.Contracts\CRPL.Contracts.csproj" />
     <ProjectReference Include="..\CRPL.Data\CRPL.Data.csproj" />
     <ProjectReference Include="..\CRPL.Web\CRPL.Web.csproj" />
   </ItemGroup>
@@ -35,12 +34,6 @@
 
   <ItemGroup>
     <None Update="WorkSigners/TestAssets/**" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="CRPL.Contracts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>bin\Debug\net6.0\CRPL.Contracts.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

@@ -84,6 +84,11 @@ export class CpyRestructureComponent implements OnInit, OnDestroy
     return this.RestructureForm.controls.ProposedStructure as FormGroup;
   }
 
+  get CurrentStructure (): FormGroup
+  {
+    return this.RestructureForm.controls.CurrentStructure as FormGroup;
+  }
+
   private populate()
   {
     this.ProposedStructure.patchValue({
@@ -94,7 +99,13 @@ export class CpyRestructureComponent implements OnInit, OnDestroy
 
   private populateCurrentStructure ()
   {
-
+    if (this.RegisteredWork.OwnershipStructure)
+    {
+      this.CurrentStructure.patchValue({
+        TotalShares: this.RegisteredWork.OwnershipStructure.map(x => x.Share).reduce((previousValue, currentValue) => previousValue + currentValue),
+        Stakes: this.RegisteredWork.OwnershipStructure
+      });
+    }
   }
 
   private save (): Observable<OwnershipRestructureViewModel>
