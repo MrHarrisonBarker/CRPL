@@ -61,7 +61,7 @@ public class FormsController : ControllerBase
     }
     
     [HttpPost("copyright/ownership")]
-    public async Task<OwnershipRestructureViewModel> Update(OwnershipRestructureInputModel inputModel)
+    public async Task<OwnershipRestructureViewModel> UpdateOwnershipStructure(OwnershipRestructureInputModel inputModel)
     {
         try
         {

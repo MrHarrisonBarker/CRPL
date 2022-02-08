@@ -26,9 +26,8 @@ interface RightMeta
 })
 export class CpyRegistrationComponent implements OnInit, OnDestroy
 {
-  @Input() ExistingApplication!: ApplicationViewModel;
+  @Input() ExistingApplication!: ApplicationViewModel | CopyrightRegistrationViewModel;
   public RegistrationForm: FormGroup;
-  public AcceptedUla: boolean = false;
 
   public Rights: RightMeta[] = [
     {Name: "authorship", Description: "The eternal right to original authorship."},

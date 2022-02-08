@@ -24,7 +24,7 @@ public class CopyrightService : ICopyrightService
         Logger.LogInformation("Getting {Id}'s works", id);
         var works = await Context.RegisteredWorks
             .Include(x => x.AssociatedApplication)
-            .Include(x => x.UserWorks)
+            .Include(x => x.UserWorks).ThenInclude(x => x.UserAccount)
             .Where(x => x.UserWorks.Any(u => u.UserId == id)).ToListAsync();
         
         return works.Select(x => Mapper.Map<RegisteredWorkWithAppsViewModel>(x)).ToList();

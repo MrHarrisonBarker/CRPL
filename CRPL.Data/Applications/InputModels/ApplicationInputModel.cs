@@ -7,9 +7,3 @@ public abstract class ApplicationInputModel
 {
     public Guid Id { get; set; }
 }
-
-public class OwnershipRestructureInputModel : ApplicationInputModel
-{
-    public List<OwnershipStake> CurrentStructure { get; set; }
-    public List<OwnershipStake> ProposedStructure { get; set; }
-}

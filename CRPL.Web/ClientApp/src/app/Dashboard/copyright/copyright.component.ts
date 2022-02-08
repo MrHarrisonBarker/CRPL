@@ -9,6 +9,7 @@ import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 export class CopyrightComponent implements OnInit
 {
   @Input() Copyright!: RegisteredWorkViewModel;
+  public RestructureOpen: boolean = false;
 
   constructor ()
   {

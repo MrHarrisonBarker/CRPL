@@ -1,3 +1,4 @@
+using CRPL.Data.Account.ViewModels;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
 
@@ -32,5 +33,6 @@ public class RegisteredWorkWithAppsViewModel
     public string? RightId { get; set; }
     public byte[]? Hash { get; set; }
     public string? RegisteredTransactionId { get; set; }
+    public List<UserAccountMinimalViewModel> AssociatedUsers { get; set; }
     public List<ApplicationViewModelWithoutAssociated> AssociatedApplication { get; set; }
 }

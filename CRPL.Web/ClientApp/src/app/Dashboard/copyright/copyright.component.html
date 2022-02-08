@@ -19,7 +19,18 @@
 
     </div>
     <div class="card-footer">
-      <button class="btn btn-sm">Restructure ownership</button>
+      <button class="btn btn-sm" (click)="RestructureOpen = true">Restructure ownership</button>
     </div>
   </div>
 </div>
+
+<clr-modal [(clrModalOpen)]="RestructureOpen" clrModalSize="xl">
+  <h3 class="modal-title">Restructure ownership</h3>
+  <div class="modal-body">
+    <cpy-restructure [RegisteredWork]="Copyright"></cpy-restructure>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline" (click)="RestructureOpen = false">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="RestructureOpen = false">Ok</button>
+  </div>
+</clr-modal>

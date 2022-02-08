@@ -7,6 +7,8 @@ import {CopyrightRegistrationInputModel} from "../_Models/Applications/Copyright
 import {CopyrightRegistrationViewModel} from "../_Models/Applications/CopyrightRegistrationViewModel";
 import {FormsPaths} from "../api.conts";
 import {ApplicationViewModel} from "../_Models/Applications/ApplicationViewModel";
+import {OwnershipRestructureViewModel} from "../_Models/Applications/OwnershipRestructureViewModel";
+import {OwnershipRestructureInputModel} from "../_Models/Applications/OwnershipRestructureInputModel";
 
 @Injectable({
   providedIn: 'root'
@@ -47,5 +49,10 @@ export class FormsService
   public GetApplication (id: string): Observable<ApplicationViewModel>
   {
     return this.http.get<ApplicationViewModel>(this.BaseUrl + FormsPaths.BasePath + "/" + id);
+  }
+
+  public UpdateOwnershipRestructure (inputModel: OwnershipRestructureInputModel): Observable<OwnershipRestructureViewModel>
+  {
+    return this.http.post<OwnershipRestructureViewModel>(this.BaseUrl + FormsPaths.OwnershipRestructure, inputModel);
   }
 }
