@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Form, FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
 import {FormsService} from "../../_Services/forms.service";
@@ -20,11 +20,11 @@ interface RightMeta
 }
 
 @Component({
-  selector: 'cpy-registration',
-  templateUrl: './cpy-registration.component.html',
-  styleUrls: ['./cpy-registration.component.css']
+  selector: 'cpy-registration-form',
+  templateUrl: './cpy-registration-form.component.html',
+  styleUrls: ['./cpy-registration-form.component.css']
 })
-export class CpyRegistrationComponent implements OnInit, OnDestroy
+export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 {
   @Input() ExistingApplication!: ApplicationViewModel | CopyrightRegistrationViewModel;
   public RegistrationForm: FormGroup;

@@ -2,11 +2,11 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormArray, FormGroup} from "@angular/forms";
 
 @Component({
-  selector: 'ownership-stake-input',
-  templateUrl: './ownership-stake.component.html',
-  styleUrls: ['./ownership-stake.component.css'],
+  selector: 'ownership-stake-form',
+  templateUrl: './ownership-stake-form.component.html',
+  styleUrls: ['./ownership-stake-form.component.css'],
 })
-export class OwnershipStakeComponent implements OnInit
+export class OwnershipStakeFormComponent implements OnInit
 {
   @Input() public Index!: number;
   @Input() public Form!: FormGroup;

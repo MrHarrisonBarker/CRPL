@@ -9,11 +9,11 @@ import {
 import {ValidatorsService} from "../../_Services/validators.service";
 
 @Component({
-  selector: 'ownership-structure-input',
-  templateUrl: './ownership-structure.component.html',
-  styleUrls: ['./ownership-structure.component.css']
+  selector: 'ownership-structure-form',
+  templateUrl: './ownership-structure-form.component.html',
+  styleUrls: ['./ownership-structure-form.component.css']
 })
-export class OwnershipStructureComponent implements OnInit
+export class OwnershipStructureFormComponent implements OnInit
 {
   @Input() public Form!: FormGroup;
 

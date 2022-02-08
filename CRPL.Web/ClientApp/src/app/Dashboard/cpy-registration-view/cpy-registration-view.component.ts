@@ -3,10 +3,10 @@ import {CopyrightRegistrationViewModel} from "../../_Models/Applications/Copyrig
 
 @Component({
   selector: 'cpy-registration-view [Application]',
-  templateUrl: './cpy-registration.component.html',
-  styleUrls: ['./cpy-registration.component.css']
+  templateUrl: './cpy-registration-view.component.html',
+  styleUrls: ['./cpy-registration-view.component.css']
 })
-export class CpyRegistrationComponentView implements OnInit
+export class CpyRegistrationViewComponent implements OnInit
 {
   @Input() Application!: CopyrightRegistrationViewModel;
 

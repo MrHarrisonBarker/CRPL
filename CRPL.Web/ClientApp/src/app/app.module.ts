@@ -17,18 +17,20 @@ import {LogoutButtonComponent} from './User/logout-button/logout-button.componen
 import {AlertComponent} from './alert/alert.component';
 import {UploadComponent} from './upload/upload.component';
 import {ApplicationsComponent} from './Forms/applications/applications.component';
-import {CpyRegistrationComponent} from './Forms/cpy-registration/cpy-registration.component';
-import {CpyRestructureComponent} from './Forms/cpy-restructure/cpy-restructure.component';
-import {OwnershipStakeComponent} from './Forms/ownership-stake/ownership-stake.component';
-import { OwnershipStructureComponent } from './Forms/ownership-structure/ownership-structure.component';
-import { ApplicationComponent } from './Forms/application/application.component';
 import { DashboardComponent } from './Dashboard/dashboard/dashboard.component';
-import { CopyrightComponent } from './Dashboard/copyright/copyright.component';
-import {CpyRegistrationComponentView} from "./Dashboard/cpy-registration/cpy-registration.component";
-import { SubmittedComponent } from './Dashboard/cpy-registration/submitted/submitted.component';
 import { ApplicationsViewComponent } from './Dashboard/applications-view/applications-view.component';
 import { ApplicationStatusComponent } from './Core/application-status/application-status.component';
 import { CopyrightStatusComponent } from './Core/copyright-status/copyright-status.component';
+import { OwnershipStructureViewComponent } from './Core/ownership-structure-view/ownership-structure-view.component';
+import { CpyRestructureViewComponent } from './Dashboard/cpy-restructure-view/cpy-restructure-view.component';
+import {CpyRestructureFormComponent} from "./Forms/cpy-restructure-form/cpy-restructure-form.component";
+import {CpyRegistrationFormComponent} from "./Forms/cpy-registration-form/cpy-registration-form.component";
+import {OwnershipStakeFormComponent} from "./Forms/ownership-stake-form/ownership-stake-form.component";
+import {CopyrightViewComponent} from "./Dashboard/copyright-view/copyright-view.component";
+import {SubmittedViewComponent} from "./Dashboard/cpy-registration-view/cpy-registration-view-submitted/cpy-registration-view-submitted.component";
+import {IndervidualApplicationComponent} from "./Forms/application-indervidual/application.component";
+import {OwnershipStructureFormComponent} from "./Forms/ownership-structure-form/ownership-structure-form.component";
+import {CpyRegistrationViewComponent} from "./Dashboard/cpy-registration-view/cpy-registration-view.component";
 
 @NgModule({
   declarations: [
@@ -41,18 +43,22 @@ import { CopyrightStatusComponent } from './Core/copyright-status/copyright-stat
     AlertComponent,
     UploadComponent,
     ApplicationsComponent,
-    CpyRegistrationComponent,
-    CpyRestructureComponent,
-    OwnershipStakeComponent,
-    OwnershipStructureComponent,
-    ApplicationComponent,
+    CpyRestructureFormComponent,
+    CpyRegistrationFormComponent,
+    OwnershipStructureViewComponent,
+    OwnershipStakeFormComponent,
+    OwnershipStakeFormComponent,
     DashboardComponent,
-    CopyrightComponent,
-    CpyRegistrationComponentView,
-    SubmittedComponent,
+    CopyrightViewComponent,
+    SubmittedViewComponent,
     ApplicationsViewComponent,
     ApplicationStatusComponent,
-    CopyrightStatusComponent
+    CopyrightStatusComponent,
+    OwnershipStructureViewComponent,
+    CpyRestructureViewComponent,
+    IndervidualApplicationComponent,
+    OwnershipStructureFormComponent,
+    CpyRegistrationViewComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -64,7 +70,7 @@ import { CopyrightStatusComponent } from './Core/copyright-status/copyright-stat
       {path: '', component: HomeComponent, pathMatch: 'full'},
       {path: 'apps', component: ApplicationsComponent, canActivate: [AuthGuard]},
       {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent},
-      {path: 'application/:id', canActivate: [AuthGuard], component: ApplicationComponent},
+      {path: 'application/:id', canActivate: [AuthGuard], component: IndervidualApplicationComponent},
       {path: 'dashboard', canActivate: [AuthGuard], component: DashboardComponent}
     ]),
     ReactiveFormsModule

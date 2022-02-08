@@ -3,10 +3,10 @@ import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 
 @Component({
   selector: 'copyright-view [Copyright]',
-  templateUrl: './copyright.component.html',
-  styleUrls: ['./copyright.component.css']
+  templateUrl: './copyright-view.component.html',
+  styleUrls: ['./copyright-view.component.css']
 })
-export class CopyrightComponent implements OnInit
+export class CopyrightViewComponent implements OnInit
 {
   @Input() Copyright!: RegisteredWorkViewModel;
   public RestructureOpen: boolean = false;

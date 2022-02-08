@@ -12,11 +12,11 @@ import {OwnershipRestructureViewModel} from "../../_Models/Applications/Ownershi
 import {Observable, Subject} from "rxjs";
 
 @Component({
-  selector: 'cpy-restructure',
-  templateUrl: './cpy-restructure.component.html',
-  styleUrls: ['./cpy-restructure.component.css']
+  selector: 'cpy-restructure-form',
+  templateUrl: './cpy-restructure-form.component.html',
+  styleUrls: ['./cpy-restructure-form.component.css']
 })
-export class CpyRestructureComponent implements OnInit, OnDestroy
+export class CpyRestructureFormComponent implements OnInit, OnDestroy
 {
   @Input() RegisteredWork!: RegisteredWorkViewModel;
   @Input() ExistingApplication!: OwnershipRestructureViewModel
@@ -35,6 +35,13 @@ export class CpyRestructureComponent implements OnInit, OnDestroy
     private router: Router)
   {
     this.RestructureForm = this.formBuilder.group({
+      CurrentStructure: this.formBuilder.group({
+        TotalShares: [100, [Validators.required]],
+        Stakes: this.formBuilder.array([this.formBuilder.group({
+          Owner: ['', [Validators.required], [this.validatorService.RealShareholderValidator()]],
+          Share: [1, [Validators.required, Validators.min(1)]]
+        })], [this.validatorService.ShareStructureValidator()])
+      }),
       ProposedStructure: this.formBuilder.group({
         TotalShares: [100, [Validators.required]],
         Stakes: this.formBuilder.array([this.formBuilder.group({
@@ -110,7 +117,10 @@ export class CpyRestructureComponent implements OnInit, OnDestroy
 
   private save (): Observable<OwnershipRestructureViewModel>
   {
+    console.log("saving restructure application");
+
     let inputModel: OwnershipRestructureInputModel = {
+      CurrentStructure: this.CurrentStructure.controls.Stakes.value,
       ProposedStructure: this.ProposedStructure.controls.Stakes.value
     }
 

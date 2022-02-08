@@ -8,7 +8,7 @@ import {FormsService} from "../../_Services/forms.service";
   templateUrl: './application.component.html',
   styleUrls: ['./application.component.css']
 })
-export class ApplicationComponent implements OnInit
+export class IndervidualApplicationComponent implements OnInit
 {
 
   public Application!: ApplicationViewModel;

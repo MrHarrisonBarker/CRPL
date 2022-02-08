@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
+import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
 
 @Component({
   selector: 'applications-view [Application] [ShowForms]',
@@ -19,6 +20,7 @@ export class ApplicationsViewComponent implements OnInit
 
   ngOnInit (): void
   {
+    console.log("Application", this.Application);
   }
 
   public PropertyInSelected (prop: string): boolean
@@ -30,6 +32,11 @@ export class ApplicationsViewComponent implements OnInit
   get ApplicationAsCopyrightRegistration ()
   {
     return (this.Application as CopyrightRegistrationViewModel);
+  }
+
+  get ApplicationAsOwnershipRestructure()
+  {
+    return (this.Application as OwnershipRestructureViewModel);
   }
 
 }

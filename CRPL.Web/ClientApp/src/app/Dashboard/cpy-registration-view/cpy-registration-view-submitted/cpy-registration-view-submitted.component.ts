@@ -3,11 +3,11 @@ import {CopyrightRegistrationViewModel} from "../../../_Models/Applications/Copy
 import {ClrTimelineStepState} from "@clr/angular";
 
 @Component({
-  selector: 'cpy-registration-submitted [Application]',
-  templateUrl: './submitted.component.html',
-  styleUrls: ['./submitted.component.css']
+  selector: 'cpy-registration-view-submitted [Application]',
+  templateUrl: './cpy-registration-view-submitted.component.html',
+  styleUrls: ['./cpy-registration-view-submitted.component.css']
 })
-export class SubmittedComponent implements OnInit
+export class SubmittedViewComponent implements OnInit
 {
   @Input() Application!: CopyrightRegistrationViewModel
   public timelineSuccess: ClrTimelineStepState = ClrTimelineStepState.SUCCESS;
