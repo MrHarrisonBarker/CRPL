@@ -12,7 +12,7 @@ public static class RegisteredEventProcessor
 {
     public static async Task ProcessEvent(this EventLog<RegisteredEventDTO> registeredEvent, IServiceProvider serviceProvider, ILogger<EventProcessingService> logger)
     { 
-        logger.LogInformation("Processing registered event");
+        logger.LogInformation("Processing registered event for {Id}", registeredEvent.Event.RightId);
         
         using var scope = serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
