@@ -1,4 +1,5 @@
 let userPaths : UserPaths = {
+  IsReal: "",
   EmailExists: "", PhoneExists: "",
   Account: "", Auth: "", AuthenticateSignature: "", FetchNonce: "", RevokeAuthenticate: "", Update: "", Search: "",
   BasePath: "user"
@@ -16,7 +17,7 @@ let formsPaths: FormsPaths = {
   BasePath: "forms"
 }
 
-let copyrightPaths: CopyrightPaths = {BasePath: "copyright", GetMy: ""}
+let copyrightPaths: CopyrightPaths = {Bind: "", BasePath: "copyright", GetMy: ""}
 
 formsPaths = {
   ...formsPaths,
@@ -35,12 +36,14 @@ userPaths = {
   Account: userPaths.BasePath,
   PhoneExists: userPaths.BasePath + "/unique/phone",
   EmailExists: userPaths.BasePath + "/unique/email",
-  Search: userPaths.BasePath + "/search"
+  Search: userPaths.BasePath + "/search",
+  IsReal: userPaths.BasePath + "/real"
 }
 
 copyrightPaths = {
   ...copyrightPaths,
-  GetMy: copyrightPaths.BasePath + "/my"
+  GetMy: copyrightPaths.BasePath + "/my",
+  Bind: copyrightPaths.BasePath + "/bind"
 }
 
 interface UserPaths {
@@ -54,6 +57,7 @@ interface UserPaths {
   readonly PhoneExists: string;
   readonly EmailExists: string;
   readonly Search: string;
+  readonly IsReal: string;
 }
 
 interface WorksPaths {
@@ -72,6 +76,7 @@ interface FormsPaths {
 interface CopyrightPaths {
   readonly BasePath: string;
   readonly GetMy: string;
+  readonly Bind: string;
 }
 
 export const UserPaths: UserPaths = userPaths;

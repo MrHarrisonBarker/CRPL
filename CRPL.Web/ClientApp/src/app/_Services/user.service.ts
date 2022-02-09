@@ -49,8 +49,8 @@ export class UserService
     return this.http.get<boolean>(this.BaseUrl + UserPaths.EmailExists, {params: new HttpParams().set('email', email)});
   }
 
-  public Search(address: string) : Observable<UserAccountMinimalViewModel[]>
+  public IsReal(address: string) : Observable<boolean>
   {
-    return this.http.get<UserAccountMinimalViewModel[]>(this.BaseUrl + UserPaths.Search + "/" + encodeURI(address));
+    return this.http.get<boolean>(this.BaseUrl + UserPaths.IsReal + "/" + encodeURI(address));
   }
 }

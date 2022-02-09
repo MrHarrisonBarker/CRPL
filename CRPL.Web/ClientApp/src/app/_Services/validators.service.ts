@@ -69,7 +69,7 @@ export class ValidatorsService
   {
     return (control: AbstractControl): Observable<ValidationErrors | null> =>
     {
-      return this.userService.Search(control.value).pipe(map(x => x.length == 1 ? null : {'NotRealShareholder': true}));
+      return this.userService.IsReal(control.value).pipe(map(x => x ? null : {'NotRealShareholder': true}));
     }
   }
 }

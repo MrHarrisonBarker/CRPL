@@ -105,7 +105,7 @@ public class UserController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpGet("unique/phone")]
     public async Task<bool> IsUniquePhoneNumber(string phone)
     {
@@ -119,7 +119,7 @@ public class UserController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpGet("unique/email")]
     public async Task<bool> IsUniqueEmail(string email)
     {
@@ -134,12 +134,12 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpGet("search/{address}")]
-    public async Task<List<UserAccountMinimalViewModel>> Search(string address)
+    [HttpGet("real/{address}")]
+    public bool IsRealUser(string address)
     {
         try
         {
-            return await UserService.SearchUsers(address);
+            return UserService.AreUsersReal(new List<string> { address });
         }
         catch (Exception e)
         {
