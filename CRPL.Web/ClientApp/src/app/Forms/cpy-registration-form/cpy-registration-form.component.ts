@@ -227,6 +227,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
   public Submit (): void
   {
+    this.unsubscribe.next();
     this.save().subscribe(x =>
     {
       if (x)

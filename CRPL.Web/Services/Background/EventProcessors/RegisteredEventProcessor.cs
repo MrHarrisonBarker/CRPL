@@ -1,6 +1,7 @@
 using CRPL.Contracts.Standard.ContractDefinition;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Data.BlockchainUtils;
 using CRPL.Web.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Nethereum.Contracts;
@@ -9,9 +10,10 @@ namespace CRPL.Web.Services.Background.EventProcessors;
 
 public static class RegisteredEventProcessor
 {
-    public static async Task ProcessEvent(this EventLog<RegisteredEventDTO> registeredEvent, IServiceProvider serviceProvider)
-    {
-        // TODO: LOGGER !!!
+    public static async Task ProcessEvent(this EventLog<RegisteredEventDTO> registeredEvent, IServiceProvider serviceProvider, ILogger<EventProcessingService> logger)
+    { 
+        logger.LogInformation("Processing registered event");
+        
         using var scope = serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
 

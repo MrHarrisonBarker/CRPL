@@ -31,8 +31,11 @@ public class EventProcessingService : BackgroundService
 
                 switch (nextEvent.GetType().FullName)
                 {
-                    case var name when name.Contains(""):
-                        await ((EventLog<RegisteredEventDTO>)nextEvent).ProcessEvent(ServiceProvider);
+                    case var name when name.Contains("RegisteredEvent"):
+                        await ((EventLog<RegisteredEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
+                        break;
+                    case var name when name.Contains("ApprovedEvent"):
+                        await ((EventLog<ApprovedEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
                         break;
                 }
             }

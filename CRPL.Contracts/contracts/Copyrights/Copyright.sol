@@ -70,7 +70,10 @@ abstract contract Copyright is ICopyright {
             _shareholders[rightId].push(to[i]);
         }
 
+        _approvedAddress[_copyCount.getCurrent()] = msg.sender;
+
         emit Registered(rightId, to);
+        emit Approved(rightId, msg.sender);
     }
 
     function _register (OwnershipStake[] memory to) internal validShareholders(to) returns (uint256) {
@@ -78,7 +81,7 @@ abstract contract Copyright is ICopyright {
         return _copyCount.getCurrent();
     }
 
-    function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external override validId(rightId) validShareholders(restructured) isShareholder(rightId, msg.sender) payable {
+    function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external override validId(rightId) validShareholders(restructured) isShareholderOrApproved(rightId, msg.sender) payable {
         
         for (uint8 i = 0; i < restructured.length; i++) {
 
@@ -94,7 +97,7 @@ abstract contract Copyright is ICopyright {
         return _getProposedRestructure(rightId);
     }
 
-    function BindRestructure(uint256 rightId, bool accepted) external override isShareholder(rightId, msg.sender) validId(rightId) payable 
+    function BindRestructure(uint256 rightId, bool accepted) external override isShareholderOrApproved(rightId, msg.sender) validId(rightId) payable 
     {
         _checkHasVoted(rightId, msg.sender);
      
@@ -130,7 +133,7 @@ abstract contract Copyright is ICopyright {
 
     }
 
-    function ApproveOne(uint256 rightId, address approved) external override validId(rightId) validAddress(approved) isShareholder(rightId, msg.sender) payable {
+    function ApproveOne(uint256 rightId, address approved) external override validId(rightId) validAddress(approved) isShareholderOrApproved(rightId, msg.sender) payable {
         // check approved is not owner of copyright
 
         _approvedAddress[rightId] = approved;
@@ -189,13 +192,14 @@ abstract contract Copyright is ICopyright {
 
     //////////// MODIFIERS ////////////
 
-    modifier isShareholder(uint256 rightId, address addr) 
+    modifier isShareholderOrApproved(uint256 rightId, address addr) 
     {
         uint8 c = 0;
         for (uint8 i = 0; i < _shareholders[rightId].length; i++) 
         {
             if (_shareholders[rightId][i].owner == addr) c ++;
         }
+        if (_approvedAddress[rightId] == addr) c ++;
         require(c == 1, NOT_SHAREHOLDER);
         _;
     }
