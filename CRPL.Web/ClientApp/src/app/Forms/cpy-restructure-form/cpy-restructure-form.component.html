@@ -13,10 +13,17 @@
       </clr-alert-item>
     </clr-alert>
 
-    <ownership-structure-view [OwnershipStructure]="RegisteredWork.OwnershipStructure" *ngIf="RegisteredWork.OwnershipStructure"></ownership-structure-view>
+    <div id="current-ownership">
+      <h4>Current ownership structure</h4>
+      <hr/>
+      <ownership-structure-view [OwnershipStructure]="RegisteredWork.OwnershipStructure" *ngIf="RegisteredWork.OwnershipStructure"></ownership-structure-view>
+    </div>
 
-    <ownership-structure-form [Form]="ProposedStructure"></ownership-structure-form>
-
+    <div id="proposed-ownership">
+      <h4>Proposed ownership structure</h4>
+      <hr/>
+      <ownership-structure-form [Form]="ProposedStructure"></ownership-structure-form>
+    </div>
     {{RestructureForm.value | json}}
 
     <clr-checkbox-wrapper>

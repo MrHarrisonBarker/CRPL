@@ -1,6 +1,9 @@
-<div id="ownership-structure">
-  <div  [style.flex]="ShareStyle(share)" *ngFor="let share of OwnershipStructure"></div>
+<div id="ownership-structure" *ngIf="OwnershipStructure">
+  <div  [style.flex]="ShareStyle(share)" [style.background-color]="ColourMap[share.Owner]" *ngFor="let share of OwnershipStructure"></div>
 </div>
 
-<p>ownership-structure-view works!</p>
+<div>
+  <div *ngFor="let share of OwnershipStructure"><span [style.background-color]="ColourMap[share.Owner]" class="badge">{{share.Share}}</span><span>{{share.Owner}}</span></div>
+</div>
+
 {{OwnershipStructure | json}}

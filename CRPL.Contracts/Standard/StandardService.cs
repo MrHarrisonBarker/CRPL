@@ -238,7 +238,7 @@ namespace CRPL.Contracts.Standard
              return ContractHandler.SendRequestAndWaitForReceiptAsync(proposeRestructureFunction, cancellationToken);
         }
 
-        public Task<string> ProposeRestructureRequestAsync(BigInteger rightId, List<OwnershipStake> restructured)
+        public Task<string> ProposeRestructureRequestAsync(BigInteger rightId, List<OwnershipStakeContract> restructured)
         {
             var proposeRestructureFunction = new ProposeRestructureFunction();
                 proposeRestructureFunction.RightId = rightId;
@@ -247,7 +247,7 @@ namespace CRPL.Contracts.Standard
              return ContractHandler.SendRequestAsync(proposeRestructureFunction);
         }
 
-        public Task<TransactionReceipt> ProposeRestructureRequestAndWaitForReceiptAsync(BigInteger rightId, List<OwnershipStake> restructured, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> ProposeRestructureRequestAndWaitForReceiptAsync(BigInteger rightId, List<OwnershipStakeContract> restructured, CancellationTokenSource cancellationToken = null)
         {
             var proposeRestructureFunction = new ProposeRestructureFunction();
                 proposeRestructureFunction.RightId = rightId;
@@ -266,7 +266,7 @@ namespace CRPL.Contracts.Standard
              return ContractHandler.SendRequestAndWaitForReceiptAsync(registerFunction, cancellationToken);
         }
 
-        public Task<string> RegisterRequestAsync(List<OwnershipStake> to)
+        public Task<string> RegisterRequestAsync(List<OwnershipStakeContract> to)
         {
             var registerFunction = new RegisterFunction();
                 registerFunction.To = to;
@@ -274,7 +274,7 @@ namespace CRPL.Contracts.Standard
              return ContractHandler.SendRequestAsync(registerFunction);
         }
 
-        public Task<TransactionReceipt> RegisterRequestAndWaitForReceiptAsync(List<OwnershipStake> to, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> RegisterRequestAndWaitForReceiptAsync(List<OwnershipStakeContract> to, CancellationTokenSource cancellationToken = null)
         {
             var registerFunction = new RegisterFunction();
                 registerFunction.To = to;
@@ -306,7 +306,7 @@ namespace CRPL.Contracts.Standard
              return ContractHandler.SendRequestAndWaitForReceiptAsync(registerWithMetaFunction, cancellationToken);
         }
 
-        public Task<string> RegisterWithMetaRequestAsync(List<OwnershipStake> to, Meta def)
+        public Task<string> RegisterWithMetaRequestAsync(List<OwnershipStakeContract> to, Meta def)
         {
             var registerWithMetaFunction = new RegisterWithMetaFunction();
                 registerWithMetaFunction.To = to;
@@ -315,7 +315,7 @@ namespace CRPL.Contracts.Standard
              return ContractHandler.SendRequestAsync(registerWithMetaFunction);
         }
 
-        public Task<TransactionReceipt> RegisterWithMetaRequestAndWaitForReceiptAsync(List<OwnershipStake> to, Meta def, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> RegisterWithMetaRequestAndWaitForReceiptAsync(List<OwnershipStakeContract> to, Meta def, CancellationTokenSource cancellationToken = null)
         {
             var registerWithMetaFunction = new RegisterWithMetaFunction();
                 registerWithMetaFunction.To = to;

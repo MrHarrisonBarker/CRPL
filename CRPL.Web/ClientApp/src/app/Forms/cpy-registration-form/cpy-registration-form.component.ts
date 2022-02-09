@@ -8,10 +8,10 @@ import {CopyrightRegistrationInputModel} from "../../_Models/Applications/Copyri
 import {ValidatorsService} from "../../_Services/validators.service";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
-import {debounceTime, switchMap, takeUntil, tap} from "rxjs/operators";
-import {Observable, Subject} from "rxjs";
+import {catchError, debounceTime, switchMap, takeUntil, tap} from "rxjs/operators";
+import {Observable, of, Subject} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
 
 interface RightMeta
 {
@@ -118,7 +118,11 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
     this.RegistrationForm.valueChanges.pipe(
       debounceTime(1500),
-      switchMap(formValue => this.save()),
+      switchMap(formValue =>
+      {
+        if (!this.RegistrationForm.pending) return this.save()
+        return of(null);
+      }),
       takeUntil(this.unsubscribe)
     ).subscribe(res =>
     {
@@ -168,6 +172,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
   private save (): Observable<CopyrightRegistrationViewModel>
   {
+    console.log("saving");
     this.alertService.StartLoading();
     let ownership: OwnershipStake[] = this.OwnershipStructure.controls.Stakes.value;
 
@@ -183,7 +188,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
       WorkHash: this.RegistrationForm.value.WorkHash
     }
 
-    return this.formsService.UpdateCopyrightRegistration(inputModel).pipe(tap(crp => this.ExistingApplication = crp));
+    return this.formsService.UpdateCopyrightRegistration(inputModel).pipe(tap(crp => this.ExistingApplication = crp), catchError(err => of(null as any)));
   }
 
   private populateForm (): void
@@ -200,19 +205,38 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
     });
 
     this.OwnershipStructure.patchValue({
-      TotalShares: model.OwnershipStakes.map(x => x.Share).reduce((previousValue, currentValue) => previousValue + currentValue),
-      Stakes: model.OwnershipStakes
+      TotalShares: model.OwnershipStakes.map(x => x.Share).reduce((previousValue, currentValue) => previousValue + currentValue)
     });
+
+    (this.OwnershipStructure.controls.Stakes as FormArray).clear();
+    for (let stake of model.OwnershipStakes)
+    {
+      (this.OwnershipStructure.controls.Stakes as FormArray).push(this.generateStake(stake))
+    }
 
     console.log('populated form', this.RegistrationForm.value);
   }
 
-  public Submit():void
+  private generateStake (stake: OwnershipStake)
   {
-    this.formsService.SubmitCopyrightRegistration(this.ExistingApplication.Id).subscribe(x =>
+    return this.formBuilder.group({
+      Owner: [stake.Owner, [Validators.required], [this.validatorService.RealShareholderValidator()]],
+      Share: [stake.Share, [Validators.required, Validators.min(1)]]
+    })
+  }
+
+  public Submit (): void
+  {
+    this.save().subscribe(x =>
     {
-      // if submitted route away to dashboard
-      if (x) this.router.navigate(['/dashboard']);
-    }, error => this.alertService.Alert({Type: 'danger', Message: error.error}))
+      if (x)
+      {
+        this.formsService.SubmitCopyrightRegistration(this.ExistingApplication.Id).subscribe(x =>
+        {
+          // if submitted route away to dashboard
+          if (x) this.router.navigate(['/dashboard']);
+        }, error => this.alertService.Alert({Type: 'danger', Message: error.error}))
+      }
+    })
   }
 }

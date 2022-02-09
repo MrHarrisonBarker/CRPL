@@ -4,7 +4,7 @@ import {ApplicationType, ApplicationViewModel} from "../../_Models/Applications/
 @Component({
   selector: 'application-type [Application]',
   template: '<span [ngClass]="map[Type]">{{Type}}</span>',
-  styleUrls: ['']
+  styles: ['']
 })
 export class ApplicationTypeComponent implements OnInit
 {

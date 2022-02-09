@@ -33,7 +33,7 @@ public class RegisteredWorkWithAppsViewModel
     public string? RightId { get; set; }
     public byte[]? Hash { get; set; }
     public string? RegisteredTransactionId { get; set; }
-    public List<Contracts.Standard.ContractDefinition.OwnershipStake>? OwnershipStructure { get; set; }
+    public List<Contracts.Standard.ContractDefinition.OwnershipStakeContract>? OwnershipStructure { get; set; }
     public List<UserAccountMinimalViewModel> AssociatedUsers { get; set; }
     public List<ApplicationViewModelWithoutAssociated> AssociatedApplication { get; set; }
 }

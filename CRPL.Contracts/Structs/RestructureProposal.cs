@@ -8,8 +8,8 @@ namespace CRPL.Contracts.Standard.ContractDefinition
     public class RestructureProposalBase 
     {
         [Parameter("tuple[]", "oldStructure", 1)]
-        public virtual List<OwnershipStake> OldStructure { get; set; }
+        public virtual List<OwnershipStakeContract> OldStructure { get; set; }
         [Parameter("tuple[]", "newStructure", 2)]
-        public virtual List<OwnershipStake> NewStructure { get; set; }
+        public virtual List<OwnershipStakeContract> NewStructure { get; set; }
     }
 }

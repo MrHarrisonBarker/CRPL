@@ -65,7 +65,7 @@ public class RegistrationService : IRegistrationService
         var handler = BlockchainConnection.Web3().Eth.GetContractTransactionHandler<RegisterWithMetaFunction>();
         var register = new RegisterWithMetaFunction
         {
-            To = application.OwnershipStakes.Decode().Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
+            To = application.OwnershipStakes.Decode().Select(x => Mapper.Map<OwnershipStakeContract>(x)).ToList(),
             Def = new Meta
             {
                 Expires = new BigInteger((DateTime.Now.AddYears(application.YearsExpire) - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds),

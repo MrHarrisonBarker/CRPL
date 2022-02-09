@@ -135,7 +135,7 @@ namespace CRPL.Contracts.Standard.ContractDefinition
         [Parameter("uint256", "rightId", 1)]
         public virtual BigInteger RightId { get; set; }
         [Parameter("tuple[]", "restructured", 2)]
-        public virtual List<OwnershipStake> Restructured { get; set; }
+        public virtual List<OwnershipStakeContract> Restructured { get; set; }
     }
 
     public partial class RegisterFunction : RegisterFunctionBase { }
@@ -144,7 +144,7 @@ namespace CRPL.Contracts.Standard.ContractDefinition
     public class RegisterFunctionBase : FunctionMessage
     {
         [Parameter("tuple[]", "to", 1)]
-        public virtual List<OwnershipStake> To { get; set; }
+        public virtual List<OwnershipStakeContract> To { get; set; }
     }
 
     public partial class RegisterTimeFunction : RegisterTimeFunctionBase { }
@@ -162,7 +162,7 @@ namespace CRPL.Contracts.Standard.ContractDefinition
     public class RegisterWithMetaFunctionBase : FunctionMessage
     {
         [Parameter("tuple[]", "to", 1)]
-        public virtual List<OwnershipStake> To { get; set; }
+        public virtual List<OwnershipStakeContract> To { get; set; }
         [Parameter("tuple", "def", 2)]
         public virtual Meta Def { get; set; }
     }
@@ -270,7 +270,7 @@ namespace CRPL.Contracts.Standard.ContractDefinition
         [Parameter("uint256", "rightId", 1, true )]
         public virtual BigInteger RightId { get; set; }
         [Parameter("tuple[]", "to", 2, false )]
-        public virtual List<OwnershipStake> To { get; set; }
+        public virtual List<OwnershipStakeContract> To { get; set; }
     }
 
     public partial class RestructuredEventDTO : RestructuredEventDTOBase { }
@@ -341,7 +341,7 @@ namespace CRPL.Contracts.Standard.ContractDefinition
     public class OwnershipOfOutputDTOBase : IFunctionOutputDTO 
     {
         [Parameter("tuple[]", "", 1)]
-        public virtual List<OwnershipStake> ReturnValue1 { get; set; }
+        public virtual List<OwnershipStakeContract> ReturnValue1 { get; set; }
     }
 
     public partial class PortfolioSizeOutputDTO : PortfolioSizeOutputDTOBase { }

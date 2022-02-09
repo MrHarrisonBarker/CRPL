@@ -2,7 +2,7 @@ using Nethereum.ABI.FunctionEncoding.Attributes;
 
 namespace CRPL.Contracts.Standard.ContractDefinition
 {
-    public partial class OwnershipStake : OwnershipStakeBase { }
+    public partial class OwnershipStakeContract : OwnershipStakeBase { }
 
     public class OwnershipStakeBase 
     {
