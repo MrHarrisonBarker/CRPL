@@ -29,7 +29,7 @@ export class CopyrightViewComponent implements OnInit
     let openApplications = this.Copyright.AssociatedApplication.filter(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Incomplete);
     let submittedApplications = this.Copyright.AssociatedApplication.find(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Submitted);
 
-    return openApplications != undefined || !submittedApplications;
+    return  !submittedApplications;
   }
 
   get ExistingRestructure (): OwnershipRestructureViewModel | undefined

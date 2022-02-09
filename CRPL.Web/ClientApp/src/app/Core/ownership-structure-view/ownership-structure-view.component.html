@@ -3,7 +3,7 @@
 </div>
 
 <div>
-  <div *ngFor="let share of OwnershipStructure"><span [style.background-color]="ColourMap[share.Owner]" class="badge">{{share.Share}}</span><span>{{share.Owner}}</span></div>
+  <div *ngFor="let share of OwnershipStructure"><span [style.background-color]="ColourMap[share.Owner]" class="badge">{{share.Share}}</span><a [href]="AccountLink(share.Owner)">{{share.Owner}}</a></div>
 </div>
 
-{{OwnershipStructure | json}}
+<!--{{OwnershipStructure | json}}-->

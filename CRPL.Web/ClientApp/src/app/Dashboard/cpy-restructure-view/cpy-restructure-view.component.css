@@ -1,0 +1,15 @@
+#current-ownership {
+  margin: 1rem;
+}
+
+#current-ownership > hr {
+  margin-bottom: 1rem;
+}
+
+#proposed-ownership {
+  margin: 1rem;
+}
+
+#proposed-ownership > hr {
+  margin-bottom: 1rem;
+}

@@ -22,19 +22,24 @@ export class OwnershipStructureViewComponent implements OnInit
     this.OwnershipStructure.forEach(share => this.ColourMap[share.Owner] = this.randomColor())
   }
 
-  public ShareStyle(stake: OwnershipStake): number
+  public ShareStyle (stake: OwnershipStake): number
   {
     return (stake.Share / this.TotalShares) * 100;
   }
 
-  private randomColor(): string
+  private randomColor (): string
   {
     let color = '#';
     let letters = '0123456789ABCDEF'
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 6; i++)
+    {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
   }
 
+  public AccountLink (address: string): string
+  {
+    return "https://etherscan.io/address/" + address;
+  }
 }

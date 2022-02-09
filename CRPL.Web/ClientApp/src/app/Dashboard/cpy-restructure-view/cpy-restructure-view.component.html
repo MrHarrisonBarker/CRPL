@@ -1,1 +1,24 @@
-<p>cpy-restructure-view works!</p>
+<div class="card">
+  <div class="card-header">
+    Ownership restructure
+    <application-status [status]="Application.Status"></application-status>
+  </div>
+  <div class="card-block">
+    <div id="current-ownership">
+      <h4>Current ownership structure</h4>
+      <hr/>
+      <ownership-structure-view [OwnershipStructure]="Application.CurrentStructure" *ngIf="Application"></ownership-structure-view>
+    </div>
+
+    <div id="proposed-ownership">
+      <h4>Proposed ownership structure</h4>
+      <hr/>
+      <ownership-structure-view [OwnershipStructure]="Application.ProposedStructure" *ngIf="Application"></ownership-structure-view>
+    </div>
+  </div>
+
+  <div class="card-footer">
+    <button class="btn btn-sm">Cancel application</button>
+    <button class="btn btn-sm">Bind proposal</button>
+  </div>
+</div>
