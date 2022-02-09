@@ -18,6 +18,7 @@ public class FormsService : IFormsService
     private readonly IMapper Mapper;
     private readonly IUserService UserService;
     private readonly IRegistrationService RegistrationService;
+    private readonly ICopyrightService CopyrightService;
     private readonly AppSettings Options;
 
     public FormsService(
@@ -26,13 +27,15 @@ public class FormsService : IFormsService
         IMapper mapper,
         IOptions<AppSettings> options,
         IUserService userService,
-        IRegistrationService registrationService)
+        IRegistrationService registrationService,
+        ICopyrightService copyrightService)
     {
         Logger = logger;
         Context = context;
         Mapper = mapper;
         UserService = userService;
         RegistrationService = registrationService;
+        CopyrightService = copyrightService;
         Options = options.Value;
     }
 
@@ -87,7 +90,7 @@ public class FormsService : IFormsService
         }
 
         Context.Applications.Update(application);
-        application.Update(inputModel, Mapper, UserService);
+        await application.Update(inputModel, Mapper, UserService, CopyrightService);
         application.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();

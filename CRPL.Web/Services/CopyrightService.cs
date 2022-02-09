@@ -2,8 +2,10 @@ using System.Numerics;
 using AutoMapper;
 using CRPL.Contracts.Standard;
 using CRPL.Data.Account;
+using CRPL.Data.Applications;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
+using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nethereum.Contracts;
@@ -25,6 +27,29 @@ public class CopyrightService : ICopyrightService
         Mapper = mapper;
         BlockchainConnection = blockchainConnection;
         ContractRepository = contractRepository;
+    }
+
+    public async Task<RegisteredWork> GetWork(Guid id)
+    {
+        return (await Context.RegisteredWorks
+            .Include(x => x.AssociatedApplication)
+            .Include(x => x.UserWorks)
+            .FirstOrDefaultAsync(x => x.Id == id))!;
+    }
+
+    public async Task AttachWorkToApplicationAndCheckValid(Guid id, Application application)
+    {
+        var work = await Context.RegisteredWorks.Include(x => x.AssociatedApplication).FirstOrDefaultAsync(x => x.Id == id);
+
+        if (work == null) throw new WorkNotFoundException(id);
+        if (work.Registered == null) throw new Exception("The work is not registered!");
+        if (work.Status == RegisteredWorkStatus.Registered) throw new Exception("The work is not registered!");
+        
+        if (work.AssociatedApplication.Any(x => x.Id == application.Id)) return;
+
+        Context.RegisteredWorks.Update(work);
+        
+        work.AssociatedApplication.Add(application);
     }
 
     public async Task<List<RegisteredWorkWithAppsViewModel>> GetUsersWorks(Guid id)

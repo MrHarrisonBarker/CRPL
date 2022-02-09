@@ -22,7 +22,7 @@ public class AutoMapping : Profile
 
         CreateMap<Application, ApplicationViewModelWithoutAssociated>().IncludeAllDerived();
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModelWithoutAssociated>();
-
+        CreateMap<OwnershipRestructureApplication, OwnershipRestructureViewModelWithoutAssociated>();
 
         CreateMap<Application, ApplicationViewModel>()
             .ForMember(model => model.AssociatedWork, x => x.MapFrom(src => src.AssociatedWork))
