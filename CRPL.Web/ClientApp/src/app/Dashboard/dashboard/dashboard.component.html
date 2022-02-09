@@ -33,9 +33,10 @@
             </section>
           </nav>
           <div class="content-area">
-            {{Selected | json}}
             <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected"></copyright-view>
             <applications-view [Application]="Selected" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
+
+            {{Selected | json}}
           </div>
         </div>
       </clr-tab-content>

@@ -1,0 +1,7 @@
+#ownership-structure {
+  height: 1rem;
+}
+
+#ownership-structure > div {
+  height: 100%;
+}

@@ -1,25 +1,34 @@
-{{Copyright | json}}
 <div id="copyright-card">
   <div class="card">
     <div class="card-header">
-      Work title <copyright-status [status]="Copyright.Status"></copyright-status>
+      Work title
+      <copyright-status [status]="Copyright.Status"></copyright-status>
     </div>
     <div class="card-block">
       <div class="card-title">{{Copyright.Id}}</div>
       <div class="card-text" id="copyright-info">
-        <span>{{Copyright.RegisteredTransactionId}}</span>
-        <span><b>Work hash</b> {{Copyright.Hash | slice:0:20}}...</span>
-        <span><em><b>Registered on</b> {{Copyright.Registered | date}}</em></span>
-        <span><b>Copyright id</b> {{Copyright.RightId}}</span>
-        <br>
-        GET data from blockchain and inject
+        <span>{{Copyright.RegisteredTransactionId}}</span> <span><b>Work hash</b> {{Copyright.Hash | slice:0:20}}...</span> <span><em><b>Registered on</b> {{Copyright.Registered | date}}</em></span> <span><b>Copyright id</b> {{Copyright.RightId}}</span> <br> GET data from blockchain and inject
       </div>
+      <!--      <applications-view [Application]="application" [ShowForms]="false" *ngFor="let application of Copyright.AssociatedApplication"></applications-view>-->
 
-      <applications-view [Application]="application" [ShowForms]="false" *ngFor="let application of Copyright.AssociatedApplication"></applications-view>
+      {{Copyright.AssociatedApplication | json}}
+
+      <div id="applications" *ngIf="Copyright.AssociatedApplication">
+        <h4>Applications</h4>
+        <clr-accordion>
+          <clr-accordion-panel *ngFor="let application of Copyright.AssociatedApplication">
+            <clr-accordion-title>{{application.Id}}
+              <application-status [status]="application.Status"></application-status>
+              <application-type [Application]="application"></application-type>
+            </clr-accordion-title>
+            <clr-accordion-content *clrIfExpanded>{{application.Created | date:'long'}} {{application.Modified | date:'long'}}</clr-accordion-content>
+          </clr-accordion-panel>
+        </clr-accordion>
+      </div>
 
     </div>
     <div class="card-footer">
-      <button class="btn btn-sm" (click)="RestructureOpen = true">Restructure ownership</button>
+      <button class="btn btn-sm" (click)="RestructureOpen = true" [disabled]="!IsRestructureAllowed">Restructure ownership</button>
     </div>
   </div>
 </div>
@@ -27,10 +36,12 @@
 <clr-modal [(clrModalOpen)]="RestructureOpen" clrModalSize="xl">
   <h3 class="modal-title">Restructure ownership</h3>
   <div class="modal-body">
-    <cpy-restructure-form [RegisteredWork]="Copyright"></cpy-restructure-form>
+    <cpy-restructure-form [RegisteredWork]="Copyright" [ExistingApplication]="ExistingRestructure"></cpy-restructure-form>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline" (click)="RestructureOpen = false">Cancel</button>
     <button type="button" class="btn btn-primary" (click)="RestructureOpen = false">Ok</button>
   </div>
 </clr-modal>
+
+{{Copyright | json}}

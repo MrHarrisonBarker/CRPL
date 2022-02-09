@@ -18,5 +18,5 @@ export interface RegisteredWorkViewModel
   Hash?: string,
   RegisteredTransactionId: string,
   OwnershipStructure?: OwnershipStake[],
-  AssociatedApplication: ApplicationViewModel[]
+  AssociatedApplication?: ApplicationViewModel[]
 }

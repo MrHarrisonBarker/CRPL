@@ -31,6 +31,7 @@ import {SubmittedViewComponent} from "./Dashboard/cpy-registration-view/cpy-regi
 import {IndervidualApplicationComponent} from "./Forms/application-indervidual/application.component";
 import {OwnershipStructureFormComponent} from "./Forms/ownership-structure-form/ownership-structure-form.component";
 import {CpyRegistrationViewComponent} from "./Dashboard/cpy-registration-view/cpy-registration-view.component";
+import {ApplicationTypeComponent} from "./Core/application-type/application-type.component";
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import {CpyRegistrationViewComponent} from "./Dashboard/cpy-registration-view/cp
     CpyRestructureViewComponent,
     IndervidualApplicationComponent,
     OwnershipStructureFormComponent,
-    CpyRegistrationViewComponent
+    CpyRegistrationViewComponent,
+    ApplicationTypeComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

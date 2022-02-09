@@ -6,3 +6,17 @@
   display: flex;
   flex-direction: column;
 }
+
+application-status {
+  margin-left: 1rem;
+}
+
+#applications {
+  display: flex;
+  margin: 0.2rem;
+  flex-direction: column;
+}
+
+#applications > h4 {
+  margin: 0.5rem;
+}

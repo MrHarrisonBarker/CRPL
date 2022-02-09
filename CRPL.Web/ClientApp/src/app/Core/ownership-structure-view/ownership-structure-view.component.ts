@@ -9,6 +9,7 @@ import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
 export class OwnershipStructureViewComponent implements OnInit
 {
   @Input() OwnershipStructure!: OwnershipStake[];
+  public TotalShares!: number;
 
   constructor ()
   {
@@ -16,6 +17,12 @@ export class OwnershipStructureViewComponent implements OnInit
 
   ngOnInit (): void
   {
+    this.TotalShares = this.OwnershipStructure.map(x => x.Share).reduce((previousValue, currentValue) => previousValue + currentValue);
+  }
+
+  public ShareStyle(stake: OwnershipStake): number
+  {
+    return (stake.Share / this.TotalShares) * 100;
   }
 
 }

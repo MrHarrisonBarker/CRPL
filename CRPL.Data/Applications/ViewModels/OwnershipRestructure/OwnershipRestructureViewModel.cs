@@ -7,3 +7,8 @@ public class OwnershipRestructureViewModel : ApplicationViewModel
     public List<OwnershipStake> CurrentStructure { get; set; }
     public List<OwnershipStake> ProposedStructure { get; set; }
 }
+
+public class OwnershipRestructureViewModelWithoutAssociated : ApplicationViewModelWithoutAssociated
+{
+    
+}

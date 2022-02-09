@@ -11,6 +11,7 @@ public static class RegisteredEventProcessor
 {
     public static async Task ProcessEvent(this EventLog<RegisteredEventDTO> registeredEvent, IServiceProvider serviceProvider)
     {
+        // TODO: LOGGER !!!
         using var scope = serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
 

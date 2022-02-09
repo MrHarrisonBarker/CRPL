@@ -69,7 +69,7 @@ public class UserService : IUserService
     public bool AreUsersReal(List<string> userAddresses)
     {
         Logger.LogInformation("are these users real? {Users}", string.Join(",", userAddresses));
-        var userAccounts = Context.UserAccounts.Where(x => userAddresses.Contains(x.Wallet.PublicAddress)).ToList();
+        var userAccounts = Context.UserAccounts.Where(x => userAddresses.Select(a => a.ToLower()).Contains(x.Wallet.PublicAddress.ToLower())).ToList();
         return userAccounts.Count == userAddresses.Count;
     }
 

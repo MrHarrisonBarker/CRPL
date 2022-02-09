@@ -1,7 +1,3 @@
-using CRPL.Contracts.Copyleft;
-using CRPL.Contracts.Copyleft.ContractDefinition;
-using CRPL.Contracts.Permissive;
-using CRPL.Contracts.Permissive.ContractDefinition;
 using CRPL.Contracts.Standard;
 using CRPL.Contracts.Standard.ContractDefinition;
 using CRPL.Data.BlockchainUtils;
@@ -10,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Web3;
-using Nethereum.Web3.Accounts;
 
 namespace CRPL.Data.ContractDeployment;
 
@@ -27,10 +22,10 @@ public class ContractRepository : IContractRepository
         {
             case CopyrightContract.Standard:
                 return await StandardService.DeployContractAndWaitForReceiptAsync(connection, new StandardDeployment(), cancellationTokenSource);
-            case CopyrightContract.Copyleft:
-                return await CopyleftService.DeployContractAndWaitForReceiptAsync(connection, new CopyleftDeployment(), cancellationTokenSource);
-            case CopyrightContract.Permissive:
-                return await PermissiveService.DeployContractAndWaitForReceiptAsync(connection, new PermissiveDeployment(), cancellationTokenSource);
+            // case CopyrightContract.Copyleft:
+                // return await CopyleftService.DeployContractAndWaitForReceiptAsync(connection, new CopyleftDeployment(), cancellationTokenSource);
+            // case CopyrightContract.Permissive:
+                // return await PermissiveService.DeployContractAndWaitForReceiptAsync(connection, new PermissiveDeployment(), cancellationTokenSource);
             default:
                 throw new ArgumentOutOfRangeException(nameof(contractType), contractType, null);
         }
@@ -91,10 +86,10 @@ public class ContractRepository : IContractRepository
     private async void init()
     {
         // runs with a clear workspace to deploy all contracts needed
-        foreach (CopyrightContract contractType in Enum.GetValues<CopyrightContract>())
-        {
-            await deployContract(contractType, BlockchainConnection.Web3());
-        }
+        // foreach (CopyrightContract contractType in Enum.GetValues<CopyrightContract>())
+        // {
+            await deployContract(CopyrightContract.Standard, BlockchainConnection.Web3());
+        // }
     }
 
     private async Task deployContract(CopyrightContract contractType, Web3 web3)
