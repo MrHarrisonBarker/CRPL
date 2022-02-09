@@ -1,6 +1,7 @@
 using CRPL.Contracts.Standard.ContractDefinition;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
+using Nethereum.BlockchainProcessing;
 
 namespace CRPL.Web.Services.Background;
 
@@ -26,18 +27,16 @@ public class BlockchainEventListener : BackgroundService
         Logger.LogInformation("Starting blockchain event listener");
         var latestBlock = await BlockchainConnection.Web3().Eth.Blocks.GetBlockNumber.SendRequestAsync();
 
-        var processor = BlockchainConnection.Web3().Processing.Logs
-            .CreateProcessorForContract<RegisteredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log));
-
-        var approvedProcessor = BlockchainConnection.Web3().Processing.Logs
-            .CreateProcessorForContract<ApprovedEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log));
+        List<BlockchainProcessor> processors = new List<BlockchainProcessor>()
+        {
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<RegisteredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log)),
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<ApprovedEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log)),
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<ProposedRestructureEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log)),
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<RestructuredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log)),
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<FailedProposalEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log))
+        };
         
-        var proposedProcessor = BlockchainConnection.Web3().Processing.Logs
-            .CreateProcessorForContract<ProposedRestructureEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log));
-        
-        Task.Run(async () => await processor.ExecuteAsync(stoppingToken));
-        Task.Run(async () => await proposedProcessor.ExecuteAsync(stoppingToken));
-        await Task.Run(async () => await approvedProcessor.ExecuteAsync(stoppingToken));
+        processors.ForEach(x => Task.Run(async () => await x.ExecuteAsync(stoppingToken), stoppingToken));
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

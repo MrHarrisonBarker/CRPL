@@ -7,6 +7,7 @@ using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
+using CRPL.Data.Proposal;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -86,8 +87,34 @@ public class CopyrightService : ICopyrightService
             Logger.LogError(e, "Exception thrown when sending restructure proposal transaction");
             throw;
         }
+    }
 
-        throw new NotImplementedException();
+    public async Task BindProposal(BindProposalInput proposalInput)
+    {
+        var application = await Context.Applications.Include(x => x.AssociatedWork).FirstOrDefaultAsync(x => x.Id == proposalInput.ApplicationId);
+        if (application == null) throw new ApplicationNotFoundException(proposalInput.ApplicationId);
+        if (application.AssociatedWork == null) throw new WorkNotFoundException();
+        
+        var handler = BlockchainConnection.Web3().Eth.GetContractTransactionHandler<BindRestructureFunction>();
+        var bind = new BindRestructureFunction()
+        {
+            RightId = BigInteger.Parse(application.AssociatedWork.RightId),
+            Accepted = proposalInput.Accepted
+        };
+        
+        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, bind);
+
+        try
+        {
+            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, bind);
+
+            Logger.LogInformation("sent restructure bind transaction at {Id}", transactionId);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when sending restructure bind transaction");
+            throw;
+        }
     }
 
     public async Task<List<RegisteredWorkWithAppsViewModel>> GetUsersWorks(Guid id)

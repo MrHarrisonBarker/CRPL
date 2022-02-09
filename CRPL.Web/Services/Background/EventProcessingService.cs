@@ -40,11 +40,14 @@ public class EventProcessingService : BackgroundService
                     case var name when name.Contains("ProposedRestructureEvent"):
                         await ((EventLog<ProposedRestructureEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
                         break;
+                    case var name when name.Contains("RestructuredEvent"):
+                        await ((EventLog<RestructuredEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
+                        break;
                 }
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Error occurred when processing event {Event}", nameof(nextEvent));
+                Logger.LogError(ex, "Error occurred when processing event {Event}", nextEvent.GetType().FullName);
             }
         }
     }

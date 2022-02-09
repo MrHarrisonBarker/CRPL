@@ -1,4 +1,5 @@
 using CRPL.Data.Account;
+using CRPL.Data.Proposal;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +40,21 @@ public class CopyrightController : ControllerBase
         try
         {
             return await CopyrightService.GetUsersWorks(id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when getting users application");
+            throw;
+        }
+    }
+
+    [HttpPost("bind")]
+    public async Task<ActionResult> BindProposal(BindProposalInput proposalInput)
+    {
+        try
+        {
+            await CopyrightService.BindProposal(proposalInput);
+            return Ok();
         }
         catch (Exception e)
         {
