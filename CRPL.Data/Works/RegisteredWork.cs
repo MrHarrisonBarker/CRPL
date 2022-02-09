@@ -20,6 +20,7 @@ public class RegisteredWork
     public string? RightId { get; set; }
     public byte[]? Hash { get; set; }
     public string? RegisteredTransactionId { get; set; }
+    public string? ProposalTransactionId { get; set; }
     public List<UserWork> UserWorks { get; set; }
     public List<Application> AssociatedApplication { get; set; }
 }

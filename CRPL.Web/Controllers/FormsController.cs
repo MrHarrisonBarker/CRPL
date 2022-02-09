@@ -1,3 +1,4 @@
+using CRPL.Data.Applications;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Services.Interfaces;
@@ -103,4 +104,17 @@ public class FormsController : ControllerBase
         }
     }
     
+    [HttpPost("copyright/submit/ownership/{id}")]
+    public async Task<OwnershipRestructureViewModel> SubmitOwnershipRestructure(Guid id)
+    {
+        try
+        {
+            return await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when submitting ownership restructure application");
+            throw;
+        }
+    }
 }

@@ -1,8 +1,10 @@
 using System.Numerics;
 using AutoMapper;
 using CRPL.Contracts.Standard;
+using CRPL.Contracts.Standard.ContractDefinition;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.ViewModels;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Web.Exceptions;
@@ -43,13 +45,49 @@ public class CopyrightService : ICopyrightService
 
         if (work == null) throw new WorkNotFoundException(id);
         if (work.Registered == null) throw new Exception("The work is not registered!");
-        if (work.Status == RegisteredWorkStatus.Registered) throw new Exception("The work is not registered!");
-        
+        if (work.Status != RegisteredWorkStatus.Registered) throw new Exception("The work is not registered!");
+
         if (work.AssociatedApplication.Any(x => x.Id == application.Id)) return;
 
         Context.RegisteredWorks.Update(work);
-        
+
         work.AssociatedApplication.Add(application);
+    }
+
+    public async Task<OwnershipRestructureApplication> ProposeRestructure(OwnershipRestructureApplication application)
+    {
+        if (application.AssociatedWork == null) throw new WorkNotFoundException();
+
+        var handler = BlockchainConnection.Web3().Eth.GetContractTransactionHandler<ProposeRestructureFunction>();
+        var propose = new ProposeRestructureFunction()
+        {
+            RightId = BigInteger.Parse(application.AssociatedWork.RightId),
+            Restructured = application.ProposedStructure.Decode().Select(x => Mapper.Map<OwnershipStakeContract>(x)).ToList()
+        };
+
+        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, propose);
+
+        try
+        {
+            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, propose);
+
+            Context.Update(application);
+            application.TransactionId = transactionId;
+            application.AssociatedWork.ProposalTransactionId = transactionId;
+            
+            Logger.LogInformation("sent ownership proposal transaction at {Id}", transactionId);
+            
+            await Context.SaveChangesAsync();
+
+            return application;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when sending restructure proposal transaction");
+            throw;
+        }
+
+        throw new NotImplementedException();
     }
 
     public async Task<List<RegisteredWorkWithAppsViewModel>> GetUsersWorks(Guid id)

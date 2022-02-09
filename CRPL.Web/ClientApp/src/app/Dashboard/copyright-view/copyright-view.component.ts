@@ -36,9 +36,13 @@ export class CopyrightViewComponent implements OnInit
   {
     if (this.Copyright.AssociatedApplication)
     {
-      return this.Copyright.AssociatedApplication.find(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status != ApplicationStatus.Complete) as OwnershipRestructureViewModel;
+      return this.Copyright.AssociatedApplication.find(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Incomplete) as OwnershipRestructureViewModel;
     }
     return undefined as any;
   }
 
+  public CancelRestructure (): void
+  {
+    // TODO: send cancel call
+  }
 }

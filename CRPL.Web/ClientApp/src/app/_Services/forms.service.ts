@@ -55,4 +55,9 @@ export class FormsService
   {
     return this.http.post<OwnershipRestructureViewModel>(this.BaseUrl + FormsPaths.OwnershipRestructure, inputModel);
   }
+
+  public SubmitOwnershipRestructure (id: string) : Observable<OwnershipRestructureViewModel>
+  {
+    return this.http.post<OwnershipRestructureViewModel>(this.BaseUrl + FormsPaths.OwnershipRestructureSubmit + "/" + id, null);
+  }
 }

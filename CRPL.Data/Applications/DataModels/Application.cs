@@ -13,6 +13,7 @@ public abstract class Application
     public ApplicationStatus Status { get; set; }
     public List<UserApplication> AssociatedUsers { get; set; }
     public RegisteredWork? AssociatedWork { get; set; }
+    public string? TransactionId { get; set; }
 
     public Application(ApplicationType applicationType)
     {

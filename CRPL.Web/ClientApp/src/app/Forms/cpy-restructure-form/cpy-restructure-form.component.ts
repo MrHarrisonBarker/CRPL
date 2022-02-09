@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {FormsService} from "../../_Services/forms.service";
@@ -10,13 +10,14 @@ import {OwnershipRestructureInputModel} from "../../_Models/Applications/Ownersh
 import {debounceTime, switchMap, takeUntil, tap} from "rxjs/operators";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
 import {Observable, Subject} from "rxjs";
+import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
 
 @Component({
   selector: 'cpy-restructure-form',
   templateUrl: './cpy-restructure-form.component.html',
   styleUrls: ['./cpy-restructure-form.component.css']
 })
-export class CpyRestructureFormComponent implements OnInit, OnDestroy
+export class CpyRestructureFormComponent implements OnInit, OnDestroy, AfterViewInit
 {
   @Input() RegisteredWork!: RegisteredWorkViewModel;
   @Input() ExistingApplication!: OwnershipRestructureViewModel | undefined;
@@ -55,6 +56,7 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
 
   ngOnInit (): void
   {
+    console.log("starting restructure application", this.ExistingApplication, this.RegisteredWork);
     if (!this.RegisteredWork)
     {
       this.alertService.Alert({Type: 'danger', Message: 'No work found!'})
@@ -64,7 +66,8 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
     if (this.ExistingApplication)
     {
       console.log("There is an existing application", this.ExistingApplication);
-      this.formsService.GetApplication(this.ExistingApplication.Id).subscribe(x => {
+      this.formsService.GetApplication(this.ExistingApplication.Id).subscribe(x =>
+      {
         this.ExistingApplication = x as OwnershipRestructureViewModel;
         this.populate();
       });
@@ -72,7 +75,10 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
       Owner: this.authService.UserAccount.getValue().WalletPublicAddress,
       Share: 100
     }]);
+  }
 
+  ngAfterViewInit (): void
+  {
     this.RestructureForm.valueChanges.pipe(
       debounceTime(1500),
       switchMap(formValue => this.save()),
@@ -106,31 +112,53 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
   {
     if (this.ExistingApplication)
     {
+      (this.ProposedStructure.controls.Stakes as FormArray).clear();
+      for (let stake of this.ExistingApplication.ProposedStructure)
+      {
+        (this.ProposedStructure.controls.Stakes as FormArray).push(this.generateStake(stake))
+      }
+
       this.ProposedStructure.patchValue({
         TotalShares: this.ExistingApplication.ProposedStructure.map(x => x.Share).reduce((previousValue, currentValue) => previousValue + currentValue),
-        Stakes: this.ExistingApplication.ProposedStructure
       });
+
+      (this.CurrentStructure.controls.Stakes as FormArray).clear();
+      for (let stake of this.ExistingApplication.CurrentStructure)
+      {
+        (this.CurrentStructure.controls.Stakes as FormArray).push(this.generateStake(stake))
+      }
 
       this.CurrentStructure.patchValue({
         TotalShares: this.ExistingApplication.CurrentStructure.map(x => x.Share).reduce((previousValue, currentValue) => previousValue + currentValue),
-        Stakes: this.ExistingApplication.CurrentStructure
       });
+      console.log("application populated", this.RestructureForm.value)
     }
+  }
+
+  private generateStake (stake: OwnershipStake)
+  {
+    return this.formBuilder.group({
+      Owner: [stake.Owner, [Validators.required], [this.validatorService.RealShareholderValidator()]],
+      Share: [stake.Share, [Validators.required, Validators.min(1)]]
+    })
   }
 
   private populateCurrentStructure ()
   {
     if (this.RegisteredWork.OwnershipStructure)
     {
-      this.CurrentStructure.patchValue({
-        TotalShares: this.RegisteredWork.OwnershipStructure.map(x => x.Share).reduce((previousValue, currentValue) => previousValue + currentValue),
-        Stakes: this.RegisteredWork.OwnershipStructure
-      });
+      let formArr = (this.CurrentStructure.controls.Stakes as FormArray);
+      formArr.clear()
+      this.RegisteredWork.OwnershipStructure.forEach(s => formArr.push(this.generateStake(s)))
+      this.CurrentStructure.patchValue({TotalShares: this.RegisteredWork.OwnershipStructure.map(x => x.Share).reduce((previousValue, currentValue) => previousValue + currentValue),});
+
+      console.log("populated current struct", this.RestructureForm.value);
     }
   }
 
   private save (): Observable<OwnershipRestructureViewModel>
   {
+    this.alertService.StartLoading();
     console.log("saving restructure application");
 
     let inputModel: OwnershipRestructureInputModel = {
@@ -138,8 +166,17 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
       ProposedStructure: this.ProposedStructure.controls.Stakes.value
     }
 
-    if (this.ExistingApplication) inputModel.WorkId = this.ExistingApplication.Id;
+    if (this.RegisteredWork) inputModel.WorkId = this.RegisteredWork.Id;
+    if (this.ExistingApplication) inputModel.Id = this.ExistingApplication.Id;
 
     return this.formsService.UpdateOwnershipRestructure(inputModel).pipe(tap(crp => this.ExistingApplication = crp));
+  }
+
+  public Submit (): void
+  {
+    this.alertService.StartLoading();
+    // stops change detection and auto save
+    this.unsubscribe.next();
+    if (this.ExistingApplication?.Id) this.formsService.SubmitOwnershipRestructure(this.ExistingApplication.Id).subscribe();
   }
 }

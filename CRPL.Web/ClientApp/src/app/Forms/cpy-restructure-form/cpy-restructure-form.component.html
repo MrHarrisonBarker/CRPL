@@ -30,5 +30,7 @@
       <input type="checkbox" clrCheckbox name="ula" required value="ula" formControlName="AcceptedUla"/> <label>accept ula</label>
     </clr-checkbox-wrapper>
 
+    <button class="btn btn-primary" [disabled]="RestructureForm.invalid" (click)="Submit()">Submit</button>
+
   </form>
 </div>

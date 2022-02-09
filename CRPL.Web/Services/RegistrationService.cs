@@ -85,6 +85,7 @@ public class RegistrationService : IRegistrationService
 
             Context.Update(application);
             application.AssociatedWork.RegisteredTransactionId = transactionId;
+            application.TransactionId = transactionId;
             
             Logger.LogInformation("sent register transaction at {Id}", transactionId);
 

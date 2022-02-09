@@ -102,6 +102,7 @@ public class FormsService : IFormsService
     {
         Logger.LogInformation("Submitting {ApplicationType}", typeof(T).Name);
         var application = (await Context.Applications
+            .Include(x => x.AssociatedWork)
             .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
             .FirstOrDefaultAsync(x => x.Id == id))!;
 
@@ -109,7 +110,7 @@ public class FormsService : IFormsService
 
         if (application.Status == ApplicationStatus.Submitted) throw new Exception("The application has already been submitted");
 
-        var submittedApplication = (T)application.Submit(RegistrationService);
+        var submittedApplication = (T)await application.Submit(RegistrationService, CopyrightService);
         submittedApplication.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();
