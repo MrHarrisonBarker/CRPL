@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./Structs/OwnershipStake.sol";
 import "./Structs/RestructureProposal.sol";
+import "./Structs/ProposalVote.sol";
 
 /// @title Defintion of a multi party shareholder style ownership structure, with consensus voting
 interface IStructuredOwnership {
@@ -36,6 +37,8 @@ interface IStructuredOwnership {
     /// @param rightId The copyright id
     /// @return A restructure proposal
     function Proposal(uint256 rightId) external view returns (RestructureProposal memory);
+    
+    function CurrentVotes(uint256 rightId) external view returns (ProposalVote[] memory);
 
     /// @notice Binds a shareholders vote to a restructure
     /// @dev Must authorize shareholder

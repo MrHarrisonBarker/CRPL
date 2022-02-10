@@ -130,10 +130,16 @@ public class CopyrightService : ICopyrightService
             if (registeredWork.Status == RegisteredWorkStatus.Registered && registeredWork.RightId != null)
             {
                 Logger.LogInformation("{Id} has a registered work, getting info from the blockchain", id);
-                var res =
+                
+                var ownershipOf =
                     await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
                         .OwnershipOfQueryAsync(BigInteger.Parse(registeredWork.RightId));
-                if (res != null) registeredWork.OwnershipStructure = res.ReturnValue1;
+                registeredWork.OwnershipStructure = ownershipOf.ReturnValue1;
+                
+                var currentVotes = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
+                    .CurrentVotesQueryAsync(BigInteger.Parse(registeredWork.RightId));
+
+                registeredWork.CurrentVotes = currentVotes.ReturnValue1;
             }
         }
 

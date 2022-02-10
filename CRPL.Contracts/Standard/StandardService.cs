@@ -117,6 +117,19 @@ namespace CRPL.Contracts.Standard
              return ContractHandler.SendRequestAndWaitForReceiptAsync(bindRestructureFunction, cancellationToken);
         }
 
+        public Task<CurrentVotesOutputDTO> CurrentVotesQueryAsync(CurrentVotesFunction currentVotesFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryDeserializingToObjectAsync<CurrentVotesFunction, CurrentVotesOutputDTO>(currentVotesFunction, blockParameter);
+        }
+
+        public Task<CurrentVotesOutputDTO> CurrentVotesQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
+        {
+            var currentVotesFunction = new CurrentVotesFunction();
+                currentVotesFunction.RightId = rightId;
+            
+            return ContractHandler.QueryDeserializingToObjectAsync<CurrentVotesFunction, CurrentVotesOutputDTO>(currentVotesFunction, blockParameter);
+        }
+
         public Task<BigInteger> ExpiresOnQueryAsync(ExpiresOnFunction expiresOnFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryAsync<ExpiresOnFunction, BigInteger>(expiresOnFunction, blockParameter);

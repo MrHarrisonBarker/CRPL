@@ -8,6 +8,12 @@ export enum RegisteredWorkStatus
   Registered
 }
 
+export interface ProposalVote
+{
+  Voter: string;
+  Accepted: boolean;
+}
+
 export interface RegisteredWorkViewModel
 {
   Id: string,
@@ -19,4 +25,5 @@ export interface RegisteredWorkViewModel
   RegisteredTransactionId: string,
   OwnershipStructure?: OwnershipStake[],
   AssociatedApplication?: ApplicationViewModel[]
+  CurrentVotes?: ProposalVote[]
 }

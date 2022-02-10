@@ -197,13 +197,13 @@ public class UserService : IUserService
             .FirstOrDefaultAsync(x => x.Wallet.PublicAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
         if (user == null) throw new UserNotFoundException(address);
 
-        if (!user.UserWorks.Any(x => x.WorkId == work.Id))
-        {
+        // if (!user.UserWorks.Any(x => x.WorkId == work.Id))
+        // {
             user.UserWorks.Add(new UserWork()
             {
                 RegisteredWork = work
             });
-        }
+        // }
         
         return work;
     }

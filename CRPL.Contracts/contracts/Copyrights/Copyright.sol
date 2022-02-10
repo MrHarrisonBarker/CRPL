@@ -97,6 +97,10 @@ abstract contract Copyright is ICopyright {
         return _getProposedRestructure(rightId);
     }
 
+    function CurrentVotes(uint256 rightId) external override validId(rightId) view returns (ProposalVote[] memory) {
+        return _proposalVotes[rightId];
+    }
+
     function BindRestructure(uint256 rightId, bool accepted) external override isShareholderOrApproved(rightId, msg.sender) validId(rightId) payable 
     {
         _checkHasVoted(rightId, msg.sender);
