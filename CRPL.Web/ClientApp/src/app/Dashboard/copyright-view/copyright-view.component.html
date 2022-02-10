@@ -36,7 +36,7 @@
 <clr-modal [(clrModalOpen)]="RestructureOpen" clrModalSize="xl">
   <h3 class="modal-title">Restructure ownership</h3>
   <div class="modal-body">
-    <cpy-restructure-form [RegisteredWork]="Copyright" [ExistingApplication]="ExistingRestructure"></cpy-restructure-form>
+    <cpy-restructure-form *ngIf="RestructureOpen" [RegisteredWork]="Copyright" [ExistingApplication]="ExistingRestructure"></cpy-restructure-form>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline" (click)="RestructureOpen = false; CancelRestructure()">Cancel</button>

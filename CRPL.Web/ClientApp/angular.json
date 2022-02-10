@@ -32,11 +32,11 @@
               "node_modules/@clr/ui/clr-ui.min.css"
             ],
             "scripts": [
+              "node_modules/iso-3166-1/dist/index.js",
+              "node_modules/country-telephone-data/country_telephone_data.js",
               "node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js",
               "node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js",
-              "node_modules/@clr/icons/clr-icons.min.js",
-              "node_modules/iso-3166-1/dist/index.js",
-              "node_modules/country-telephone-data/country_telephone_data.js"
+              "node_modules/@clr/icons/clr-icons.min.js"
             ]
           },
           "configurations": {

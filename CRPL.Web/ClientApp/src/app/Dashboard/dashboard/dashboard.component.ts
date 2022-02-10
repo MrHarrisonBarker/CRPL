@@ -6,7 +6,7 @@ import {RegisteredWorkStatus, RegisteredWorkViewModel} from "../../_Models/Works
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
 import {forkJoin} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
-import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
+import {WarehouseService} from "../../_Services/warehouse.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -15,14 +15,15 @@ import {CopyrightRegistrationViewModel} from "../../_Models/Applications/Copyrig
 })
 export class DashboardComponent implements OnInit
 {
-
-  public MyApplications!: ApplicationViewModel[];
-  public Works!: RegisteredWorkViewModel[];
   public Loaded: boolean = false;
   public Selected!: ApplicationViewModel | RegisteredWorkViewModel;
   public IsApplication: boolean = false;
 
-  constructor (private formsService: FormsService, private copyrightService: CopyrightService, private alertService: AlertService)
+  constructor (
+    private formsService: FormsService,
+    private copyrightService: CopyrightService,
+    private alertService: AlertService,
+    private warehouse: WarehouseService)
   {
   }
 
@@ -31,9 +32,7 @@ export class DashboardComponent implements OnInit
     this.alertService.StartLoading();
     forkJoin([this.formsService.GetMyApplications(), this.copyrightService.GetMyCopyrights()]).subscribe(x =>
     {
-      this.MyApplications = x[0];
-      this.Works = x[1];
-      console.log(this.MyApplications, this.Works);
+      console.log(this.warehouse.MyApplications, this.warehouse.MyWorks);
       this.Loaded = true;
       this.alertService.StopLoading();
     });
@@ -41,22 +40,22 @@ export class DashboardComponent implements OnInit
 
   get RegisteredCopyrights (): RegisteredWorkViewModel[]
   {
-    return this.Works.filter(x => x.Status == RegisteredWorkStatus.Registered);
+    return this.warehouse.MyWorks.filter(x => x.Status == RegisteredWorkStatus.Registered);
   }
 
   get PartialApplications (): ApplicationViewModel[]
   {
-    return this.MyApplications.filter(x => x.Status == ApplicationStatus.Incomplete);
+    return this.warehouse.MyApplications.filter(x => x.Status == ApplicationStatus.Incomplete);
   }
 
   get CompletedApplications (): ApplicationViewModel[]
   {
-    return this.MyApplications.filter(x => x.Status == ApplicationStatus.Complete);
+    return this.warehouse.MyApplications.filter(x => x.Status == ApplicationStatus.Complete);
   }
 
   get SubmittedApplications (): ApplicationViewModel[]
   {
-    return this.MyApplications.filter(x => x.Status == ApplicationStatus.Submitted);
+    return this.warehouse.MyApplications.filter(x => x.Status == ApplicationStatus.Submitted);
   }
 
   get SelectedAsCopyright ()
