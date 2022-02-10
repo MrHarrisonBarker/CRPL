@@ -9,7 +9,7 @@ import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {OwnershipRestructureInputModel} from "../../_Models/Applications/OwnershipRestructureInputModel";
 import {debounceTime, switchMap, takeUntil, tap} from "rxjs/operators";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
-import {Observable, Subject} from "rxjs";
+import {Observable, of, Subject} from "rxjs";
 import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
 
 @Component({
@@ -81,7 +81,11 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy, AfterView
   {
     this.RestructureForm.valueChanges.pipe(
       debounceTime(1500),
-      switchMap(formValue => this.save()),
+      switchMap(formValue =>
+      {
+        if (!this.RestructureForm.pending) return this.save()
+        return of(null);
+      }),
       takeUntil(this.unsubscribe)
     ).subscribe(res =>
     {

@@ -6,7 +6,7 @@
 
   <p class="p3 text-muted"><em><b>(You need to use all shares for a valid ownership structure)</b></em></p>
 
-  <div formArrayName="Stakes" *ngFor="let stake of Stakes; let i = index">
+  <div formArrayName="Stakes" *ngFor="let stake of Stakes; let i = index;trackBy:trackByIdx">
     <ownership-stake-form [isDefault]="i==0" [Index]="i" [Form]="stake"></ownership-stake-form>
   </div>
 

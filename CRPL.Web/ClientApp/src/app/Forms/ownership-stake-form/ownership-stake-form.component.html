@@ -9,8 +9,9 @@
 
     {{Form.controls['Owner'].errors | json}}
 
-    <clr-range-container [clrRangeHasProgress]="true">
-      <label class="clr-control-label">Number of shares</label> <input type="range" min="1" [max]="MaximumShares" clrRange name="share" formControlName="Share" required/>
+    <clr-range-container>
+      <label class="clr-control-label">Number of shares</label>
+      <input type="range" min="1" [max]="MaximumShares" clrRange name="share" formControlName="Share"/>
       <clr-control-helper>{{Form.value['Share']}} share(s)</clr-control-helper>
     </clr-range-container>
 

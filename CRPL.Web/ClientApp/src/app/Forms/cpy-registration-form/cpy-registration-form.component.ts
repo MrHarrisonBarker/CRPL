@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
@@ -60,7 +60,8 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
     private formsService: FormsService,
     private validatorService: ValidatorsService,
     private alertService: AlertService,
-    private router: Router)
+    private router: Router,
+    private host: ElementRef<HTMLElement>)
   {
     this.RegistrationForm = formBuilder.group({
       Title: ['', [Validators.required]],
@@ -235,7 +236,11 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
         this.formsService.SubmitCopyrightRegistration(this.ExistingApplication.Id).subscribe(x =>
         {
           // if submitted route away to dashboard
-          if (x) this.router.navigate(['/dashboard']);
+          if (x)
+          {
+            if (this.router.url.includes('/dashboard')) this.host.nativeElement.remove();
+            else this.router.navigate(['/dashboard']);
+          }
         }, error => this.alertService.Alert({Type: 'danger', Message: error.error}))
       }
     })

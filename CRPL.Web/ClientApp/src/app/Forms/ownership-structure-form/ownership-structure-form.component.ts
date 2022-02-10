@@ -48,4 +48,9 @@ export class OwnershipStructureFormComponent implements OnInit
   {
     this.StakeArray.push(this.constructStakeGroup());
   }
+
+  public trackByIdx (index: number, obj: any): any
+  {
+    return index;
+  }
 }
