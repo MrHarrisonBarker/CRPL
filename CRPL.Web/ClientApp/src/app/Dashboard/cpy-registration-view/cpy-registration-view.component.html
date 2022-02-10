@@ -1,16 +1,23 @@
 <div id="application-card">
   <div class="card">
-    <div class="card-header">
-      {{Application.Title}} <application-status [status]="Application.Status"></application-status>
-    </div>
     <div class="card-block">
-      <div class="card-title">{{Application.Id}}</div>
-      <div class="card-text">
-        {{Application | json}}
+      <div class="card-title" id="copyright-title">
+        <div>Copyright registration for <em>"{{Application.Title}}"</em></div>
+        <application-status [status]="Application.Status"></application-status>
       </div>
-    </div>
-    <div class="card-footer">
-      <button class="btn btn-sm">Restructure ownership</button>
+      <div class="flex-between">
+        <p class="card-text text-muted"><em>{{Application.Id}}</em></p>
+        <a style="margin-right: 0.5rem"><em>{{Application.AssociatedWork?.RightId}}</em></a>
+      </div>
+      <div style="display: flex">
+        <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Application.Created | date:'medium'}}</p>
+        <p class="card-text"><b>modified:</b> {{Application.Modified | date:'medium'}}</p>
+      </div>
+      <div class="card-text">
+        <div id="copyright-meta">
+          <pre [innerHtml]="Meta"></pre>
+        </div>
+      </div>
     </div>
   </div>
 </div>

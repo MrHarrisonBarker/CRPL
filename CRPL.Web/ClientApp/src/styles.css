@@ -29,3 +29,44 @@ hr {
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
+
+pre {
+  background: #292d3e;
+  border-radius: 0.5rem !important;
+  border-style: none;
+  padding: 1rem;
+}
+
+pre span {
+  white-space: normal;
+  word-break: break-all !important;
+}
+
+.string {
+  color: #c3e88d;
+}
+
+.number {
+  color: #f78c6c;
+}
+
+.boolean {
+  color: #C792EA;
+}
+
+.null {
+  color: magenta;
+}
+
+.key {
+  color: #c3e88d;
+}
+
+.punctuation {
+  color: #c792ea;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+}

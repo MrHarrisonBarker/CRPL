@@ -10,9 +10,9 @@ export class ApplicationStatusComponent implements OnInit
 {
   @Input() status!: number;
   map: Record<string, string> = {
-    Complete: "badge badge-success",
-    Incomplete: "badge badge-danger",
-    Submitted: "badge badge-purple",
+    Complete: "label label-success",
+    Incomplete: "label",
+    Submitted: "label label-purple",
   }
 
   constructor ()
