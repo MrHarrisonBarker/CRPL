@@ -1,17 +1,12 @@
 import {ApplicationViewModel} from "../Applications/ApplicationViewModel";
 import {OwnershipStake} from "../StructuredOwnership/OwnershipStake";
+import {ProposalVote} from "../StructuredOwnership/ProposalVote";
 
 export enum RegisteredWorkStatus
 {
   Created,
   Verified,
   Registered
-}
-
-export interface ProposalVote
-{
-  Voter: string;
-  Accepted: boolean;
 }
 
 export interface RegisteredWorkViewModel
@@ -24,6 +19,7 @@ export interface RegisteredWorkViewModel
   Hash?: string,
   RegisteredTransactionId: string,
   OwnershipStructure?: OwnershipStake[],
-  AssociatedApplication?: ApplicationViewModel[]
-  CurrentVotes?: ProposalVote[]
+  AssociatedApplication?: ApplicationViewModel[],
+  CurrentVotes?: ProposalVote[],
+  HasProposal?: boolean
 }

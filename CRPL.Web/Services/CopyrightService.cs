@@ -11,6 +11,7 @@ using CRPL.Data.Proposal;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Nethereum.BlockchainProcessing.BlockStorage.Entities;
 using Nethereum.Contracts;
 
 namespace CRPL.Web.Services;
@@ -75,9 +76,9 @@ public class CopyrightService : ICopyrightService
             Context.Update(application);
             application.TransactionId = transactionId;
             application.AssociatedWork.ProposalTransactionId = transactionId;
-            
+
             Logger.LogInformation("sent ownership proposal transaction at {Id}", transactionId);
-            
+
             await Context.SaveChangesAsync();
 
             return application;
@@ -91,17 +92,33 @@ public class CopyrightService : ICopyrightService
 
     public async Task BindProposal(BindProposalInput proposalInput)
     {
+        Logger.LogInformation("Binding proposal using application {Id}", proposalInput.ApplicationId);
         var application = await Context.Applications.Include(x => x.AssociatedWork).FirstOrDefaultAsync(x => x.Id == proposalInput.ApplicationId);
         if (application == null) throw new ApplicationNotFoundException(proposalInput.ApplicationId);
         if (application.AssociatedWork == null) throw new WorkNotFoundException();
+
+        await sendBind(application.AssociatedWork, proposalInput.Accepted);
+    }
+
+    public async Task BindProposal(BindProposalWorkInput proposalInput)
+    {
+        Logger.LogInformation("Binding proposal using work {Id}", proposalInput.WorkId);
+        var work = await Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == proposalInput.WorkId);
+        if (work == null) throw new WorkNotFoundException(proposalInput.WorkId);
         
+        await sendBind(work, proposalInput.Accepted);
+    }
+
+    private async Task sendBind(RegisteredWork work, bool accepted)
+    {
+        Logger.LogInformation("Sending proposal bind transaction for {Id} with the answer {accpted}", work.RightId, accepted);
         var handler = BlockchainConnection.Web3().Eth.GetContractTransactionHandler<BindRestructureFunction>();
         var bind = new BindRestructureFunction()
         {
-            RightId = BigInteger.Parse(application.AssociatedWork.RightId),
-            Accepted = proposalInput.Accepted
+            RightId = BigInteger.Parse(work.RightId),
+            Accepted = accepted
         };
-        
+
         var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, bind);
 
         try
@@ -130,16 +147,21 @@ public class CopyrightService : ICopyrightService
             if (registeredWork.Status == RegisteredWorkStatus.Registered && registeredWork.RightId != null)
             {
                 Logger.LogInformation("{Id} has a registered work, getting info from the blockchain", id);
-                
-                var ownershipOf =
-                    await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
-                        .OwnershipOfQueryAsync(BigInteger.Parse(registeredWork.RightId));
-                registeredWork.OwnershipStructure = ownershipOf.ReturnValue1;
-                
-                var currentVotes = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
-                    .CurrentVotesQueryAsync(BigInteger.Parse(registeredWork.RightId));
 
-                registeredWork.CurrentVotes = currentVotes.ReturnValue1;
+                var rightId = BigInteger.Parse(registeredWork.RightId);
+
+                var ownershipOf = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
+                    .OwnershipOfQueryAsync(rightId);
+
+                var currentVotes = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
+                    .CurrentVotesQueryAsync(rightId);
+
+                var proposal = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
+                    .ProposalQueryAsync(rightId);
+
+                registeredWork.OwnershipStructure = ownershipOf != null ? ownershipOf.ReturnValue1 : null;
+                registeredWork.CurrentVotes = currentVotes != null ? currentVotes.ReturnValue1 : null;
+                registeredWork.HasProposal = proposal != null ? (proposal.ReturnValue1.NewStructure.Count > 0) : false;
             }
         }
 

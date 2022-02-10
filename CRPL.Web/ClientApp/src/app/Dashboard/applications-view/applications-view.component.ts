@@ -3,6 +3,7 @@ import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewMo
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
+import {WarehouseService} from "../../_Services/warehouse.service";
 
 @Component({
   selector: 'applications-view [Application] [ShowForms]',
@@ -11,10 +12,10 @@ import {OwnershipRestructureViewModel} from "../../_Models/Applications/Ownershi
 })
 export class ApplicationsViewComponent implements OnInit
 {
-  @Input() Application!: ApplicationViewModel | RegisteredWorkViewModel;
+  @Input() Application!: ApplicationViewModel;
   @Input() ShowForms: boolean = false;
 
-  constructor ()
+  constructor (private warehouse: WarehouseService)
   {
   }
 
@@ -29,14 +30,19 @@ export class ApplicationsViewComponent implements OnInit
     return false;
   }
 
-  get ApplicationAsCopyrightRegistration ()
+  get ApplicationAsCopyrightRegistration () : CopyrightRegistrationViewModel
   {
     return (this.Application as CopyrightRegistrationViewModel);
   }
 
-  get ApplicationAsOwnershipRestructure()
+  get ApplicationAsOwnershipRestructure() : OwnershipRestructureViewModel
   {
     return (this.Application as OwnershipRestructureViewModel);
+  }
+
+  get ExistingWork(): RegisteredWorkViewModel
+  {
+    return <RegisteredWorkViewModel>this.warehouse.MyWorks.find(x => x.Id == this.Application.AssociatedWork?.Id);
   }
 
 }

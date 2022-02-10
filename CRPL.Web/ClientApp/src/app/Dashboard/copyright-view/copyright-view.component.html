@@ -13,6 +13,13 @@
 
       {{Copyright.AssociatedApplication | json}}
 
+      <clr-alert clrAlertType="info" [clrAlertClosable]="false" *ngIf="Copyright.HasProposal">
+        <clr-alert-item>
+          <span class="alert-text"><span style="margin-right: 0.6rem">This copyright has a proposal that needs binding</span>
+            <button class="btn btn-sm" (click)="BindRestructure()">Bind</button><button class="btn btn-sm btn-danger" (click)="RejectRestructure()">Reject</button></span>
+        </clr-alert-item>
+      </clr-alert>
+
       <div id="applications" *ngIf="Copyright.AssociatedApplication">
         <h4>Applications</h4>
         <clr-accordion>

@@ -11,4 +11,5 @@ public interface ICopyrightService
     public Task AttachWorkToApplicationAndCheckValid(Guid id, Application applicationId);
     public Task<OwnershipRestructureApplication> ProposeRestructure(OwnershipRestructureApplication application);
     public Task BindProposal(BindProposalInput proposalInput);
+    public Task BindProposal(BindProposalWorkInput proposalInput);
 }

@@ -62,4 +62,19 @@ public class CopyrightController : ControllerBase
             throw;
         }
     }
+    
+    [HttpPost("bind/work")]
+    public async Task<ActionResult> BindProposal(BindProposalWorkInput proposalInput)
+    {
+        try
+        {
+            await CopyrightService.BindProposal(proposalInput);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when getting users application");
+            throw;
+        }
+    }
 }

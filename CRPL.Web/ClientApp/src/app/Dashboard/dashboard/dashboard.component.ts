@@ -58,9 +58,14 @@ export class DashboardComponent implements OnInit
     return this.warehouse.MyApplications.filter(x => x.Status == ApplicationStatus.Submitted);
   }
 
-  get SelectedAsCopyright ()
+  get SelectedAsCopyright () : RegisteredWorkViewModel
   {
     return (this.Selected as RegisteredWorkViewModel);
+  }
+
+  get SelectedAsApplication () : ApplicationViewModel
+  {
+    return (this.Selected as ApplicationViewModel);
   }
 
   public Select (selected: ApplicationViewModel | RegisteredWorkViewModel, isApplication: boolean): void

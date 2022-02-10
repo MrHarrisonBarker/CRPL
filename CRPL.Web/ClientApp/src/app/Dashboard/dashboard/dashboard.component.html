@@ -34,8 +34,7 @@
           </nav>
           <div class="content-area">
             <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected"></copyright-view>
-            <applications-view [Application]="Selected" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
-
+            <applications-view [Application]="SelectedAsApplication" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
             {{Selected | json}}
           </div>
         </div>

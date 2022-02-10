@@ -3,6 +3,7 @@ import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {ApplicationType} from "../../_Models/Applications/ApplicationViewModel";
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
+import {CopyrightService} from "../../_Services/copyright.service";
 
 @Component({
   selector: 'copyright-view [Copyright]',
@@ -14,7 +15,7 @@ export class CopyrightViewComponent implements OnInit
   @Input() Copyright!: RegisteredWorkViewModel;
   public RestructureOpen: boolean = false;
 
-  constructor ()
+  constructor (private copyrightService: CopyrightService)
   {
   }
 
@@ -32,7 +33,7 @@ export class CopyrightViewComponent implements OnInit
     return  !submittedApplications;
   }
 
-  get ExistingRestructure (): OwnershipRestructureViewModel | undefined
+  get ExistingRestructure (): OwnershipRestructureViewModel
   {
     if (this.Copyright.AssociatedApplication)
     {
@@ -44,5 +45,15 @@ export class CopyrightViewComponent implements OnInit
   public CancelRestructure (): void
   {
     // TODO: send cancel call
+  }
+
+  public BindRestructure (): void
+  {
+    if (this.Copyright.RightId) this.copyrightService.BindProposalWork({WorkId: this.Copyright.Id, Accepted: true}).subscribe();
+  }
+
+  public RejectRestructure (): void
+  {
+    if (this.Copyright.RightId) this.copyrightService.BindProposalWork({WorkId: this.Copyright.Id, Accepted: false}).subscribe();
   }
 }

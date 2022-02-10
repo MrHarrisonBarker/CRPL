@@ -5,7 +5,7 @@ import {AlertService} from "./alert.service";
 import {RegisteredWorkViewModel} from "../_Models/Works/RegisteredWork";
 import {CopyrightPaths} from "../api.conts";
 import {Observable} from "rxjs";
-import {BindProposalInput} from "../_Models/StructuredOwnership/BindProposalInput";
+import {BindProposalInput, BindProposalWorkInput} from "../_Models/StructuredOwnership/BindProposalInput";
 import {WarehouseService} from "./warehouse.service";
 import {tap} from "rxjs/operators";
 
@@ -35,5 +35,10 @@ export class CopyrightService
   public BindProposal (input: BindProposalInput): Observable<any>
   {
     return this.http.post(this.BaseUrl + CopyrightPaths.Bind, input);
+  }
+
+  public BindProposalWork (input: BindProposalWorkInput): Observable<any>
+  {
+    return this.http.post(this.BaseUrl + CopyrightPaths.Bind + "/work", input);
   }
 }
