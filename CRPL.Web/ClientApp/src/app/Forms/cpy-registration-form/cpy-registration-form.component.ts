@@ -228,21 +228,23 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
   public Submit (): void
   {
+    this.alertService.StartLoading();
     this.unsubscribe.next();
     this.save().subscribe(x =>
     {
-      if (x)
-      {
         this.formsService.SubmitCopyrightRegistration(this.ExistingApplication.Id).subscribe(x =>
         {
-          // if submitted route away to dashboard
-          if (x)
-          {
-            if (this.router.url.includes('/dashboard')) this.host.nativeElement.remove();
-            else this.router.navigate(['/dashboard']);
-          }
-        }, error => this.alertService.Alert({Type: 'danger', Message: error.error}))
-      }
+          this.alertService.StopLoading();
+          if (this.router.url.includes('/dashboard')) this.host.nativeElement.remove();
+          else this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]);
+        }, error =>
+        {
+          this.alertService.StopLoading();
+          this.alertService.Alert({Type: 'danger', Message: error.error});
+        });
+    }, error => {
+      this.alertService.StopLoading();
+      this.alertService.Alert({Type: 'danger', Message: error.error});
     })
   }
 }

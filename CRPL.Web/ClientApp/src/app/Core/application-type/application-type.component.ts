@@ -10,10 +10,10 @@ export class ApplicationTypeComponent implements OnInit
 {
   @Input() Application!: ApplicationViewModel;
   map: Record<string, string> = {
-    CopyrightRegistration: "badge",
-    OwnershipRestructure: "badge badge-light-blue",
-    CopyrightTypeChange: "badge badge-purple",
-    Dispute: "badge badge-4"
+    CopyrightRegistration: "label",
+    OwnershipRestructure: "label label-purple",
+    CopyrightTypeChange: "label label-purple",
+    Dispute: "label label-danger"
   }
 
   constructor ()

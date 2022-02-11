@@ -2,45 +2,23 @@
   <clr-timeline-step [clrState]="timelineSuccess">
     <clr-timeline-step-header>{{Application.Created | date:'short'}}</clr-timeline-step-header>
     <clr-timeline-step-title>Fill in applicaiton</clr-timeline-step-title>
-    <!-- clr-timeline-step-description -->
   </clr-timeline-step>
 
   <clr-timeline-step [clrState]="timelineSuccess">
     <clr-timeline-step-header>{{Application.Modified | date:'short'}}</clr-timeline-step-header>
     <clr-timeline-step-title>Submit application</clr-timeline-step-title>
-    <!-- clr-timeline-step-description -->
   </clr-timeline-step>
 
   <clr-timeline-step [clrState]="timelineProcessing">
     <clr-timeline-step-header>Now</clr-timeline-step-header>
     <clr-timeline-step-title>Verification</clr-timeline-step-title>
-    <!-- clr-timeline-step-description -->
+    <clr-timeline-step-description>We are verifying the authenticiy of the uploaded work and checking over your application</clr-timeline-step-description>
   </clr-timeline-step>
 
   <clr-timeline-step [clrState]="timelineNot">
     <clr-timeline-step-header>Not too long :)</clr-timeline-step-header>
     <clr-timeline-step-title>Copyright registered</clr-timeline-step-title>
-    <!-- clr-timeline-step-description -->
   </clr-timeline-step>
 </clr-timeline>
 
-<div id="copyright-card">
-  <div class="card">
-    <div class="card-header">
-      Registration for <em>"{{Application.Title}}"</em>
-      <application-status [status]="Application.Status"></application-status>
-    </div>
-    <div class="card-block">
-      <div class="card-title">{{Application.Id}}</div>
-      <div class="card-text" id="copyright-info">
-
-      </div>
-
-      <copyright-view *ngIf="Application.AssociatedWork" [Copyright]="Application.AssociatedWork"></copyright-view>
-
-    </div>
-    <div class="card-footer">
-      <button class="btn btn-sm">Register Only if verified</button>
-    </div>
-  </div>
-</div>
+<cpy-registration-view [Application]="Application"></cpy-registration-view>

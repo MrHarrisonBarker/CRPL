@@ -10,9 +10,9 @@ export class CopyrightStatusComponent implements OnInit
 {
   @Input() status!: number;
   map: Record<string, string> = {
-    Registered: "badge badge-success",
-    Verified: "badge badge-blue",
-    Created: "badge badge-purple",
+    Registered: "label label-success",
+    Verified: "label label-blue",
+    Created: "label label-purple",
   }
 
   constructor ()
