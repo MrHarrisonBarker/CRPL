@@ -1,9 +1,20 @@
 <div class="card">
-  <div class="card-header">
-    Ownership restructure
-    <application-status [status]="Application.Status"></application-status>
-  </div>
   <div class="card-block">
+    <div class="card-title flex-between">
+      <div>Ownership restructure</div>
+      <application-status [status]="Application.Status"></application-status>
+    </div>
+
+    <div class="flex-between">
+      <p class="card-text text-muted"><em>{{Application.Id}}</em></p>
+      <a style="margin-right: 0.5rem"><em>{{Application.AssociatedWork?.RightId}}</em></a>
+    </div>
+
+    <div style="display: flex">
+      <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Application.Created | date:'medium'}}</p>
+      <p class="card-text"><b>modified:</b> {{Application.Modified | date:'medium'}}</p>
+    </div>
+
     <div id="current-ownership">
       <h4>Current ownership structure</h4>
       <hr/>
@@ -15,10 +26,5 @@
       <hr/>
       <ownership-structure-view [OwnershipStructure]="Application.ProposedStructure" *ngIf="Application"></ownership-structure-view>
     </div>
-  </div>
-
-  <div class="card-footer">
-    <button class="btn btn-sm" (click)="Cancel()">Cancel application</button>
-    <button class="btn btn-sm" (click)="Bind()">Bind proposal</button>
   </div>
 </div>

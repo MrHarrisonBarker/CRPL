@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
-import {CopyrightService} from "../../_Services/copyright.service";
 
 @Component({
   selector: 'cpy-restructure-view [Application]',
@@ -11,24 +10,11 @@ export class CpyRestructureViewComponent implements OnInit
 {
   @Input() Application!: OwnershipRestructureViewModel
 
-  constructor (private copyrightService: CopyrightService)
+  constructor ()
   {
   }
 
   ngOnInit (): void
   {
-  }
-
-  Cancel ()
-  {
-
-  }
-
-  Bind ()
-  {
-    this.copyrightService.BindProposal({
-      ApplicationId: this.Application.Id,
-      Accepted: true
-    }).subscribe(x => console.log(x));
   }
 }
