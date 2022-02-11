@@ -1,19 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./Copyright.sol";
+import "./CopyrightBase.sol";
 import "../ICopyrightMeta.sol";
 import "../Structs/Meta.sol";
 
-abstract contract CopyrightWithMeta is Copyright, ICopyrightMeta {
+abstract contract CopyrightWithMeta is CopyrightBase, ICopyrightMeta {
 
-    string internal _legalDefinition;
+    mapping (uint256 => Meta) internal _metadata;
 
-    mapping (uint256 => Meta) _metadata;
-
-    constructor(string memory name, string memory legalDef) Copyright(name) 
+    constructor(string memory _name) CopyrightBase(_name) 
     {
-        _legalDefinition = legalDef;
     }
 
     function RegisterWithMeta(OwnershipStake[] memory to, Meta memory def) external 
@@ -47,14 +44,19 @@ abstract contract CopyrightWithMeta is Copyright, ICopyrightMeta {
         return _metadata[rightId].workUri;
     }
 
+    function WorkType(uint256 rightId) external override view returns (string memory)
+    {
+        return _metadata[rightId].workType;
+    }
+
     function LegalMeta(uint256 rightId) external override view returns (string memory) 
     {
         return _metadata[rightId].legalMeta;
     }
 
-    function LegalDefinition() external override view returns (string memory) 
+    function CopyrightProtections(uint256 rightId) external override view returns (Protections memory) 
     {
-        return _legalDefinition;
+        return _metadata[rightId].protections;
     }
 
     function CopyrightMeta(uint256 rightId) external override view returns (Meta memory)

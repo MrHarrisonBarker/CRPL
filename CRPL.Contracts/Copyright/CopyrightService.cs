@@ -1,33 +1,34 @@
 using System.Numerics;
 using Nethereum.RPC.Eth.DTOs;
 using Nethereum.Contracts.ContractHandlers;
-using CRPL.Contracts.Standard.ContractDefinition;
+using CRPL.Contracts.Copyright.ContractDefinition;
+using CRPL.Contracts.Structs;
 
-namespace CRPL.Contracts.Standard
+namespace CRPL.Contracts.Copyright
 {
-    public partial class StandardService
+    public partial class CopyrightService
     {
-        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(Nethereum.Web3.Web3 web3, StandardDeployment standardDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static Task<TransactionReceipt> DeployContractAndWaitForReceiptAsync(Nethereum.Web3.Web3 web3, CopyrightDeployment copyrightDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
-            return web3.Eth.GetContractDeploymentHandler<StandardDeployment>().SendRequestAndWaitForReceiptAsync(standardDeployment, cancellationTokenSource);
+            return web3.Eth.GetContractDeploymentHandler<CopyrightDeployment>().SendRequestAndWaitForReceiptAsync(copyrightDeployment, cancellationTokenSource);
         }
 
-        public static Task<string> DeployContractAsync(Nethereum.Web3.Web3 web3, StandardDeployment standardDeployment)
+        public static Task<string> DeployContractAsync(Nethereum.Web3.Web3 web3, CopyrightDeployment copyrightDeployment)
         {
-            return web3.Eth.GetContractDeploymentHandler<StandardDeployment>().SendRequestAsync(standardDeployment);
+            return web3.Eth.GetContractDeploymentHandler<CopyrightDeployment>().SendRequestAsync(copyrightDeployment);
         }
 
-        public static async Task<StandardService> DeployContractAndGetServiceAsync(Nethereum.Web3.Web3 web3, StandardDeployment standardDeployment, CancellationTokenSource cancellationTokenSource = null)
+        public static async Task<CopyrightService> DeployContractAndGetServiceAsync(Nethereum.Web3.Web3 web3, CopyrightDeployment copyrightDeployment, CancellationTokenSource cancellationTokenSource = null)
         {
-            var receipt = await DeployContractAndWaitForReceiptAsync(web3, standardDeployment, cancellationTokenSource);
-            return new StandardService(web3, receipt.ContractAddress);
+            var receipt = await DeployContractAndWaitForReceiptAsync(web3, copyrightDeployment, cancellationTokenSource);
+            return new CopyrightService(web3, receipt.ContractAddress);
         }
 
         protected Nethereum.Web3.Web3 Web3{ get; }
 
         public ContractHandler ContractHandler { get; }
 
-        public StandardService(Nethereum.Web3.Web3 web3, string contractAddress)
+        public CopyrightService(Nethereum.Web3.Web3 web3, string contractAddress)
         {
             Web3 = web3;
             ContractHandler = web3.Eth.GetContractHandler(contractAddress);
@@ -130,6 +131,19 @@ namespace CRPL.Contracts.Standard
             return ContractHandler.QueryDeserializingToObjectAsync<CopyrightMetaFunction, CopyrightMetaOutputDTO>(copyrightMetaFunction, blockParameter);
         }
 
+        public Task<CopyrightProtectionsOutputDTO> CopyrightProtectionsQueryAsync(CopyrightProtectionsFunction copyrightProtectionsFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryDeserializingToObjectAsync<CopyrightProtectionsFunction, CopyrightProtectionsOutputDTO>(copyrightProtectionsFunction, blockParameter);
+        }
+
+        public Task<CopyrightProtectionsOutputDTO> CopyrightProtectionsQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
+        {
+            var copyrightProtectionsFunction = new CopyrightProtectionsFunction();
+                copyrightProtectionsFunction.RightId = rightId;
+            
+            return ContractHandler.QueryDeserializingToObjectAsync<CopyrightProtectionsFunction, CopyrightProtectionsOutputDTO>(copyrightProtectionsFunction, blockParameter);
+        }
+
         public Task<CurrentVotesOutputDTO> CurrentVotesQueryAsync(CurrentVotesFunction currentVotesFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryDeserializingToObjectAsync<CurrentVotesFunction, CurrentVotesOutputDTO>(currentVotesFunction, blockParameter);
@@ -184,17 +198,6 @@ namespace CRPL.Contracts.Standard
                 isManagerFunction.Manager = manager;
             
             return ContractHandler.QueryAsync<IsManagerFunction, bool>(isManagerFunction, blockParameter);
-        }
-
-        public Task<string> LegalDefinitionQueryAsync(LegalDefinitionFunction legalDefinitionFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<LegalDefinitionFunction, string>(legalDefinitionFunction, blockParameter);
-        }
-
-        
-        public Task<string> LegalDefinitionQueryAsync(BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<LegalDefinitionFunction, string>(null, blockParameter);
         }
 
         public Task<string> LegalMetaQueryAsync(LegalMetaFunction legalMetaFunction, BlockParameter blockParameter = null)
@@ -373,6 +376,20 @@ namespace CRPL.Contracts.Standard
                 workHashFunction.RightId = rightId;
             
             return ContractHandler.QueryAsync<WorkHashFunction, string>(workHashFunction, blockParameter);
+        }
+
+        public Task<string> WorkTypeQueryAsync(WorkTypeFunction workTypeFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryAsync<WorkTypeFunction, string>(workTypeFunction, blockParameter);
+        }
+
+        
+        public Task<string> WorkTypeQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
+        {
+            var workTypeFunction = new WorkTypeFunction();
+                workTypeFunction.RightId = rightId;
+            
+            return ContractHandler.QueryAsync<WorkTypeFunction, string>(workTypeFunction, blockParameter);
         }
 
         public Task<string> WorkURIQueryAsync(WorkURIFunction workURIFunction, BlockParameter blockParameter = null)

@@ -1,11 +1,6 @@
-using System;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Numerics;
-using Nethereum.Hex.HexTypes;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 
-namespace CRPL.Contracts.Standard.ContractDefinition
+namespace CRPL.Contracts.Structs
 {
     public partial class ProposalVote : ProposalVoteBase { }
 

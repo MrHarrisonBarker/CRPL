@@ -1,7 +1,7 @@
 using System.Numerics;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 
-namespace CRPL.Contracts.Standard.ContractDefinition
+namespace CRPL.Contracts.Structs
 {
     public partial class Meta : MetaBase { }
 
@@ -19,5 +19,7 @@ namespace CRPL.Contracts.Standard.ContractDefinition
         public virtual string WorkUri { get; set; }
         [Parameter("string", "legalMeta", 6)]
         public virtual string LegalMeta { get; set; }
+        [Parameter("tuple", "protections", 8)]
+        public virtual Protections Protections { get; set; }
     }
 }

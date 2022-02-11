@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 
-namespace CRPL.Contracts.Standard.ContractDefinition
+namespace CRPL.Contracts.Structs
 {
     public partial class RestructureProposal : RestructureProposalBase { }
 
