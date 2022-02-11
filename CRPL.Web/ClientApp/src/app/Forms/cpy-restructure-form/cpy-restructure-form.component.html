@@ -7,6 +7,8 @@
 <div id="form-wrapper" *ngIf="!NoWork">
   <form clrForm clrLayout="compact" [formGroup]="RestructureForm" clrLabelSize="4">
 
+    <h4>Restructure application</h4>
+
     <clr-alert clrAlertType="danger" [clrAlertClosable]="false" *ngIf="!RegisteredWork.OwnershipStructure">
       <clr-alert-item>
         <span class="alert-text">No current ownership structure found!</span>
@@ -24,7 +26,6 @@
       <hr/>
       <ownership-structure-form [Form]="ProposedStructure"></ownership-structure-form>
     </div>
-<!--    {{RestructureForm.value | json}}-->
 
     <clr-checkbox-wrapper>
       <input type="checkbox" clrCheckbox name="ula" required value="ula" [formControl]="Accepted"/> <label>accept ula</label>

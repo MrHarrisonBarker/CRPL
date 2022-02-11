@@ -14,7 +14,7 @@ export class OwnershipStakeFormComponent implements OnInit
 
   ngOnInit (): void
   {
-    console.log("loaded stake!", this.Form)
+    // console.log("loaded stake!", this.Form)
   }
 
   constructor ()

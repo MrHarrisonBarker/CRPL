@@ -1,10 +1,23 @@
-<header class="header-6">
-  <div class="branding">
-    <img src="assets/crpl.png" alt="image">
-  </div>
-  <div class="header-nav">
-    <a class="nav-link nav-text" [routerLinkActive]="['/']" [routerLink]="['/']">Dashboard</a>
-    <a class="nav-link nav-text" [routerLink]="['/apps']">applications</a>
-    <a class="nav-link nav-text" [routerLink]="['/dashboard']">dashboard</a>
-  </div>
-</header>
+<div id="nav-and-logo">
+  <img src="assets/crpl.png" alt="CRPL">
+  <header class="header-7">
+    <div class="header-nav">
+      <a class="nav-link nav-text" [routerLinkActive]="['/']" [routerLink]="['/']">Index</a>
+      <a class="nav-link nav-text" [routerLinkActive]="['/']" [routerLink]="['/']" disabled>Dispute</a>
+      <a class="nav-link nav-text" [routerLinkActive]="['/']" [routerLink]="['/']">About</a>
+
+      <a href="javascript://" class="nav-link nav-icon" aria-label="settings">
+        <cds-icon shape="search"></cds-icon>
+      </a>
+
+    </div>
+    <div class="header-nav">
+      <a class="nav-link nav-text" [routerLink]="['/register']">Register</a>
+      <a class="nav-link nav-text" [routerLink]="['/dashboard']">Dashboard</a>
+    </div>
+    <div class="header-actions clr-align-items-center">
+      <login-button></login-button>
+      <logout-button></logout-button>
+    </div>
+  </header>
+</div>

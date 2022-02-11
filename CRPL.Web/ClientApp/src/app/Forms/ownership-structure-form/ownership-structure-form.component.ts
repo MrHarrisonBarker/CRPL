@@ -19,7 +19,7 @@ export class OwnershipStructureFormComponent implements OnInit
 
   constructor (private authService: AuthService, private fb: FormBuilder, private validatorService: ValidatorsService)
   {
-    console.log("loaded structure!", this.Form)
+    // console.log("loaded structure!", this.Form)
   }
 
   private constructStakeGroup (owner: string = ''): FormGroup

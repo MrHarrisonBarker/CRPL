@@ -74,15 +74,17 @@ public class RegistrationService : IRegistrationService
                 Registered = new BigInteger((DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds),
                 LegalMeta = application.Legal,
                 WorkHash = Encoding.UTF8.GetString(application.WorkHash),
-                WorkUri = application.WorkUri
+                WorkUri = application.WorkUri,
+                Protections = application.Protections
             }
         };
 
-        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, register);
+        // var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, register);
 
         try
         {
-            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, register);
+            var transactionId = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+                .RegisterWithMetaRequestAsync(register);
 
             Context.Update(application);
             application.AssociatedWork.RegisteredTransactionId = transactionId;

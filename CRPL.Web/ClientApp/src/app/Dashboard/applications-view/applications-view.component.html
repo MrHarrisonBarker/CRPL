@@ -1,3 +1,5 @@
+<button class="btn btn-danger" (click)="Cancel()" *ngIf="Application.Status == 0">Cancel application</button>
+
 <cpy-registration-form [ExistingApplication]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && ShowForms && Application.Status == 0"></cpy-registration-form>
 <cpy-registration-view [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && (!ShowForms || Application.Status == 1)"></cpy-registration-view>
 <cpy-registration-view-submitted [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && Application.Status == 2"></cpy-registration-view-submitted>
@@ -6,4 +8,4 @@
 <cpy-restructure-view [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 1"></cpy-restructure-view>
 <cpy-restructure-view-submitted [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 2"></cpy-restructure-view-submitted>
 
-{{Application | json}}
+<!--{{Application | json}}-->

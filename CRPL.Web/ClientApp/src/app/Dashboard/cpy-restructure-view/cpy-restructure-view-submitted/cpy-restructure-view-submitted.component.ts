@@ -25,26 +25,22 @@ export class CpyRestructureViewSubmittedComponent implements OnInit
   {
   }
 
-  Cancel ()
+  public Bind (): void
   {
-    this.alertService.StartLoading();
-    this.formsService.Cancel(this.Application.Id).subscribe(x =>
-    {
-      this.alertService.Alert({Type: 'success', Message: 'Canceled application'})
-      this.alertService.StopLoading();
-    }, error =>
-    {
-      this.alertService.Alert({Type: 'danger', Message: error.error});
-      this.alertService.StopLoading();
-    });
+    this.send(true);
   }
 
-  Bind ()
+  public Reject (): void
+  {
+    this.send(false);
+  }
+
+  private send(accepted: boolean) : void
   {
     this.alertService.StartLoading();
     this.copyrightService.BindProposal({
       ApplicationId: this.Application.Id,
-      Accepted: true
+      Accepted: false
     }).subscribe(x =>
     {
       this.alertService.Alert({Type: 'success', Message: 'Sent transaction'})

@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {AuthService} from "./auth.service";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpResponse} from "@angular/common/http";
 import {AlertService} from "./alert.service";
 import {Observable, throwError} from "rxjs";
 import {CopyrightRegistrationInputModel} from "../_Models/Applications/CopyrightRegistrationInputModel";
@@ -35,9 +35,12 @@ export class FormsService
                .pipe(tap(application => this.warehouse.MyApplications[this.warehouse.MyApplications.findIndex(x => x.Id == application.Id)] = application));
   }
 
-  public Cancel (id: string): Observable<any>
+  public Cancel (id: string): Observable<HttpResponse<any>>
   {
-    return this.http.delete(this.BaseUrl + FormsPaths.Cancel + "/" + encodeURI(id));
+    return this.http.delete<HttpResponse<any>>(this.BaseUrl + FormsPaths.Cancel + "/" + encodeURI(id)).pipe(tap( res => {
+      console.log(res);
+      this.warehouse.MyApplications = this.warehouse.MyApplications.filter(x => x.Id != id);
+    }));
   }
 
   public SubmitCopyrightRegistration (id: string): Observable<CopyrightRegistrationViewModel>

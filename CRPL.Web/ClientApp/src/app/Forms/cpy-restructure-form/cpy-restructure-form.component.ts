@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {FormsService} from "../../_Services/forms.service";
@@ -7,9 +7,9 @@ import {AlertService} from "../../_Services/alert.service";
 import {Router} from "@angular/router";
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {OwnershipRestructureInputModel} from "../../_Models/Applications/OwnershipRestructureInputModel";
-import {debounceTime, distinctUntilChanged, merge, switchMap, takeUntil, tap} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, switchMap, takeUntil, tap} from "rxjs/operators";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
-import {Observable, of, Subject, zip} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
 
 @Component({

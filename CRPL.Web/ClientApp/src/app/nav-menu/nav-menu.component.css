@@ -16,3 +16,17 @@ html {
 .box-shadow {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
+
+#nav-and-logo {
+  display: flex;
+  flex-direction: row;
+}
+
+#nav-and-logo > header {
+  flex: 1;
+}
+
+img {
+  max-height: 3.3rem;
+  box-shadow: #3a3a3a70 1px 1px 5px;
+}
