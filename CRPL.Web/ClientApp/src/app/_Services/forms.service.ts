@@ -37,7 +37,7 @@ export class FormsService
 
   public Cancel (id: string): Observable<any>
   {
-    return throwError(new Error());
+    return this.http.delete(this.BaseUrl + FormsPaths.Cancel + "/" + encodeURI(id));
   }
 
   public SubmitCopyrightRegistration (id: string): Observable<CopyrightRegistrationViewModel>
