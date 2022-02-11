@@ -1,5 +1,5 @@
-using CRPL.Contracts.Standard;
-using CRPL.Contracts.Standard.ContractDefinition;
+using CRPL.Contracts.Copyright;
+using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Data.BlockchainUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -20,12 +20,8 @@ public class ContractRepository : IContractRepository
     {
         switch (contractType)
         {
-            case CopyrightContract.Standard:
-                return await StandardService.DeployContractAndWaitForReceiptAsync(connection, new StandardDeployment(), cancellationTokenSource);
-            // case CopyrightContract.Copyleft:
-                // return await CopyleftService.DeployContractAndWaitForReceiptAsync(connection, new CopyleftDeployment(), cancellationTokenSource);
-            // case CopyrightContract.Permissive:
-                // return await PermissiveService.DeployContractAndWaitForReceiptAsync(connection, new PermissiveDeployment(), cancellationTokenSource);
+            case CopyrightContract.Copyright:
+                return await CopyrightService.DeployContractAndWaitForReceiptAsync(connection, new CopyrightDeployment(), cancellationTokenSource);
             default:
                 throw new ArgumentOutOfRangeException(nameof(contractType), contractType, null);
         }
@@ -88,7 +84,7 @@ public class ContractRepository : IContractRepository
         // runs with a clear workspace to deploy all contracts needed
         // foreach (CopyrightContract contractType in Enum.GetValues<CopyrightContract>())
         // {
-            await deployContract(CopyrightContract.Standard, BlockchainConnection.Web3());
+            await deployContract(CopyrightContract.Copyright, BlockchainConnection.Web3());
         // }
     }
 

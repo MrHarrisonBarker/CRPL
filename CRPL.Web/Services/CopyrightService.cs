@@ -1,7 +1,7 @@
 using System.Numerics;
 using AutoMapper;
-using CRPL.Contracts.Standard;
-using CRPL.Contracts.Standard.ContractDefinition;
+using CRPL.Contracts.Copyright.ContractDefinition;
+using CRPL.Contracts.Structs;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
@@ -11,8 +11,6 @@ using CRPL.Data.Proposal;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Nethereum.BlockchainProcessing.BlockStorage.Entities;
-using Nethereum.Contracts;
 
 namespace CRPL.Web.Services;
 
@@ -67,11 +65,11 @@ public class CopyrightService : ICopyrightService
             Restructured = application.ProposedStructure.Decode().Select(x => Mapper.Map<OwnershipStakeContract>(x)).ToList()
         };
 
-        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, propose);
+        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, propose);
 
         try
         {
-            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, propose);
+            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, propose);
 
             Context.Update(application);
             application.TransactionId = transactionId;
@@ -119,11 +117,11 @@ public class CopyrightService : ICopyrightService
             Accepted = accepted
         };
 
-        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, bind);
+        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, bind);
 
         try
         {
-            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, bind);
+            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, bind);
 
             Logger.LogInformation("sent restructure bind transaction at {Id}", transactionId);
         }
@@ -150,16 +148,16 @@ public class CopyrightService : ICopyrightService
 
                 var rightId = BigInteger.Parse(registeredWork.RightId);
 
-                var ownershipOf = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
+                var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                     .OwnershipOfQueryAsync(rightId);
 
-                var currentVotes = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
+                var currentVotes = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                     .CurrentVotesQueryAsync(rightId);
 
-                var proposal = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
+                var proposal = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                     .ProposalQueryAsync(rightId);
 
-                var meta = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
+                var meta = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                     .CopyrightMetaQueryAsync(rightId);
 
                 registeredWork.OwnershipStructure = ownershipOf != null ? ownershipOf.ReturnValue1 : null;

@@ -1,7 +1,8 @@
 using System.Numerics;
 using System.Text;
 using AutoMapper;
-using CRPL.Contracts.Standard.ContractDefinition;
+using CRPL.Contracts.Copyright.ContractDefinition;
+using CRPL.Contracts.Structs;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
@@ -77,11 +78,11 @@ public class RegistrationService : IRegistrationService
             }
         };
 
-        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, register);
+        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, register);
 
         try
         {
-            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, register);
+            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, register);
 
             Context.Update(application);
             application.AssociatedWork.RegisteredTransactionId = transactionId;

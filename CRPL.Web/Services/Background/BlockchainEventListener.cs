@@ -1,4 +1,4 @@
-using CRPL.Contracts.Standard.ContractDefinition;
+using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using Nethereum.BlockchainProcessing;
@@ -29,14 +29,14 @@ public class BlockchainEventListener : BackgroundService
 
         List<BlockchainProcessor> processors = new List<BlockchainProcessor>()
         {
-            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<RegisteredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log)),
-            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<ApprovedEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log)),
-            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<ProposedRestructureEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log)),
-            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<RestructuredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log)),
-            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<FailedProposalEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Standard).Address, log => EventQueue.QueueEvent(log))
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<RegisteredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log)),
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<ApprovedEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log)),
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<ProposedRestructureEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log)),
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<RestructuredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log)),
+            BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<FailedProposalEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log))
         };
-        
-        processors.ForEach(x => Task.Run(async () => await x.ExecuteAsync(stoppingToken), stoppingToken));
+
+        processors.ForEach(x => Task.Run(async () => await x.ExecuteAsync(stoppingToken, latestBlock), stoppingToken));
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

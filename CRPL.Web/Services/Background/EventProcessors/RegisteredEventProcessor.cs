@@ -1,7 +1,6 @@
-using CRPL.Contracts.Standard.ContractDefinition;
+using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
-using CRPL.Data.BlockchainUtils;
 using CRPL.Web.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Nethereum.Contracts;

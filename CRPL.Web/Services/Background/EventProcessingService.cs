@@ -1,4 +1,4 @@
-using CRPL.Contracts.Standard.ContractDefinition;
+using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Web.Services.Background.EventProcessors;
 using Nethereum.Contracts;
 

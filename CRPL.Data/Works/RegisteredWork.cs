@@ -1,4 +1,3 @@
-using CRPL.Contracts.Standard.ContractDefinition;
 using CRPL.Data.Account.ViewModels;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
@@ -35,10 +34,10 @@ public class RegisteredWorkWithAppsViewModel
     public string? RightId { get; set; }
     public byte[]? Hash { get; set; }
     public string? RegisteredTransactionId { get; set; }
-    public List<Contracts.Standard.ContractDefinition.OwnershipStakeContract>? OwnershipStructure { get; set; }
-    public List<Contracts.Standard.ContractDefinition.ProposalVote>? CurrentVotes { get; set; }
+    public List<Contracts.Structs.OwnershipStakeContract>? OwnershipStructure { get; set; }
+    public List<Contracts.Structs.ProposalVote>? CurrentVotes { get; set; }
     public bool? HasProposal { get; set; }
-    public Contracts.Standard.ContractDefinition.Meta? Meta { get; set; }
+    public Contracts.Structs.Meta? Meta { get; set; }
     public List<UserAccountMinimalViewModel> AssociatedUsers { get; set; }
     public List<ApplicationViewModelWithoutAssociated> AssociatedApplication { get; set; }
 }

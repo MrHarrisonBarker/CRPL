@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using CRPL.Contracts.Standard;
-using CRPL.Data;
 using CRPL.Data.BlockchainUtils;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
 namespace CRPL.Tests.Blockchain;
