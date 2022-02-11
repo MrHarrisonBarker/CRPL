@@ -20,3 +20,11 @@ application-status {
 #applications > h4 {
   margin: 0.5rem;
 }
+
+#ownership-structure {
+  margin: 0.2rem;
+}
+
+#ownership-structure > h4 {
+  margin: 0.5rem;
+}

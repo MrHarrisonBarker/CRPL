@@ -159,9 +159,13 @@ public class CopyrightService : ICopyrightService
                 var proposal = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
                     .ProposalQueryAsync(rightId);
 
+                var meta = await new StandardService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Standard).Address)
+                    .CopyrightMetaQueryAsync(rightId);
+
                 registeredWork.OwnershipStructure = ownershipOf != null ? ownershipOf.ReturnValue1 : null;
                 registeredWork.CurrentVotes = currentVotes != null ? currentVotes.ReturnValue1 : null;
                 registeredWork.HasProposal = proposal != null ? (proposal.ReturnValue1.NewStructure.Count > 0) : false;
+                registeredWork.Meta = meta != null ? meta.ReturnValue1 : null;
             }
         }
 

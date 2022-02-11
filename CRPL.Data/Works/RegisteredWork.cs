@@ -38,6 +38,7 @@ public class RegisteredWorkWithAppsViewModel
     public List<Contracts.Standard.ContractDefinition.OwnershipStakeContract>? OwnershipStructure { get; set; }
     public List<Contracts.Standard.ContractDefinition.ProposalVote>? CurrentVotes { get; set; }
     public bool? HasProposal { get; set; }
+    public Contracts.Standard.ContractDefinition.Meta? Meta { get; set; }
     public List<UserAccountMinimalViewModel> AssociatedUsers { get; set; }
     public List<ApplicationViewModelWithoutAssociated> AssociatedApplication { get; set; }
 }

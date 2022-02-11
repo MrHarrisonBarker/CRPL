@@ -4,6 +4,7 @@ import {ApplicationType} from "../../_Models/Applications/ApplicationViewModel";
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
 import {CopyrightService} from "../../_Services/copyright.service";
+import {syntaxHighlight} from "../../utils";
 
 @Component({
   selector: 'copyright-view [Copyright]',
@@ -55,5 +56,10 @@ export class CopyrightViewComponent implements OnInit
   public RejectRestructure (): void
   {
     if (this.Copyright.RightId) this.copyrightService.BindProposalWork({WorkId: this.Copyright.Id, Accepted: false}).subscribe();
+  }
+
+  get Meta()
+  {
+    return syntaxHighlight(JSON.stringify(this.Copyright.Meta, undefined, 4));
   }
 }

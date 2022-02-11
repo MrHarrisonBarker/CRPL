@@ -56,4 +56,9 @@ abstract contract CopyrightWithMeta is Copyright, ICopyrightMeta {
     {
         return _legalDefinition;
     }
+
+    function CopyrightMeta(uint256 rightId) external override view returns (Meta memory)
+    {
+        return _metadata[rightId];
+    }
 }

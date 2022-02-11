@@ -117,6 +117,19 @@ namespace CRPL.Contracts.Standard
              return ContractHandler.SendRequestAndWaitForReceiptAsync(bindRestructureFunction, cancellationToken);
         }
 
+        public Task<CopyrightMetaOutputDTO> CopyrightMetaQueryAsync(CopyrightMetaFunction copyrightMetaFunction, BlockParameter blockParameter = null)
+        {
+            return ContractHandler.QueryDeserializingToObjectAsync<CopyrightMetaFunction, CopyrightMetaOutputDTO>(copyrightMetaFunction, blockParameter);
+        }
+
+        public Task<CopyrightMetaOutputDTO> CopyrightMetaQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
+        {
+            var copyrightMetaFunction = new CopyrightMetaFunction();
+                copyrightMetaFunction.RightId = rightId;
+            
+            return ContractHandler.QueryDeserializingToObjectAsync<CopyrightMetaFunction, CopyrightMetaOutputDTO>(copyrightMetaFunction, blockParameter);
+        }
+
         public Task<CurrentVotesOutputDTO> CurrentVotesQueryAsync(CurrentVotesFunction currentVotesFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryDeserializingToObjectAsync<CurrentVotesFunction, CurrentVotesOutputDTO>(currentVotesFunction, blockParameter);

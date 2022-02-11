@@ -9,6 +9,16 @@ export enum RegisteredWorkStatus
   Registered
 }
 
+export interface CopyrightMeta
+{
+  Title: string;
+  Expires: number;
+  Registered: number;
+  WorkHash: string;
+  WorkUri: string;
+  LegalMeta: string;
+}
+
 export interface RegisteredWorkViewModel
 {
   Id: string,
@@ -21,5 +31,6 @@ export interface RegisteredWorkViewModel
   OwnershipStructure?: OwnershipStake[],
   AssociatedApplication?: ApplicationViewModel[],
   CurrentVotes?: ProposalVote[],
-  HasProposal?: boolean
+  HasProposal?: boolean,
+  Meta?: CopyrightMeta
 }

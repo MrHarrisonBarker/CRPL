@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./Structs/Meta.sol";
+
 /// @title Copyright meta and legal data
 interface ICopyrightMeta {
 
@@ -24,4 +26,6 @@ interface ICopyrightMeta {
 
     /// @notice legal definition of copyright contract
     function LegalDefinition() external view returns (string memory);
+    
+    function CopyrightMeta(uint256 rightId) external view returns (Meta memory);
 }

@@ -1,17 +1,34 @@
 <div id="copyright-card">
   <div class="card">
-    <div class="card-header">
-      Work title
-      <copyright-status [status]="Copyright.Status"></copyright-status>
-    </div>
     <div class="card-block">
-      <div class="card-title">{{Copyright.Id}}</div>
-      <div class="card-text" id="copyright-info">
-        <span>{{Copyright.RegisteredTransactionId}}</span> <span><b>Work hash</b> {{Copyright.Hash | slice:0:20}}...</span> <span><em><b>Registered on</b> {{Copyright.Registered | date}}</em></span> <span><b>Copyright id</b> {{Copyright.RightId}}</span> <br> GET data from blockchain and inject
+      <div class="card-title flex-between">
+        <div><em>"{{Copyright.Meta?.Title}}"</em></div>
+        <copyright-status [status]="Copyright.Status"></copyright-status>
       </div>
-      <!--      <applications-view [Application]="application" [ShowForms]="false" *ngFor="let application of Copyright.AssociatedApplication"></applications-view>-->
+      <div class="card-text" id="copyright-info">
 
-      {{Copyright.AssociatedApplication | json}}
+        <div class="flex-between">
+          <p class="card-text text-muted"><em>{{Copyright.Id}}</em></p>
+          <a class="card-text" style="margin-right: 0.5rem"><em class="text-muted">right id:</em> <em>{{Copyright?.RightId}}</em></a>
+        </div>
+
+        <div><em class="text-muted">transaction:</em>&nbsp;&nbsp;<a>{{Copyright.RegisteredTransactionId}}</a></div>
+
+        <div style="display: flex">
+          <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Copyright.Created | date:'medium'}}</p>
+          <p class="card-text"><b>registered:</b> {{Copyright?.Registered | date:'medium'}}</p>
+        </div>
+
+        <div class="card-text">
+          <pre [innerHtml]="Meta"></pre>
+        </div>
+
+      </div>
+
+      <div *ngIf="Copyright.OwnershipStructure" id="ownership-structure">
+        <h4>Ownership structure</h4>
+        <ownership-structure-view [OwnershipStructure]="Copyright.OwnershipStructure"></ownership-structure-view>
+      </div>
 
       <clr-alert clrAlertType="info" [clrAlertClosable]="false" *ngIf="Copyright.HasProposal">
         <clr-alert-item>
