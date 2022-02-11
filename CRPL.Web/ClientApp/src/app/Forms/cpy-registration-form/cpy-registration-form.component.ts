@@ -13,9 +13,10 @@ import {Observable, of, Subject} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
 import {Router} from '@angular/router';
 
-interface RightMeta
+interface ProtectionsMeta
 {
   Name: string;
+  ReadableName: string;
   Description: string;
 }
 
@@ -26,32 +27,28 @@ interface RightMeta
 })
 export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 {
+  private unsubscribe = new Subject<void>();
+
   @Input() ExistingApplication!: ApplicationViewModel | CopyrightRegistrationViewModel;
+
   public RegistrationForm: FormGroup;
 
-  public Rights: RightMeta[] = [
-    {Name: "authorship", Description: "The eternal right to original authorship."},
-    {
-      Name: "reproduce",
-      Description: "The exclusive right to reproduction and the right to authorise any other party for reproduction."
-    },
-    {
-      Name: "distribution",
-      Description: "The exclusive right to distribution and the right to authorise any other party for distribution including but not limited to; online distribution markets, public performances or broadcasts."
-    },
-    {
-      Name: "adapt",
-      Description: "The exclusive right to adapt and recite work while maintaining all rights to the derivative including the right to seek additional protection on the derivative works."
-    },
-    {
-      Name: "changeOfOwnership",
-      Description: "The exclusive right to alter the underlying ownership of the work in- cluding removing the original party as principle owner of the work."
-    },
+  public Protections: ProtectionsMeta[] = [
+    {Name: "Authorship",ReadableName: "Authorship", Description: "The eternal right to original authorship."},
+    {Name: "CommercialAdaptation",ReadableName: "Commercial adaptation", Description: ""},
+    {Name: "NonCommercialAdaptation",ReadableName: "Non-Commercial adaptation", Description: ""},
+    {Name: "ReviewOrCrit",ReadableName: "Review or critique", Description: ""},
+    {Name: "CommercialPerformance",ReadableName: "Commercial performance", Description: ""},
+    {Name: "NonCommercialPerformance",ReadableName: "Non-Commercial performance", Description: ""},
+    {Name: "CommercialReproduction",ReadableName: "Commercial reproduction", Description: ""},
+    {Name: "NonCommercialReproduction",ReadableName: "Non-Commercial reproduction", Description: ""},
+    {Name: "CommercialDistribution",ReadableName: "Commercial distribution", Description: ""},
+    {Name: "NonCommercialDistribution",ReadableName: "Non-Commercial distribution", Description: ""}
   ];
 
-  public StandardRights: string[] = ["authorship", "reproduce", "distribution", "adapt", "changeOfOwnership"];
-  public PermissiveRights: string[] = ["authorship"];
-  public CopyleftRights: string[] = ["authorship", "reproduce"];
+  public StandardPreset: string[] = [
+    "Authorship", "CommercialAdaptation", "NonCommercialAdaptation", "ReviewOrCrit",
+    "CommercialPerformance","NonCommercialPerformance","CommercialReproduction", "NonCommercialReproduction", "CommercialDistribution", "NonCommercialDistribution"];
   public WorkTypes: string[] = Object.values(WorkType).filter(value => typeof value != 'number') as string[];
 
   constructor (
@@ -69,13 +66,17 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
       WorkUri: ['', [Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?')]],
       Legal: [''],
       Expires: [100, [Validators.required, Validators.max(100), Validators.min(1)]],
-      ProtectionType: ['Standard', [Validators.required]],
-      Rights: formBuilder.group({
-        authorship: [false],
-        reproduce: [false],
-        distribution: [false],
-        adapt: [false],
-        changeOfOwnership: [false]
+      Protections: formBuilder.group({
+        Authorship: [false],
+        CommercialAdaptation: [false],
+        NonCommercialAdaptation: [false],
+        ReviewOrCrit: [false],
+        CommercialPerformance: [false],
+        NonCommercialPerformance: [false],
+        CommercialReproduction: [false],
+        NonCommercialReproduction: [false],
+        CommercialDistribution: [false],
+        NonCommercialDistribution: [false]
       }),
       WorkType: ['Image', [Validators.required]],
       OwnershipStructure: this.formBuilder.group({
@@ -99,8 +100,6 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
     return this.RegistrationForm.controls.WorkHash as FormControl;
   }
 
-  private unsubscribe = new Subject<void>();
-
   public ngOnInit (): void
   {
     if (this.ExistingApplication)
@@ -115,7 +114,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
       }])
     }
 
-    this.selectRights(this.StandardRights);
+    this.selectRights(this.StandardPreset);
 
     this.RegistrationForm.valueChanges.pipe(
       debounceTime(1500),
@@ -140,28 +139,27 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
     this.unsubscribe.next()
   }
 
-  private selectRights (rights: string[]): void
+  private selectRights (protections: string[]): void
   {
-    this.RegistrationForm.controls['Rights'].reset();
-    for (let right in rights)
+    console.log("selecting rights", protections);
+    this.RegistrationForm.controls['Protections'].reset();
+    this.Protections.forEach(x => (this.RegistrationForm.controls['Protections'] as FormGroup).controls[x.Name].setValue(false));
+    for (let protection in protections)
     {
-      let rightsGroup = this.RegistrationForm.controls['Rights'] as FormGroup;
-      rightsGroup.controls[this.StandardRights[right]].setValue(true);
+      let rightsGroup = this.RegistrationForm.controls['Protections'] as FormGroup;
+      rightsGroup.controls[this.Protections[protection].Name].setValue(true);
     }
   }
 
-  public ChangeCopyrightType (): void
+  public ChangeCopyrightType (value: string): void
   {
-    switch (this.RegistrationForm.value.ProtectionType)
+    switch (value)
     {
       case "Standard":
-        this.selectRights(this.StandardRights);
+        this.selectRights(this.StandardPreset);
         break;
-      case "Permissive":
-        this.selectRights(this.PermissiveRights);
-        break;
-      case "Copyleft":
-        this.selectRights(this.CopyleftRights);
+      case "Nothing":
+        this.selectRights([]);
         break;
     }
   }
@@ -186,7 +184,8 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
       YearsExpire: this.RegistrationForm.value.Expires,
       CopyrightType: this.RegistrationForm.value.ProtectionType,
       Legal: this.RegistrationForm.value.Legal,
-      WorkHash: this.RegistrationForm.value.WorkHash
+      WorkHash: this.RegistrationForm.value.WorkHash,
+      Protections: this.RegistrationForm.value.Protections
     }
 
     return this.formsService.UpdateCopyrightRegistration(inputModel).pipe(tap(crp => this.ExistingApplication = crp), catchError(err => of(null as any)));
@@ -203,6 +202,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
       Expires: model.YearsExpire,
       ProtectionType: model.CopyrightType,
       WorkType: model.WorkType,
+      Protections: model.Protections
     });
 
     this.OwnershipStructure.patchValue({

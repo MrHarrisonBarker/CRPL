@@ -9,3 +9,12 @@ form {
 p {
   margin-top: 0 !important;
 }
+
+#right-matrix {
+  margin-top: 1rem;
+  /*display: flex;*/
+  /*flex-direction: row;*/
+  /*flex-wrap: wrap;*/
+  /*align-content: center;*/
+  /*justify-content: space-between;*/
+}

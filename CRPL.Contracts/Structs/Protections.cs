@@ -1,7 +1,9 @@
+using Microsoft.EntityFrameworkCore;
 using Nethereum.ABI.FunctionEncoding.Attributes;
 
 namespace CRPL.Contracts.Structs
 {
+    [Owned]
     public partial class Protections : ProtectionsBase { }
 
     public class ProtectionsBase 

@@ -20,19 +20,18 @@
     </clr-textarea-container>
 
     <clr-select-container>
-      <label>Type of protection</label> <select clrSelect name="options" formControlName="ProtectionType" (ngModelChange)="ChangeCopyrightType()">
+      <label>Protection presets</label> <select clrSelect name="options" #preset (change)="ChangeCopyrightType(preset.value)">
       <option value="Standard">Standard</option>
-      <option value="Copyleft">Copyleft</option>
-      <option value="Permissive">Permissive</option>
+      <option value="Nothing">Nothing</option>
     </select>
     </clr-select-container>
 
-    <div id="right-matrix" formGroupName="Rights">
-      <clr-checkbox-wrapper *ngFor="let right of Rights">
-        <input type="checkbox" clrCheckbox name="ula" required [value]="right.Name" [formControlName]="right.Name"/> <label>{{right.Name}}
+    <div id="right-matrix" formGroupName="Protections">
+      <clr-checkbox-wrapper style="height: 100%" *ngFor="let protection of Protections">
+        <input type="checkbox" clrCheckbox name="ula" required [value]="protection.Name" [formControlName]="protection.Name"/> <label>{{protection.ReadableName}}
         <clr-signpost>
           <clr-signpost-content>
-            <p>{{right.Description}}</p>
+            <p>{{protection.Description}}</p>
           </clr-signpost-content>
         </clr-signpost>
       </label>
