@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {WorkType} from "../../_Models/WorkType";
+import {ClrTimelineStepState} from "@clr/angular";
 
 @Component({
   selector: 'cpy-registration-view [Application]',
@@ -10,6 +11,10 @@ import {WorkType} from "../../_Models/WorkType";
 export class CpyRegistrationViewComponent implements OnInit
 {
   @Input() Application!: CopyrightRegistrationViewModel;
+  public timelineSuccess: ClrTimelineStepState = ClrTimelineStepState.SUCCESS;
+  public timelineProcessing: ClrTimelineStepState = ClrTimelineStepState.PROCESSING;
+  public timelineNot: ClrTimelineStepState = ClrTimelineStepState.NOT_STARTED;
+  public timelineCurrent: ClrTimelineStepState = ClrTimelineStepState.CURRENT;
 
   constructor ()
   {
@@ -32,6 +37,11 @@ export class CpyRegistrationViewComponent implements OnInit
     };
 
     return syntaxHighlight(JSON.stringify(meta, undefined, 4)).replace(/([{},\]\[])+/g, match => '<span class="punctuation">' + match + '</span>');
+  }
+
+  get WorkStatus()
+  {
+    return this.Application.AssociatedWork?.Status;
   }
 }
 

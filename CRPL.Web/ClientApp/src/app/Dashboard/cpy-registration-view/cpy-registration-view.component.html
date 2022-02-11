@@ -13,6 +13,34 @@
         <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Application.Created | date:'medium'}}</p>
         <p class="card-text"><b>modified:</b> {{Application.Modified | date:'medium'}}</p>
       </div>
+
+      <div>
+        <clr-timeline *ngIf="Application.AssociatedWork">
+
+          <clr-timeline-step [clrState]="WorkStatus == 0 ? timelineCurrent : timelineSuccess">
+            <clr-timeline-step-header>{{Application?.AssociatedWork?.Created | date:'short'}}</clr-timeline-step-header>
+            <clr-timeline-step-title>Work created</clr-timeline-step-title>
+          </clr-timeline-step>
+
+          <clr-timeline-step [clrState]="WorkStatus == 1 ? timelineCurrent : WorkStatus == 2 ? timelineSuccess : timelineNot">
+            <clr-timeline-step-header>
+              <span *ngIf="WorkStatus == 0">Future</span>
+              <span *ngIf="WorkStatus == 1">Soon</span>
+              <span *ngIf="WorkStatus == 2">Past</span>
+            </clr-timeline-step-header>
+            <clr-timeline-step-title>Work verified</clr-timeline-step-title>
+          </clr-timeline-step>
+
+          <clr-timeline-step [clrState]="WorkStatus == 2 ? timelineSuccess : timelineNot">
+            <clr-timeline-step-header>
+              <span *ngIf="WorkStatus == 2">{{Application?.AssociatedWork?.Registered | date:'short'}}</span>
+              <span *ngIf="WorkStatus != 2">Future</span>
+              </clr-timeline-step-header>
+                <clr-timeline-step-title>Work registered</clr-timeline-step-title>
+          </clr-timeline-step>
+        </clr-timeline>
+      </div>
+
       <div class="card-text">
         <div id="copyright-meta">
           <pre [innerHtml]="Meta"></pre>
