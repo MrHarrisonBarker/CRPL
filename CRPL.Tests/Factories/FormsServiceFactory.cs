@@ -2,8 +2,10 @@ using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Web.Services;
+using CRPL.Web.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 
 namespace CRPL.Tests.Factories;
 
@@ -23,6 +25,7 @@ public class FormsServiceFactory
             new Logger<FormsService>(new LoggerFactory()), 
             context, mapper, appSettings, 
             new UserServiceFactory().Create(context),
-            new RegistrationServiceFactory().Create(context));
+            new Mock<IRegistrationService>().Object,
+            new Mock<ICopyrightService>().Object);
     }
 }

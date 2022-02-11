@@ -17,8 +17,15 @@ public class AutoMapping : Profile
         CreateMap<UserAccount, UserAccountMinimalViewModel>();
 
         CreateMap<RegisteredWork, RegisteredWorkViewModel>();
-        CreateMap<RegisteredWork, RegisteredWorkWithAppsViewModel>().ForMember(model => model.AssociatedUsers, x => 
-            x.MapFrom(src => src.UserWorks.Select(u => u.UserAccount)));
+        CreateMap<RegisteredWork, RegisteredWorkWithAppsViewModel>()
+            .ForMember(model => model.AssociatedUsers, x =>
+                x.MapFrom(src => src.UserWorks.Select(u => u.UserAccount)))
+            .ForMember(model => model.OwnershipStructure, x =>
+                x.Ignore())
+            .ForMember(src => src.CurrentVotes, x =>
+                x.Ignore())
+            .ForMember(src => src.HasProposal, x =>
+                x.Ignore());
 
         CreateMap<Application, ApplicationViewModelWithoutAssociated>().IncludeAllDerived();
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModelWithoutAssociated>();
