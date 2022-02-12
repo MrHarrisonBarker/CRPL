@@ -34,7 +34,9 @@ export class CpyRegistrationViewComponent implements OnInit
       WorkUri: this.Application.WorkUri,
       Legal: this.Application.Legal,
       OwnershipStructure: this.Application.OwnershipStakes,
-      ProtectionLength: this.Application.YearsExpire
+      ProtectionLength: this.Application.YearsExpire,
+      Protections: this.Application.Protections,
+      AssociatedWork: this.Application.AssociatedWork
     };
 
     return syntaxHighlight(JSON.stringify(meta, undefined, 4));

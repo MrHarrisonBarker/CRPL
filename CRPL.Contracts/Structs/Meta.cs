@@ -18,6 +18,8 @@ namespace CRPL.Contracts.Structs
         [Parameter("string", "workUri", 5)]
         public virtual string WorkUri { get; set; }
         [Parameter("string", "legalMeta", 6)]
+        public virtual string WorkType { get; set; }
+        [Parameter("string", "workType", 7)]
         public virtual string LegalMeta { get; set; }
         [Parameter("tuple", "protections", 8)]
         public virtual Protections Protections { get; set; }

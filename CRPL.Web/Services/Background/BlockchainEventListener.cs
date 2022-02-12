@@ -35,8 +35,8 @@ public class BlockchainEventListener : BackgroundService
             BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<RestructuredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log)),
             BlockchainConnection.Web3().Processing.Logs.CreateProcessorForContract<FailedProposalEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log))
         };
-
-        processors.ForEach(x => Task.Run(async () => await x.ExecuteAsync(stoppingToken, latestBlock), stoppingToken));
+        
+        processors.ForEach(x => Task.Run(async () => await x.ExecuteAsync(stoppingToken), stoppingToken));
     }
 
     public override Task StopAsync(CancellationToken cancellationToken)

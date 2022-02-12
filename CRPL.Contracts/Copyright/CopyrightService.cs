@@ -131,19 +131,6 @@ namespace CRPL.Contracts.Copyright
             return ContractHandler.QueryDeserializingToObjectAsync<CopyrightMetaFunction, CopyrightMetaOutputDTO>(copyrightMetaFunction, blockParameter);
         }
 
-        public Task<CopyrightProtectionsOutputDTO> CopyrightProtectionsQueryAsync(CopyrightProtectionsFunction copyrightProtectionsFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryDeserializingToObjectAsync<CopyrightProtectionsFunction, CopyrightProtectionsOutputDTO>(copyrightProtectionsFunction, blockParameter);
-        }
-
-        public Task<CopyrightProtectionsOutputDTO> CopyrightProtectionsQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
-        {
-            var copyrightProtectionsFunction = new CopyrightProtectionsFunction();
-                copyrightProtectionsFunction.RightId = rightId;
-            
-            return ContractHandler.QueryDeserializingToObjectAsync<CopyrightProtectionsFunction, CopyrightProtectionsOutputDTO>(copyrightProtectionsFunction, blockParameter);
-        }
-
         public Task<CurrentVotesOutputDTO> CurrentVotesQueryAsync(CurrentVotesFunction currentVotesFunction, BlockParameter blockParameter = null)
         {
             return ContractHandler.QueryDeserializingToObjectAsync<CurrentVotesFunction, CurrentVotesOutputDTO>(currentVotesFunction, blockParameter);
@@ -155,20 +142,6 @@ namespace CRPL.Contracts.Copyright
                 currentVotesFunction.RightId = rightId;
             
             return ContractHandler.QueryDeserializingToObjectAsync<CurrentVotesFunction, CurrentVotesOutputDTO>(currentVotesFunction, blockParameter);
-        }
-
-        public Task<BigInteger> ExpiresOnQueryAsync(ExpiresOnFunction expiresOnFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<ExpiresOnFunction, BigInteger>(expiresOnFunction, blockParameter);
-        }
-
-        
-        public Task<BigInteger> ExpiresOnQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
-        {
-            var expiresOnFunction = new ExpiresOnFunction();
-                expiresOnFunction.RightId = rightId;
-            
-            return ContractHandler.QueryAsync<ExpiresOnFunction, BigInteger>(expiresOnFunction, blockParameter);
         }
 
         public Task<string> GetApprovedQueryAsync(GetApprovedFunction getApprovedFunction, BlockParameter blockParameter = null)
@@ -198,20 +171,6 @@ namespace CRPL.Contracts.Copyright
                 isManagerFunction.Manager = manager;
             
             return ContractHandler.QueryAsync<IsManagerFunction, bool>(isManagerFunction, blockParameter);
-        }
-
-        public Task<string> LegalMetaQueryAsync(LegalMetaFunction legalMetaFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<LegalMetaFunction, string>(legalMetaFunction, blockParameter);
-        }
-
-        
-        public Task<string> LegalMetaQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
-        {
-            var legalMetaFunction = new LegalMetaFunction();
-                legalMetaFunction.RightId = rightId;
-            
-            return ContractHandler.QueryAsync<LegalMetaFunction, string>(legalMetaFunction, blockParameter);
         }
 
         public Task<OwnershipOfOutputDTO> OwnershipOfQueryAsync(OwnershipOfFunction ownershipOfFunction, BlockParameter blockParameter = null)
@@ -308,20 +267,6 @@ namespace CRPL.Contracts.Copyright
              return ContractHandler.SendRequestAndWaitForReceiptAsync(registerFunction, cancellationToken);
         }
 
-        public Task<BigInteger> RegisterTimeQueryAsync(RegisterTimeFunction registerTimeFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<RegisterTimeFunction, BigInteger>(registerTimeFunction, blockParameter);
-        }
-
-        
-        public Task<BigInteger> RegisterTimeQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
-        {
-            var registerTimeFunction = new RegisterTimeFunction();
-                registerTimeFunction.RightId = rightId;
-            
-            return ContractHandler.QueryAsync<RegisterTimeFunction, BigInteger>(registerTimeFunction, blockParameter);
-        }
-
         public Task<string> RegisterWithMetaRequestAsync(RegisterWithMetaFunction registerWithMetaFunction)
         {
              return ContractHandler.SendRequestAsync(registerWithMetaFunction);
@@ -348,62 +293,6 @@ namespace CRPL.Contracts.Copyright
                 registerWithMetaFunction.Def = def;
             
              return ContractHandler.SendRequestAndWaitForReceiptAsync(registerWithMetaFunction, cancellationToken);
-        }
-
-        public Task<string> TitleQueryAsync(TitleFunction titleFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<TitleFunction, string>(titleFunction, blockParameter);
-        }
-
-        
-        public Task<string> TitleQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
-        {
-            var titleFunction = new TitleFunction();
-                titleFunction.RightId = rightId;
-            
-            return ContractHandler.QueryAsync<TitleFunction, string>(titleFunction, blockParameter);
-        }
-
-        public Task<string> WorkHashQueryAsync(WorkHashFunction workHashFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<WorkHashFunction, string>(workHashFunction, blockParameter);
-        }
-
-        
-        public Task<string> WorkHashQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
-        {
-            var workHashFunction = new WorkHashFunction();
-                workHashFunction.RightId = rightId;
-            
-            return ContractHandler.QueryAsync<WorkHashFunction, string>(workHashFunction, blockParameter);
-        }
-
-        public Task<string> WorkTypeQueryAsync(WorkTypeFunction workTypeFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<WorkTypeFunction, string>(workTypeFunction, blockParameter);
-        }
-
-        
-        public Task<string> WorkTypeQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
-        {
-            var workTypeFunction = new WorkTypeFunction();
-                workTypeFunction.RightId = rightId;
-            
-            return ContractHandler.QueryAsync<WorkTypeFunction, string>(workTypeFunction, blockParameter);
-        }
-
-        public Task<string> WorkURIQueryAsync(WorkURIFunction workURIFunction, BlockParameter blockParameter = null)
-        {
-            return ContractHandler.QueryAsync<WorkURIFunction, string>(workURIFunction, blockParameter);
-        }
-
-        
-        public Task<string> WorkURIQueryAsync(BigInteger rightId, BlockParameter blockParameter = null)
-        {
-            var workURIFunction = new WorkURIFunction();
-                workURIFunction.RightId = rightId;
-            
-            return ContractHandler.QueryAsync<WorkURIFunction, string>(workURIFunction, blockParameter);
         }
     }
 }

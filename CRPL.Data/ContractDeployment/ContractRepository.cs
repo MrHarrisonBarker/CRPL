@@ -52,9 +52,9 @@ public class ContractRepository : IContractRepository
         // If no contracts are deployed then init and deploy all contracts
         if (!context.DeployedContracts.Any())
         {
-            Logger.LogInformation("Not contracts found! deploying all");
+            Logger.LogInformation("No contracts found! deploying");
 
-            init();
+            Task.Run(async () => await deployContract(CopyrightContract.Copyright, BlockchainConnection.Web3())).Wait();
         }
     }
 
@@ -79,12 +79,12 @@ public class ContractRepository : IContractRepository
         }
     }
 
-    private async void init()
+    private async Task init()
     {
         // runs with a clear workspace to deploy all contracts needed
         // foreach (CopyrightContract contractType in Enum.GetValues<CopyrightContract>())
         // {
-            await deployContract(CopyrightContract.Copyright, BlockchainConnection.Web3());
+            
         // }
     }
 

@@ -75,7 +75,8 @@ import {CpyRestructureViewSubmittedComponent} from "./Dashboard/cpy-restructure-
       {path: 'apps', component: ApplicationsComponent, canActivate: [AuthGuard]},
       {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent},
       {path: 'application/:id', canActivate: [AuthGuard], component: IndervidualApplicationComponent},
-      {path: 'dashboard', canActivate: [AuthGuard], component: DashboardComponent}
+      {path: 'dashboard', canActivate: [AuthGuard], component: DashboardComponent},
+      {path: 'register', canActivate: [AuthGuard], component: CpyRegistrationFormComponent}
     ]),
     ReactiveFormsModule
   ],

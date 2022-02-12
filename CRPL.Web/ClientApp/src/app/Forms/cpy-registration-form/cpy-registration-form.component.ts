@@ -8,7 +8,7 @@ import {CopyrightRegistrationInputModel} from "../../_Models/Applications/Copyri
 import {ValidatorsService} from "../../_Services/validators.service";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
-import {catchError, debounceTime, switchMap, takeUntil, tap} from "rxjs/operators";
+import {catchError, debounceTime, distinctUntilChanged, switchMap, takeUntil, tap} from "rxjs/operators";
 import {Observable, of, Subject} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
 import {Router} from '@angular/router';
@@ -116,13 +116,15 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
     this.selectRights(this.StandardPreset);
 
-    this.RegistrationForm.valueChanges.pipe(
+    this.detectChanges();
+  }
+
+  private detectChanges (): void
+  {
+    this.RegistrationForm.markAsPristine();
+    this.RegistrationForm.valueChanges.pipe(distinctUntilChanged()).pipe(
       debounceTime(1500),
-      switchMap(formValue =>
-      {
-        if (!this.RegistrationForm.pending) return this.save()
-        return of(null);
-      }),
+      switchMap(formValue => this.save()),
       takeUntil(this.unsubscribe)
     ).subscribe(res =>
     {

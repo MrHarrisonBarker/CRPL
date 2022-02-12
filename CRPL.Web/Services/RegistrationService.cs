@@ -63,7 +63,6 @@ public class RegistrationService : IRegistrationService
         if (application == null) throw new ApplicationNotFoundException(applicationId);
         if (application.AssociatedWork == null) throw new Exception("There is no work associated with this application!");
 
-        var handler = BlockchainConnection.Web3().Eth.GetContractTransactionHandler<RegisterWithMetaFunction>();
         var register = new RegisterWithMetaFunction
         {
             To = application.OwnershipStakes.Decode().Select(x => Mapper.Map<OwnershipStakeContract>(x)).ToList(),
@@ -75,12 +74,11 @@ public class RegistrationService : IRegistrationService
                 LegalMeta = application.Legal,
                 WorkHash = Encoding.UTF8.GetString(application.WorkHash),
                 WorkUri = application.WorkUri,
+                WorkType = application.WorkType.ToString(),
                 Protections = application.Protections
             }
         };
-
-        // var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, register);
-
+        
         try
         {
             var transactionId = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)

@@ -14,14 +14,13 @@ using NUnit.Framework;
 namespace CRPL.Tests.Blockchain;
 
 [TestFixture]
-[Ignore("need ci blockchain")]
+// [Ignore("need ci blockchain")]
 public class When_Interacting_with_Standard_Contract
 {
     private string ContractAddress;
     private BlockchainConnection BlockchainConnection;
     
     [SetUp]
-    [Ignore("need ci blockchain")]
     public async Task SetUp()
     {
         var appSettings = Options.Create(new AppSettings()
@@ -53,7 +52,6 @@ public class When_Interacting_with_Standard_Contract
     }
     
     [Test]
-    [Ignore("need ci blockchain")]
     public async Task Should_Register_New_Copyright()
     {
         var funcMessage = new RegisterWithMetaFunction()
@@ -73,23 +71,37 @@ public class When_Interacting_with_Standard_Contract
                 Registered = 0,
                 LegalMeta = "legal",
                 WorkHash = "hash",
-                WorkUri = "uri"
+                WorkUri = "uri",
+                WorkType = "Image",
+                Protections = new Protections()
+                {
+                    Authorship = true,
+                    CommercialAdaptation = true,
+                    CommercialDistribution = true,
+                    CommercialPerformance = true,
+                    CommercialReproduction = true,
+                    NonCommercialAdaptation = true,
+                    NonCommercialDistribution = true,
+                    NonCommercialPerformance = true,
+                    NonCommercialReproduction = true,
+                    ReviewOrCrit = true
+                }
             }
         };
+
         var receipt = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractAddress).RegisterWithMetaRequestAndWaitForReceiptAsync(funcMessage);
 
         receipt.Should().NotBeNull();
         receipt.Status.Value.Should().Be(1);
 
-        var res = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractAddress).TitleQueryAsync(1);
+        var res = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractAddress).CopyrightMetaQueryAsync(1);
 
-        res.Should().BeEquivalentTo("Hello world");
+        res.ReturnValue1.Title.Should().BeEquivalentTo("Hello world");
         
         Console.WriteLine($"Status -> {receipt.Status}");
     }
 
     [Test]
-    [Ignore("need ci blockchain")]
     public async Task Should_Get_Ownership()
     {
         var funcMessage = new RegisterWithMetaFunction()
@@ -109,7 +121,21 @@ public class When_Interacting_with_Standard_Contract
                 Registered = 0,
                 LegalMeta = "legal",
                 WorkHash = "hash",
-                WorkUri = "uri"
+                WorkUri = "uri",
+                WorkType = "Image",
+                Protections = new Protections()
+                {
+                    Authorship = true,
+                    CommercialAdaptation = true,
+                    CommercialDistribution = true,
+                    CommercialPerformance = true,
+                    CommercialReproduction = true,
+                    NonCommercialAdaptation = true,
+                    NonCommercialDistribution = true,
+                    NonCommercialPerformance = true,
+                    NonCommercialReproduction = true,
+                    ReviewOrCrit = true
+                }
             }
         };
         var receipt = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractAddress).RegisterWithMetaRequestAndWaitForReceiptAsync(funcMessage);
