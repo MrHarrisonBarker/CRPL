@@ -191,7 +191,6 @@ public class UserService : IUserService
 
     public async Task<RegisteredWork> AssignToWork(string address, RegisteredWork work)
     {
-        Logger.LogInformation("Assigning {Address} to work {Id}", address, work.RightId);
         var user = await Context.UserAccounts
             .Include(x => x.UserWorks)
             .FirstOrDefaultAsync(x => x.Wallet.PublicAddress.ToLower() == address.ToLower());
@@ -199,15 +198,16 @@ public class UserService : IUserService
 
         // if (!user.UserWorks.Any(x => x.WorkId == work.Id))
         // {
-        if (user.UserWorks == null) user.UserWorks = new List<UserWork>();
+        user.UserWorks ??= new List<UserWork>();
         
-            user.UserWorks.Add(new UserWork()
-            {
-                WorkId = work.Id,
-                UserId = user.Id
-            });
+        Logger.LogInformation("Assigning {Address} to work {Id}", address, work.RightId);
+        user.UserWorks.Add(new UserWork()
+        {
+            WorkId = work.Id,
+            UserId = user.Id
+        });
         // }
-        
+
         return work;
     }
 

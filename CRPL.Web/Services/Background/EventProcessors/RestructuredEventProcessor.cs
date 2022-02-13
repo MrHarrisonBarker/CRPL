@@ -16,7 +16,6 @@ public static class RestructuredEventProcessor
 
         using var scope = serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-        var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
         var work = await context.RegisteredWorks
             .Include(x => x.AssociatedApplication)
@@ -31,7 +30,20 @@ public static class RestructuredEventProcessor
         // assigning new shareholders to the work and removing old ones
         context.UserWorks.RemoveRange(work.UserWorks);
         work.UserWorks.Clear();
-        restructuredEvent.Event.Proposal.NewStructure.ForEach(x => userService.AssignToWork(x.Owner, work));
+        foreach (var x in restructuredEvent.Event.Proposal.NewStructure)
+        {
+            var user = await context.UserAccounts.FirstOrDefaultAsync(u => u.Wallet.PublicAddress.ToLower() == x.Owner.ToLower());
+            
+            if (user == null) throw new UserNotFoundException(x.Owner);
+            
+            logger.LogInformation("Assigning {Address} to work {Id}", x.Owner, work.RightId);
+            
+            context.UserWorks.Add(new UserWork()
+            {
+                UserId = user.Id,
+                WorkId = work.Id
+            });
+        }
 
         logger.LogInformation("Setting restructure application to complete");
         // setting application status to complete
