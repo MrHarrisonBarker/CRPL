@@ -31,12 +31,12 @@ public class CopyrightService : ICopyrightService
         ContractRepository = contractRepository;
     }
 
-    public async Task<RegisteredWork> GetWork(Guid id)
+    public async Task<RegisteredWorkWithAppsViewModel> GetWork(Guid id)
     {
-        return (await Context.RegisteredWorks
+        return await injectFromChain(Mapper.Map<RegisteredWorkWithAppsViewModel>(await Context.RegisteredWorks
             .Include(x => x.AssociatedApplication)
-            .Include(x => x.UserWorks)
-            .FirstOrDefaultAsync(x => x.Id == id))!;
+            .Include(x => x.UserWorks).ThenInclude(x => x.UserAccount)
+            .FirstOrDefaultAsync(x => x.Id == id)));
     }
 
     public async Task AttachWorkToApplicationAndCheckValid(Guid id, Application application)
@@ -143,29 +143,34 @@ public class CopyrightService : ICopyrightService
         {
             if (registeredWork.Status == RegisteredWorkStatus.Registered && registeredWork.RightId != null)
             {
-                Logger.LogInformation("{Id} has a registered work, getting info from the blockchain", id);
-
-                var rightId = BigInteger.Parse(registeredWork.RightId);
-
-                var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-                    .OwnershipOfQueryAsync(rightId);
-
-                var currentVotes = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-                    .CurrentVotesQueryAsync(rightId);
-
-                var proposal = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-                    .ProposalQueryAsync(rightId);
-
-                var meta = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-                    .CopyrightMetaQueryAsync(rightId);
-
-                registeredWork.OwnershipStructure = ownershipOf != null ? ownershipOf.ReturnValue1 : null;
-                registeredWork.CurrentVotes = currentVotes != null ? currentVotes.ReturnValue1 : null;
-                registeredWork.HasProposal = proposal != null ? (proposal.ReturnValue1.NewStructure.Count > 0) : false;
-                registeredWork.Meta = meta != null ? meta.ReturnValue1 : null;
+                await injectFromChain(registeredWork);
             }
         }
 
         return works;
+    }
+
+    private async Task<RegisteredWorkWithAppsViewModel> injectFromChain(RegisteredWorkWithAppsViewModel registeredWork)
+    {
+        Logger.LogInformation("Injecting blockchain data into registered work {Id}", registeredWork.Id);
+        var rightId = BigInteger.Parse(registeredWork.RightId);
+
+        var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+            .OwnershipOfQueryAsync(rightId);
+
+        var currentVotes = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+            .CurrentVotesQueryAsync(rightId);
+
+        var proposal = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+            .ProposalQueryAsync(rightId);
+
+        var meta = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+            .CopyrightMetaQueryAsync(rightId);
+
+        registeredWork.OwnershipStructure = ownershipOf != null ? ownershipOf.ReturnValue1 : null;
+        registeredWork.CurrentVotes = currentVotes != null ? currentVotes.ReturnValue1 : null;
+        registeredWork.HasProposal = proposal != null ? (proposal.ReturnValue1.NewStructure.Count > 0) : false;
+        registeredWork.Meta = meta != null ? meta.ReturnValue1 : null;
+        return registeredWork;
     }
 }

@@ -7,7 +7,7 @@ namespace CRPL.Web.Services.Interfaces;
 public interface ICopyrightService
 {
     public Task<List<RegisteredWorkWithAppsViewModel>> GetUsersWorks(Guid id);
-    public Task<RegisteredWork> GetWork(Guid id);
+    public Task<RegisteredWorkWithAppsViewModel> GetWork(Guid id);
     public Task AttachWorkToApplicationAndCheckValid(Guid id, Application applicationId);
     public Task<OwnershipRestructureApplication> ProposeRestructure(OwnershipRestructureApplication application);
     public Task BindProposal(BindProposalInput proposalInput);

@@ -20,7 +20,7 @@ public class CopyrightController : ControllerBase
         CopyrightService = copyrightService;
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("complete/{id}")]
     public async Task<RegisteredWork> CompleteRegistration([FromRoute]Guid id)
     {
         try
@@ -30,6 +30,20 @@ public class CopyrightController : ControllerBase
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when getting application");
+            throw;
+        }
+    }
+    
+    [HttpGet("{id}")]
+    public async Task<RegisteredWorkWithAppsViewModel> Get([FromRoute]Guid id)
+    {
+        try
+        {
+            return await CopyrightService.GetWork(id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when getting registered work");
             throw;
         }
     }
