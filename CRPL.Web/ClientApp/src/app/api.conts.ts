@@ -18,7 +18,9 @@ let formsPaths: FormsPaths = {
   BasePath: "forms"
 }
 
-let copyrightPaths: CopyrightPaths = {Bind: "", BasePath: "copyright", GetMy: ""}
+let copyrightPaths: CopyrightPaths = {Bind: "", BasePath: "copyright"}
+
+let queryPaths: QueryPaths = {All: "", BasePath: "q", GetMy: ""}
 
 formsPaths = {
   ...formsPaths,
@@ -44,8 +46,13 @@ userPaths = {
 
 copyrightPaths = {
   ...copyrightPaths,
-  GetMy: copyrightPaths.BasePath + "/my",
   Bind: copyrightPaths.BasePath + "/bind"
+}
+
+queryPaths = {
+  ...queryPaths,
+  GetMy: queryPaths.BasePath + "/my",
+  All: queryPaths.BasePath + "/all"
 }
 
 interface UserPaths {
@@ -78,11 +85,17 @@ interface FormsPaths {
 
 interface CopyrightPaths {
   readonly BasePath: string;
-  readonly GetMy: string;
   readonly Bind: string;
+}
+
+interface QueryPaths {
+  readonly BasePath: string;
+  readonly GetMy: string;
+  readonly All: string;
 }
 
 export const UserPaths: UserPaths = userPaths;
 export const WorksPaths: WorksPaths = worksPaths;
 export const FormsPaths: FormsPaths = formsPaths;
 export const CopyrightPaths: CopyrightPaths = copyrightPaths;
+export const QueryPaths: QueryPaths = queryPaths;

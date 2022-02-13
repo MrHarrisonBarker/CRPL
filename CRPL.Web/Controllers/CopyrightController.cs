@@ -33,34 +33,6 @@ public class CopyrightController : ControllerBase
             throw;
         }
     }
-    
-    [HttpGet("{id}")]
-    public async Task<RegisteredWorkWithAppsViewModel> Get([FromRoute]Guid id)
-    {
-        try
-        {
-            return await CopyrightService.GetWork(id);
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "Exception thrown when getting registered work");
-            throw;
-        }
-    }
-
-    [HttpGet("my/{id}")]
-    public async Task<List<RegisteredWorkWithAppsViewModel>> GetMy(Guid id)
-    {
-        try
-        {
-            return await CopyrightService.GetUsersWorks(id);
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "Exception thrown when getting users application");
-            throw;
-        }
-    }
 
     [HttpPost("bind")]
     public async Task<ActionResult> BindProposal(BindProposalInput proposalInput)

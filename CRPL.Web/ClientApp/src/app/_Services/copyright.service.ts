@@ -3,7 +3,7 @@ import {AuthService} from "./auth.service";
 import {HttpClient} from "@angular/common/http";
 import {AlertService} from "./alert.service";
 import {RegisteredWorkViewModel} from "../_Models/Works/RegisteredWork";
-import {CopyrightPaths} from "../api.conts";
+import {CopyrightPaths, QueryPaths} from "../api.conts";
 import {Observable} from "rxjs";
 import {BindProposalInput, BindProposalWorkInput} from "../_Models/StructuredOwnership/BindProposalInput";
 import {WarehouseService} from "./warehouse.service";
@@ -28,7 +28,7 @@ export class CopyrightService
 
   public GetMyCopyrights (): Observable<RegisteredWorkViewModel[]>
   {
-    return this.http.get<RegisteredWorkViewModel[]>(this.BaseUrl + CopyrightPaths.GetMy + "/" + this.authService.UserAccount.getValue().Id)
+    return this.http.get<RegisteredWorkViewModel[]>(this.BaseUrl + QueryPaths.GetMy + "/" + this.authService.UserAccount.getValue().Id)
       .pipe(tap(works => this.warehouse.MyWorks = works));
   }
 
@@ -44,6 +44,6 @@ export class CopyrightService
 
   public Get (workId: string): Observable<RegisteredWorkViewModel>
   {
-    return this.http.get<RegisteredWorkViewModel>(this.BaseUrl + CopyrightPaths.BasePath + "/" + encodeURI(workId));
+    return this.http.get<RegisteredWorkViewModel>(this.BaseUrl + QueryPaths.BasePath + "/" + encodeURI(workId));
   }
 }
