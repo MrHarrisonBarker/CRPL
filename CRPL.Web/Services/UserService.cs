@@ -194,14 +194,17 @@ public class UserService : IUserService
         Logger.LogInformation("Assigning {Address} to work {Id}", address, work.RightId);
         var user = await Context.UserAccounts
             .Include(x => x.UserWorks)
-            .FirstOrDefaultAsync(x => x.Wallet.PublicAddress.Equals(address, StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefaultAsync(x => x.Wallet.PublicAddress.ToLower() == address.ToLower());
         if (user == null) throw new UserNotFoundException(address);
 
         // if (!user.UserWorks.Any(x => x.WorkId == work.Id))
         // {
+        if (user.UserWorks == null) user.UserWorks = new List<UserWork>();
+        
             user.UserWorks.Add(new UserWork()
             {
-                RegisteredWork = work
+                WorkId = work.Id,
+                UserId = user.Id
             });
         // }
         

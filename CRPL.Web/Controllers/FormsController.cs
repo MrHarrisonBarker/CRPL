@@ -1,3 +1,4 @@
+using System.Net;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
@@ -81,7 +82,7 @@ public class FormsController : ControllerBase
         try
         {
             await FormsService.CancelApplication(id);
-            return Ok($"Canceled application {id}");
+            return StatusCode(200);
         }
         catch (Exception e)
         {

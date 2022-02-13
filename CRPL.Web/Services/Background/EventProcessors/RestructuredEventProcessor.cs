@@ -29,6 +29,7 @@ public static class RestructuredEventProcessor
 
         logger.LogInformation("Assigning new shareholders and removing old");
         // assigning new shareholders to the work and removing old ones
+        context.UserWorks.RemoveRange(work.UserWorks);
         work.UserWorks.Clear();
         restructuredEvent.Event.Proposal.NewStructure.ForEach(x => userService.AssignToWork(x.Owner, work));
 

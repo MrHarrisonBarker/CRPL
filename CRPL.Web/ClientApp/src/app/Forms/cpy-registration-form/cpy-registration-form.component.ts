@@ -8,7 +8,7 @@ import {CopyrightRegistrationInputModel} from "../../_Models/Applications/Copyri
 import {ValidatorsService} from "../../_Services/validators.service";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
-import {catchError, debounceTime, distinctUntilChanged, switchMap, takeUntil, tap} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from "rxjs/operators";
 import {Observable, of, Subject} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
 import {Router} from '@angular/router';
@@ -102,6 +102,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
   public ngOnInit (): void
   {
+    // IF NO APPLICATION THEN USE DEFAULT
     if (this.ExistingApplication)
     {
       console.log("application is existing", this.ExistingApplication);
@@ -190,7 +191,10 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
       Protections: this.RegistrationForm.value.Protections
     }
 
-    return this.formsService.UpdateCopyrightRegistration(inputModel).pipe(tap(crp => this.ExistingApplication = crp), catchError(err => of(null as any)));
+    return this.formsService.UpdateCopyrightRegistration(inputModel).pipe(tap(crp => {
+      this.ExistingApplication = crp;
+      console.log("updated reg application", crp, this.ExistingApplication);
+    }));
   }
 
   private populateForm (): void

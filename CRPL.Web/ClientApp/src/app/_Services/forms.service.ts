@@ -2,14 +2,14 @@ import {Inject, Injectable} from '@angular/core';
 import {AuthService} from "./auth.service";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {AlertService} from "./alert.service";
-import {Observable, throwError} from "rxjs";
+import {Observable, of, throwError} from "rxjs";
 import {CopyrightRegistrationInputModel} from "../_Models/Applications/CopyrightRegistrationInputModel";
 import {CopyrightRegistrationViewModel} from "../_Models/Applications/CopyrightRegistrationViewModel";
 import {FormsPaths} from "../api.conts";
 import {ApplicationViewModel} from "../_Models/Applications/ApplicationViewModel";
 import {OwnershipRestructureViewModel} from "../_Models/Applications/OwnershipRestructureViewModel";
 import {OwnershipRestructureInputModel} from "../_Models/Applications/OwnershipRestructureInputModel";
-import {tap} from "rxjs/operators";
+import {catchError, map, tap} from "rxjs/operators";
 import {WarehouseService} from "./warehouse.service";
 
 @Injectable({
@@ -38,7 +38,7 @@ export class FormsService
   public Cancel (id: string): Observable<HttpResponse<any>>
   {
     return this.http.delete<HttpResponse<any>>(this.BaseUrl + FormsPaths.Cancel + "/" + encodeURI(id)).pipe(tap( res => {
-      console.log(res);
+      console.log("CANCEL APPLICATION before", this.warehouse.MyApplications);
       this.warehouse.MyApplications = this.warehouse.MyApplications.filter(x => x.Id != id);
     }));
   }
@@ -62,7 +62,7 @@ export class FormsService
                  let index = this.warehouse.MyApplications.findIndex(x => x.Id == application.Id);
                  if (index == -1) this.warehouse.MyApplications.push(application);
                  else this.warehouse.MyApplications[index] = application;
-               }));
+             }));
   }
 
   public UpdateOwnershipRestructure (inputModel: OwnershipRestructureInputModel): Observable<OwnershipRestructureViewModel>

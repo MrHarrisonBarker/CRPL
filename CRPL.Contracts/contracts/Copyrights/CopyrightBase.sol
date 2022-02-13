@@ -49,7 +49,7 @@ abstract contract CopyrightBase is ICopyright {
         _name = name;
     }
 
-    function OwnershipOf(uint256 rightId) external override validId(rightId) view returns (OwnershipStake[] memory) {       
+    function OwnershipOf(uint256 rightId) public override validId(rightId) view returns (OwnershipStake[] memory) {       
         return _shareholders[rightId];
     }
 
@@ -122,9 +122,11 @@ abstract contract CopyrightBase is ICopyright {
 
         // if the proposal has enough votes, **** 100% SHAREHOLDER CONSENSUS ****
         if (_numOfPropVotes[rightId] == _numberOfShareholder(rightId)) {
-
+            
             // proposal has been accepted and is now binding
 
+            OwnershipStake[] memory oldOwnership = OwnershipOf(rightId);
+            
             // reset has to happen before new shareholders are registered to remove data concerning old shareholders
             _resetProposal(rightId);
 
@@ -132,7 +134,7 @@ abstract contract CopyrightBase is ICopyright {
 
             delete(_newHolders[rightId]);
 
-            emit Restructured(rightId, _getProposedRestructure(rightId));
+            emit Restructured(rightId, RestructureProposal({oldStructure: oldOwnership, newStructure: OwnershipOf(rightId)}));
         }
 
     }

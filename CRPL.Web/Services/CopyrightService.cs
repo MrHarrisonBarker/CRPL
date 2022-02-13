@@ -103,7 +103,7 @@ public class CopyrightService : ICopyrightService
         Logger.LogInformation("Binding proposal using work {Id}", proposalInput.WorkId);
         var work = await Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == proposalInput.WorkId);
         if (work == null) throw new WorkNotFoundException(proposalInput.WorkId);
-        
+
         await sendBind(work, proposalInput.Accepted);
     }
 
@@ -117,11 +117,10 @@ public class CopyrightService : ICopyrightService
             Accepted = accepted
         };
 
-        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, bind);
-
         try
         {
-            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, bind);
+            var transactionId = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+                .BindRestructureRequestAsync(bind);
 
             Logger.LogInformation("sent restructure bind transaction at {Id}", transactionId);
         }

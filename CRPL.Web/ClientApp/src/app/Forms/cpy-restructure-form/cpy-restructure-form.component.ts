@@ -176,7 +176,11 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
     if (this.RegisteredWork) inputModel.WorkId = this.RegisteredWork.Id;
     if (this.ExistingApplication) inputModel.Id = this.ExistingApplication.Id;
 
-    return this.formsService.UpdateOwnershipRestructure(inputModel).pipe(tap(crp => this.ExistingApplication = crp));
+    return this.formsService.UpdateOwnershipRestructure(inputModel).pipe(tap(crp =>
+    {
+      console.log("updated restructure", this.ExistingApplication, crp)
+      this.ExistingApplication = crp;
+    }));
   }
 
   public Submit (): void
