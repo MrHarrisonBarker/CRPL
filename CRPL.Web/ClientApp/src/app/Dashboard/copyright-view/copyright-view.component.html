@@ -8,11 +8,11 @@
       <div class="card-text" id="copyright-info">
 
         <div class="flex-between">
-          <p class="card-text text-muted"><em>{{Copyright.Id}}</em></p>
-          <a class="card-text" style="margin-right: 0.5rem"><em class="text-muted">right id:</em> <em>{{Copyright?.RightId}}</em></a>
+          <p class="card-text text-muted"><em><a [routerLink]="['/cpy',Copyright.Id]">{{Copyright.Id}}</a></em></p>
+          <p class="card-text" style="margin-right: 0.5rem"><em class="text-muted">right id: <a target="_blank">{{Copyright?.RightId}}</a></em></p>
         </div>
 
-        <div><em class="text-muted">transaction:</em>&nbsp;&nbsp;<a>{{Copyright.RegisteredTransactionId}}</a></div>
+        <div><em class="text-muted">transaction:</em>&nbsp;&nbsp;<a target="_blank" [href]="TransactionLink(Copyright.RegisteredTransactionId)">{{Copyright.RegisteredTransactionId}}</a></div>
 
         <div style="display: flex">
           <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Copyright.Created | date:'medium'}}</p>
@@ -51,7 +51,7 @@
       </div>
 
     </div>
-    <div class="card-footer">
+    <div class="card-footer" *ngIf="ShowActions">
       <button class="btn btn-sm" (click)="RestructureOpen = true" [disabled]="!IsRestructureAllowed">Restructure ownership</button>
     </div>
   </div>
@@ -67,4 +67,4 @@
   </div>
 </clr-modal>
 
-{{Copyright | json}}
+<!--{{Copyright | json}}-->

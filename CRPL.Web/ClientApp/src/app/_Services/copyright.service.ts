@@ -41,4 +41,9 @@ export class CopyrightService
   {
     return this.http.post(this.BaseUrl + CopyrightPaths.Bind + "/work", input);
   }
+
+  public Get (workId: string): Observable<RegisteredWorkViewModel>
+  {
+    return this.http.get<RegisteredWorkViewModel>(this.BaseUrl + CopyrightPaths.BasePath + "/" + encodeURI(workId));
+  }
 }

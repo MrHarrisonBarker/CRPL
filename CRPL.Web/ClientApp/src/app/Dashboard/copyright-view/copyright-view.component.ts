@@ -14,6 +14,7 @@ import {syntaxHighlight} from "../../utils";
 export class CopyrightViewComponent implements OnInit
 {
   @Input() Copyright!: RegisteredWorkViewModel;
+  @Input() ShowActions: boolean = true;
   public RestructureOpen: boolean = false;
 
   constructor (private copyrightService: CopyrightService)
@@ -61,5 +62,10 @@ export class CopyrightViewComponent implements OnInit
   get Meta()
   {
     return syntaxHighlight(JSON.stringify(this.Copyright.Meta, undefined, 4));
+  }
+
+  public TransactionLink (address: string): string
+  {
+    return "https://etherscan.io/tx/" + address
   }
 }

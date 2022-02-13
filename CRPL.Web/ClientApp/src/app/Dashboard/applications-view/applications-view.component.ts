@@ -52,13 +52,14 @@ export class ApplicationsViewComponent implements OnInit
       this.alertService.StartLoading();
       this.formsService.Cancel(this.Application.Id).subscribe(x =>
       {
-        this.alertService.Alert({Type: 'success', Message: 'Canceled application'})
+        this.alertService.Alert({Type: 'success', Message: 'Canceled application'});
+        this.Application = null as any;
         this.alertService.StopLoading();
       }, error =>
       {
         this.alertService.Alert({Type: 'danger', Message: error.error});
         this.alertService.StopLoading();
-      });
+      }, () => this.alertService.StopLoading());
 
   }
 }

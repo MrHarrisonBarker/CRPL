@@ -33,6 +33,7 @@ import {OwnershipStructureFormComponent} from "./Forms/ownership-structure-form/
 import {CpyRegistrationViewComponent} from "./Dashboard/cpy-registration-view/cpy-registration-view.component";
 import {ApplicationTypeComponent} from "./Core/application-type/application-type.component";
 import {CpyRestructureViewSubmittedComponent} from "./Dashboard/cpy-restructure-view/cpy-restructure-view-submitted/cpy-restructure-view-submitted.component";
+import { CopyrightComponent } from './copyright/copyright.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,8 @@ import {CpyRestructureViewSubmittedComponent} from "./Dashboard/cpy-restructure-
     OwnershipStructureFormComponent,
     CpyRegistrationViewComponent,
     ApplicationTypeComponent,
-    CpyRestructureViewSubmittedComponent
+    CpyRestructureViewSubmittedComponent,
+    CopyrightComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -76,7 +78,8 @@ import {CpyRestructureViewSubmittedComponent} from "./Dashboard/cpy-restructure-
       {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent},
       {path: 'application/:id', canActivate: [AuthGuard], component: IndervidualApplicationComponent},
       {path: 'dashboard', canActivate: [AuthGuard], component: DashboardComponent},
-      {path: 'register', canActivate: [AuthGuard], component: CpyRegistrationFormComponent}
+      {path: 'register', canActivate: [AuthGuard], component: CpyRegistrationFormComponent},
+      {path: 'cpy/:id', component: CopyrightComponent},
     ]),
     ReactiveFormsModule
   ],
