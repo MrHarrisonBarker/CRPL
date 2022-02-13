@@ -10,25 +10,25 @@
               <section class="nav-group collapsible">
                 <input id="copyrightsNav" type="checkbox"/> <label for="copyrightsNav">Copyrights</label>
                 <ul class="nav-list">
-                  <li *ngFor="let right of RegisteredCopyrights"><a class="nav-link" (click)="Select(right, false)">{{right.Meta?.Title}}</a></li>
+                  <li *ngFor="let right of RegisteredCopyrights"><a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">{{right.Meta?.Title}}</a></li>
                 </ul>
               </section>
               <section class="nav-group collapsible">
                 <input id="ApplicationsNav" type="checkbox"/> <label for="ApplicationsNav">Submitted Applications</label>
                 <ul class="nav-list">
-                  <li *ngFor="let application of SubmittedApplications"><a class="nav-link" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
+                  <li *ngFor="let application of SubmittedApplications"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
                 </ul>
               </section>
               <section class="nav-group collapsible">
                 <input id="PartialApplicationsNav" type="checkbox"/> <label for="PartialApplicationsNav">Partial Applications</label>
                 <ul class="nav-list">
-                  <li *ngFor="let application of PartialApplications"><a class="nav-link" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
+                  <li *ngFor="let application of PartialApplications"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
                 </ul>
               </section>
               <section class="nav-group collapsible">
                 <input id="CompletedApplicationsNav" type="checkbox"/> <label for="CompletedApplicationsNav">Completed Applications</label>
                 <ul class="nav-list">
-                  <li *ngFor="let application of CompletedApplications"><a class="nav-link" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
+                  <li *ngFor="let application of CompletedApplications"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
                 </ul>
               </section>
             </section>
