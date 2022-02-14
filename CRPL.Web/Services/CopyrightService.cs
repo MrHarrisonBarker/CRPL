@@ -50,19 +50,21 @@ public class CopyrightService : ICopyrightService
     {
         if (application.AssociatedWork == null) throw new WorkNotFoundException();
 
-        var handler = BlockchainConnection.Web3().Eth.GetContractTransactionHandler<ProposeRestructureFunction>();
+        // var handler = BlockchainConnection.Web3().Eth.GetContractTransactionHandler<ProposeRestructureFunction>();
         var propose = new ProposeRestructureFunction()
         {
             RightId = BigInteger.Parse(application.AssociatedWork.RightId),
             Restructured = application.ProposedStructure.Decode().Select(x => Mapper.Map<OwnershipStakeContract>(x)).ToList()
         };
 
-        var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, propose);
+        // var estimate = await handler.EstimateGasAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, propose);
 
         try
         {
-            var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, propose);
-
+            // var transactionId = await handler.SendRequestAsync(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, propose);
+            var transactionId = await new CRPL.Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+                .ProposeRestructureRequestAsync(propose);
+            
             Context.Update(application);
             application.TransactionId = transactionId;
             application.AssociatedWork.ProposalTransactionId = transactionId;
@@ -99,10 +101,9 @@ public class CopyrightService : ICopyrightService
         await sendBind(work, proposalInput.Accepted);
     }
 
-    private async Task sendBind(RegisteredWork work, bool accepted)
+    private async Task<string> sendBind(RegisteredWork work, bool accepted)
     {
         Logger.LogInformation("Sending proposal bind transaction for {Id} with the answer {accpted}", work.RightId, accepted);
-        var handler = BlockchainConnection.Web3().Eth.GetContractTransactionHandler<BindRestructureFunction>();
         var bind = new BindRestructureFunction()
         {
             RightId = BigInteger.Parse(work.RightId),
@@ -115,6 +116,8 @@ public class CopyrightService : ICopyrightService
                 .BindRestructureRequestAsync(bind);
 
             Logger.LogInformation("sent restructure bind transaction at {Id}", transactionId);
+
+            return transactionId;
         }
         catch (Exception e)
         {
