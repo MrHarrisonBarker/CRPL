@@ -18,9 +18,9 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var userService = new QueryServiceFactory().Create(context);
+            var queryService = new QueryServiceFactory().Create(context, null);
 
-            var works = await userService.Search(new StructuredQuery()
+            var works = await queryService.Search(new StructuredQuery()
             {
                 Keyword = "title"
             }, 0);
@@ -34,9 +34,9 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var userService = new QueryServiceFactory().Create(context);
+            var queryService = new QueryServiceFactory().Create(context, null);
 
-            var works = await userService.Search(new StructuredQuery()
+            var works = await queryService.Search(new StructuredQuery()
             {
                 SortBy = Sortable.Created
             }, 0);
@@ -56,9 +56,9 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var userService = new QueryServiceFactory().Create(context);
+            var queryService = new QueryServiceFactory().Create(context, null);
 
-            var works = await userService.Search(new StructuredQuery(), 0, 1);
+            var works = await queryService.Search(new StructuredQuery(), 0, 1);
 
             works.Should().NotBeNull();
             works.Count.Should().Be(1);
@@ -70,9 +70,9 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var userService = new QueryServiceFactory().Create(context);
+            var queryService = new QueryServiceFactory().Create(context, null);
 
-            var works = await userService.Search(new StructuredQuery()
+            var works = await queryService.Search(new StructuredQuery()
             {
                 WorkFilters = new Dictionary<WorkFilter, string>()
                 {
@@ -89,9 +89,9 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var userService = new QueryServiceFactory().Create(context);
+            var queryService = new QueryServiceFactory().Create(context, null);
 
-            var works = await userService.Search(new StructuredQuery()
+            var works = await queryService.Search(new StructuredQuery()
             {
                 WorkFilters = new Dictionary<WorkFilter, string>()
                 {
