@@ -37,18 +37,18 @@ export class CpyRestructureViewSubmittedComponent implements OnInit
 
   private send(accepted: boolean) : void
   {
-    this.alertService.StartLoading();
+
     this.copyrightService.BindProposal({
       ApplicationId: this.Application.Id,
       Accepted: accepted
     }).subscribe(x =>
     {
       this.alertService.Alert({Type: 'success', Message: 'Sent transaction'})
-      this.alertService.StopLoading();
+
     }, error =>
     {
       this.alertService.Alert({Type: 'danger', Message: error.error});
-      this.alertService.StopLoading();
+
     });
   }
 }

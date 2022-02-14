@@ -57,7 +57,7 @@ export class InfoWizardComponent implements OnInit
 
   public SaveForms (): void
   {
-    this.alertService.StartLoading();
+
     let accountInput: AccountInputModel = {};
 
     accountInput.FirstName = this.FirstPageModel.value.FirstName;

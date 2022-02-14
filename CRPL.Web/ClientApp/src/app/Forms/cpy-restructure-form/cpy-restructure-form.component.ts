@@ -119,7 +119,7 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
       {
         this.alertService.Alert({Message: "Saved changes", Type: "success"});
       }
-      this.alertService.StopLoading();
+      ;
     }, error => console.error(error))
   }
 
@@ -165,7 +165,7 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
 
   private save (): Observable<OwnershipRestructureViewModel>
   {
-    this.alertService.StartLoading();
+
     console.log("saving restructure application");
 
     let inputModel: OwnershipRestructureInputModel = {
@@ -185,7 +185,7 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
 
   public Submit (): void
   {
-    this.alertService.StartLoading();
+
     // stops change detection and auto save
     this.unsubscribe.next();
     if (this.ExistingApplication?.Id) this.formsService.SubmitOwnershipRestructure(this.ExistingApplication.Id)

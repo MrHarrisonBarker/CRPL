@@ -29,12 +29,12 @@ export class CopyrightComponent implements OnInit
 
   async ngOnInit (): Promise<any>
   {
-    this.alertService.StartLoading();
+
     let workId = this.route.snapshot.paramMap.get('id');
     if (workId) await this.copyrightService.Get(workId).subscribe(x =>
     {
       this.Copyright = x;
-      this.alertService.StopLoading();
+
     });
   }
 

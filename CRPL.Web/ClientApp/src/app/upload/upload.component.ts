@@ -47,7 +47,7 @@ export class UploadComponent implements OnInit
   {
     if (this.CurrentFile != null)
     {
-      this.alertService.StartLoading();
+
       this.worksService.UploadWork(this.CurrentFile).subscribe(event =>
       {
         if (event.type == HttpEventType.UploadProgress)
@@ -69,7 +69,7 @@ export class UploadComponent implements OnInit
   {
     if (this.FinishedUpload && this.WorkHash)
     {
-      this.alertService.StartLoading();
+
       this.worksService.GetSignedWork(this.WorkHash).subscribe(data =>
       {
         DownloadFile(this.CurrentFile.name, data);

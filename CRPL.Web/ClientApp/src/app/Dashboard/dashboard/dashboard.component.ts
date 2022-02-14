@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit
 
   async ngOnInit (): Promise<any>
   {
-    this.alertService.StartLoading();
+
     // GET EVERYTHING
     await forkJoin([this.formsService.GetMyApplications(), this.copyrightService.GetMyCopyrights()]).subscribe(x =>
     {
@@ -44,7 +44,7 @@ export class DashboardComponent implements OnInit
       if (this.route.snapshot.paramMap.has("applicationId")) this.Selected = this.warehouse.MyApplications.find(x => x.Id == this.route.snapshot.paramMap.get("applicationId")) as ApplicationViewModel
 
       this.Loaded = true;
-      this.alertService.StopLoading();
+
     });
 
     console.log(this.route.snapshot.paramMap.keys);

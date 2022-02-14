@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {RouterModule} from '@angular/router';
@@ -34,6 +34,7 @@ import {CpyRegistrationViewComponent} from "./Dashboard/cpy-registration-view/cp
 import {ApplicationTypeComponent} from "./Core/application-type/application-type.component";
 import {CpyRestructureViewSubmittedComponent} from "./Dashboard/cpy-restructure-view/cpy-restructure-view-submitted/cpy-restructure-view-submitted.component";
 import { CopyrightComponent } from './copyright/copyright.component';
+import {HttpLoadingInterceptor} from "./Core/HttpLoadingInterceptor";
 
 @NgModule({
   declarations: [
@@ -83,7 +84,11 @@ import { CopyrightComponent } from './copyright/copyright.component';
     ]),
     ReactiveFormsModule
   ],
-  providers: [{provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}],
+  providers: [
+    {provide: ErrorHandler},
+    {provide: HTTP_INTERCEPTORS, useClass: HttpLoadingInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule

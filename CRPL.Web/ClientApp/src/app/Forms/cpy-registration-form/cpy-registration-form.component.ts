@@ -133,7 +133,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
       {
         this.alertService.Alert({Message: "Saved changes", Type: "success"});
       }
-      this.alertService.StopLoading();
+
     }, error => console.error(error))
   }
 
@@ -175,7 +175,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
   private save (): Observable<CopyrightRegistrationViewModel>
   {
     console.log("saving");
-    this.alertService.StartLoading();
+
     let ownership: OwnershipStake[] = this.OwnershipStructure.controls.Stakes.value;
 
     let inputModel: CopyrightRegistrationInputModel = {
@@ -234,22 +234,22 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
   public Submit (): void
   {
-    this.alertService.StartLoading();
+
     this.unsubscribe.next();
     this.save().subscribe(x =>
     {
         this.formsService.SubmitCopyrightRegistration(this.ExistingApplication.Id).subscribe(x =>
         {
-          this.alertService.StopLoading();
+
           if (this.router.url.includes('/dashboard')) this.host.nativeElement.remove();
           else this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]);
         }, error =>
         {
-          this.alertService.StopLoading();
+
           this.alertService.Alert({Type: 'danger', Message: error.error});
         });
     }, error => {
-      this.alertService.StopLoading();
+
       this.alertService.Alert({Type: 'danger', Message: error.error});
     })
   }
