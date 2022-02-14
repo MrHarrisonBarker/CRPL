@@ -1,3 +1,4 @@
+using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +45,7 @@ public class QueryController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpGet("all")]
     public async Task<List<RegisteredWorkViewModel>> GetAll(int from, int take = 100)
     {
@@ -55,6 +56,20 @@ public class QueryController : ControllerBase
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when getting all works");
+            throw;
+        }
+    }
+
+    [HttpPost("search")]
+    public async Task<List<RegisteredWorkViewModel>> Search([FromBody]StructuredQuery structuredQuery, int from, int take = 100)
+    {
+        try
+        {
+            return await QueryService.Search(structuredQuery, from, take);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when searching for works");
             throw;
         }
     }

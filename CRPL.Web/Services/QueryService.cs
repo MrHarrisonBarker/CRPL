@@ -53,10 +53,12 @@ public class QueryService : IQueryService
 
     public Task<List<RegisteredWorkViewModel>> Search(StructuredQuery query, int from, int take = 100)
     {
+        Logger.LogInformation("Searching for works {Query}", query.ToString());
         var works = Context.RegisteredWorks.AsQueryable();
 
         if (query.Keyword != null) works = works.Where(x => x.Title.Contains(query.Keyword));
-        if (query.SortBy.HasValue) works = works.OrderBy(query.SortBy.ToString());
+
+        works = query.SortBy.HasValue ? works.OrderBy(query.SortBy.ToString()) : works.OrderBy(x => x.Created);
 
         if (query.WorkFilters != null)
         {

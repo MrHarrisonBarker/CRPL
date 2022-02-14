@@ -44,7 +44,7 @@ public class CopyrightController : ControllerBase
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Exception thrown when getting users application");
+            Logger.LogError(e, "Exception thrown when binding a proposal vote");
             throw;
         }
     }
@@ -59,7 +59,7 @@ public class CopyrightController : ControllerBase
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Exception thrown when getting users application");
+            Logger.LogError(e, "Exception thrown when binding a proposal vote");
             throw;
         }
     }
