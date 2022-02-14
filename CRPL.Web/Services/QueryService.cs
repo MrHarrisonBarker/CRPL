@@ -111,7 +111,7 @@ public class QueryService : IQueryService
 
         registeredWork.OwnershipStructure = ownershipOf != null ? ownershipOf.ReturnValue1 : null;
         registeredWork.CurrentVotes = currentVotes != null ? currentVotes.ReturnValue1 : null;
-        registeredWork.HasProposal = proposal != null ? (proposal.ReturnValue1.NewStructure.Count > 0) : false;
+        registeredWork.HasProposal = proposal != null && proposal.ReturnValue1 != null ? proposal.ReturnValue1.NewStructure.Count > 0 : false;
         registeredWork.Meta = meta != null ? meta.ReturnValue1 : null;
         return registeredWork;
     }
