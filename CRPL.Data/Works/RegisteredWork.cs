@@ -13,6 +13,7 @@ public class RegisteredWork
     }
 
     public Guid Id { get; set; }
+    public string Title { get; set; }
     public DateTime Created { get; set; }
     public DateTime? Registered { get; set; }
     public RegisteredWorkStatus Status { get; set; }
@@ -28,6 +29,7 @@ public class RegisteredWork
 public class RegisteredWorkWithAppsViewModel
 {
     public Guid Id { get; set; }
+    public string Title { get; set; }
     public DateTime Created { get; set; }
     public DateTime? Registered { get; set; }
     public RegisteredWorkStatus Status { get; set; }

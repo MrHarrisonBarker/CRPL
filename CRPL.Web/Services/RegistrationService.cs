@@ -45,7 +45,8 @@ public class RegistrationService : IRegistrationService
             {
                 UserAccount = x.UserAccount
             }).ToList(),
-            Hash = application.WorkHash
+            Hash = application.WorkHash,
+            Title = application.Title
         };
 
         Context.RegisteredWorks.Add(registeredWork);

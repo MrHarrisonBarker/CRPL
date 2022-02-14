@@ -1,3 +1,4 @@
+using System.Linq.Dynamic.Core;
 using System.Numerics;
 using AutoMapper;
 using CRPL.Data;
@@ -51,7 +52,12 @@ public class QueryService : IQueryService
 
     public Task<List<RegisteredWorkViewModel>> Search(StructuredQuery query, int from, int take = 100)
     {
-        throw new NotImplementedException();
+        var works = Context.RegisteredWorks.AsQueryable();
+
+        if (query.Keyword != null) works = works.Where(x => x.Title.Contains(query.Keyword));
+        if (query.SortBy.HasValue) works = works.OrderBy(query.SortBy.ToString());
+
+        return works.Select(x => Mapper.Map<RegisteredWorkViewModel>(x)).ToListAsync();
     }
 
     public async Task<List<RegisteredWorkWithAppsViewModel>> GetUsersWorks(Guid id)

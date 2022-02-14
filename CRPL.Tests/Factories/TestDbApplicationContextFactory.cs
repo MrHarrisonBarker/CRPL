@@ -125,19 +125,22 @@ public class TestDbApplicationContextFactory : IDisposable
             {
                 Hash = new byte[] { 0 },
                 Id = new Guid("D54F35CC-3C8A-471C-A641-2BB5A59A8963"),
-                RightId = "1"
+                RightId = "1",
+                Title = "Hello world"
             },
             new()
             {
                 Hash = new byte[] { 0, 0 },
                 Id = new Guid("C96560FD-6528-4921-9650-761AE96EF0DA"),
-                RightId = "2"
+                RightId = "2",
+                Title = "test title"
             },
             new()
             {
                 Hash = new byte[] { 0, 0, 0 },
                 Id = new Guid("E2199DB5-DC40-4690-B812-4E52A4D74A06"),
-                RightId = "3"
+                RightId = "3",
+                Title = "another title"
             }
         };
 

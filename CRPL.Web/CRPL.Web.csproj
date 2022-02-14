@@ -30,6 +30,7 @@
     <PackageReference Include="Serilog.Exceptions" Version="8.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.2.15" />
     <PackageReference Include="TagLibSharp" Version="2.2.0" />
   </ItemGroup>
 
