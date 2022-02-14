@@ -1,15 +1,12 @@
-#current-ownership {
-  margin: 1rem;
-}
-
 #current-ownership > hr {
-  margin-bottom: 1rem;
-}
-
-#proposed-ownership {
-  margin: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 #proposed-ownership > hr {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 0.1rem !important;
+  margin-top: 0 !important;
 }

@@ -17,4 +17,9 @@ export class CpyRestructureViewComponent implements OnInit
   ngOnInit (): void
   {
   }
+
+  public TransactionLink (TransactionId: string): string
+  {
+    return "https://etherscan.io/tx/" + TransactionId;
+  }
 }

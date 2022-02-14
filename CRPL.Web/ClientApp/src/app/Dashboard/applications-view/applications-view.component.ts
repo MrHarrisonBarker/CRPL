@@ -6,6 +6,7 @@ import {OwnershipRestructureViewModel} from "../../_Models/Applications/Ownershi
 import {WarehouseService} from "../../_Services/warehouse.service";
 import {AlertService} from "../../_Services/alert.service";
 import {FormsService} from "../../_Services/forms.service";
+import {ClarityIcons, trashIcon} from "@cds/core/icon";
 
 @Component({
   selector: 'applications-view [Application] [ShowForms]',
@@ -19,6 +20,7 @@ export class ApplicationsViewComponent implements OnInit
 
   constructor (private warehouse: WarehouseService, private alertService: AlertService, private formsService: FormsService)
   {
+    ClarityIcons.addIcons(trashIcon);
   }
 
   ngOnInit (): void
@@ -49,16 +51,16 @@ export class ApplicationsViewComponent implements OnInit
 
   public Cancel (): void
   {
-      this.alertService.StartLoading();
+
       this.formsService.Cancel(this.Application.Id).subscribe(x =>
       {
         this.alertService.Alert({Type: 'success', Message: 'Canceled application'});
         this.Application = null as any;
-        this.alertService.StopLoading();
+
       }, error =>
       {
         this.alertService.Alert({Type: 'danger', Message: error.error});
-        this.alertService.StopLoading();
+
       }, () => this.alertService.StopLoading());
 
   }

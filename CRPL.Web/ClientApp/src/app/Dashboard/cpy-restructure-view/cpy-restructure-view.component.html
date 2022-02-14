@@ -7,8 +7,10 @@
 
     <div class="flex-between">
       <p class="card-text text-muted"><em>{{Application.Id}}</em></p>
-      <a style="margin-right: 0.5rem"><em>{{Application.AssociatedWork?.RightId}}</em></a>
+      <p class="card-text" style="margin-right: 0.5rem"><em class="text-muted">right id: <a target="_blank">{{Application.AssociatedWork?.RightId}}</a></em></p>
     </div>
+
+    <div><em class="text-muted">transaction:</em>&nbsp;&nbsp;<a target="_blank" [href]="TransactionLink(Application.TransactionId)">{{Application.TransactionId}}</a></div>
 
     <div style="display: flex">
       <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Application.Created | date:'medium'}}</p>

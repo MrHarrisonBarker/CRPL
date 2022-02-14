@@ -16,6 +16,7 @@ export interface ApplicationViewModel
   ApplicationType: ApplicationType;
   Created: Date;
   Modified: Date;
+  TransactionId: string;
   Status: ApplicationStatus;
   AssociatedUsers: UserAccountMinimalViewModel[];
   AssociatedWork?: RegisteredWorkViewModel;

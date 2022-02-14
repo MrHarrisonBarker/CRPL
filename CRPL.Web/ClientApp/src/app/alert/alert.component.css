@@ -1,5 +1,26 @@
+:host {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 99999;
+  box-shadow: #323232a1 0px 2px 5px;
+}
 clr-spinner {
   position: absolute;
   right: 0;
-  margin: 1rem;
+  margin: 0.5rem;
+  height: 2rem !important;
+  width: 2rem !important;
+}
+
+
+#spinner-canvas {
+  position: absolute;
+  background: #444444;
+  right: 0;
+  margin: 0.25rem;
+  height: 2.5rem;
+  width: 2.5rem;
+  border: 0;
+  border-radius: 100%;
 }

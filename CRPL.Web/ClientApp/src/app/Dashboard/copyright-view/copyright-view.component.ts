@@ -68,4 +68,9 @@ export class CopyrightViewComponent implements OnInit
   {
     return "https://etherscan.io/tx/" + address
   }
+
+  public routeToApplication (Id: string)
+  {
+    return ['/dashboard', {applicationId: Id}];
+  }
 }

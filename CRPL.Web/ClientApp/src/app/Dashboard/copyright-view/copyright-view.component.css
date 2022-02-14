@@ -28,3 +28,20 @@ application-status {
 #ownership-structure > h4 {
   margin: 0.5rem;
 }
+
+
+.ass-application {
+  border-bottom: solid 1px #cccccc;
+  padding: 0.2rem 1rem;
+}
+
+p {
+  margin-bottom: 0.1rem !important;
+  margin-top: 0 !important;
+}
+
+#ass-applications {
+  background: #fafafa;
+  border: solid 1px #cccccc;
+  border-radius: 0.2rem;
+}

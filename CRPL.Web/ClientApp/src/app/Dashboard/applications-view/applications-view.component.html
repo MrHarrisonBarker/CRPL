@@ -1,4 +1,9 @@
-<button class="btn btn-danger" (click)="Cancel()" *ngIf="Application.Status == 0">Cancel application</button>
+<div class="flex-between">
+  <div></div>
+  <button class="btn btn-danger btn-icon" (click)="Cancel()" *ngIf="Application.Status == 0">
+    <cds-icon shape="trash"></cds-icon>
+  </button>
+</div>
 
 <cpy-registration-form [ExistingApplication]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && ShowForms && Application.Status == 0"></cpy-registration-form>
 <cpy-registration-view [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && (!ShowForms || Application.Status == 1)"></cpy-registration-view>
