@@ -5,6 +5,7 @@ using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
+using CRPL.Web.Core.Query;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,7 +58,17 @@ public class QueryService : IQueryService
         if (query.Keyword != null) works = works.Where(x => x.Title.Contains(query.Keyword));
         if (query.SortBy.HasValue) works = works.OrderBy(query.SortBy.ToString());
 
-        return works.Select(x => Mapper.Map<RegisteredWorkViewModel>(x)).ToListAsync();
+        if (query.WorkFilters != null)
+        {
+            foreach (var workFilter in query.WorkFilters.Keys)
+            {
+                query.WorkFilters.TryGetValue(workFilter, out var data);
+                if (data == null) throw new Exception("Search filter not found!");
+                works = works.Apply(workFilter, data);
+            }
+        }
+        
+        return works.Skip(from).Take(take).Select(x => Mapper.Map<RegisteredWorkViewModel>(x)).ToListAsync();
     }
 
     public async Task<List<RegisteredWorkWithAppsViewModel>> GetUsersWorks(Guid id)
