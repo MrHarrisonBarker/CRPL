@@ -127,7 +127,8 @@ public class TestDbApplicationContextFactory : IDisposable
                 Id = new Guid("D54F35CC-3C8A-471C-A641-2BB5A59A8963"),
                 RightId = "1",
                 Title = "Hello world",
-                Registered = DateTime.Now.AddDays(-1)
+                Registered = DateTime.Now.AddDays(-1),
+                Status = RegisteredWorkStatus.Registered
             },
             new()
             {
@@ -135,7 +136,8 @@ public class TestDbApplicationContextFactory : IDisposable
                 Id = new Guid("C96560FD-6528-4921-9650-761AE96EF0DA"),
                 RightId = "2",
                 Title = "test title",
-                Registered = DateTime.Now.AddDays(-2)
+                Registered = DateTime.Now.AddDays(-2),
+                Status = RegisteredWorkStatus.Registered
             },
             new()
             {
@@ -143,8 +145,35 @@ public class TestDbApplicationContextFactory : IDisposable
                 Id = new Guid("E2199DB5-DC40-4690-B812-4E52A4D74A06"),
                 RightId = "3",
                 Title = "another title",
-                Registered = DateTime.Now.AddDays(-3)
-            }
+                Registered = DateTime.Now.AddDays(-3),
+                Status = RegisteredWorkStatus.Registered
+            },
+            new()
+            {
+                Hash = new byte[] { 0, 0, 0 },
+                Id = new Guid("85B77C6F-7D0C-4FCE-9691-4613C1F8BFDE"),
+                RightId = "4",
+                Title = "Created",
+                Status = RegisteredWorkStatus.Created
+            },
+            new()
+            {
+                Hash = new byte[] { 0, 0, 0 },
+                Id = new Guid("816FE428-4350-4124-B855-72A429C925A6"),
+                RightId = "5",
+                Title = "Verified",
+                Status = RegisteredWorkStatus.Verified
+            },
+            new()
+            {
+                Hash = new byte[] { 0, 0, 0 },
+                Id = new Guid("9EE1AEF2-47BA-4A13-8AFE-693CF3D7E3DD"),
+                RightId = "6",
+                Title = "Assigned",
+                Status = RegisteredWorkStatus.Registered,
+                Registered = DateTime.Now.AddDays(-1),
+                RegisteredTransactionId = "TRANSACTION HASH"
+            },
         };
 
         List<Application> applications = new List<Application>()
@@ -155,7 +184,7 @@ public class TestDbApplicationContextFactory : IDisposable
                 Modified = DateTime.Now,
                 Id = new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"),
                 ApplicationType = ApplicationType.CopyrightRegistration,
-                OwnershipStakes = "ADDRESS!50;ANOTHER_ADDRESS!50",
+                OwnershipStakes = "0x0000000000000000000000000000000000099991!50;0x0000000000000000000000000000000000099992!50",
                 Legal = "LEGAL META",
                 Title = "HELLO WORLD",
                 WorkHash = Encoding.UTF8.GetBytes("HASH"),
@@ -163,7 +192,7 @@ public class TestDbApplicationContextFactory : IDisposable
                 AssociatedUsers = new List<UserApplication>()
                 {
                     new() { UserId = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C") }
-                }
+                },
             },
             new OwnershipRestructureApplication()
             {
@@ -173,7 +202,31 @@ public class TestDbApplicationContextFactory : IDisposable
                 ApplicationType = ApplicationType.OwnershipRestructure,
                 CurrentStructure = "ADDRESS!50;ANOTHER_ADDRESS!50",
                 ProposedStructure = "ADDRESS!90;ANOTHER_ADDRESS!10",
-            }
+            },
+            new CopyrightRegistrationApplication()
+            {
+                Created = DateTime.Now,
+                Modified = DateTime.Now,
+                Id = new Guid("CDBEE1A0-D266-43AB-BB0A-16E3CD07451E"),
+                ApplicationType = ApplicationType.CopyrightRegistration,
+                OwnershipStakes = "0x0000000000000000000000000000000000099991!50;0x0000000000000000000000000000000000099992!50",
+                Legal = "LEGAL META",
+                Title = "HELLO WORLD",
+                WorkHash = Encoding.UTF8.GetBytes("HASH"),
+                WorkUri = "URI",
+                AssociatedWork = registeredWorks.Last()
+            },
+            new OwnershipRestructureApplication()
+            {
+                Created = DateTime.Now,
+                Modified = DateTime.Now,
+                Id = new Guid("39E52B21-5BA4-4F69-AFF8-28294391EFB8"),
+                ApplicationType = ApplicationType.OwnershipRestructure,
+                CurrentStructure = "0x0000000000000000000000000000000000099991!50;0x0000000000000000000000000000000000099992!50",
+                ProposedStructure = "0x0000000000000000000000000000000000099991!90;0x0000000000000000000000000000000000099992!10",
+                AssociatedWork = registeredWorks.Last(),
+                Status = ApplicationStatus.Submitted
+            },
         };
 
         context.UserAccounts.AddRange(userAccounts);
