@@ -25,7 +25,10 @@ public class AutoMapping : Profile
             .ForMember(src => src.CurrentVotes, x =>
                 x.Ignore())
             .ForMember(src => src.HasProposal, x =>
+                x.Ignore())
+            .ForMember(src => src.Meta, x =>
                 x.Ignore());
+        
 
         CreateMap<Application, ApplicationViewModelWithoutAssociated>().IncludeAllDerived();
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModelWithoutAssociated>();
