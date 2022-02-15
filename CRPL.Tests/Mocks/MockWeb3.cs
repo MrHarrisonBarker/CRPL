@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
@@ -53,6 +54,10 @@ public class MockWeb3
 
         public Task<T> SendRequestAsync<T>(RpcRequest request, string route = null)
         {
+            if (ReturnMapping[request.Method].GetType() == typeof(Exception))
+            {
+                throw (Exception)ReturnMapping[request.Method];
+            }
             return Task.FromResult((T)ReturnMapping[request.Method]);
         }
 

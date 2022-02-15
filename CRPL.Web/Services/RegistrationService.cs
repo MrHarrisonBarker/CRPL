@@ -64,6 +64,7 @@ public class RegistrationService : IRegistrationService
         if (application == null) throw new ApplicationNotFoundException(applicationId);
         if (application.AssociatedWork == null) throw new Exception("There is no work associated with this application!");
         if (application.AssociatedWork.Status != RegisteredWorkStatus.Verified) throw new WorkNotVerifiedException();
+        if (application.Status != ApplicationStatus.Submitted) throw new Exception("Application not in correct state!");
 
         var register = new RegisterWithMetaFunction
         {
@@ -99,6 +100,7 @@ public class RegistrationService : IRegistrationService
         }
         catch (Exception e)
         {
+            application.Status = ApplicationStatus.Failed;
             application.AssociatedWork.Status = RegisteredWorkStatus.Rejected;
             await Context.SaveChangesAsync();
             

@@ -1,7 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using CRPL.Contracts.Copyright.ContractDefinition;
+using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Tests.Factories;
 using CRPL.Web.Exceptions;
@@ -19,19 +22,43 @@ namespace CRPL.Tests.EventProcessors;
 [TestFixture]
 public class FailedProposalEventProcessor
 {
+    private static readonly List<RegisteredWork> Works = new()
+    {
+        new()
+        {
+            Id = new Guid("C714A94E-BE61-4D7B-A4CE-28F0667FAEAD"),
+            Title = "Hello world",
+            Created = DateTime.Now,
+            Status = RegisteredWorkStatus.SentToChain,
+            RightId = "1",
+            RegisteredTransactionId = "TRANSACTION HASH"
+        }
+    };
+
+    private static readonly List<Application> Applications = new()
+    {
+        new OwnershipRestructureApplication
+        {
+            Id = new Guid("392BC10F-B6CC-42BA-9151-02F12E96776A"),
+            Status = ApplicationStatus.Submitted,
+            AssociatedWork = Works.First()
+        }
+    };
+    
     [Test]
     public async Task Should_Set_Status()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory().Create();
+        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
+            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications));
 
         var eventLog = new EventLog<FailedProposalEventDTO>(new FailedProposalEventDTO()
         {
-            RightId = BigInteger.Parse("6")
+            RightId = BigInteger.Parse("1")
         }, new FilterLog());
 
         await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
 
-        var application = await context.OwnershipRestructureApplications.FirstOrDefaultAsync(x => x.Id == new Guid("39E52B21-5BA4-4F69-AFF8-28294391EFB8"));
+        var application = await context.OwnershipRestructureApplications.FirstOrDefaultAsync(x => x.Id == Applications.First().Id);
 
         application.BindStatus.Should().Be(BindStatus.Rejected);
         application.Status.Should().Be(ApplicationStatus.Failed);

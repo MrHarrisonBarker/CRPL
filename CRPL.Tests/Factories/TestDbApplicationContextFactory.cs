@@ -43,82 +43,103 @@ public class TestDbApplicationContextFactory : IDisposable
         return new ApplicationContext(CreateOptions());
     }
 
+    public ApplicationContext CreateContext(List<RegisteredWork> registeredWorks = null, List<Application> applications = null)
+    {
+        if (Connection == null)
+        {
+            Connection = new SqliteConnection("DataSource=:memory:;Foreign Keys=False");
+            Connection.Open();
+
+            var options = CreateOptions();
+            using (var context = new ApplicationContext(options))
+            {
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+                context.UserAccounts.AddRange(UserAccounts);
+                context.RegisteredWorks.AddRange(registeredWorks);
+                context.Applications.AddRange(applications);
+                context.SaveChanges();
+            }
+        }
+
+        return new ApplicationContext(CreateOptions());
+    }
+
+    readonly List<UserAccount> UserAccounts = new()
+    {
+        new()
+        {
+            Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
+            Email = null,
+            Status = UserAccount.AccountStatus.Incomplete,
+            FirstName = "Incomplete",
+            LastName = "User",
+            PhoneNumber = null,
+            RegisteredJurisdiction = null,
+            DateOfBirth = null,
+            Wallet = new UserWallet()
+            {
+                PublicAddress = "test_1"
+            }
+        },
+        new()
+        {
+            Id = new Guid("73C4FF17-1EF8-483C-BCDB-9A6191888F04"),
+            Email = "mail@harrisonbarker.co.uk",
+            Status = UserAccount.AccountStatus.Complete,
+            FirstName = "Complete",
+            LastName = "User",
+            PhoneNumber = "+4407852276048",
+            RegisteredJurisdiction = "GBR",
+            DateOfBirth = new UserAccount.DOB()
+            {
+                Year = 2000, Month = 7, Day = 24
+            },
+            Wallet = new UserWallet()
+            {
+                PublicAddress = "test_2"
+            },
+            AuthenticationToken = "TEST_TOKEN"
+        },
+        new()
+        {
+            Id = new Guid("8E9C6FB8-A8D7-459F-A39C-B06E68FE4E03"),
+            Email = "",
+            Status = UserAccount.AccountStatus.Created,
+            FirstName = "",
+            LastName = "",
+            PhoneNumber = "",
+            RegisteredJurisdiction = "",
+            DateOfBirth = new UserAccount.DOB(),
+            Wallet = new UserWallet()
+            {
+                PublicAddress = "test_0"
+            }
+        },
+        new()
+        {
+            Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
+            Email = "test@user.co.uk",
+            Status = UserAccount.AccountStatus.Complete,
+            FirstName = "Complete",
+            LastName = "User",
+            PhoneNumber = "99999999999",
+            RegisteredJurisdiction = "GBR",
+            DateOfBirth = new UserAccount.DOB()
+            {
+                Year = 2000, Month = 7, Day = 24
+            },
+            Wallet = new UserWallet
+            {
+                PublicAddress = TestConstants.TestAccountAddress,
+                Nonce = "NONCE"
+            },
+            AuthenticationToken = null
+        }
+    };
 
     private void seed(ApplicationContext context)
     {
-        List<UserAccount> userAccounts = new List<UserAccount>()
-        {
-            new()
-            {
-                Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
-                Email = null,
-                Status = UserAccount.AccountStatus.Incomplete,
-                FirstName = "Incomplete",
-                LastName = "User",
-                PhoneNumber = null,
-                RegisteredJurisdiction = null,
-                DateOfBirth = null,
-                Wallet = new UserWallet()
-                {
-                    PublicAddress = "test_1"
-                }
-            },
-            new()
-            {
-                Id = new Guid("73C4FF17-1EF8-483C-BCDB-9A6191888F04"),
-                Email = "mail@harrisonbarker.co.uk",
-                Status = UserAccount.AccountStatus.Complete,
-                FirstName = "Complete",
-                LastName = "User",
-                PhoneNumber = "+4407852276048",
-                RegisteredJurisdiction = "GBR",
-                DateOfBirth = new UserAccount.DOB()
-                {
-                    Year = 2000, Month = 7, Day = 24
-                },
-                Wallet = new UserWallet()
-                {
-                    PublicAddress = "test_2"
-                },
-                AuthenticationToken = "TEST_TOKEN"
-            },
-            new()
-            {
-                Id = new Guid("8E9C6FB8-A8D7-459F-A39C-B06E68FE4E03"),
-                Email = "",
-                Status = UserAccount.AccountStatus.Created,
-                FirstName = "",
-                LastName = "",
-                PhoneNumber = "",
-                RegisteredJurisdiction = "",
-                DateOfBirth = new UserAccount.DOB(),
-                Wallet = new UserWallet()
-                {
-                    PublicAddress = "test_0"
-                }
-            },
-            new()
-            {
-                Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
-                Email = "test@user.co.uk",
-                Status = UserAccount.AccountStatus.Complete,
-                FirstName = "Complete",
-                LastName = "User",
-                PhoneNumber = "99999999999",
-                RegisteredJurisdiction = "GBR",
-                DateOfBirth = new UserAccount.DOB()
-                {
-                    Year = 2000, Month = 7, Day = 24
-                },
-                Wallet = new UserWallet
-                {
-                    PublicAddress = TestConstants.TestAccountAddress,
-                    Nonce = "NONCE"
-                },
-                AuthenticationToken = null
-            }
-        };
-
         List<RegisteredWork> registeredWorks = new List<RegisteredWork>()
         {
             new()
@@ -170,7 +191,7 @@ public class TestDbApplicationContextFactory : IDisposable
                 Id = new Guid("9EE1AEF2-47BA-4A13-8AFE-693CF3D7E3DD"),
                 RightId = "6",
                 Title = "Assigned",
-                Status = RegisteredWorkStatus.Verified,
+                Status = RegisteredWorkStatus.Registered,
                 Registered = DateTime.Now.AddDays(-1),
                 RegisteredTransactionId = "TRANSACTION HASH"
             },
@@ -214,7 +235,8 @@ public class TestDbApplicationContextFactory : IDisposable
                 Title = "HELLO WORLD",
                 WorkHash = Encoding.UTF8.GetBytes("HASH"),
                 WorkUri = "URI",
-                AssociatedWork = registeredWorks.Last(),
+                Status = ApplicationStatus.Submitted,
+                AssociatedWork = registeredWorks.First(x => x.Id == new Guid("816FE428-4350-4124-B855-72A429C925A6")),
             },
             new OwnershipRestructureApplication()
             {
@@ -245,9 +267,35 @@ public class TestDbApplicationContextFactory : IDisposable
                     Status = RegisteredWorkStatus.ProcessingVerification
                 },
             },
+            new CopyrightRegistrationApplication()
+            {
+                Created = DateTime.Now,
+                Modified = DateTime.Now,
+                Id = new Guid("807DADCF-9629-410D-8A36-4C366B5D53F5"),
+                ApplicationType = ApplicationType.CopyrightRegistration,
+                OwnershipStakes = "0x0000000000000000000000000000000000099991!50;0x0000000000000000000000000000000000099992!50",
+                Legal = "LEGAL META",
+                Title = "HELLO WORLD",
+                WorkHash = Encoding.UTF8.GetBytes("HASH"),
+                WorkUri = "URI",
+                Status = ApplicationStatus.Complete
+            },
+            new CopyrightRegistrationApplication()
+            {
+                Created = DateTime.Now,
+                Modified = DateTime.Now,
+                Id = new Guid("57F0DC07-889D-446B-8E4D-D45DA4B4DCC4"),
+                ApplicationType = ApplicationType.CopyrightRegistration,
+                OwnershipStakes = "0x0000000000000000000000000000000000099991!50;0x0000000000000000000000000000000000099992!50",
+                Legal = "LEGAL META",
+                Title = "HELLO WORLD",
+                WorkHash = Encoding.UTF8.GetBytes("HASH"),
+                WorkUri = "URI",
+                Status = ApplicationStatus.Submitted
+            },
         };
 
-        context.UserAccounts.AddRange(userAccounts);
+        context.UserAccounts.AddRange(UserAccounts);
         context.RegisteredWorks.AddRange(registeredWorks);
         context.Applications.AddRange(applications);
         context.SaveChanges();

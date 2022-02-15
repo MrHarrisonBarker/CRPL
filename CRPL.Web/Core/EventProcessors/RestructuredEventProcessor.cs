@@ -23,6 +23,7 @@ public static class RestructuredEventProcessor
             .FirstOrDefaultAsync(x => x.RightId == restructuredEvent.Event.RightId.ToString());
 
         if (work == null) throw new WorkNotFoundException();
+        if (work.Status != RegisteredWorkStatus.Registered) throw new WorkNotRegisteredException();
 
         context.Update(work);
 

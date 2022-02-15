@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -6,6 +7,7 @@ using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Contracts.Structs;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.ViewModels;
 using CRPL.Tests.Factories;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Background;
@@ -22,41 +24,64 @@ namespace CRPL.Tests.EventProcessors;
 [TestFixture]
 public class RegisteredEventProcessor
 {
-    
-    
+    private static readonly List<RegisteredWork> Works = new()
+    {
+        new()
+        {
+            Id = new Guid("C714A94E-BE61-4D7B-A4CE-28F0667FAEAD"),
+            Title = "Hello world",
+            Created = DateTime.Now,
+            Status = RegisteredWorkStatus.SentToChain,
+            RightId = "1",
+            RegisteredTransactionId = "TRANSACTION HASH"
+        }
+    };
+
+    private static readonly List<Application> Applications = new()
+    {
+        new CopyrightRegistrationApplication
+        {
+            Id = new Guid("392BC10F-B6CC-42BA-9151-02F12E96776A"),
+            Status = ApplicationStatus.Submitted,
+            AssociatedWork = Works.First()
+        }
+    };
+
     [Test]
     public async Task Should_Update_Work_Status()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory().Create();
+        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
+            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications));
 
         var eventLog = new EventLog<RegisteredEventDTO>(new RegisteredEventDTO
         {
             To = new List<OwnershipStakeContract>
             {
-                new() {Owner = TestConstants.TestAccountAddress, Share = 100}
+                new() { Owner = TestConstants.TestAccountAddress, Share = 100 }
             },
-            RightId = BigInteger.Parse("6")
-        }, new FilterLog()
+            RightId = BigInteger.Parse("1")
+        }, new FilterLog
         {
-            TransactionHash = "TRANSACTION HASH"
+            TransactionHash = Works.First().RegisteredTransactionId
         });
 
         await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
 
-        var work = await context.RegisteredWorks.FirstOrDefaultAsync(x => x.RightId == "6");
+        var work = await context.RegisteredWorks.FirstOrDefaultAsync(x => x.RightId == "1");
         work.Status.Should().Be(RegisteredWorkStatus.Registered);
     }
 
     [Test]
     public async Task Should_Update_Application_Status()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory().Create();
+        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
+            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications));
 
         var eventLog = new EventLog<RegisteredEventDTO>(new RegisteredEventDTO
         {
             To = new List<OwnershipStakeContract>
             {
-                new() {Owner = TestConstants.TestAccountAddress, Share = 100}
+                new() { Owner = TestConstants.TestAccountAddress, Share = 100 }
             },
             RightId = BigInteger.Parse("6")
         }, new FilterLog
@@ -66,7 +91,7 @@ public class RegisteredEventProcessor
 
         await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
 
-        var work = await context.RegisteredWorks.FirstOrDefaultAsync(x => x.RightId == "6");
+        var work = await context.RegisteredWorks.Include(x => x.AssociatedApplication).FirstOrDefaultAsync(x => x.RightId == "6");
         work.AssociatedApplication.FirstOrDefault(x => x.ApplicationType == ApplicationType.CopyrightRegistration).Status.Should().Be(ApplicationStatus.Complete);
     }
 
@@ -79,7 +104,7 @@ public class RegisteredEventProcessor
         {
             TransactionHash = "BAD HASH"
         });
-        
+
         await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory())))
             .Should().ThrowAsync<WorkNotFoundException>();
     }
