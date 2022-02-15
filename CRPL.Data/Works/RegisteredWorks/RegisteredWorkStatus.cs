@@ -3,6 +3,9 @@ namespace CRPL.Data.Account;
 public enum RegisteredWorkStatus
 {
     Created,
+    ProcessingVerification,
     Verified,
-    Registered
+    SentToChain,
+    Registered,
+    Rejected
 }

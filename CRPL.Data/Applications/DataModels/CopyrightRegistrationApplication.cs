@@ -14,11 +14,3 @@ public class CopyrightRegistrationApplication : Application
     public string OwnershipStakes { get; set; }
     public Protections Protections { get; set; }
 }
-
-public enum WorkType
-{
-    Image,
-    Video,
-    Sound,
-    PDF
-}
