@@ -170,7 +170,7 @@ public class TestDbApplicationContextFactory : IDisposable
                 Id = new Guid("9EE1AEF2-47BA-4A13-8AFE-693CF3D7E3DD"),
                 RightId = "6",
                 Title = "Assigned",
-                Status = RegisteredWorkStatus.Registered,
+                Status = RegisteredWorkStatus.Verified,
                 Registered = DateTime.Now.AddDays(-1),
                 RegisteredTransactionId = "TRANSACTION HASH"
             },
@@ -214,7 +214,7 @@ public class TestDbApplicationContextFactory : IDisposable
                 Title = "HELLO WORLD",
                 WorkHash = Encoding.UTF8.GetBytes("HASH"),
                 WorkUri = "URI",
-                AssociatedWork = registeredWorks.Last()
+                AssociatedWork = registeredWorks.Last(),
             },
             new OwnershipRestructureApplication()
             {
@@ -226,6 +226,24 @@ public class TestDbApplicationContextFactory : IDisposable
                 ProposedStructure = "0x0000000000000000000000000000000000099991!90;0x0000000000000000000000000000000000099992!10",
                 AssociatedWork = registeredWorks.Last(),
                 Status = ApplicationStatus.Submitted
+            },
+            new CopyrightRegistrationApplication()
+            {
+                Created = DateTime.Now,
+                Modified = DateTime.Now,
+                Id = new Guid("E4D79015-9228-498A-9B16-3F76CB14104D"),
+                ApplicationType = ApplicationType.CopyrightRegistration,
+                OwnershipStakes = "0x0000000000000000000000000000000000099991!50;0x0000000000000000000000000000000000099992!50",
+                Legal = "LEGAL META",
+                Title = "HELLO WORLD",
+                WorkHash = Encoding.UTF8.GetBytes("HASH"),
+                WorkUri = "URI",
+                AssociatedWork = new()
+                {
+                    Title = "ProcessingVerification",
+                    Created = DateTime.Now,
+                    Status = RegisteredWorkStatus.ProcessingVerification
+                },
             },
         };
 

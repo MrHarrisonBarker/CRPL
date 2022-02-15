@@ -47,9 +47,10 @@ public static class RestructuredEventProcessor
 
         logger.LogInformation("Setting restructure application to complete");
         // setting application status to complete
-        var application = work.AssociatedApplication.FirstOrDefault(x => x.Status == ApplicationStatus.Submitted && x.ApplicationType == ApplicationType.OwnershipRestructure);
+        var application = (OwnershipRestructureApplication)work.AssociatedApplication.FirstOrDefault(x => x.Status == ApplicationStatus.Submitted && x.ApplicationType == ApplicationType.OwnershipRestructure)!;
         if (application == null) throw new ApplicationNotFoundException();
         application.Status = ApplicationStatus.Complete;
+        application.BindStatus = BindStatus.Bound;
 
         await context.SaveChangesAsync();
     }

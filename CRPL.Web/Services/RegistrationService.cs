@@ -63,6 +63,7 @@ public class RegistrationService : IRegistrationService
             .Include(x => x.AssociatedWork).FirstOrDefaultAsync(x => x.Id == applicationId);
         if (application == null) throw new ApplicationNotFoundException(applicationId);
         if (application.AssociatedWork == null) throw new Exception("There is no work associated with this application!");
+        if (application.AssociatedWork.Status != RegisteredWorkStatus.Verified) throw new WorkNotVerifiedException();
 
         var register = new RegisterWithMetaFunction
         {
@@ -87,6 +88,7 @@ public class RegistrationService : IRegistrationService
 
             Context.Update(application);
             application.AssociatedWork.RegisteredTransactionId = transactionId;
+            application.AssociatedWork.Status = RegisteredWorkStatus.SentToChain;
             application.TransactionId = transactionId;
             
             Logger.LogInformation("sent register transaction at {Id}", transactionId);
@@ -97,6 +99,9 @@ public class RegistrationService : IRegistrationService
         }
         catch (Exception e)
         {
+            application.AssociatedWork.Status = RegisteredWorkStatus.Rejected;
+            await Context.SaveChangesAsync();
+            
             Logger.LogError(e, "Exception thrown when sending register transaction");
             throw;
         }

@@ -43,6 +43,9 @@ public class EventProcessingService : BackgroundService
                     case var name when name.Contains("RestructuredEvent"):
                         await ((EventLog<RestructuredEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
                         break;
+                    case var name when name.Contains("FailedProposalEvent"):
+                        await ((EventLog<FailedProposalEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
+                        break;
                 }
             }
             catch (Exception ex)
