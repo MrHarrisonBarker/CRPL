@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Contracts.Structs;
+using CRPL.Data.Applications;
 using CRPL.Tests.Factories;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Background;
@@ -48,6 +50,31 @@ public class RestructuredEventProcessor
         work.Should().NotBeNull();
         work.UserWorks[0].UserAccount.Wallet.PublicAddress.Should().BeEquivalentTo(TestConstants.TestAccountAddress);
         work.UserWorks[1].UserAccount.Wallet.PublicAddress.Should().BeEquivalentTo("test_2");
+    }
+
+    [Test]
+    public async Task Should_Set_Status()
+    {
+        var (context, serviceProvider) = await new ServiceProviderWithContextFactory().Create();
+
+        var eventLog = new EventLog<RestructuredEventDTO>(new RestructuredEventDTO()
+        {
+            Proposal = new RestructureProposal
+            {
+                NewStructure = new List<OwnershipStakeContract>
+                {
+                    new() { Owner = TestConstants.TestAccountAddress, Share = 45 },
+                    new() { Owner = "test_2", Share = 55 }
+                }
+            },
+            RightId = BigInteger.Parse("6")
+        }, new FilterLog());
+
+        await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
+        
+        var application = await context.OwnershipRestructureApplications.FirstOrDefaultAsync(x => x.Id == new Guid("39E52B21-5BA4-4F69-AFF8-28294391EFB8"));
+
+        application.BindStatus.Should().Be(BindStatus.Bound);
     }
 
     [Test]
