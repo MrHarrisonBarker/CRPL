@@ -31,6 +31,12 @@
                   <li *ngFor="let application of CompletedApplications"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
                 </ul>
               </section>
+              <section class="nav-group collapsible">
+                <input id="FailedApplicationsNav" type="checkbox"/> <label for="FailedApplicationsNav">Failed Applications</label>
+                <ul class="nav-list">
+                  <li *ngFor="let application of FailedApplications"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
+                </ul>
+              </section>
             </section>
           </nav>
           <div class="content-area">

@@ -10,7 +10,7 @@
 <cpy-registration-view [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && (!ShowForms || Application.Status == 2)"></cpy-registration-view>
 
 <cpy-restructure-form [RegisteredWork]="ExistingWork" [ExistingApplication]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && ShowForms && Application.Status == 0"></cpy-restructure-form>
-<cpy-restructure-view-submitted [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 1"></cpy-restructure-view-submitted>
+<cpy-restructure-view-submitted [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && (Application.Status == 1 || Application.Status == 3)"></cpy-restructure-view-submitted>
 <cpy-restructure-view [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 2"></cpy-restructure-view>
 
 <!--{{Application | json}}-->

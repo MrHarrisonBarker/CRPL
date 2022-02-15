@@ -27,7 +27,6 @@ export class BindStatusComponent implements OnInit
 
   get Status (): string
   {
-    console.log("bind",BindStatus[this.status],this.status)
     return BindStatus[this.status];
   }
 }
