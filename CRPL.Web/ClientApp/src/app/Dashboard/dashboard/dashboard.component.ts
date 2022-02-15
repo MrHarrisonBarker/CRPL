@@ -41,7 +41,11 @@ export class DashboardComponent implements OnInit
       if (this.route.snapshot.paramMap.has("workId")) this.Selected = this.warehouse.MyWorks.find(x => x.Id == this.route.snapshot.paramMap.get("workId")) as RegisteredWorkViewModel
 
       // ROUTE APPLICATION
-      if (this.route.snapshot.paramMap.has("applicationId")) this.Selected = this.warehouse.MyApplications.find(x => x.Id == this.route.snapshot.paramMap.get("applicationId")) as ApplicationViewModel
+      if (this.route.snapshot.paramMap.has("applicationId"))
+      {
+        this.Selected = this.warehouse.MyApplications.find(x => x.Id == this.route.snapshot.paramMap.get("applicationId")) as ApplicationViewModel
+        this.IsApplication = true;
+      }
 
       this.Loaded = true;
 

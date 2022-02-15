@@ -6,11 +6,11 @@
 </div>
 
 <cpy-registration-form [ExistingApplication]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && ShowForms && Application.Status == 0"></cpy-registration-form>
-<cpy-registration-view [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && (!ShowForms || Application.Status == 1)"></cpy-registration-view>
-<cpy-registration-view-submitted [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && Application.Status == 2"></cpy-registration-view-submitted>
+<cpy-registration-view-submitted [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && Application.Status == 1"></cpy-registration-view-submitted>
+<cpy-registration-view [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && (!ShowForms || Application.Status == 2)"></cpy-registration-view>
 
 <cpy-restructure-form [RegisteredWork]="ExistingWork" [ExistingApplication]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && ShowForms && Application.Status == 0"></cpy-restructure-form>
-<cpy-restructure-view [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 1"></cpy-restructure-view>
-<cpy-restructure-view-submitted [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 2"></cpy-restructure-view-submitted>
+<cpy-restructure-view-submitted [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 1"></cpy-restructure-view-submitted>
+<cpy-restructure-view [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 2"></cpy-restructure-view>
 
 <!--{{Application | json}}-->

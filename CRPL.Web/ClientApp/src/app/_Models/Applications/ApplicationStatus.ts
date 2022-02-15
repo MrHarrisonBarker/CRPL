@@ -1,6 +1,7 @@
 export enum ApplicationStatus
 {
     Incomplete,
+    Submitted,
     Complete,
-    Submitted
+    Failed
 }

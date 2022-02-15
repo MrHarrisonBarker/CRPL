@@ -1,4 +1,16 @@
-<div class="flex-between">
+<clr-alert clrAlertType="danger" [clrAlertClosable]="false" *ngIf="Application.BindStatus == 3">
+  <clr-alert-item>
+    <span class="alert-text">This ownership restrucure was rejected for some reason!</span>
+  </clr-alert-item>
+</clr-alert>
+
+<clr-alert clrAlertType="success" [clrAlertClosable]="false" *ngIf="Application.BindStatus == 2">
+  <clr-alert-item>
+    <span class="alert-text">This ownership restrucure was successfully bound</span>
+  </clr-alert-item>
+</clr-alert>
+
+<div class="flex-between" *ngIf="Application.BindStatus == 1">
   <div></div>
   <div>
     <button class="btn btn-sm" (click)="Reject()">Reject proposal</button>

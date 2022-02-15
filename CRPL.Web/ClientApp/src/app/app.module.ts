@@ -35,6 +35,7 @@ import {ApplicationTypeComponent} from "./Core/application-type/application-type
 import {CpyRestructureViewSubmittedComponent} from "./Dashboard/cpy-restructure-view/cpy-restructure-view-submitted/cpy-restructure-view-submitted.component";
 import { CopyrightComponent } from './copyright/copyright.component';
 import {HttpLoadingInterceptor} from "./Core/HttpLoadingInterceptor";
+import { BindStatusComponent } from './Core/bind-status/bind-status.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ import {HttpLoadingInterceptor} from "./Core/HttpLoadingInterceptor";
     CpyRegistrationViewComponent,
     ApplicationTypeComponent,
     CpyRestructureViewSubmittedComponent,
-    CopyrightComponent
+    CopyrightComponent,
+    BindStatusComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

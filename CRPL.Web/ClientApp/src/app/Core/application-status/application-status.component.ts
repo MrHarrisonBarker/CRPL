@@ -13,6 +13,7 @@ export class ApplicationStatusComponent implements OnInit
     Complete: "label label-success",
     Incomplete: "label",
     Submitted: "label label-purple",
+    Failed: "label label-danger"
   }
 
   constructor ()

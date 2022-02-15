@@ -5,8 +5,11 @@ import {ProposalVote} from "../StructuredOwnership/ProposalVote";
 export enum RegisteredWorkStatus
 {
   Created,
+  ProcessingVerification,
   Verified,
-  Registered
+  SentToChain,
+  Registered,
+  Rejected
 }
 
 export interface CopyrightMeta

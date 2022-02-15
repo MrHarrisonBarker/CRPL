@@ -2,7 +2,10 @@
   <div class="card-block">
     <div class="card-title flex-between">
       <div>Ownership restructure</div>
-      <application-status [status]="Application.Status"></application-status>
+      <div class="flex-between">
+        <div class="flex-between"><p><em class="text-muted">binding status:</em>&nbsp;</p><bind-status [status]="Application.BindStatus"></bind-status></div>
+        <application-status [status]="Application.Status"></application-status>
+      </div>
     </div>
 
     <div class="flex-between">
