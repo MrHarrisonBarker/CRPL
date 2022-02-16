@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from "../../_Services/auth.service";
 import {AlertService} from "../../_Services/alert.service";
+import {AccountStatus} from "../../_Models/Account/UserAccountViewModel";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'login-button',
@@ -13,7 +15,8 @@ export class LoginButtonComponent implements OnInit
 
   constructor (
     public authService: AuthService,
-    private alertService: AlertService)
+    private alertService: AlertService,
+    private router: Router)
   {
     this.HasMetaMask = (window as any).ethereum;
   }
@@ -32,8 +35,19 @@ export class LoginButtonComponent implements OnInit
 
     this.authService.LoginWithMetaMask().subscribe(res =>
     {
-      if (res.Account) this.alertService.Alert({Message: "Successfully logged in!", Type: "success"});
+      if (res.Account)
+      {
+        this.alertService.Alert({Message: "Successfully logged in!", Type: "success"});
+        if (this.authService.UserAccount.getValue().Status == AccountStatus.Created || this.authService.UserAccount.getValue().Status == AccountStatus.Incomplete){
+          this.router.navigate(['/user/info']);
+        }
+      }
       if (!res.Account) this.alertService.Alert({Message: res.Log, Type: "danger"});
     }, error => this.alertService.Alert({Message: error.error, Type: "danger"}), () => this.alertService.StopLoading());
+  }
+
+  Account ()
+  {
+
   }
 }

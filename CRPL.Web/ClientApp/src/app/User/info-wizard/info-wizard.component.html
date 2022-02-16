@@ -1,4 +1,4 @@
-<clr-wizard #wizard [clrWizardOpen]="open" (clrWizardCurrentPageChanged)="PageChange()" (clrWizardOpenChange)="Closed()" (clrWizardOnFinish)="Finished()" [clrWizardPreventDefaultNext]="false">
+<clr-wizard #wizard [clrWizardOpen]="open" (clrWizardOpenChange)="Closed()" (clrWizardOnFinish)="Finished()" [clrWizardPreventDefaultNext]="false">
   <clr-wizard-title>Account Info</clr-wizard-title>
 
   <clr-wizard-button [type]="'cancel'">Cancel</clr-wizard-button>
@@ -6,11 +6,11 @@
   <clr-wizard-button [type]="'next'">Next</clr-wizard-button>
   <clr-wizard-button [type]="'finish'" (click)="WizardFinished()">Done</clr-wizard-button>
 
-  <clr-wizard-page #pageOne [clrWizardPageNextDisabled]="!FirstPageModel.valid">
+  <clr-wizard-page #pageOne [clrWizardPageNextDisabled]="!FirstPageForm.valid">
     <ng-template clrPageTitle>Basic Information</ng-template>
     <ng-template clrPageNavTitle>Basic Info</ng-template>
 
-    <form clrForm clrLayout="horizontal" [formGroup]="FirstPageModel">
+    <form clrForm clrLayout="horizontal" [formGroup]="FirstPageForm">
       <clr-input-container>
         <label>First name</label> <input clrInput name="firstName" required formControlName="FirstName"/>
         <clr-control-error>This field cannot be empty!</clr-control-error>
@@ -40,11 +40,11 @@
     </form>
   </clr-wizard-page>
 
-  <clr-wizard-page #pageTwo [clrWizardPageNextDisabled]="!SecondPageModel.valid">
+  <clr-wizard-page #pageTwo [clrWizardPageNextDisabled]="!SecondPageForm.valid">
     <ng-template clrPageTitle>Contact Information</ng-template>
     <ng-template clrPageNavTitle>Contact Info</ng-template>
 
-    <form clrForm clrLayout="horizontal" [formGroup]="SecondPageModel">
+    <form clrForm clrLayout="horizontal" [formGroup]="SecondPageForm">
 
       <clr-datalist-container>
         <label>Dial code</label> <input clrDatalistInput formControlName="DialCode" placeholder="44" name="dialCode"/>
@@ -55,15 +55,15 @@
 
       <clr-input-container>
         <label>Phone</label> <input clrInput name="phoneNumber" formControlName="PhoneNumber"/>
-        <clr-control-error *ngIf="SecondPageModel.controls.PhoneNumber.hasError('phoneExists')">This phone number is already in use</clr-control-error>
+        <clr-control-error *ngIf="SecondPageForm.controls.PhoneNumber.hasError('phoneExists')">This phone number is already in use</clr-control-error>
       </clr-input-container>
 
       <clr-input-container>
         <label>E-mail</label> <input clrInput type="email" name="email" formControlName="Email"/>
-        <clr-control-error *ngIf="SecondPageModel.controls.Email.hasError('emailExists')">This email is already in use</clr-control-error>
+        <clr-control-error *ngIf="SecondPageForm.controls.Email.hasError('emailExists')">This email is already in use</clr-control-error>
       </clr-input-container>
 
-      <clr-alert clrAlertType="danger" *ngIf="SecondPageModel.controls.Email.hasError('hasNoContact')">
+      <clr-alert clrAlertType="danger" *ngIf="SecondPageForm.controls.Email.hasError('hasNoContact')">
         <clr-alert-item>
           <span class="alert-text">You must have one way of contacting</span>
         </clr-alert-item>

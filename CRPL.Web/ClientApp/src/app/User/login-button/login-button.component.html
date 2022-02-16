@@ -1,4 +1,5 @@
-<button class="btn btn-primary" (click)="Login()" [disabled]="!HasMetaMask || authService.IsAuthenticated.getValue()">
+<button class="btn btn-primary" (click)="Account()" *ngIf="authService.IsAuthenticated.getValue()">{{authService.UserAccount.getValue().WalletPublicAddress}}</button>
+<button class="btn btn-primary" (click)="Login()" [disabled]="!HasMetaMask" *ngIf="!authService.IsAuthenticated.getValue()">
   <div>
     <span *ngIf="!HasMetaMask">Install MetaMask To Login</span>
     <span *ngIf="HasMetaMask">Login with MetaMask</span>

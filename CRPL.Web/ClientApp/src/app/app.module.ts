@@ -36,6 +36,7 @@ import {CpyRestructureViewSubmittedComponent} from "./Dashboard/cpy-restructure-
 import { CopyrightComponent } from './copyright/copyright.component';
 import {HttpLoadingInterceptor} from "./Core/HttpLoadingInterceptor";
 import { BindStatusComponent } from './Core/bind-status/bind-status.component';
+import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
 
 @NgModule({
   declarations: [
@@ -77,11 +78,11 @@ import { BindStatusComponent } from './Core/bind-status/bind-status.component';
     FormsModule,
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full'},
-      {path: 'apps', component: ApplicationsComponent, canActivate: [AuthGuard]},
-      {path: 'user/info', canActivate: [AuthGuard], component: InfoWizardComponent},
-      {path: 'application/:id', canActivate: [AuthGuard], component: IndervidualApplicationComponent},
-      {path: 'dashboard', canActivate: [AuthGuard], component: DashboardComponent},
-      {path: 'register', canActivate: [AuthGuard], component: CpyRegistrationFormComponent},
+      {path: 'apps', component: ApplicationsComponent, canActivate: [CompleteUserAndAuthGuard]},
+      {path: 'user/info', component: InfoWizardComponent, canActivate: [AuthGuard]},
+      {path: 'application/:id',  component: IndervidualApplicationComponent, canActivate: [CompleteUserAndAuthGuard]},
+      {path: 'dashboard', component: DashboardComponent, canActivate: [CompleteUserAndAuthGuard]},
+      {path: 'register', component: CpyRegistrationFormComponent, canActivate: [CompleteUserAndAuthGuard]},
       {path: 'cpy/:id', component: CopyrightComponent},
     ]),
     ReactiveFormsModule
