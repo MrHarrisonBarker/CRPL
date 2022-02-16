@@ -59,6 +59,7 @@
     </div>
     <div class="card-footer" *ngIf="ShowActions">
       <button class="btn btn-sm" (click)="RestructureOpen = true" [disabled]="!IsRestructureAllowed">Restructure ownership</button>
+      <button class="btn btn-sm" (click)="Sync()">Sync with blockchain</button>
     </div>
   </div>
 </div>

@@ -5,6 +5,7 @@ import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
 import {CopyrightService} from "../../_Services/copyright.service";
 import {syntaxHighlight} from "../../utils";
+import {AlertService} from "../../_Services/alert.service";
 
 @Component({
   selector: 'copyright-view [Copyright]',
@@ -17,7 +18,7 @@ export class CopyrightViewComponent implements OnInit
   @Input() ShowActions: boolean = true;
   public RestructureOpen: boolean = false;
 
-  constructor (private copyrightService: CopyrightService)
+  constructor (private copyrightService: CopyrightService, private alertService: AlertService)
   {
   }
 
@@ -32,7 +33,7 @@ export class CopyrightViewComponent implements OnInit
     let openApplications = this.Copyright.AssociatedApplication.filter(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Incomplete);
     let submittedApplications = this.Copyright.AssociatedApplication.find(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Submitted);
 
-    return  !submittedApplications;
+    return !submittedApplications;
   }
 
   get ExistingRestructure (): OwnershipRestructureViewModel
@@ -51,15 +52,21 @@ export class CopyrightViewComponent implements OnInit
 
   public BindRestructure (): void
   {
-    if (this.Copyright.RightId) this.copyrightService.BindProposalWork({WorkId: this.Copyright.Id, Accepted: true}).subscribe();
+    if (this.Copyright.RightId) this.copyrightService.BindProposalWork({
+      WorkId: this.Copyright.Id,
+      Accepted: true
+    }).subscribe();
   }
 
   public RejectRestructure (): void
   {
-    if (this.Copyright.RightId) this.copyrightService.BindProposalWork({WorkId: this.Copyright.Id, Accepted: false}).subscribe();
+    if (this.Copyright.RightId) this.copyrightService.BindProposalWork({
+      WorkId: this.Copyright.Id,
+      Accepted: false
+    }).subscribe();
   }
 
-  get Meta()
+  get Meta ()
   {
     return syntaxHighlight(JSON.stringify(this.Copyright.Meta, undefined, 4));
   }
@@ -72,5 +79,13 @@ export class CopyrightViewComponent implements OnInit
   public routeToApplication (Id: string)
   {
     return ['/dashboard', {applicationId: Id}];
+  }
+
+  public Sync (): void
+  {
+    this.copyrightService.Sync(this.Copyright.Id).subscribe(x => this.alertService.Alert({
+      Type: "info",
+      Message: "The work has been synced with the blockchain"
+    }));
   }
 }

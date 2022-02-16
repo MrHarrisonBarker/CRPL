@@ -29,7 +29,7 @@ export class CopyrightService
   public GetMyCopyrights (): Observable<RegisteredWorkViewModel[]>
   {
     return this.http.get<RegisteredWorkViewModel[]>(this.BaseUrl + QueryPaths.GetMy + "/" + this.authService.UserAccount.getValue().Id)
-      .pipe(tap(works => this.warehouse.MyWorks = works));
+               .pipe(tap(works => this.warehouse.MyWorks = works));
   }
 
   public BindProposal (input: BindProposalInput): Observable<any>
@@ -45,5 +45,10 @@ export class CopyrightService
   public Get (workId: string): Observable<RegisteredWorkViewModel>
   {
     return this.http.get<RegisteredWorkViewModel>(this.BaseUrl + QueryPaths.BasePath + "/" + encodeURI(workId));
+  }
+
+  public Sync (workId: string): Observable<any>
+  {
+    return this.http.patch(this.BaseUrl + CopyrightPaths.Sync + "/" + encodeURI(workId), null);
   }
 }
