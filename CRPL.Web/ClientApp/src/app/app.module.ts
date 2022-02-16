@@ -37,6 +37,10 @@ import { CopyrightComponent } from './copyright/copyright.component';
 import {HttpLoadingInterceptor} from "./Core/HttpLoadingInterceptor";
 import { BindStatusComponent } from './Core/bind-status/bind-status.component';
 import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
+import { CpyRegistrationViewFailedComponent } from './Dashboard/cpy-registration-view/cpy-registration-view-failed/cpy-registration-view-failed.component';
+import {
+  CpyRestructureViewFailedComponent
+} from "./Dashboard/cpy-restructure-view/cpy-restructure-view-failed/cpy-restructure-view-failed.component";
 
 @NgModule({
   declarations: [
@@ -68,7 +72,9 @@ import {CompleteUserAndAuthGuard} from "./_Guards/complete-user-and-auth.guard";
     ApplicationTypeComponent,
     CpyRestructureViewSubmittedComponent,
     CopyrightComponent,
-    BindStatusComponent
+    BindStatusComponent,
+    CpyRegistrationViewFailedComponent,
+    CpyRestructureViewFailedComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

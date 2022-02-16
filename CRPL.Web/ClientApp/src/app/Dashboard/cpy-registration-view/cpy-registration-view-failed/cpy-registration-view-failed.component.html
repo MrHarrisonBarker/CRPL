@@ -1,0 +1,7 @@
+<clr-alert clrAlertType="danger" [clrAlertClosable]="false">
+  <clr-alert-item>
+          <span class="alert-text">
+            The work collided with <em><a [routerLink]="RouteToCollision()">{{Application.AssociatedWork?.VerificationResult?.Collision}}</a></em>
+          </span>
+  </clr-alert-item>
+</clr-alert>

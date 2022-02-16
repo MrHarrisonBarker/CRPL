@@ -22,6 +22,12 @@ export interface CopyrightMeta
   LegalMeta: string;
 }
 
+interface VerificationResult
+{
+  IsAuthentic: boolean;
+  Collision: string;
+}
+
 export interface RegisteredWorkViewModel
 {
   Id: string,
@@ -35,5 +41,6 @@ export interface RegisteredWorkViewModel
   AssociatedApplication?: ApplicationViewModel[],
   CurrentVotes?: ProposalVote[],
   HasProposal?: boolean,
-  Meta?: CopyrightMeta
+  Meta?: CopyrightMeta,
+  VerificationResult?: VerificationResult;
 }
