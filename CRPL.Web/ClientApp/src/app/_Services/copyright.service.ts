@@ -51,4 +51,9 @@ export class CopyrightService
   {
     return this.http.patch(this.BaseUrl + CopyrightPaths.Sync + "/" + encodeURI(workId), null);
   }
+
+  public Complete (id: string): Observable<any>
+  {
+    return this.http.patch(this.BaseUrl + CopyrightPaths.Complete + "/" + encodeURI(id), null);
+  }
 }

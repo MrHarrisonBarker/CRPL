@@ -1,4 +1,4 @@
-<clr-timeline>
+<clr-timeline *ngIf="Application.AssociatedWork">
   <clr-timeline-step [clrState]="timelineSuccess">
     <clr-timeline-step-header>{{Application.Created | date:'short'}}</clr-timeline-step-header>
     <clr-timeline-step-title>Fill in applicaiton</clr-timeline-step-title>
@@ -9,7 +9,7 @@
     <clr-timeline-step-title>Submit application</clr-timeline-step-title>
   </clr-timeline-step>
 
-  <clr-timeline-step [clrState]="timelineProcessing">
+  <clr-timeline-step [clrState]="Application.AssociatedWork.Status >= 2 ? timelineSuccess : timelineProcessing">
     <clr-timeline-step-header>Now</clr-timeline-step-header>
     <clr-timeline-step-title>Verification</clr-timeline-step-title>
     <clr-timeline-step-description></clr-timeline-step-description>
@@ -20,5 +20,16 @@
     <clr-timeline-step-title>Copyright registered</clr-timeline-step-title>
   </clr-timeline-step>
 </clr-timeline>
+
+<clr-alert clrAlertType="success" [clrAlertClosable]="false" *ngIf="Application.AssociatedWork?.Status == 2">
+  <clr-alert-item>
+    <span class="alert-text">
+      <div class="flex-between">
+        <span>The work uploaded has been verified and is ready to be sent to the blockchain</span>
+        <button style="margin:0" class="btn btn-sm btn-primary-outline" (click)="Complete()">Send to the chain</button>
+      </div>
+    </span>
+  </clr-alert-item>
+</clr-alert>
 
 <cpy-registration-view [Application]="Application"></cpy-registration-view>

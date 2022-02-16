@@ -18,7 +18,7 @@ let formsPaths: FormsPaths = {
   BasePath: "forms"
 }
 
-let copyrightPaths: CopyrightPaths = {Sync: "", Bind: "", BasePath: "copyright"}
+let copyrightPaths: CopyrightPaths = {Complete: "", Sync: "", Bind: "", BasePath: "copyright"}
 
 let queryPaths: QueryPaths = {All: "", BasePath: "q", GetMy: ""}
 
@@ -47,7 +47,8 @@ userPaths = {
 copyrightPaths = {
   ...copyrightPaths,
   Bind: copyrightPaths.BasePath + "/bind",
-  Sync: copyrightPaths.BasePath + "/sync"
+  Sync: copyrightPaths.BasePath + "/sync",
+  Complete: copyrightPaths.BasePath + "/complete"
 }
 
 queryPaths = {
@@ -88,6 +89,7 @@ interface CopyrightPaths {
   readonly BasePath: string;
   readonly Bind: string;
   readonly Sync: string;
+  readonly Complete: string;
 }
 
 interface QueryPaths {
