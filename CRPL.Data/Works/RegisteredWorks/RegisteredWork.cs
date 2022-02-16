@@ -1,4 +1,5 @@
 using CRPL.Data.Applications;
+using CRPL.Data.Workds;
 
 namespace CRPL.Data.Account;
 
@@ -15,6 +16,7 @@ public class RegisteredWork
     public DateTime Created { get; set; }
     public DateTime? Registered { get; set; }
     public RegisteredWorkStatus Status { get; set; }
+    public VerificationResult? VerificationResult { get; set; }
     // maps from a bigInt aka uin256
     public string? RightId { get; set; }
     public byte[]? Hash { get; set; }

@@ -23,7 +23,7 @@ public class CopyrightController : ControllerBase
         OwnershipSynchroniser = synchronisers.First();
     }
     
-    [HttpGet("complete/{id}")]
+    [HttpPatch("complete/{id}")]
     public async Task<RegisteredWork> CompleteRegistration([FromRoute]Guid id)
     {
         try

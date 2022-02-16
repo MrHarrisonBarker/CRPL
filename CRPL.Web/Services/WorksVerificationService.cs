@@ -1,7 +1,9 @@
 using System.Security.Cryptography;
 using CRPL.Data.Account;
+using CRPL.Data.Applications;
 using CRPL.Data.Workds;
 using CRPL.Data.Works;
+using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using CRPL.Web.WorkSigners;
 using Microsoft.EntityFrameworkCore;
@@ -21,14 +23,43 @@ public class WorksVerificationService : IWorksVerificationService
         CachedWorkRepository = cachedWorkRepository;
     }
 
-    public async Task<VerificationResult> VerifyWork(byte[] hash)
+    public async Task VerifyWork(Guid workId)
     {
-        var collision = await Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Hash == hash);
-        return new VerificationResult
+        Logger.LogInformation("Verifying {Id}", workId);
+        
+        var work = await Context.RegisteredWorks
+            .Include(x => x.AssociatedApplication)
+            .FirstOrDefaultAsync(x => x.Id == workId);
+        if (work == null) throw new WorkNotFoundException(workId);
+
+        var application = work.AssociatedApplication.FirstOrDefault(x => x.ApplicationType == ApplicationType.CopyrightRegistration);
+        if (application == null) throw new ApplicationNotFoundException();
+
+        Context.Update(work);
+        Context.Update(application);
+        
+        var collision = await Context.RegisteredWorks
+            .FirstOrDefaultAsync(x => x.Hash == work.Hash && x.Id != workId);
+
+        if (collision != null)
         {
-            IsAuthentic = collision == null,
-            Collision = collision?.RightId
+            Logger.LogInformation("Found a collision when verifying work {Id}", workId);
+            work.Status = RegisteredWorkStatus.Rejected;
+            application.Status = ApplicationStatus.Failed;
+        }
+        else
+        {
+            Logger.LogInformation("Found no collision when verifying work {Id}", workId);
+            work.Status = RegisteredWorkStatus.Verified; 
+        }
+
+        work.VerificationResult = new VerificationResult
+        {
+            Collision = collision?.Id,
+            IsAuthentic = collision == null
         };
+
+        await Context.SaveChangesAsync();
     }
 
     public async Task<byte[]> Upload(IFormFile file)

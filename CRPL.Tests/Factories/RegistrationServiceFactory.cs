@@ -4,9 +4,9 @@ using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
-using CRPL.Data.Works;
 using CRPL.Tests.Mocks;
 using CRPL.Web.Services;
+using CRPL.Web.Services.Background.VerificationPipeline;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -30,6 +30,8 @@ public class RegistrationServiceFactory
             Address = "TEST CONTRACT"
         });
 
-        return new RegistrationService(new Mock<ILogger<UserService>>().Object, context, mapper, connectionMock.Object, contractRepoMock.Object);
+        var queue = new Mock<IVerificationQueue>();
+
+        return new RegistrationService(new Mock<ILogger<UserService>>().Object, context, mapper, connectionMock.Object, contractRepoMock.Object, queue.Object);
     }
 }

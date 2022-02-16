@@ -9,6 +9,7 @@ using CRPL.Data.Applications.ViewModels;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Web.Exceptions;
+using CRPL.Web.Services.Background.VerificationPipeline;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,14 +22,22 @@ public class RegistrationService : IRegistrationService
     private readonly IMapper Mapper;
     private readonly IBlockchainConnection BlockchainConnection;
     private readonly IContractRepository ContractRepository;
+    private readonly IVerificationQueue VerificationQueue;
 
-    public RegistrationService(ILogger<UserService> logger, ApplicationContext context, IMapper mapper, IBlockchainConnection blockchainConnection, IContractRepository contractRepository)
+    public RegistrationService(
+        ILogger<UserService> logger,
+        ApplicationContext context,
+        IMapper mapper,
+        IBlockchainConnection blockchainConnection,
+        IContractRepository contractRepository,
+        IVerificationQueue verificationQueue)
     {
         Logger = logger;
         Context = context;
         Mapper = mapper;
         BlockchainConnection = blockchainConnection;
         ContractRepository = contractRepository;
+        VerificationQueue = verificationQueue;
     }
 
     public RegisteredWork StartRegistration(CopyrightRegistrationApplication application)
@@ -46,11 +55,14 @@ public class RegistrationService : IRegistrationService
                 UserAccount = x.UserAccount
             }).ToList(),
             Hash = application.WorkHash,
-            Title = application.Title
+            Title = application.Title,
+            Status = RegisteredWorkStatus.ProcessingVerification
         };
 
         Context.RegisteredWorks.Add(registeredWork);
         Context.SaveChanges();
+        
+        VerificationQueue.QueueWork(registeredWork.Id);
 
         return registeredWork;
     }

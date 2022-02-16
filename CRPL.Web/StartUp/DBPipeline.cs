@@ -4,6 +4,7 @@ using CRPL.Data.ContractDeployment;
 using CRPL.Data.Seed;
 using CRPL.Data.Works;
 using CRPL.Web.Services.Background;
+using CRPL.Web.Services.Background.VerificationPipeline;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,6 +44,7 @@ public class DbPipelineBuilder
         services.AddSingleton<IContractRepository, ContractRepository>();
         services.AddSingleton<ICachedWorkRepository, CachedWorkRepository>();
         services.AddSingleton<IEventQueue, EventQueue>();
+        services.AddSingleton<IVerificationQueue, VerificationQueue>();
         
         services.Configure<FormOptions>(o => {
             o.ValueLengthLimit = int.MaxValue;

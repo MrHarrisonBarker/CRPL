@@ -1,7 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace CRPL.Data.Workds;
 
+[Owned]
 public class VerificationResult
 {
     public bool IsAuthentic { get; set; }
-    public string? Collision { get; set; }
+    public Guid? Collision { get; set; }
 }
