@@ -1,23 +1,18 @@
 using System.Collections.Generic;
-using AutoMapper;
-using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
-using CRPL.Web.Services;
+using CRPL.Web.Core.ChainSync.Synchronisers;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace CRPL.Tests.Factories;
+namespace CRPL.Tests.Factories.Synchronisers;
 
-public class CopyrightServiceFactory
+public class OwnershipSynchroniserFactory
 {
-    public CopyrightService Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public OwnershipSynchroniser Create(ApplicationContext context, Dictionary<string, object>? mappings)
     {
-        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
-        var mapper = new Mapper(configuration);
-
         var web3Mock = new MockWeb3(mappings);
 
         var connectionMock = new Mock<IBlockchainConnection>();
@@ -29,11 +24,6 @@ public class CopyrightServiceFactory
             Address = "TEST CONTRACT"
         });
         
-        return new CopyrightService(
-            new Logger<CopyrightService>(new LoggerFactory()),
-            context,
-            mapper,
-            connectionMock.Object,
-            contractRepoMock.Object);
+        return new OwnershipSynchroniser(new Logger<OwnershipSynchroniser>(new LoggerFactory()), context, connectionMock.Object, contractRepoMock.Object);
     }
 }

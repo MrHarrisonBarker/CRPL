@@ -13,59 +13,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Tests.Factories;
 
-public class TestDbApplicationContextFactory : IDisposable
+public static class TestDBUtils
 {
-    private DbConnection? Connection;
-
-    private DbContextOptions<ApplicationContext> CreateOptions()
-    {
-        return new DbContextOptionsBuilder<ApplicationContext>()
-            .EnableSensitiveDataLogging()
-            .UseSqlite(Connection).Options;
-    }
-
-    public ApplicationContext CreateContext()
-    {
-        if (Connection == null)
-        {
-            Connection = new SqliteConnection("DataSource=:memory:;Foreign Keys=False");
-            Connection.Open();
-
-            var options = CreateOptions();
-            using (var context = new ApplicationContext(options))
-            {
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
-                seed(context);
-            }
-        }
-
-        return new ApplicationContext(CreateOptions());
-    }
-
-    public ApplicationContext CreateContext(List<RegisteredWork> registeredWorks = null, List<Application> applications = null)
-    {
-        if (Connection == null)
-        {
-            Connection = new SqliteConnection("DataSource=:memory:;Foreign Keys=False");
-            Connection.Open();
-
-            var options = CreateOptions();
-            using (var context = new ApplicationContext(options))
-            {
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
-                context.UserAccounts.AddRange(UserAccounts);
-                context.RegisteredWorks.AddRange(registeredWorks);
-                context.Applications.AddRange(applications);
-                context.SaveChanges();
-            }
-        }
-
-        return new ApplicationContext(CreateOptions());
-    }
-
-    readonly List<UserAccount> UserAccounts = new()
+    public static readonly List<UserAccount> UserAccounts = new()
     {
         new()
         {
@@ -118,6 +68,25 @@ public class TestDbApplicationContextFactory : IDisposable
         },
         new()
         {
+            Id = new Guid("F61BB4E5-E1C7-4F3E-A39A-93ABAFFE1AC9"),
+            Email = "harrison@thebarkers.me.uk",
+            Status = UserAccount.AccountStatus.Complete,
+            FirstName = "Complete",
+            LastName = "User",
+            PhoneNumber = "+4407852276048",
+            RegisteredJurisdiction = "GBR",
+            DateOfBirth = new UserAccount.DOB()
+            {
+                Year = 2000, Month = 7, Day = 24
+            },
+            Wallet = new UserWallet()
+            {
+                PublicAddress = "0xaea270413700371a8a28ab8b5ece05201bdf49de"
+            },
+            AuthenticationToken = "TEST_TOKEN"
+        },
+        new()
+        {
             Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
             Email = "test@user.co.uk",
             Status = UserAccount.AccountStatus.Complete,
@@ -137,6 +106,59 @@ public class TestDbApplicationContextFactory : IDisposable
             AuthenticationToken = null
         }
     };
+}
+
+public class TestDbApplicationContextFactory : IDisposable
+{
+    private DbConnection? Connection;
+
+    private DbContextOptions<ApplicationContext> CreateOptions()
+    {
+        return new DbContextOptionsBuilder<ApplicationContext>()
+            .EnableSensitiveDataLogging()
+            .UseSqlite(Connection).Options;
+    }
+
+    public ApplicationContext CreateContext()
+    {
+        if (Connection == null)
+        {
+            Connection = new SqliteConnection("DataSource=:memory:;Foreign Keys=False");
+            Connection.Open();
+
+            var options = CreateOptions();
+            using (var context = new ApplicationContext(options))
+            {
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+                seed(context);
+            }
+        }
+
+        return new ApplicationContext(CreateOptions());
+    }
+
+    public ApplicationContext CreateContext(List<RegisteredWork> registeredWorks = null, List<Application> applications = null)
+    {
+        if (Connection == null)
+        {
+            Connection = new SqliteConnection("DataSource=:memory:;Foreign Keys=False");
+            Connection.Open();
+
+            var options = CreateOptions();
+            using (var context = new ApplicationContext(options))
+            {
+                context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
+                context.UserAccounts.AddRange(TestDBUtils.UserAccounts);
+                context.RegisteredWorks.AddRange(registeredWorks);
+                context.Applications.AddRange(applications);
+                context.SaveChanges();
+            }
+        }
+
+        return new ApplicationContext(CreateOptions());
+    }
 
     private void seed(ApplicationContext context)
     {
@@ -295,7 +317,7 @@ public class TestDbApplicationContextFactory : IDisposable
             },
         };
 
-        context.UserAccounts.AddRange(UserAccounts);
+        context.UserAccounts.AddRange(TestDBUtils.UserAccounts);
         context.RegisteredWorks.AddRange(registeredWorks);
         context.Applications.AddRange(applications);
         context.SaveChanges();

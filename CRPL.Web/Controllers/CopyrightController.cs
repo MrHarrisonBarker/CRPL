@@ -1,5 +1,6 @@
 using CRPL.Data.Account;
 using CRPL.Data.Proposal;
+using CRPL.Web.Core.ChainSync.Synchronisers;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,12 +13,14 @@ public class CopyrightController : ControllerBase
     private readonly ILogger<FormsController> Logger;
     private readonly IRegistrationService RegistrationService;
     private readonly ICopyrightService CopyrightService;
+    private readonly ISynchroniser OwnershipSynchroniser;
 
-    public CopyrightController(ILogger<FormsController> logger, IRegistrationService registrationService, ICopyrightService copyrightService)
+    public CopyrightController(ILogger<FormsController> logger, IRegistrationService registrationService, ICopyrightService copyrightService, IEnumerable<ISynchroniser> synchronisers)
     {
         Logger = logger;
         RegistrationService = registrationService;
         CopyrightService = copyrightService;
+        OwnershipSynchroniser = synchronisers.First();
     }
     
     [HttpGet("complete/{id}")]
@@ -60,6 +63,21 @@ public class CopyrightController : ControllerBase
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when binding a proposal vote");
+            throw;
+        }
+    }
+    
+    [HttpPatch("sync/{id}")]
+    public async Task<ActionResult> SyncWork(Guid id)
+    {
+        try
+        {
+            await OwnershipSynchroniser.SynchroniseOne(id);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when synchronising work");
             throw;
         }
     }
