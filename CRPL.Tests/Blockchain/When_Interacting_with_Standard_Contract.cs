@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace CRPL.Tests.Blockchain;
 
 [TestFixture]
-// [Ignore("need ci blockchain")]
+[Ignore("need ci blockchain")]
 public class When_Interacting_with_Standard_Contract
 {
     private string ContractAddress;
