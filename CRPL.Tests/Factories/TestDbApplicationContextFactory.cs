@@ -3,110 +3,13 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
-using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
-using CRPL.Data.StructuredOwnership;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Tests.Factories;
-
-public static class TestDBUtils
-{
-    public static readonly List<UserAccount> UserAccounts = new()
-    {
-        new()
-        {
-            Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
-            Email = null,
-            Status = UserAccount.AccountStatus.Incomplete,
-            FirstName = "Incomplete",
-            LastName = "User",
-            PhoneNumber = null,
-            RegisteredJurisdiction = null,
-            DateOfBirth = null,
-            Wallet = new UserWallet()
-            {
-                PublicAddress = "test_1"
-            }
-        },
-        new()
-        {
-            Id = new Guid("73C4FF17-1EF8-483C-BCDB-9A6191888F04"),
-            Email = "mail@harrisonbarker.co.uk",
-            Status = UserAccount.AccountStatus.Complete,
-            FirstName = "Complete",
-            LastName = "User",
-            PhoneNumber = "+4407852276048",
-            RegisteredJurisdiction = "GBR",
-            DateOfBirth = new UserAccount.DOB()
-            {
-                Year = 2000, Month = 7, Day = 24
-            },
-            Wallet = new UserWallet()
-            {
-                PublicAddress = "test_2"
-            },
-            AuthenticationToken = "TEST_TOKEN"
-        },
-        new()
-        {
-            Id = new Guid("8E9C6FB8-A8D7-459F-A39C-B06E68FE4E03"),
-            Email = "",
-            Status = UserAccount.AccountStatus.Created,
-            FirstName = "",
-            LastName = "",
-            PhoneNumber = "",
-            RegisteredJurisdiction = "",
-            DateOfBirth = new UserAccount.DOB(),
-            Wallet = new UserWallet()
-            {
-                PublicAddress = "test_0"
-            }
-        },
-        new()
-        {
-            Id = new Guid("F61BB4E5-E1C7-4F3E-A39A-93ABAFFE1AC9"),
-            Email = "harrison@thebarkers.me.uk",
-            Status = UserAccount.AccountStatus.Complete,
-            FirstName = "Complete",
-            LastName = "User",
-            PhoneNumber = "+4407852276048",
-            RegisteredJurisdiction = "GBR",
-            DateOfBirth = new UserAccount.DOB()
-            {
-                Year = 2000, Month = 7, Day = 24
-            },
-            Wallet = new UserWallet()
-            {
-                PublicAddress = "0xaea270413700371a8a28ab8b5ece05201bdf49de"
-            },
-            AuthenticationToken = "TEST_TOKEN"
-        },
-        new()
-        {
-            Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
-            Email = "test@user.co.uk",
-            Status = UserAccount.AccountStatus.Complete,
-            FirstName = "Complete",
-            LastName = "User",
-            PhoneNumber = "99999999999",
-            RegisteredJurisdiction = "GBR",
-            DateOfBirth = new UserAccount.DOB()
-            {
-                Year = 2000, Month = 7, Day = 24
-            },
-            Wallet = new UserWallet
-            {
-                PublicAddress = TestConstants.TestAccountAddress,
-                Nonce = "NONCE"
-            },
-            AuthenticationToken = null
-        }
-    };
-}
 
 public class TestDbApplicationContextFactory : IDisposable
 {
@@ -138,7 +41,7 @@ public class TestDbApplicationContextFactory : IDisposable
         return new ApplicationContext(CreateOptions());
     }
 
-    public ApplicationContext CreateContext(List<RegisteredWork> registeredWorks = null, List<Application> applications = null)
+    public ApplicationContext CreateContext(List<RegisteredWork> registeredWorks = null, List<Application> applications = null, List<UserAccount> userAccounts = null)
     {
         if (Connection == null)
         {
@@ -150,9 +53,9 @@ public class TestDbApplicationContextFactory : IDisposable
             {
                 context.Database.EnsureDeleted();
                 context.Database.EnsureCreated();
-                context.UserAccounts.AddRange(TestDBUtils.UserAccounts);
-                context.RegisteredWorks.AddRange(registeredWorks);
-                context.Applications.AddRange(applications);
+                if (userAccounts != null) context.UserAccounts.AddRange(userAccounts);
+                if (registeredWorks != null) context.RegisteredWorks.AddRange(registeredWorks);
+                if (applications != null) context.Applications.AddRange(applications);
                 context.SaveChanges();
             }
         }
@@ -162,6 +65,98 @@ public class TestDbApplicationContextFactory : IDisposable
 
     private void seed(ApplicationContext context)
     {
+        List<UserAccount> userAccounts = new()
+        {
+            new UserAccount
+            {
+                Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
+                Email = null,
+                Status = UserAccount.AccountStatus.Incomplete,
+                FirstName = "Incomplete",
+                LastName = "User",
+                PhoneNumber = null,
+                RegisteredJurisdiction = null,
+                DateOfBirth = null,
+                Wallet = new UserWallet()
+                {
+                    PublicAddress = "test_1"
+                }
+            },
+            new UserAccount
+            {
+                Id = new Guid("73C4FF17-1EF8-483C-BCDB-9A6191888F04"),
+                Email = "mail@harrisonbarker.co.uk",
+                Status = UserAccount.AccountStatus.Complete,
+                FirstName = "Complete",
+                LastName = "User",
+                PhoneNumber = "+4407852276048",
+                RegisteredJurisdiction = "GBR",
+                DateOfBirth = new UserAccount.DOB()
+                {
+                    Year = 2000, Month = 7, Day = 24
+                },
+                Wallet = new UserWallet()
+                {
+                    PublicAddress = "test_2"
+                },
+                AuthenticationToken = "TEST_TOKEN"
+            },
+            new UserAccount
+            {
+                Id = new Guid("8E9C6FB8-A8D7-459F-A39C-B06E68FE4E03"),
+                Email = "",
+                Status = UserAccount.AccountStatus.Created,
+                FirstName = "",
+                LastName = "",
+                PhoneNumber = "",
+                RegisteredJurisdiction = "",
+                DateOfBirth = new UserAccount.DOB(),
+                Wallet = new UserWallet()
+                {
+                    PublicAddress = "test_0"
+                }
+            },
+            new UserAccount
+            {
+                Id = new Guid("F61BB4E5-E1C7-4F3E-A39A-93ABAFFE1AC9"),
+                Email = "harrison@thebarkers.me.uk",
+                Status = UserAccount.AccountStatus.Complete,
+                FirstName = "Complete",
+                LastName = "User",
+                PhoneNumber = "+4407852276048",
+                RegisteredJurisdiction = "GBR",
+                DateOfBirth = new UserAccount.DOB()
+                {
+                    Year = 2000, Month = 7, Day = 24
+                },
+                Wallet = new UserWallet()
+                {
+                    PublicAddress = "0xaea270413700371a8a28ab8b5ece05201bdf49de"
+                },
+                AuthenticationToken = "TEST_TOKEN"
+            },
+            new UserAccount
+            {
+                Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
+                Email = "test@user.co.uk",
+                Status = UserAccount.AccountStatus.Complete,
+                FirstName = "Complete",
+                LastName = "User",
+                PhoneNumber = "99999999999",
+                RegisteredJurisdiction = "GBR",
+                DateOfBirth = new UserAccount.DOB()
+                {
+                    Year = 2000, Month = 7, Day = 24
+                },
+                Wallet = new UserWallet
+                {
+                    PublicAddress = TestConstants.TestAccountAddress,
+                    Nonce = "NONCE"
+                },
+                AuthenticationToken = null
+            }
+        };
+
         List<RegisteredWork> registeredWorks = new List<RegisteredWork>()
         {
             new()
@@ -223,9 +218,9 @@ public class TestDbApplicationContextFactory : IDisposable
         {
             new CopyrightRegistrationApplication()
             {
+                Id = new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"),
                 Created = DateTime.Now,
                 Modified = DateTime.Now,
-                Id = new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"),
                 ApplicationType = ApplicationType.CopyrightRegistration,
                 OwnershipStakes = "0x0000000000000000000000000000000000099991!50;0x0000000000000000000000000000000000099992!50",
                 Legal = "LEGAL META",
@@ -317,7 +312,7 @@ public class TestDbApplicationContextFactory : IDisposable
             },
         };
 
-        context.UserAccounts.AddRange(TestDBUtils.UserAccounts);
+        context.UserAccounts.AddRange(userAccounts);
         context.RegisteredWorks.AddRange(registeredWorks);
         context.Applications.AddRange(applications);
         context.SaveChanges();

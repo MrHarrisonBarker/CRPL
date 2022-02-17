@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.ViewModels;
 using CRPL.Tests.Factories;
 using CRPL.Web.Exceptions;
 using FluentAssertions;
@@ -16,20 +17,26 @@ namespace CRPL.Tests.Services.WorksVerificationService;
 [TestFixture]
 public class VerifyWork
 {
-    private static readonly List<RegisteredWork> Works = new()
+    private List<RegisteredWork> Works;
+
+    [SetUp]
+    public async Task Setup()
     {
-        new()
+        Works = new()
         {
-            Id = new Guid("C714A94E-BE61-4D7B-A4CE-28F0667FAEAD"),
-            Title = "Hello world",
-            Created = DateTime.Now,
-            Status = RegisteredWorkStatus.ProcessingVerification,
-            RightId = "1",
-            RegisteredTransactionId = "TRANSACTION HASH",
-            Hash = Encoding.UTF8.GetBytes("Hello world")
-        }
-    };
-    
+            new()
+            {
+                Id = new Guid("C714A94E-BE61-4D7B-A4CE-28F0667FAEAD"),
+                Title = "Hello world",
+                Created = DateTime.Now,
+                Status = RegisteredWorkStatus.ProcessingVerification,
+                RightId = "1",
+                RegisteredTransactionId = "TRANSACTION HASH",
+                Hash = Encoding.UTF8.GetBytes("Hello world")
+            }
+        };
+    }
+
     [Test]
     public async Task Should_Be_Authentic()
     {
@@ -43,8 +50,17 @@ public class VerifyWork
             RegisteredTransactionId = "TRANSACTION HASH",
             Hash = Encoding.UTF8.GetBytes("Authentic Work")
         });
-        
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, new List<Application>()))
+
+        var applications = new List<Application>()
+        {
+            new CopyrightRegistrationApplication()
+            {
+                Id = new Guid("1F4EDD7E-8EEA-43FA-B696-E0D121DD28BE"),
+                AssociatedWork = Works.Last()
+            }
+        };
+
+        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, applications))
         {
             var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
 
@@ -71,8 +87,17 @@ public class VerifyWork
             RegisteredTransactionId = "TRANSACTION HASH",
             Hash = Encoding.UTF8.GetBytes("Hello world")
         });
-        
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, new List<Application>()))
+
+        var applications = new List<Application>()
+        {
+            new CopyrightRegistrationApplication()
+            {
+                Id = new Guid("1F4EDD7E-8EEA-43FA-B696-E0D121DD28BE"),
+                AssociatedWork = Works.Last()
+            }
+        };
+
+        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, applications))
         {
             var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
 

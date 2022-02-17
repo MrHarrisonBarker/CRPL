@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CRPL.Data.Account;
 using CRPL.Tests.Factories;
 using CRPL.Web.Exceptions;
 using FluentAssertions;
@@ -13,7 +16,15 @@ public class RevokeAuthentication
     [Test]
     public async Task Should_Revoke()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        await using (var context = new TestDbApplicationContextFactory().CreateContext(userAccounts:new List<UserAccount>
+                     {
+                         new()
+                         {
+                             Id = new Guid("45C89178-DB68-476C-8B23-269FA6675821"),
+                             AuthenticationToken = "TEST_TOKEN",
+                             Wallet = new UserWallet() {PublicAddress = "TEST ADDRESS"}
+                         }
+                     }))
         {
             var userService = new UserServiceFactory().Create(context);
 
