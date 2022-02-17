@@ -28,13 +28,9 @@ export class WorksService
     return this.http.post(this.BaseUrl + WorksPaths.BasePath, data, {reportProgress: true, observe: 'events'});
   }
 
-  public GetSignedWork (hash: string): Observable<Blob>
+  public GetSignedWork (id: string): Observable<Blob>
   {
-    let encodedHash = hash.replace(/\+/g, '.')
-    console.log(hash, encodedHash);
-
-    return this.http.get(this.BaseUrl + WorksPaths.BasePath, {
-      params: new HttpParams().set("hash", encodedHash),
+    return this.http.get(this.BaseUrl + WorksPaths.BasePath + "/" + encodeURI(id), {
       reportProgress: true,
       responseType: 'blob'
     });

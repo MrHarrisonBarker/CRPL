@@ -19,51 +19,23 @@ public class UserAccountSeeder
             {
                 Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
                 Email = null,
-                Status = UserAccount.AccountStatus.Incomplete,
-                FirstName = "Incomplete",
-                LastName = "User",
-                PhoneNumber = null,
-                RegisteredJurisdiction = null,
-                DateOfBirth = null,
-                Wallet = new UserWallet()
-                {
-                    PublicAddress = "1"
-                }
-            },
-            new()
-            {
-                Id = new Guid("73C4FF17-1EF8-483C-BCDB-9A6191888F04"),
-                Email = "mail@harrisonbarker.co.uk",
                 Status = UserAccount.AccountStatus.Complete,
-                FirstName = "Complete",
+                FirstName = "Test",
                 LastName = "User",
-                DialCode = "+44",
                 PhoneNumber = "07852276048",
                 RegisteredJurisdiction = "GBR",
-                DateOfBirth = new UserAccount.DOB()
+                DateOfBirth = new UserAccount.DOB
                 {
-                    Year = 2000, Month = 7, Day = 24
+                    Day = 24,
+                    Month = 7,
+                    Year = 2000
                 },
-                Wallet = new UserWallet()
+                DialCode = "+44",
+                Wallet = new UserWallet
                 {
-                    PublicAddress = "2"
+                    PublicAddress = "0x3aaf677ea4e72eebb92d2d5c3a92307ee789e24c"
                 }
-            },
-            new()
-            {
-                Id = new Guid("8E9C6FB8-A8D7-459F-A39C-B06E68FE4E03"),
-                Email = "",
-                Status = UserAccount.AccountStatus.Created,
-                FirstName = "",
-                LastName = "",
-                PhoneNumber = "",
-                RegisteredJurisdiction = "",
-                DateOfBirth = new UserAccount.DOB(),
-                Wallet = new UserWallet()
-                {
-                    PublicAddress = "0"
-                }
-            },
+            }
         };
 
         Context.UserAccounts.AddRange(userAccounts);

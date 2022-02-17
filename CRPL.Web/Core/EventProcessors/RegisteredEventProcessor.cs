@@ -2,6 +2,7 @@ using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Web.Exceptions;
+using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nethereum.Contracts;
 
@@ -32,7 +33,7 @@ public static class RegisteredEventProcessor
         
         await context.SaveChangesAsync();
         
-        var worksVerificationService = scope.ServiceProvider.GetRequiredService<WorksVerificationService>();
+        var worksVerificationService = scope.ServiceProvider.GetRequiredService<IWorksVerificationService>();
         await worksVerificationService.Sign(registeredWork.Id);
     }
 }

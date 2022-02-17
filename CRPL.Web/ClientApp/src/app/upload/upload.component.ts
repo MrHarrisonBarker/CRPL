@@ -1,9 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {WorksService} from "../_Services/works.service";
 import {HttpEventType} from "@angular/common/http";
-import {DownloadFile} from "../utils";
 import {AlertService} from "../_Services/alert.service";
-import {FormControl, FormGroup} from "@angular/forms";
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'file-upload',
@@ -19,7 +18,6 @@ export class UploadComponent implements OnInit
   public FinishedUpload: boolean = false;
   public WorkHash: string = "";
   public UploadError: string = "";
-  public DownloadError: string = "";
 
   constructor (
     private worksService: WorksService,
@@ -62,19 +60,6 @@ export class UploadComponent implements OnInit
           console.log("Current work hash", this.WorkHash);
         }
       }, error => this.UploadError = error.error, () => this.alertService.StopLoading());
-    }
-  }
-
-  GetSignedWork ()
-  {
-    if (this.FinishedUpload && this.WorkHash)
-    {
-
-      this.worksService.GetSignedWork(this.WorkHash).subscribe(data =>
-      {
-        DownloadFile(this.CurrentFile.name, data);
-        console.log(data);
-      }, error => this.DownloadError = error.error, () => this.alertService.StopLoading());
     }
   }
 }

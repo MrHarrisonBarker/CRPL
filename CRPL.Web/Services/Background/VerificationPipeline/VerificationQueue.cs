@@ -34,7 +34,7 @@ public class VerificationQueue : IVerificationQueue
         await Signal.WaitAsync(cancellationToken);
         Queue.TryDequeue(out var workId);
 
-        await Task.Delay((int)TimeSpan.FromMinutes(1).TotalMilliseconds);
+        await Task.Delay((int)TimeSpan.FromSeconds(30).TotalMilliseconds);
 
         return workId;
     }

@@ -4,8 +4,9 @@ import {ApplicationType} from "../../_Models/Applications/ApplicationViewModel";
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
 import {CopyrightService} from "../../_Services/copyright.service";
-import {syntaxHighlight} from "../../utils";
+import {DownloadFile, syntaxHighlight} from "../../utils";
 import {AlertService} from "../../_Services/alert.service";
+import {WorksService} from "../../_Services/works.service";
 
 @Component({
   selector: 'copyright-view [Copyright]',
@@ -18,7 +19,10 @@ export class CopyrightViewComponent implements OnInit
   @Input() ShowActions: boolean = true;
   public RestructureOpen: boolean = false;
 
-  constructor (private copyrightService: CopyrightService, private alertService: AlertService)
+  constructor (
+    private copyrightService: CopyrightService,
+    private alertService: AlertService,
+    private worksService: WorksService)
   {
   }
 
@@ -87,5 +91,14 @@ export class CopyrightViewComponent implements OnInit
       Type: "info",
       Message: "The work has been synced with the blockchain"
     }));
+  }
+
+  public Download (): void
+  {
+    this.worksService.GetSignedWork(this.Copyright.Id).subscribe(data =>
+    {
+      DownloadFile(this.Copyright.Meta?.Title + "-master", data);
+      console.log(data);
+    });
   }
 }

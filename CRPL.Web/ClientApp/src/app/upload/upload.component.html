@@ -32,12 +32,3 @@
     </clr-alert>
   </div>
 </div>
-
-<div>
-  <button class="btn" (click)="GetSignedWork()" [disabled]="!FinishedUpload">Download Signed Work</button>
-  <clr-alert clrAlertType="danger" *ngIf="DownloadError">
-    <clr-alert-item>
-      <span class="alert-text">{{DownloadError}}</span>
-    </clr-alert-item>
-  </clr-alert>
-</div>
