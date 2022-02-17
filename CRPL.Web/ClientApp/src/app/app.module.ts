@@ -13,7 +13,6 @@ import {AuthGuard} from "./_Guards/auth.guard";
 import {ClarityModule} from "@clr/angular";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {InfoWizardComponent} from './User/info-wizard/info-wizard.component';
-import {LogoutButtonComponent} from './User/logout-button/logout-button.component';
 import {AlertComponent} from './alert/alert.component';
 import {UploadComponent} from './upload/upload.component';
 import {ApplicationsComponent} from './Forms/applications/applications.component';
@@ -49,7 +48,6 @@ import {
     HomeComponent,
     LoginButtonComponent,
     InfoWizardComponent,
-    LogoutButtonComponent,
     AlertComponent,
     UploadComponent,
     ApplicationsComponent,

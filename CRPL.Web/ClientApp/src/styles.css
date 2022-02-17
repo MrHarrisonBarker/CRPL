@@ -70,3 +70,7 @@ pre span {
   display: flex;
   justify-content: space-between;
 }
+
+.container {
+  flex: 1;
+}

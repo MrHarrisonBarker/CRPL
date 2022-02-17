@@ -1,7 +1,25 @@
-<body>
+<body style="height: 100%;flex-direction: column;display: flex;">
   <alert-container></alert-container>
   <app-nav-menu></app-nav-menu>
   <div class="container">
     <router-outlet></router-outlet>
   </div>
 </body>
+<footer>
+  <div id="footer">
+
+    <img src="assets/crpl.png" />
+
+    <div id="site-map">
+      <a [routerLink]="['/']">Index</a>
+      <a [routerLink]="['/search']">Search</a>
+      <a [routerLink]="['/about']">About</a>
+      <a [routerLink]="['/register']">Register copyright</a>
+      <a [routerLink]="['/dashboard']">Dashboard</a>
+      <a [routerLink]="['/']">Account preferences</a>
+    </div>
+    <div id="legal">
+
+    </div>
+  </div>
+</footer>

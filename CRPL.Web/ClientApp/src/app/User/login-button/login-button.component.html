@@ -1,8 +1,19 @@
-<button class="btn btn-primary" (click)="Account()" *ngIf="authService.IsAuthenticated.getValue()">{{authService.UserAccount.getValue().WalletPublicAddress}}</button>
+<clr-dropdown *ngIf="authService.IsAuthenticated.getValue()" style="margin-right: 1rem;">
+  <button class="dropdown-toggle btn btn-primary btn-icon" clrDropdownTrigger>
+    <cds-icon shape="user"></cds-icon>
+    <cds-icon shape="angle" direction="down"></cds-icon>
+  </button>
+  <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
+    <label class="dropdown-header" aria-hidden="true">Account</label>
+    <div aria-label="Account Preferences" clrDropdownItem (click)="NavigateToPreferences()">Preferences</div>
+    <div aria-label="Logout" clrDropdownItem (click)="Logout()">Logout</div>
+    <div class="dropdown-divider" role="separator" aria-hidden="true"></div>
+    <label aria-label="Dashboard" clrDropdownItem [routerLink]="['/dashboard']">Dashboard</label>
+  </clr-dropdown-menu>
+</clr-dropdown>
+
 <button class="btn btn-primary" (click)="Login()" [disabled]="!HasMetaMask" *ngIf="!authService.IsAuthenticated.getValue()">
   <div>
-    <span *ngIf="!HasMetaMask">Install MetaMask To Login</span>
-    <span *ngIf="HasMetaMask">Login with MetaMask</span>
-    <img src="assets/meta-mask.svg" alt="MetaMask">
+    <span *ngIf="!HasMetaMask">Install MetaMask To Login</span> <span *ngIf="HasMetaMask">Login with MetaMask</span> <img src="assets/meta-mask.svg" alt="MetaMask">
   </div>
 </button>

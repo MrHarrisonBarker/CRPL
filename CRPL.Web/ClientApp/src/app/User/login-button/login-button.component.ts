@@ -3,6 +3,7 @@ import {AuthService} from "../../_Services/auth.service";
 import {AlertService} from "../../_Services/alert.service";
 import {AccountStatus} from "../../_Models/Account/UserAccountViewModel";
 import {Router} from "@angular/router";
+import {angleIcon, ClarityIcons, userIcon} from "@cds/core/icon";
 
 @Component({
   selector: 'login-button',
@@ -18,6 +19,8 @@ export class LoginButtonComponent implements OnInit
     private alertService: AlertService,
     private router: Router)
   {
+    ClarityIcons.addIcons(userIcon);
+    ClarityIcons.addIcons(angleIcon);
     this.HasMetaMask = (window as any).ethereum;
   }
 
@@ -46,7 +49,12 @@ export class LoginButtonComponent implements OnInit
     }, error => this.alertService.Alert({Message: error.error, Type: "danger"}), () => this.alertService.StopLoading());
   }
 
-  Account ()
+  public Logout (): void
+  {
+    this.authService.Logout();
+  }
+
+  public NavigateToPreferences (): void
   {
 
   }
