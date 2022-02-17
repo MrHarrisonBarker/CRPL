@@ -5,4 +5,12 @@
 .content-area {
   padding: 1rem;
   width: 100%;
+  display: flex;
+}
+
+.centre-align {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }

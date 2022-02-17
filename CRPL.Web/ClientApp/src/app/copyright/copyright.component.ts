@@ -15,6 +15,7 @@ import {AlertService} from "../_Services/alert.service";
 export class CopyrightComponent implements OnInit
 {
   public Copyright!: RegisteredWorkViewModel;
+  public Loaded: boolean = false;
 
   constructor (
     private route: ActivatedRoute,
@@ -34,8 +35,8 @@ export class CopyrightComponent implements OnInit
     if (workId) await this.copyrightService.Get(workId).subscribe(x =>
     {
       this.Copyright = x;
-
-    });
+      this.Loaded = true;
+    }, error => this.Loaded = true, () => this.Loaded = true);
   }
 
   public IsOwner (): boolean

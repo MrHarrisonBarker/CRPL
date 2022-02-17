@@ -1,4 +1,4 @@
-<div id="contain" *ngIf="Loaded">
+<div id="contain" *ngIf="Loaded" class="container">
   <section cds-theme="dark">
   <clr-tabs>
     <clr-tab>
@@ -40,9 +40,11 @@
             </section>
           </nav>
           <div class="content-area">
+            <div *ngIf="!Selected" class="centre-align">
+              <img src="https://i.giphy.com/media/baPIkfAo0Iv5K/giphy.webp" />
+            </div>
             <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected"></copyright-view>
             <applications-view [Application]="SelectedAsApplication" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
-<!--            {{Selected | json}}-->
           </div>
         </div>
       </clr-tab-content>

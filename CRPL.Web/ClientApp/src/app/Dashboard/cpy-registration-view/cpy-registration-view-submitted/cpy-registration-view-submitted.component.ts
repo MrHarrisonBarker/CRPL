@@ -17,6 +17,7 @@ export class SubmittedViewComponent implements OnInit
   public timelineProcessing: ClrTimelineStepState = ClrTimelineStepState.PROCESSING;
   public timelineNot: ClrTimelineStepState = ClrTimelineStepState.NOT_STARTED;
   public vertical: ClrTimelineLayout = ClrTimelineLayout.VERTICAL;
+  public timelineCurrent: ClrTimelineStepState = ClrTimelineStepState.CURRENT;
 
   constructor (private copyrightService: CopyrightService, private alertService: AlertService)
   {

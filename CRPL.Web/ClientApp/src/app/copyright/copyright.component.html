@@ -1,4 +1,13 @@
-<div id="copyright-card" *ngIf="Copyright">
+<div *ngIf="!Copyright && Loaded" id="not-found">
+  <div>
+    <img src="https://i.giphy.com/media/l2JJKs3I69qfaQleE/giphy.webp"/>
+    <clr-alert [clrAlertClosable]="false" clrAlertType="danger">
+      <clr-alert-item><span class="alert-text">Copyright not found!</span></clr-alert-item>
+    </clr-alert>
+  </div>
+</div>
+
+<div id="copyright-card" *ngIf="Copyright && Loaded">
   <div class="flex-between">
     <button type="button" class="btn btn-icon btn-link btn-sm" aria-label="back" (click)="Back()">
       <cds-icon shape="undo"></cds-icon>

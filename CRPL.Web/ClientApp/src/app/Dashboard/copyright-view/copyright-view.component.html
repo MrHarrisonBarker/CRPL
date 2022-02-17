@@ -1,4 +1,30 @@
-<div id="copyright-card">
+<clr-alert clrAlertType="danger" [clrAlertClosable]="false" *ngIf="!Meta">
+  <clr-alert-item>
+          <span class="alert-text">
+            <div class="flex-between">
+              <span style="margin-right: 0.6rem">
+                Metadata cannot be found on the blockchain! has the copyright been changed by an external transaction not from this system?<br>
+                Try syncing this copyright with the blockchain<br>
+                <button class="btn btn-sm" (click)="Sync()">Sync with blockchain</button>
+              </span>
+            </div>
+          </span>
+  </clr-alert-item>
+</clr-alert>
+
+<div *ngIf="!Copyright">
+  <img src="https://i.giphy.com/media/l2JJKs3I69qfaQleE/giphy.webp"/>
+
+  <clr-alert clrAlertType="danger" [clrAlertClosable]="false">
+    <clr-alert-item>
+          <span class="alert-text">
+              <span style="margin-right: 0.6rem">The copyright your looking for cannot be found!</span>
+          </span>
+    </clr-alert-item>
+  </clr-alert>
+</div>
+
+<div id="copyright-card" *ngIf="Copyright">
   <div class="card">
     <div class="card-block">
       <div class="card-title flex-between">
@@ -19,7 +45,7 @@
           <p class="card-text"><b>registered:</b> {{Copyright?.Registered | date:'medium'}}</p>
         </div>
 
-        <clr-alert clrAlertType="info" [clrAlertClosable]="false">
+        <clr-alert clrAlertType="info" [clrAlertClosable]="false" *ngIf="ShowActions">
           <clr-alert-item>
           <span class="alert-text">
             <div class="flex-between">

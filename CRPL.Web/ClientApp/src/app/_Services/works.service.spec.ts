@@ -52,14 +52,14 @@ describe('WorksService', () =>
     [HttpTestingController, WorksService],
     (httpMock: HttpTestingController, worksService: WorksService) =>
     {
-      let mockHash = 'TEST HASH';
       let mockResponse = new Blob(['1','1','1']);
+      let mockId = 'ID';
 
-      worksService.GetSignedWork(mockHash).subscribe(response => {
+      worksService.GetSignedWork(mockId).subscribe(response => {
         expect(response).toEqual(mockResponse);
       });
 
-      let request = httpMock.expectOne('works?hash=' + encodeURI(mockHash));
+      let request = httpMock.expectOne('works/' + encodeURI(mockId));
 
       request.flush(mockResponse);
     }));
