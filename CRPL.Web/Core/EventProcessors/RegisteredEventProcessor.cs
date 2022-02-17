@@ -29,7 +29,10 @@ public static class RegisteredEventProcessor
         registeredWork.Status = RegisteredWorkStatus.Registered;
 
         registeredWork.AssociatedApplication.First(x => x.ApplicationType == ApplicationType.CopyrightRegistration).Status = ApplicationStatus.Complete;
-
+        
         await context.SaveChangesAsync();
+        
+        var worksVerificationService = scope.ServiceProvider.GetRequiredService<WorksVerificationService>();
+        await worksVerificationService.Sign(registeredWork.Id);
     }
 }

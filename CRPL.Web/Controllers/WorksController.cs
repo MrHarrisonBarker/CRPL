@@ -33,20 +33,18 @@ public class WorksController : ControllerBase
         }
     }
 
-    [HttpGet]
-    public IActionResult SignWork(string hash, string signature)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetSignedWork(Guid id)
     {
         try
         {
-            // .Replace('_','/').Replace('-','=')
-            var decodedHash = Convert.FromBase64String(hash.Replace('.','+'));
-            var work = WorksVerificationService.Sign(decodedHash, signature);
+            var work = await WorksVerificationService.GetSigned(id);
 
-            return File(work.Work, work.ContentType, "name.jpg");
+            return File(work.Work, work.ContentType, work.FileName);
         }
         catch (Exception e)
         {
-            Logger.LogError(e, "Exception thrown when signing work");
+            Logger.LogError(e, "Exception thrown when getting signed work");
             throw;
         }
     }

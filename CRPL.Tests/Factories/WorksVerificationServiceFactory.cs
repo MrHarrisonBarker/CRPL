@@ -12,7 +12,7 @@ public class WorksVerificationServiceFactory
     {
         var cachedWorkRepository = new CachedWorkRepository(new Logger<CachedWorkRepository>(new LoggerFactory()));
         
-        cachedWorkRepository.Set(new byte[]{0}, new byte[]{0}, "","");
+        cachedWorkRepository.Set(new byte[]{ 1, 1, 1, 1, 1 }, new byte[]{0}, "","");
         
         return new WorksVerificationService(new Logger<WorksVerificationService>(new LoggerFactory()), context, cachedWorkRepository);
     }

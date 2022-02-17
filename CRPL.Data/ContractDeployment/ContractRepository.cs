@@ -54,7 +54,9 @@ public class ContractRepository : IContractRepository
         {
             Logger.LogInformation("No contracts found! deploying");
 
-            Task.Run(async () => await deployContract(CopyrightContract.Copyright, BlockchainConnection.Web3())).Wait();
+            var task = Task.Run(async () => await DeployContract(CopyrightContract.Copyright));
+            task.Wait();
+            Logger.LogInformation("Contracts deployed");
         }
     }
 
@@ -68,29 +70,20 @@ public class ContractRepository : IContractRepository
     private async void getContracts(ContractContext contractContext)
     {
         DeployedContracts = contractContext.DeployedContracts.ToDictionary(x => x.Type, x => x);
-        
+
         // check if contracts can be found on the blockchain
         foreach (var deployedContract in DeployedContracts.Values)
         {
-
             var result = await BlockchainConnection.Web3().Eth.GetCode.SendRequestAsync(deployedContract.Address);
 
             if (result == null) throw new Exception("A saved contract doesn't exist on the blockchain");
         }
     }
 
-    private async Task init()
+    private async Task DeployContract(CopyrightContract contractType)
     {
-        // runs with a clear workspace to deploy all contracts needed
-        // foreach (CopyrightContract contractType in Enum.GetValues<CopyrightContract>())
-        // {
-            
-        // }
-    }
-
-    private async Task deployContract(CopyrightContract contractType, Web3 web3)
-    {
-        var receipt = await deploymentMessage(contractType, web3);
+        Logger.LogInformation("Deploying contract {Type}", contractType.ToString());
+        var receipt = await deploymentMessage(contractType, BlockchainConnection.Web3());
 
         if (receipt.HasErrors()!.Value) throw new Exception($"There was an error when deploying a contract: {receipt.Logs}");
 
@@ -109,5 +102,7 @@ public class ContractRepository : IContractRepository
         });
 
         await context.SaveChangesAsync();
+        
+        getContracts(context);
     }
 }

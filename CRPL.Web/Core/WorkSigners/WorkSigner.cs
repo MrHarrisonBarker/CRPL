@@ -6,7 +6,6 @@ public abstract class WorkSigner
 
     protected WorkSigner(string signature)
     {
-        var now = DateTime.Now;
-        Signature = $"CRPL COPYRIGHT SIGNATURE ({now.ToLongDateString()} at {now.ToLongTimeString()}) // " + signature;
+        Signature = signature;
     }
 }

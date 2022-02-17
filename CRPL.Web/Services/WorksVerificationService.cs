@@ -50,7 +50,7 @@ public class WorksVerificationService : IWorksVerificationService
         else
         {
             Logger.LogInformation("Found no collision when verifying work {Id}", workId);
-            work.Status = RegisteredWorkStatus.Verified; 
+            work.Status = RegisteredWorkStatus.Verified;
         }
 
         work.VerificationResult = new VerificationResult
@@ -85,29 +85,50 @@ public class WorksVerificationService : IWorksVerificationService
         return hash;
     }
 
-    public CachedWork Sign(byte[] hash, string signature)
+    public async Task<CachedWork> Sign(Guid workId)
     {
-        Logger.LogInformation("Signing work {Hash}", hash);
+        Logger.LogInformation("Signing work for {Id}", workId);
 
-        var work = CachedWorkRepository.Get(hash);
+        var work = await Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == workId);
+        if (work == null) throw new WorkNotFoundException(workId);
+        if (work.Status != RegisteredWorkStatus.Registered || !work.Registered.HasValue) throw new WorkNotRegisteredException();
+        
+        Logger.LogInformation("Signing work {Hash}", work.Hash);
 
-        switch (work.ContentType)
+        var signature = $"CRPL COPYRIGHT SIGNATURE ({work.Registered.Value.ToLongDateString()} at {work.Registered.Value.ToLongTimeString()}) // {work.Id} // registered on the chain at {work.RegisteredTransactionId} // right id {work.RightId}";
+        
+        var cachedWork = CachedWorkRepository.Get(work.Hash);
+        
+        switch (cachedWork.ContentType)
         {
             case var type when type.Contains("image"):
-                work = new ImageSigner(signature).Sign(work);
+                cachedWork = new ImageSigner(signature).Sign(cachedWork);
                 break;
             case "application/pdf":
-                work = new TextSigner(signature).Sign(work);
+                cachedWork = new TextSigner(signature).Sign(cachedWork);
                 break;
             case "audio/mpeg":
-                work = new SoundSigner(signature).Sign(work);
+                cachedWork = new SoundSigner(signature).Sign(cachedWork);
                 break;
             case var type when type.Contains("video"):
-                work = new VideoSigner(signature).Sign(work);
+                cachedWork = new VideoSigner(signature).Sign(cachedWork);
                 break;
         }
 
-        return new UniversalSigner(signature).Sign(work);
+        var signedWork = new UniversalSigner(signature).Sign(cachedWork);
+        
+        CachedWorkRepository.SetSigned(work.Hash, signedWork);
+
+        return signedWork;
+    }
+
+    public async Task<CachedWork> GetSigned(Guid workId)
+    {
+        var work = await Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == workId);
+        if (work == null) throw new WorkNotFoundException(workId);
+        if (work.Hash == null) throw new Exception($"Work has no hash {workId}");
+
+        return CachedWorkRepository.GetSigned(work.Hash);
     }
 
     private byte[] HashWork(byte[] work)
