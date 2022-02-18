@@ -56,12 +56,8 @@ export class ApplicationsViewComponent implements OnInit
       {
         this.alertService.Alert({Type: 'success', Message: 'Canceled application'});
         this.Application = null as any;
-
-      }, error =>
-      {
-        this.alertService.Alert({Type: 'danger', Message: error.error});
-
-      }, () => this.alertService.StopLoading());
+        this.alertService.TriggerChange.emit();
+      });
 
   }
 }

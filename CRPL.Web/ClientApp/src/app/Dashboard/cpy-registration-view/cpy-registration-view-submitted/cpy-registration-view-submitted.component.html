@@ -1,25 +1,27 @@
-<clr-timeline *ngIf="Application.AssociatedWork">
-  <clr-timeline-step [clrState]="timelineSuccess">
-    <clr-timeline-step-header>{{Application.Created | date:'short'}}</clr-timeline-step-header>
-    <clr-timeline-step-title>Fill in applicaiton</clr-timeline-step-title>
-  </clr-timeline-step>
+<div class="card">
+  <clr-timeline *ngIf="Application.AssociatedWork">
+    <clr-timeline-step [clrState]="timelineSuccess">
+      <clr-timeline-step-header>{{Application.Created | date:'short'}}</clr-timeline-step-header>
+      <clr-timeline-step-title>Fill in applicaiton</clr-timeline-step-title>
+    </clr-timeline-step>
 
-  <clr-timeline-step [clrState]="timelineSuccess">
-    <clr-timeline-step-header>{{Application.Modified | date:'short'}}</clr-timeline-step-header>
-    <clr-timeline-step-title>Submit application</clr-timeline-step-title>
-  </clr-timeline-step>
+    <clr-timeline-step [clrState]="timelineSuccess">
+      <clr-timeline-step-header>{{Application.Modified | date:'short'}}</clr-timeline-step-header>
+      <clr-timeline-step-title>Submit application</clr-timeline-step-title>
+    </clr-timeline-step>
 
-  <clr-timeline-step [clrState]="Application.AssociatedWork.Status >= 2 ? timelineSuccess : timelineProcessing">
-    <clr-timeline-step-header>Now</clr-timeline-step-header>
-    <clr-timeline-step-title>Verification</clr-timeline-step-title>
-    <clr-timeline-step-description></clr-timeline-step-description>
-  </clr-timeline-step>
+    <clr-timeline-step [clrState]="Application.AssociatedWork.Status >= 2 ? timelineSuccess : timelineProcessing">
+      <clr-timeline-step-header>Now</clr-timeline-step-header>
+      <clr-timeline-step-title>Verification</clr-timeline-step-title>
+      <clr-timeline-step-description></clr-timeline-step-description>
+    </clr-timeline-step>
 
-  <clr-timeline-step [clrState]="Application.AssociatedWork.Status == 2 ? timelineCurrent : timelineNot">
-    <clr-timeline-step-header>Not too long :)</clr-timeline-step-header>
-    <clr-timeline-step-title>Copyright registration</clr-timeline-step-title>
-  </clr-timeline-step>
-</clr-timeline>
+    <clr-timeline-step [clrState]="Application.AssociatedWork.Status == 2 ? timelineCurrent : Application.AssociatedWork.Status == 3 ? timelineProcessing : timelineNot">
+      <clr-timeline-step-header>Not too long :)</clr-timeline-step-header>
+      <clr-timeline-step-title>Copyright registration</clr-timeline-step-title>
+    </clr-timeline-step>
+  </clr-timeline>
+</div>
 
 <clr-alert clrAlertType="success" [clrAlertClosable]="false" *ngIf="Application.AssociatedWork?.Status == 2">
   <clr-alert-item>

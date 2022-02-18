@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {BehaviorSubject, Subject} from "rxjs";
 
 export interface AlertMeta
@@ -24,6 +24,7 @@ export class AlertService
 
   private _alert: Subject<AlertMeta> = new Subject<AlertMeta>();
   private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public TriggerChange: EventEmitter<any> = new EventEmitter<any>();
 
   constructor ()
   {

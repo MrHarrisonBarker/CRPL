@@ -2,14 +2,14 @@ import {Inject, Injectable} from '@angular/core';
 import {AuthService} from "./auth.service";
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {AlertService} from "./alert.service";
-import {Observable, of, throwError} from "rxjs";
+import {Observable} from "rxjs";
 import {CopyrightRegistrationInputModel} from "../_Models/Applications/CopyrightRegistrationInputModel";
 import {CopyrightRegistrationViewModel} from "../_Models/Applications/CopyrightRegistrationViewModel";
 import {FormsPaths} from "../api.conts";
 import {ApplicationViewModel} from "../_Models/Applications/ApplicationViewModel";
 import {OwnershipRestructureViewModel} from "../_Models/Applications/OwnershipRestructureViewModel";
 import {OwnershipRestructureInputModel} from "../_Models/Applications/OwnershipRestructureInputModel";
-import {catchError, map, tap} from "rxjs/operators";
+import {tap} from "rxjs/operators";
 import {WarehouseService} from "./warehouse.service";
 
 @Injectable({
@@ -32,7 +32,7 @@ export class FormsService
   public UpdateCopyrightRegistration (inputModel: CopyrightRegistrationInputModel): Observable<CopyrightRegistrationViewModel>
   {
     return this.http.post<CopyrightRegistrationViewModel>(this.BaseUrl + FormsPaths.CopyrightRegistration, inputModel)
-               .pipe(tap(application => this.warehouse.MyApplications[this.warehouse.MyApplications.findIndex(x => x.Id == application.Id)] = application));
+               .pipe(tap(application => this.warehouse.UpdateApplication(application)));
   }
 
   public Cancel (id: string): Observable<HttpResponse<any>>
@@ -46,7 +46,7 @@ export class FormsService
   public SubmitCopyrightRegistration (id: string): Observable<CopyrightRegistrationViewModel>
   {
     return this.http.post<CopyrightRegistrationViewModel>(this.BaseUrl + FormsPaths.CopyrightRegistrationSubmit + "/" + id, null)
-               .pipe(tap(application => this.warehouse.MyApplications[this.warehouse.MyApplications.findIndex(x => x.Id == application.Id)] = application));
+               .pipe(tap(application => this.warehouse.UpdateApplication(application)));
   }
 
   public GetMyApplications (): Observable<ApplicationViewModel[]>
@@ -68,12 +68,12 @@ export class FormsService
   public UpdateOwnershipRestructure (inputModel: OwnershipRestructureInputModel): Observable<OwnershipRestructureViewModel>
   {
     return this.http.post<OwnershipRestructureViewModel>(this.BaseUrl + FormsPaths.OwnershipRestructure, inputModel)
-               .pipe(tap(application => this.warehouse.MyApplications[this.warehouse.MyApplications.findIndex(x => x.Id == application.Id)] = application));
+               .pipe(tap(application => this.warehouse.UpdateApplication(application)));
   }
 
   public SubmitOwnershipRestructure (id: string) : Observable<OwnershipRestructureViewModel>
   {
     return this.http.post<OwnershipRestructureViewModel>(this.BaseUrl + FormsPaths.OwnershipRestructureSubmit + "/" + id, null)
-               .pipe(tap(application => this.warehouse.MyApplications[this.warehouse.MyApplications.findIndex(x => x.Id == application.Id)] = application));
+               .pipe(tap(application => this.warehouse.UpdateApplication(application)));
   }
 }

@@ -1,32 +1,53 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormsService} from "../../_Services/forms.service";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 import {CopyrightService} from "../../_Services/copyright.service";
 import {RegisteredWorkStatus, RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
-import {forkJoin} from "rxjs";
+import {forkJoin, Observable} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
 import {WarehouseService} from "../../_Services/warehouse.service";
 import {ActivatedRoute} from "@angular/router";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
-export class DashboardComponent implements OnInit
+export class DashboardComponent implements OnInit, OnDestroy
 {
   public Loaded: boolean = false;
   public Selected!: ApplicationViewModel | RegisteredWorkViewModel;
   public IsApplication: boolean = false;
 
+  public CompletedApplications!: Observable<ApplicationViewModel[]>;
+  public SubmittedApplications!: Observable<ApplicationViewModel[]>;
+  public PartialApplications!: Observable<ApplicationViewModel[]>;
+  public FailedApplications!: Observable<ApplicationViewModel[]>;
+
+  public RegisteredCopyrights!: Observable<RegisteredWorkViewModel[]>;
+
   constructor (
     private formsService: FormsService,
     private copyrightService: CopyrightService,
     private alertService: AlertService,
-    private warehouse: WarehouseService,
+    public warehouse: WarehouseService,
     private route: ActivatedRoute)
   {
+    this.alertService.TriggerChange.subscribe(x => this.decChanges);
+
+    this.CompletedApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Complete)));
+    this.SubmittedApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Submitted)));
+    this.PartialApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Incomplete)));
+    this.FailedApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Failed)));
+
+    this.RegisteredCopyrights = this.warehouse.__MyWorks.pipe(map(x => x.filter(a => a.Status == RegisteredWorkStatus.Registered)));
+  }
+
+  private decChanges()
+  {
+
   }
 
   async ngOnInit (): Promise<any>
@@ -35,7 +56,6 @@ export class DashboardComponent implements OnInit
     // GET EVERYTHING
     await forkJoin([this.formsService.GetMyApplications(), this.copyrightService.GetMyCopyrights()]).subscribe(x =>
     {
-      console.log(this.warehouse.MyApplications, this.warehouse.MyWorks);
 
       // ROUTE WORK
       if (this.route.snapshot.paramMap.has("workId")) this.Selected = this.warehouse.MyWorks.find(x => x.Id == this.route.snapshot.paramMap.get("workId")) as RegisteredWorkViewModel
@@ -52,32 +72,10 @@ export class DashboardComponent implements OnInit
     });
 
     console.log(this.route.snapshot.paramMap.keys);
-
   }
 
-  get RegisteredCopyrights (): RegisteredWorkViewModel[]
+  public ngOnDestroy (): void
   {
-    return this.warehouse.MyWorks.filter(x => x.Status == RegisteredWorkStatus.Registered);
-  }
-
-  get PartialApplications (): ApplicationViewModel[]
-  {
-    return this.warehouse.MyApplications.filter(x => x.Status == ApplicationStatus.Incomplete);
-  }
-
-  get CompletedApplications (): ApplicationViewModel[]
-  {
-    return this.warehouse.MyApplications.filter(x => x.Status == ApplicationStatus.Complete);
-  }
-
-  get SubmittedApplications (): ApplicationViewModel[]
-  {
-    return this.warehouse.MyApplications.filter(x => x.Status == ApplicationStatus.Submitted);
-  }
-
-  get FailedApplications (): ApplicationViewModel[]
-  {
-    return this.warehouse.MyApplications.filter(x => x.Status == ApplicationStatus.Failed);
   }
 
   get SelectedAsCopyright () : RegisteredWorkViewModel
@@ -92,6 +90,7 @@ export class DashboardComponent implements OnInit
 
   public Select (selected: ApplicationViewModel | RegisteredWorkViewModel, isApplication: boolean): void
   {
+    console.log("selected", selected);
     this.Selected = selected;
     this.IsApplication = isApplication;
   }

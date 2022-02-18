@@ -1,4 +1,4 @@
-<div id="contain" *ngIf="Loaded" class="container">
+<div id="contain" class="container">
   <section cds-theme="dark">
   <clr-tabs>
     <clr-tab>
@@ -10,31 +10,31 @@
               <section class="nav-group collapsible">
                 <input id="copyrightsNav" type="checkbox"/> <label for="copyrightsNav">Copyrights</label>
                 <ul class="nav-list">
-                  <li *ngFor="let right of RegisteredCopyrights"><a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">{{right.Meta?.Title}}</a></li>
+                  <li *ngFor="let right of RegisteredCopyrights | async"><a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">{{right.Meta?.Title}}</a></li>
                 </ul>
               </section>
               <section class="nav-group collapsible">
                 <input id="ApplicationsNav" type="checkbox"/> <label for="ApplicationsNav">Submitted Applications</label>
                 <ul class="nav-list">
-                  <li *ngFor="let application of SubmittedApplications"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
+                  <li *ngFor="let application of SubmittedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
                 </ul>
               </section>
               <section class="nav-group collapsible">
                 <input id="PartialApplicationsNav" type="checkbox"/> <label for="PartialApplicationsNav">Partial Applications</label>
                 <ul class="nav-list">
-                  <li *ngFor="let application of PartialApplications"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
+                  <li *ngFor="let application of PartialApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
                 </ul>
               </section>
               <section class="nav-group collapsible">
                 <input id="CompletedApplicationsNav" type="checkbox"/> <label for="CompletedApplicationsNav">Completed Applications</label>
                 <ul class="nav-list">
-                  <li *ngFor="let application of CompletedApplications"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
+                  <li *ngFor="let application of CompletedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
                 </ul>
               </section>
               <section class="nav-group collapsible">
                 <input id="FailedApplicationsNav" type="checkbox"/> <label for="FailedApplicationsNav">Failed Applications</label>
                 <ul class="nav-list">
-                  <li *ngFor="let application of FailedApplications"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
+                  <li *ngFor="let application of FailedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
                 </ul>
               </section>
             </section>
@@ -52,3 +52,6 @@
   </clr-tabs>
   </section>
 </div>
+
+
+{{CompletedApplications | async | json}}
