@@ -32,6 +32,11 @@ export class WarehouseService
     }
   }
 
+  public RemoveApplication (id: string)
+  {
+    this.__MyApplications.next(this._MyApplications.filter(x => x.Id != id))
+  }
+
   private _MyApplications: ApplicationViewModel[] = [];
   private _MyWorks: RegisteredWorkViewModel[] = [];
 

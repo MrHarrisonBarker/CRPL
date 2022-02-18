@@ -1,57 +1,66 @@
 <div id="contain" class="container">
   <section cds-theme="dark">
-  <clr-tabs>
-    <clr-tab>
-      <button clrTabLink>Copyrights</button>
-      <clr-tab-content *clrIfActive="true">
-        <div class="content-container">
-          <nav class="sidenav">
-            <section class="sidenav-content">
-              <section class="nav-group collapsible">
-                <input id="copyrightsNav" type="checkbox"/> <label for="copyrightsNav">Copyrights</label>
-                <ul class="nav-list">
-                  <li *ngFor="let right of RegisteredCopyrights | async"><a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">{{right.Meta?.Title}}</a></li>
-                </ul>
+    <clr-tabs>
+      <clr-tab>
+        <button clrTabLink>Copyrights</button>
+        <clr-tab-content *clrIfActive="true">
+          <div class="content-container">
+            <nav class="sidenav">
+              <section class="sidenav-content">
+                <section class="nav-group collapsible">
+                  <input id="copyrightsNav" type="checkbox"/> <label for="copyrightsNav">Copyrights</label>
+                  <ul class="nav-list">
+                    <li *ngFor="let right of RegisteredCopyrights | async"><a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">{{right.Meta?.Title}}</a></li>
+                  </ul>
+                </section>
+                <section class="nav-group collapsible">
+                  <input id="ApplicationsNav" type="checkbox"/> <label for="ApplicationsNav">Submitted Applications</label>
+                  <ul class="nav-list">
+                    <li *ngFor="let application of SubmittedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)">
+                      <application-type [Application]="application"></application-type>
+                    </a></li>
+                  </ul>
+                </section>
+                <section class="nav-group collapsible">
+                  <input id="PartialApplicationsNav" type="checkbox"/> <label for="PartialApplicationsNav">Partial Applications</label>
+                  <ul class="nav-list">
+                    <li *ngFor="let application of PartialApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)">
+                      <application-type [Application]="application"></application-type>
+                    </a></li>
+                  </ul>
+                </section>
+                <section class="nav-group collapsible">
+                  <input id="CompletedApplicationsNav" type="checkbox"/> <label for="CompletedApplicationsNav">Completed Applications</label>
+                  <ul class="nav-list">
+                    <li *ngFor="let application of CompletedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)">
+                      <application-type [Application]="application"></application-type>
+                    </a></li>
+                  </ul>
+                </section>
+                <section class="nav-group collapsible">
+                  <input id="FailedApplicationsNav" type="checkbox"/> <label for="FailedApplicationsNav">Failed Applications</label>
+                  <ul class="nav-list">
+                    <li *ngFor="let application of FailedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)">
+                      <application-type [Application]="application"></application-type>
+                    </a></li>
+                  </ul>
+                </section>
               </section>
-              <section class="nav-group collapsible">
-                <input id="ApplicationsNav" type="checkbox"/> <label for="ApplicationsNav">Submitted Applications</label>
-                <ul class="nav-list">
-                  <li *ngFor="let application of SubmittedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
-                </ul>
-              </section>
-              <section class="nav-group collapsible">
-                <input id="PartialApplicationsNav" type="checkbox"/> <label for="PartialApplicationsNav">Partial Applications</label>
-                <ul class="nav-list">
-                  <li *ngFor="let application of PartialApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
-                </ul>
-              </section>
-              <section class="nav-group collapsible">
-                <input id="CompletedApplicationsNav" type="checkbox"/> <label for="CompletedApplicationsNav">Completed Applications</label>
-                <ul class="nav-list">
-                  <li *ngFor="let application of CompletedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
-                </ul>
-              </section>
-              <section class="nav-group collapsible">
-                <input id="FailedApplicationsNav" type="checkbox"/> <label for="FailedApplicationsNav">Failed Applications</label>
-                <ul class="nav-list">
-                  <li *ngFor="let application of FailedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)"><application-type [Application]="application"></application-type></a></li>
-                </ul>
-              </section>
-            </section>
-          </nav>
-          <div class="content-area">
-            <div *ngIf="!Selected" class="centre-align">
-              <img src="https://i.giphy.com/media/baPIkfAo0Iv5K/giphy.webp" />
+            </nav>
+            <div class="content-area">
+              <div *ngIf="!Selected" class="centre-align">
+                <img src="https://i.giphy.com/media/baPIkfAo0Iv5K/giphy.webp"/>
+              </div>
+              <div *ngIf="Selected">
+                <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected"></copyright-view>
+                <applications-view [Application]="SelectedAsApplication" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
+              </div>
             </div>
-            <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected"></copyright-view>
-            <applications-view [Application]="SelectedAsApplication" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
           </div>
-        </div>
-      </clr-tab-content>
-    </clr-tab>
-  </clr-tabs>
+        </clr-tab-content>
+      </clr-tab>
+    </clr-tabs>
   </section>
 </div>
 
-
-{{CompletedApplications | async | json}}
+{{Selected | json}}

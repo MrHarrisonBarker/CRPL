@@ -37,9 +37,10 @@ export class FormsService
 
   public Cancel (id: string): Observable<HttpResponse<any>>
   {
-    return this.http.delete<HttpResponse<any>>(this.BaseUrl + FormsPaths.Cancel + "/" + encodeURI(id)).pipe(tap( res => {
+    return this.http.delete<HttpResponse<any>>(this.BaseUrl + FormsPaths.Cancel + "/" + encodeURI(id)).pipe(tap(res =>
+    {
       console.log("CANCEL APPLICATION before", this.warehouse.MyApplications);
-      this.warehouse.MyApplications = this.warehouse.MyApplications.filter(x => x.Id != id);
+      this.warehouse.RemoveApplication(id);
     }));
   }
 
@@ -58,11 +59,7 @@ export class FormsService
   public GetApplication (id: string): Observable<ApplicationViewModel>
   {
     return this.http.get<ApplicationViewModel>(this.BaseUrl + FormsPaths.BasePath + "/" + id)
-               .pipe(tap(application => {
-                 let index = this.warehouse.MyApplications.findIndex(x => x.Id == application.Id);
-                 if (index == -1) this.warehouse.MyApplications.push(application);
-                 else this.warehouse.MyApplications[index] = application;
-             }));
+               .pipe(tap(application => this.warehouse.UpdateApplication(application)));
   }
 
   public UpdateOwnershipRestructure (inputModel: OwnershipRestructureInputModel): Observable<OwnershipRestructureViewModel>
@@ -71,7 +68,7 @@ export class FormsService
                .pipe(tap(application => this.warehouse.UpdateApplication(application)));
   }
 
-  public SubmitOwnershipRestructure (id: string) : Observable<OwnershipRestructureViewModel>
+  public SubmitOwnershipRestructure (id: string): Observable<OwnershipRestructureViewModel>
   {
     return this.http.post<OwnershipRestructureViewModel>(this.BaseUrl + FormsPaths.OwnershipRestructureSubmit + "/" + id, null)
                .pipe(tap(application => this.warehouse.UpdateApplication(application)));
