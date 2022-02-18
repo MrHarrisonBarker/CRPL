@@ -7,7 +7,7 @@
       <clr-control-error *ngIf="Form.controls['Owner'].hasError('NotRealShareholder')">The address has to be registered with us!</clr-control-error>
     </clr-input-container>
 
-    {{Form.controls['Owner'].errors | json}}
+<!--    {{Form.controls['Owner'].errors | json}}-->
 
     <clr-range-container>
       <label class="clr-control-label">Number of shares</label>
@@ -15,7 +15,7 @@
       <clr-control-helper>{{Form.value['Share']}} share(s)</clr-control-helper>
     </clr-range-container>
 
-    {{Form.controls['Share'].errors | json}}
+<!--    {{Form.controls['Share'].errors | json}}-->
   </form>
 
   <button [disabled]="isDefault" (click)="Remove()" class="btn btn-danger">-</button>

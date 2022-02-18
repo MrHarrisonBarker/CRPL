@@ -5,7 +5,8 @@
 .content-area {
   padding: 1rem;
   width: 100%;
-  display: flex;
+  /*display: flex;*/
+  /*flex-direction: column;*/
 }
 
 .centre-align {

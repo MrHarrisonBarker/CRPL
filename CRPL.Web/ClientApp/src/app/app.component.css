@@ -22,3 +22,11 @@ a {
   display: flex;
   flex-direction: row;
 }
+
+body {
+  overflow: auto;
+  overflow-x: hidden;
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+}

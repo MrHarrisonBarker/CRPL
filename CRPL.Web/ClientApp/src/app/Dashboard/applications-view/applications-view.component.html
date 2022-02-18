@@ -1,18 +1,18 @@
-<div class="flex-between">
-  <div></div>
-  <button class="btn btn-danger btn-icon" (click)="Cancel()" *ngIf="Application.Status == 0">
-    <cds-icon shape="trash"></cds-icon>
-  </button>
-</div>
+<div>
+  <div class="flex-between">
+    <div></div>
+    <button class="btn btn-danger btn-icon" (click)="Cancel()" *ngIf="Application.Status == 0">
+      <cds-icon shape="trash"></cds-icon>
+    </button>
+  </div>
 
-<cpy-registration-form [ExistingApplication]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && ShowForms && Application.Status == 0"></cpy-registration-form>
-<cpy-registration-view-submitted [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && Application.Status == 1"></cpy-registration-view-submitted>
-<cpy-registration-view [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && (!ShowForms || Application.Status == 2)"></cpy-registration-view>
-<cpy-registration-view-failed [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && Application.Status == 3"></cpy-registration-view-failed>
+  <cpy-registration-form [ExistingApplication]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && ShowForms && Application.Status == 0"></cpy-registration-form>
+  <cpy-registration-view-submitted [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && Application.Status == 1"></cpy-registration-view-submitted>
+  <cpy-registration-view [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && (!ShowForms || Application.Status == 2)"></cpy-registration-view>
+  <cpy-registration-view-failed [Application]="ApplicationAsCopyrightRegistration" *ngIf="Application.ApplicationType == 0 && Application.Status == 3"></cpy-registration-view-failed>
 
-<cpy-restructure-form [RegisteredWork]="ExistingWork" [ExistingApplication]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && ShowForms && Application.Status == 0"></cpy-restructure-form>
-<cpy-restructure-view-submitted [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && (Application.Status == 1 || Application.Status == 3)"></cpy-restructure-view-submitted>
-<cpy-restructure-view [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 2"></cpy-restructure-view>
-<cpy-restructure-view-failed [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 3"></cpy-restructure-view-failed>
-
-<!--{{Application | json}}-->
+  <cpy-restructure-form [RegisteredWork]="ExistingWork" [ExistingApplication]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && ShowForms && Application.Status == 0"></cpy-restructure-form>
+  <cpy-restructure-view-submitted [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && (Application.Status == 1 || Application.Status == 3)"></cpy-restructure-view-submitted>
+  <cpy-restructure-view [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 2"></cpy-restructure-view>
+  <cpy-restructure-view-failed [Application]="ApplicationAsOwnershipRestructure" *ngIf="Application.ApplicationType == 1 && Application.Status == 3"></cpy-restructure-view-failed>
+</div><!--{{Application | json}}-->
