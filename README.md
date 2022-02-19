@@ -1,4 +1,5 @@
 # CRPL
+[![Build Status](https://dev.azure.com/harrison0099/CRPL/_apis/build/status/MrHarrisonBarker.CRPL?branchName=main)](https://dev.azure.com/harrison0099/CRPL/_build/latest?definitionId=3&branchName=main)
 
 CRPL or **C**opy**r**ight on a **p**ublic **l**edger is an open platform for registering and managing the copyrights of
 a creators intellectual property secured on the publicly distributed ledger Ethereum. The immutability and public

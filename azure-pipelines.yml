@@ -15,7 +15,7 @@ stages:
       buildConfiguration: 'Release'
     
     jobs:
-      - job: Build
+      - job: Build_Test
         steps:
           - task: UseDotNet@2
             condition: succeeded()
@@ -30,8 +30,6 @@ stages:
               command: 'build'
               configuration: $(buildConfiguration)
 
-      - job: Test
-        steps:
           - task: DotNetCoreCLI@2
             condition: succeededOrFailed()
             displayName: 'dotnet test'
@@ -41,8 +39,6 @@ stages:
               publishTestResults: true
               projects: './CRPL.Tests'
 
-      - job: Angular
-        steps:
           - task: Npm@1
             condition: succeededOrFailed()
             displayName: "npm install"
@@ -58,8 +54,6 @@ stages:
               customCommand: run test -- --watch=false --code-coverage --browsers=ChromeHeadless
               workingDir: 'CRPL.Web/ClientApp'
 
-      - job: PublishResults
-        steps:
           - task: reportgenerator@4
             displayName: 'Combine code coverage reports'
             condition: succeededOrFailed()
@@ -103,8 +97,6 @@ stages:
             workingDirectory: 'CRPL.Contracts'
             displayName: 'Run tests and coverage'
 
-      - job: PublishResults
-        steps:
           - task: PublishCodeCoverageResults@1
             inputs:
               codeCoverageTool: Cobertura
