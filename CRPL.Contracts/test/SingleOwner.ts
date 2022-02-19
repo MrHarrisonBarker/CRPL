@@ -5,24 +5,21 @@ import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/dist/src/signer-with-
 import {BigNumberish, ContractFactory} from "ethers";
 import { Copyright } from "../typechain";
 
-describe("Ownership", function ()
+describe("SingleOwner", function ()
 {
     let contractFactory: ContractFactory;
     let deployedContract: Copyright;
 
     let owner: SignerWithAddress;
     let address1: SignerWithAddress;
-    let address2: SignerWithAddress;
-    let addresses: SignerWithAddress[];
 
     beforeEach(async function ()
     {
         contractFactory = await ethers.getContractFactory("Copyright");
 
-        [owner, address1, address2, ...addresses] = await ethers.getSigners();
+        [owner, address1] = await ethers.getSigners();
         let ownershipStructure: { owner: string; share: BigNumberish }[] = [
-            {owner: owner.address, share: 70},
-            {owner: address1.address, share: 30}
+            {owner: owner.address, share: 100}
         ];
 
         deployedContract = await contractFactory.deploy() as Copyright;
@@ -31,19 +28,20 @@ describe("Ownership", function ()
         await deployedContract.Register(ownershipStructure);
     });
 
-    it('Should', async function ()
+    it('Should approve for right', async function ()
     {
+        let res = await deployedContract.ApproveOne(1, address1.address);
 
+        res.wait().then(value =>
+        {
+            expect(value.events).to.not.be.null;
+            expect(value.events != null && value.events[0].event).to.equal("Approved")
+        });
     });
 
-    it('Should have no proposal', async function ()
+    it('Should have ownership structure of one address', async function ()
     {
-        expect(await deployedContract.Proposal(1)).to.eql([[[owner.address, 70],[address1.address, 30]],[]]);
-    });
-
-    it('Should have ownership structure', async function ()
-    {
-        expect(await deployedContract.OwnershipOf(1)).to.eql([[owner.address, 70],[address1.address, 30]]);
+        expect(await deployedContract.OwnershipOf(1)).to.eql([[owner.address, 100]]);
     });
 
     it('Should propose new structure', async function ()
@@ -63,8 +61,7 @@ describe("Ownership", function ()
 
         expect(await deployedContract.Proposal(1)).to.eql([
             [
-                [owner.address, 70],
-                [address1.address, 30]
+                [owner.address, 100]
             ],
             [
                 [owner.address, 50],
@@ -82,7 +79,6 @@ describe("Ownership", function ()
 
         await deployedContract.ProposeRestructure(1, ownershipStructure);
 
-        await deployedContract.connect(address1).BindRestructure(1, true);
         let res = await deployedContract.BindRestructure(1, true);
 
         res.wait().then(value =>
@@ -91,16 +87,4 @@ describe("Ownership", function ()
             expect(value.events != null && value.events[0].event).to.equal("Restructured")
         });
     });
-
-    it('Should allow shareholder', async function()
-    {
-        let res = await deployedContract.connect(address1).ApproveOne(1, address1.address);
-
-        res.wait().then(value =>
-        {
-            expect(value.events).to.not.be.null;
-            expect(value.events != null && value.events[0].event).to.equal("Approved")
-        });
-    });
-
 });

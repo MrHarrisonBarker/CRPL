@@ -3,13 +3,13 @@ import {expect} from "chai";
 import {ethers} from "hardhat";
 import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import {BigNumberish, ContractFactory} from "ethers";
-import {Standard} from "../typechain";
+import { Copyright } from "../typechain";
 
 
 describe("Copyright", function ()
 {
     let contractFactory: ContractFactory;
-    let deployedContract: Standard;
+    let deployedContract: Copyright;
 
     let owner: SignerWithAddress;
     let address1: SignerWithAddress;
@@ -18,7 +18,7 @@ describe("Copyright", function ()
 
     beforeEach(async function ()
     {
-        contractFactory = await ethers.getContractFactory("Standard");
+        contractFactory = await ethers.getContractFactory("Copyright");
 
         [owner, address1, address2, ...addresses] = await ethers.getSigners();
         let ownershipStructure: { owner: string; share: BigNumberish }[] = [
@@ -26,7 +26,7 @@ describe("Copyright", function ()
             {owner: address1.address, share: 50}
         ];
 
-        deployedContract = await contractFactory.deploy() as Standard;
+        deployedContract = await contractFactory.deploy() as Copyright;
 
         await deployedContract.deployed();
         await deployedContract.Register(ownershipStructure);
@@ -48,9 +48,9 @@ describe("Copyright", function ()
         });
     });
 
-    it('Should be approved', async function ()
+    it('Should registerer be approved', async function ()
     {
-        await deployedContract.connect(address1).ApproveOne(1, address2.address);
+        await deployedContract.ApproveOne(1, address2.address);
         expect(await deployedContract.GetApproved(1)).to.equal(address2.address);
     });
 

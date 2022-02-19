@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "lint": "solhint --max-warnings 0 \"contracts/**/*.sol\"",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "coverage": "hardhat coverage"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.4",
     "@nomiclabs/hardhat-etherscan": "^2.1.8",

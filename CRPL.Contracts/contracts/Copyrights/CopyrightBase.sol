@@ -205,8 +205,7 @@ abstract contract CopyrightBase is ICopyright {
         {
             if (_shareholders[rightId][i].owner == addr) c ++;
         }
-        if (_approvedAddress[rightId] == addr) c ++;
-        require(c == 1, NOT_SHAREHOLDER);
+        require(c == 1 || _approvedAddress[rightId] == addr, NOT_SHAREHOLDER);
         _;
     }
 
