@@ -18,7 +18,7 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var queryService = new QueryServiceFactory().Create(context, null);
+            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, null);
 
             var works = await queryService.Search(new StructuredQuery()
             {
@@ -34,7 +34,7 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var queryService = new QueryServiceFactory().Create(context, null);
+            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, null);
 
             var works = await queryService.Search(new StructuredQuery()
             {
@@ -56,7 +56,7 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var queryService = new QueryServiceFactory().Create(context, null);
+            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, null);
 
             var works = await queryService.Search(new StructuredQuery(), 0, 1);
 
@@ -70,7 +70,7 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var queryService = new QueryServiceFactory().Create(context, null);
+            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, null);
 
             var works = await queryService.Search(new StructuredQuery()
             {
@@ -89,7 +89,7 @@ public class Search
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var queryService = new QueryServiceFactory().Create(context, null);
+            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, null);
 
             var works = await queryService.Search(new StructuredQuery()
             {

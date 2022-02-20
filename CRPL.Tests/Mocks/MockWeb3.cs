@@ -54,7 +54,7 @@ public class MockWeb3
 
         public Task<T> SendRequestAsync<T>(RpcRequest request, string route = null)
         {
-            if (ReturnMapping[request.Method].GetType() == typeof(Exception))
+            if (ReturnMapping[request.Method].GetType().BaseType == typeof(Exception))
             {
                 throw (Exception)ReturnMapping[request.Method];
             }

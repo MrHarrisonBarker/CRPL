@@ -1,26 +1,20 @@
-using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using AutoMapper;
-using Common.Logging;
 using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
 using CRPL.Web.Services;
-using FluentAssertions;
+using CRPL.Web.Services.Background.SlientExpiry;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Nethereum.JsonRpc.Client;
-using Nethereum.Model;
-using Nethereum.Web3;
 
 namespace CRPL.Tests.Factories;
 
 public class QueryServiceFactory
 {
-    public QueryService Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public (QueryService, Mock<IBlockchainConnection> connectionMock, Mock<IContractRepository> contractRepoMock, Mock<IExpiryQueue> expiryQueueMock) Create(ApplicationContext context, Dictionary<string, object>? mappings)
     {
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);
@@ -36,11 +30,14 @@ public class QueryServiceFactory
             Address = "TEST CONTRACT"
         });
 
-        return new QueryService(
+        var expiryQueueMock = new Mock<IExpiryQueue>();
+
+        return (new QueryService(
             new Logger<QueryService>(new LoggerFactory()),
             context,
             mapper,
             connectionMock.Object,
-            contractRepoMock.Object);
+            contractRepoMock.Object,
+            expiryQueueMock.Object), connectionMock, contractRepoMock, expiryQueueMock);
     }
 }

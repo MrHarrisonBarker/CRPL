@@ -15,7 +15,7 @@ public class GetAll
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var queryService = new QueryServiceFactory().Create(context, null);
+            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, null);
 
             var works = await queryService.GetAll(0);
             works.Should().NotBeNull();

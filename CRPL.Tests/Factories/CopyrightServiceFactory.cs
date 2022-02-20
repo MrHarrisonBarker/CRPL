@@ -6,6 +6,8 @@ using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
 using CRPL.Web.Services;
+using CRPL.Web.Services.Background;
+using CRPL.Web.Services.Background.SlientExpiry;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -28,12 +30,15 @@ public class CopyrightServiceFactory
         {
             Address = "TEST CONTRACT"
         });
+
+        var expiryQueueMock = new Mock<IExpiryQueue>();
         
         return new CopyrightService(
             new Logger<CopyrightService>(new LoggerFactory()),
             context,
             mapper,
             connectionMock.Object,
-            contractRepoMock.Object);
+            contractRepoMock.Object,
+            expiryQueueMock.Object);
     }
 }

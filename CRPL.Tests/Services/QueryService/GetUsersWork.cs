@@ -14,7 +14,7 @@ public class GetUsersWorks
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var queryService = new QueryServiceFactory().Create(context, null);
+            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, null);
 
             var works = await queryService.GetUsersWorks(new Guid("73C4FF17-1EF8-483C-BCDB-9A6191888F04"));
 
