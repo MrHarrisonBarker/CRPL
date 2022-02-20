@@ -16,7 +16,8 @@ public class AutoMapping : Profile
 
         CreateMap<UserAccount, UserAccountMinimalViewModel>();
 
-        CreateMap<RegisteredWork, RegisteredWorkViewModel>();
+        CreateMap<RegisteredWork, RegisteredWorkViewModel>()
+            .ForMember(model => model.RegisteredTransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.RegisteredTransactionId));
         CreateMap<RegisteredWork, RegisteredWorkWithAppsViewModel>()
             .ForMember(model => model.AssociatedUsers, x =>
                 x.MapFrom(src => src.UserWorks.Select(u => u.UserAccount)))
@@ -27,26 +28,32 @@ public class AutoMapping : Profile
             .ForMember(src => src.HasProposal, x =>
                 x.Ignore())
             .ForMember(src => src.Meta, x =>
-                x.Ignore());
+                x.Ignore())
+            .ForMember(model => model.RegisteredTransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.RegisteredTransactionId));
         
 
-        CreateMap<Application, ApplicationViewModelWithoutAssociated>().IncludeAllDerived();
+        CreateMap<Application, ApplicationViewModelWithoutAssociated>().IncludeAllDerived()
+            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
+
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModelWithoutAssociated>();
         CreateMap<OwnershipRestructureApplication, OwnershipRestructureViewModelWithoutAssociated>();
 
         CreateMap<Application, ApplicationViewModel>()
             .ForMember(model => model.AssociatedWork, x => x.MapFrom(src => src.AssociatedWork))
-            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)));
+            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
+            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
 
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModel>()
             .ForMember(model => model.OwnershipStakes, x =>
                 x.MapFrom(src => src.OwnershipStakes.Decode()))
-            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)));
-        
+            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
+            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
+
         CreateMap<OwnershipRestructureApplication, OwnershipRestructureViewModel>()
             .ForMember(model => model.CurrentStructure, x => x.MapFrom(src => src.CurrentStructure.Decode()))
             .ForMember(model => model.ProposedStructure, x => x.MapFrom(src => src.ProposedStructure.Decode()))
-            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)));
+            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
+            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
 
         CreateMap<CRPL.Data.StructuredOwnership.OwnershipStake, CRPL.Contracts.Structs.OwnershipStakeContract>();
     }

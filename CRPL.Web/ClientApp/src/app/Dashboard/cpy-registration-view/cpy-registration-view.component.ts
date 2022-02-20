@@ -30,6 +30,7 @@ export class CpyRegistrationViewComponent implements OnInit
     let meta = {
       Title: this.Application.Title,
       WorkType: WorkType[this.Application.WorkType],
+      YearsOfProtection: this.Application.YearsExpire,
       WorkHash: this.Application.WorkHash,
       WorkUri: this.Application.WorkUri,
       Legal: this.Application.Legal,

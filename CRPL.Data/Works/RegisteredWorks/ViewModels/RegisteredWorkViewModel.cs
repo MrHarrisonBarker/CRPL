@@ -13,4 +13,5 @@ public class RegisteredWorkViewModel
     public string? RightId { get; set; }
     public byte[]? Hash { get; set; }
     public string? RegisteredTransactionId { get; set; }
+    public string? RegisteredTransactionUri { get; set; }
 }

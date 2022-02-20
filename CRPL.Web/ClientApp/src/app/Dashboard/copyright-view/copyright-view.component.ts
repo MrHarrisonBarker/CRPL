@@ -75,16 +75,6 @@ export class CopyrightViewComponent implements OnInit
     return syntaxHighlight(JSON.stringify(this.Copyright.Meta, undefined, 4));
   }
 
-  public TransactionLink (address: string): string
-  {
-    return "https://etherscan.io/tx/" + address
-  }
-
-  public routeToApplication (Id: string)
-  {
-    return ['/dashboard', {applicationId: Id}];
-  }
-
   public Sync (): void
   {
     this.copyrightService.Sync(this.Copyright.Id).subscribe(x => this.alertService.Alert({

@@ -9,7 +9,8 @@ export enum RegisteredWorkStatus
   Verified,
   SentToChain,
   Registered,
-  Rejected
+  Rejected,
+  Expired
 }
 
 export interface CopyrightMeta
@@ -37,10 +38,12 @@ export interface RegisteredWorkViewModel
   RightId?: string,
   Hash?: string,
   RegisteredTransactionId: string,
+  RegisteredTransactionUri?: string;
   OwnershipStructure?: OwnershipStake[],
   AssociatedApplication?: ApplicationViewModel[],
   CurrentVotes?: ProposalVote[],
   HasProposal?: boolean,
   Meta?: CopyrightMeta,
   VerificationResult?: VerificationResult;
+  Title?: string;
 }

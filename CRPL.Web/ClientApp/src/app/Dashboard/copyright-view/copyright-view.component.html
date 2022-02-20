@@ -38,7 +38,7 @@
           <p class="card-text" style="margin-right: 0.5rem"><em class="text-muted">right id: <a target="_blank">{{Copyright?.RightId}}</a></em></p>
         </div>
 
-        <div><em class="text-muted">transaction:</em>&nbsp;&nbsp;<a target="_blank" [href]="TransactionLink(Copyright.RegisteredTransactionId)">{{Copyright.RegisteredTransactionId}}</a></div>
+        <div><em class="text-muted">transaction:</em>&nbsp;&nbsp;<a target="_blank" [href]="Copyright.RegisteredTransactionUri">{{Copyright.RegisteredTransactionId}}</a></div>
 
         <div style="display: flex">
           <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Copyright.Created | date:'medium'}}</p>
@@ -78,21 +78,7 @@
 
       <div id="applications" *ngIf="Copyright.AssociatedApplication">
         <h4>Applications</h4>
-        <div id="ass-applications">
-          <div *ngFor="let application of Copyright.AssociatedApplication" class="ass-application">
-            <div class="flex-between">
-              <a [routerLink]="routeToApplication(application.Id)"><em>{{application.Id}}</em></a>
-              <div>
-                <application-status [status]="application.Status"></application-status>
-                <application-type [Application]="application"></application-type>
-              </div>
-            </div>
-            <div style="display: flex">
-              <p style="margin-right: 0.5rem"><b>created:</b> {{application.Created | date:'medium'}}</p>
-              <p><b>registered:</b> {{application.Modified | date:'medium'}}</p>
-            </div>
-          </div>
-        </div>
+          <work-applications [Copyright]="Copyright"></work-applications>
       </div>
 
     </div>

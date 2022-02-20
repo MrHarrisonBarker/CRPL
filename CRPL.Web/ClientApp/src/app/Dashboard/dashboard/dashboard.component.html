@@ -10,7 +10,10 @@
                 <section class="nav-group collapsible">
                   <input id="copyrightsNav" type="checkbox"/> <label for="copyrightsNav">Copyrights</label>
                   <ul class="nav-list">
-                    <li *ngFor="let right of RegisteredCopyrights | async"><a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">{{right.Meta?.Title}}</a></li>
+                    <li *ngFor="let right of RegisteredCopyrights | async"><a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">
+                      <span *ngIf="right.Status == 4">{{right.Meta?.Title}}</span>
+                      <span *ngIf="right.Status == 6"><span style="margin-right:0.2rem">{{right.Title}}</span><copyright-status [status]="6"></copyright-status></span>
+                    </a></li>
                   </ul>
                 </section>
                 <section class="nav-group collapsible">
@@ -52,7 +55,8 @@
                 <img src="https://i.giphy.com/media/baPIkfAo0Iv5K/giphy.webp"/>
               </div>
               <div *ngIf="Selected">
-                <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected"></copyright-view>
+                <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected && SelectedAsCopyright.Status == 4"></copyright-view>
+                <copyright-view-expired [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected && SelectedAsCopyright.Status == 6"></copyright-view-expired>
                 <applications-view [Application]="SelectedAsApplication" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
               </div>
             </div>

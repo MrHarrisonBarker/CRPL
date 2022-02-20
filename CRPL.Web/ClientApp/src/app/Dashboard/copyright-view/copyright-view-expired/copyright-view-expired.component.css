@@ -1,0 +1,9 @@
+#applications > h4 {
+  margin: 0.5rem;
+}
+
+#applications {
+  display: flex;
+  margin: 0.2rem;
+  flex-direction: column;
+}

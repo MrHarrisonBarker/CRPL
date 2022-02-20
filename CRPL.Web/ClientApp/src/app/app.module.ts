@@ -40,6 +40,8 @@ import { CpyRegistrationViewFailedComponent } from './Dashboard/cpy-registration
 import {
   CpyRestructureViewFailedComponent
 } from "./Dashboard/cpy-restructure-view/cpy-restructure-view-failed/cpy-restructure-view-failed.component";
+import { CopyrightViewExpiredComponent } from './Dashboard/copyright-view/copyright-view-expired/copyright-view-expired.component';
+import { WorkApplicationsComponent } from './Core/work-applications/work-applications.component';
 
 @NgModule({
   declarations: [
@@ -72,7 +74,9 @@ import {
     CopyrightComponent,
     BindStatusComponent,
     CpyRegistrationViewFailedComponent,
-    CpyRestructureViewFailedComponent
+    CpyRestructureViewFailedComponent,
+    CopyrightViewExpiredComponent,
+    WorkApplicationsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

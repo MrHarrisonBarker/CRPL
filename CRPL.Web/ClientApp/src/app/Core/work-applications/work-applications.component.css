@@ -1,0 +1,15 @@
+.ass-application {
+  border-bottom: solid 1px #cccccc;
+  padding: 0.2rem 1rem;
+}
+
+#ass-applications {
+  background: #fafafa;
+  border: solid 1px #cccccc;
+  border-radius: 0.2rem;
+}
+
+p {
+  margin-bottom: 0.1rem !important;
+  margin-top: 0 !important;
+}

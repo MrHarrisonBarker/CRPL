@@ -1,0 +1,15 @@
+<div id="ass-applications">
+  <div *ngFor="let application of Copyright.AssociatedApplication" class="ass-application">
+    <div class="flex-between">
+      <a [routerLink]="routeToApplication(application.Id)"><em>{{application.Id}}</em></a>
+      <div>
+        <application-status [status]="application.Status"></application-status>
+        <application-type [Application]="application"></application-type>
+      </div>
+    </div>
+    <div style="display: flex">
+      <p style="margin-right: 0.5rem"><b>created:</b> {{application.Created | date:'medium'}}</p>
+      <p><b>registered:</b> {{application.Modified | date:'medium'}}</p>
+    </div>
+  </div>
+</div>

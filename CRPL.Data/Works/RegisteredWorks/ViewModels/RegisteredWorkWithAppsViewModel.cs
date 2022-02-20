@@ -19,4 +19,5 @@ public class RegisteredWorkWithAppsViewModel
     public Contracts.Structs.Meta? Meta { get; set; }
     public List<UserAccountMinimalViewModel> AssociatedUsers { get; set; }
     public List<ApplicationViewModelWithoutAssociated> AssociatedApplication { get; set; }
+    public string? RegisteredTransactionUri { get; set; }
 }
