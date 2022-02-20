@@ -83,7 +83,7 @@ stages:
             displayName: 'Install Node.js'
 
           - script: |
-              npm ci --also=dev
+              npm i --also=dev
             workingDirectory: 'CRPL.Contracts'
             displayName: 'Install dependencies'
 
