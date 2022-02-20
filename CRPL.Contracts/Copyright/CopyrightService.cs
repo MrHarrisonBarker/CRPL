@@ -251,48 +251,22 @@ namespace CRPL.Contracts.Copyright
              return ContractHandler.SendRequestAndWaitForReceiptAsync(registerFunction, cancellationToken);
         }
 
-        public Task<string> RegisterRequestAsync(List<OwnershipStakeContract> to)
+        public Task<string> RegisterRequestAsync(List<OwnershipStakeContract> to, Meta meta)
         {
             var registerFunction = new RegisterFunction();
                 registerFunction.To = to;
+                registerFunction.Meta = meta;
             
              return ContractHandler.SendRequestAsync(registerFunction);
         }
 
-        public Task<TransactionReceipt> RegisterRequestAndWaitForReceiptAsync(List<OwnershipStakeContract> to, CancellationTokenSource cancellationToken = null)
+        public Task<TransactionReceipt> RegisterRequestAndWaitForReceiptAsync(List<OwnershipStakeContract> to, Meta meta, CancellationTokenSource cancellationToken = null)
         {
             var registerFunction = new RegisterFunction();
                 registerFunction.To = to;
+                registerFunction.Meta = meta;
             
              return ContractHandler.SendRequestAndWaitForReceiptAsync(registerFunction, cancellationToken);
-        }
-
-        public Task<string> RegisterWithMetaRequestAsync(RegisterWithMetaFunction registerWithMetaFunction)
-        {
-             return ContractHandler.SendRequestAsync(registerWithMetaFunction);
-        }
-
-        public Task<TransactionReceipt> RegisterWithMetaRequestAndWaitForReceiptAsync(RegisterWithMetaFunction registerWithMetaFunction, CancellationTokenSource cancellationToken = null)
-        {
-             return ContractHandler.SendRequestAndWaitForReceiptAsync(registerWithMetaFunction, cancellationToken);
-        }
-
-        public Task<string> RegisterWithMetaRequestAsync(List<OwnershipStakeContract> to, Meta def)
-        {
-            var registerWithMetaFunction = new RegisterWithMetaFunction();
-                registerWithMetaFunction.To = to;
-                registerWithMetaFunction.Def = def;
-            
-             return ContractHandler.SendRequestAsync(registerWithMetaFunction);
-        }
-
-        public Task<TransactionReceipt> RegisterWithMetaRequestAndWaitForReceiptAsync(List<OwnershipStakeContract> to, Meta def, CancellationTokenSource cancellationToken = null)
-        {
-            var registerWithMetaFunction = new RegisterWithMetaFunction();
-                registerWithMetaFunction.To = to;
-                registerWithMetaFunction.Def = def;
-            
-             return ContractHandler.SendRequestAndWaitForReceiptAsync(registerWithMetaFunction, cancellationToken);
         }
     }
 }

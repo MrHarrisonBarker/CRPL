@@ -78,10 +78,10 @@ public class RegistrationService : IRegistrationService
         if (application.AssociatedWork.Status != RegisteredWorkStatus.Verified) throw new WorkNotVerifiedException();
         if (application.Status != ApplicationStatus.Submitted) throw new Exception("Application not in correct state!");
 
-        var register = new RegisterWithMetaFunction
+        var register = new RegisterFunction()
         {
             To = application.OwnershipStakes.Decode().Select(x => Mapper.Map<OwnershipStakeContract>(x)).ToList(),
-            Def = new Meta
+            Meta = new Meta
             {
                 Expires = new BigInteger((DateTime.Now.AddYears(application.YearsExpire) - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds),
                 Title = application.Title,
@@ -97,7 +97,7 @@ public class RegistrationService : IRegistrationService
         try
         {
             var transactionId = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-                .RegisterWithMetaRequestAsync(register);
+                .RegisterRequestAsync(register);
 
             Context.Update(application);
             application.AssociatedWork.RegisteredTransactionId = transactionId;
