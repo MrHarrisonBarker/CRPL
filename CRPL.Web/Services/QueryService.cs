@@ -6,8 +6,10 @@ using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Web.Core.Query;
+using CRPL.Web.Services.Background.SlientExpiry;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Nethereum.ABI.FunctionEncoding;
 
 namespace CRPL.Web.Services;
 
@@ -18,14 +20,22 @@ public class QueryService : IQueryService
     private readonly IMapper Mapper;
     private readonly IBlockchainConnection BlockchainConnection;
     private readonly IContractRepository ContractRepository;
+    private readonly IExpiryQueue ExpiryQueue;
 
-    public QueryService(ILogger<QueryService> logger, ApplicationContext context, IMapper mapper, IBlockchainConnection blockchainConnection, IContractRepository contractRepository)
+    public QueryService(
+        ILogger<QueryService> logger,
+        ApplicationContext context,
+        IMapper mapper,
+        IBlockchainConnection blockchainConnection,
+        IContractRepository contractRepository,
+        IExpiryQueue expiryQueue)
     {
         Logger = logger;
         Context = context;
         Mapper = mapper;
         BlockchainConnection = blockchainConnection;
         ContractRepository = contractRepository;
+        ExpiryQueue = expiryQueue;
         Logger = logger;
         Context = context;
         Mapper = mapper;
@@ -96,23 +106,40 @@ public class QueryService : IQueryService
     {
         Logger.LogInformation("Injecting blockchain data into registered work {Id}", registeredWork.Id);
         var rightId = BigInteger.Parse(registeredWork.RightId);
+        
+        try
+        {
+            var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+                .OwnershipOfQueryAsync(rightId);
 
-        var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-            .OwnershipOfQueryAsync(rightId);
+            var currentVotes = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+                .CurrentVotesQueryAsync(rightId);
 
-        var currentVotes = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-            .CurrentVotesQueryAsync(rightId);
+            var proposal = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+                .ProposalQueryAsync(rightId);
 
-        var proposal = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-            .ProposalQueryAsync(rightId);
+            var meta = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+                .CopyrightMetaQueryAsync(rightId);
 
-        var meta = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-            .CopyrightMetaQueryAsync(rightId);
+            registeredWork.OwnershipStructure = ownershipOf != null ? ownershipOf.ReturnValue1 : null;
+            registeredWork.CurrentVotes = currentVotes != null ? currentVotes.ReturnValue1 : null;
+            registeredWork.HasProposal = proposal != null && proposal.ReturnValue1 != null ? proposal.ReturnValue1.NewStructure.Count > 0 : false;
+            registeredWork.Meta = meta != null ? meta.ReturnValue1 : null;
+            return registeredWork;
+        }
+        catch (SmartContractRevertException revertException)
+        {
+            if (revertException.RevertMessage == "EXPIRED")
+            {
+                if (registeredWork.Status != RegisteredWorkStatus.Expired)
+                {
+                    Logger.LogInformation("got EXPIRED, setting work to expired");
+                    ExpiryQueue.QueueExpire(registeredWork.Id);
+                } else Logger.LogInformation("got EXPIRED but that was expected");
+            }
+            else throw;
+        }
 
-        registeredWork.OwnershipStructure = ownershipOf != null ? ownershipOf.ReturnValue1 : null;
-        registeredWork.CurrentVotes = currentVotes != null ? currentVotes.ReturnValue1 : null;
-        registeredWork.HasProposal = proposal != null && proposal.ReturnValue1 != null ? proposal.ReturnValue1.NewStructure.Count > 0 : false;
-        registeredWork.Meta = meta != null ? meta.ReturnValue1 : null;
         return registeredWork;
     }
 }

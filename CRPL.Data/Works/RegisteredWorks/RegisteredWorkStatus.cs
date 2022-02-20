@@ -7,5 +7,6 @@ public enum RegisteredWorkStatus
     Verified,
     SentToChain,
     Registered,
-    Rejected
+    Rejected,
+    Expired
 }

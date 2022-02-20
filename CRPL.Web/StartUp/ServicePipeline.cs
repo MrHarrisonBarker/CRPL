@@ -2,6 +2,7 @@ using CRPL.Data;
 using CRPL.Web.Core.ChainSync.Synchronisers;
 using CRPL.Web.Services;
 using CRPL.Web.Services.Background;
+using CRPL.Web.Services.Background.SlientExpiry;
 using CRPL.Web.Services.Background.VerificationPipeline;
 using CRPL.Web.Services.Interfaces;
 
@@ -25,6 +26,7 @@ public static class ServiceExtensions
             services.AddHostedService<BlockchainEventListener>();
             services.AddHostedService<EventProcessingService>();
             services.AddHostedService<VerificationPipelineService>();
+            services.AddHostedService<ExpiryProcessingService>();
 
             services.AddScoped<ISynchroniser, OwnershipSynchroniser>();
         }
