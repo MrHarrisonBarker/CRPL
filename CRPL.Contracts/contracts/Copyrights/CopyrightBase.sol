@@ -23,13 +23,13 @@ abstract contract CopyrightBase is ICopyright {
     string constant ALREADY_VOTED = "ALREADY_VOTED";
 
     // rightId -> ownership structures
-    mapping (uint256 => OwnershipStake[]) internal _shareholders;
+    mapping (uint256 => OwnershipStructure) internal _shareholders;
 
     // owner -> number of copyrights
     mapping (address => uint256) internal _numOfRights;
 
     // rightId -> new ownership
-    mapping (uint256 => OwnershipStake[]) internal _newHolders;
+    mapping (uint256 => OwnershipStructure) internal _newHolders;
 
     // rightId -> shareholder -> bool (prop vote)
     mapping (uint256 => ProposalVote[]) internal _proposalVotes;
@@ -49,8 +49,8 @@ abstract contract CopyrightBase is ICopyright {
         _name = name;
     }
 
-    function OwnershipOf(uint256 rightId) public override validId(rightId) view returns (OwnershipStake[] memory) {       
-        return _shareholders[rightId];
+    function OwnershipOf(uint256 rightId) public override validId(rightId) view returns (OwnershipStake[] memory) {
+        return _mapToOwnershipStakes(_shareholders[rightId]);
     }
 
     function PortfolioSize(address owner) external override validAddress(owner) view returns (uint256) {
@@ -67,9 +67,11 @@ abstract contract CopyrightBase is ICopyright {
             require(to[i].share > 0, INVALID_SHARE);
 
             _recordRight(to[i].owner);
-            _shareholders[rightId].push(to[i]);
+            _shareholders[rightId].stakes.push(to[i]);
         }
-
+        
+        _shareholders[rightId].exists = true;
+        
         _approvedAddress[_copyCount.getCurrent()] = msg.sender;
 
         emit Registered(rightId, to);
@@ -87,7 +89,8 @@ abstract contract CopyrightBase is ICopyright {
 
             require(restructured[i].share > 0, INVALID_SHARE);
 
-            _newHolders[rightId].push(restructured[i]);
+            _newHolders[rightId].stakes.push(restructured[i]);
+            _newHolders[rightId].exists = true;
         }   
 
         emit ProposedRestructure(rightId, _getProposedRestructure(rightId));
@@ -101,7 +104,7 @@ abstract contract CopyrightBase is ICopyright {
         return _proposalVotes[rightId];
     }
 
-    function BindRestructure(uint256 rightId, bool accepted) external override isShareholderOrApproved(rightId, msg.sender) validId(rightId) payable 
+    function BindRestructure(uint256 rightId, bool accepted) external override validId(rightId) isShareholderOrApproved(rightId, msg.sender) payable 
     {
         _checkHasVoted(rightId, msg.sender);
      
@@ -165,7 +168,7 @@ abstract contract CopyrightBase is ICopyright {
     //////////// INTERNAL METHODS ////////////
 
     function _numberOfShareholder(uint256 rightId) internal view returns (uint256) {
-        return _shareholders[rightId].length;
+        return _shareholders[rightId].stakes.length;
     }
 
     function _recordRight(address shareholder) internal {
@@ -173,12 +176,21 @@ abstract contract CopyrightBase is ICopyright {
     }
 
     function _getProposedRestructure(uint256 rightId) internal view returns(RestructureProposal memory) {
-        return RestructureProposal({oldStructure: _shareholders[rightId], newStructure: _newHolders[rightId]});
+        return RestructureProposal({oldStructure: _mapToOwnershipStakes(_shareholders[rightId]), newStructure: _mapToOwnershipStakes(_newHolders[rightId])});
+    }
+    
+    function _mapToOwnershipStakes(OwnershipStructure memory structure) internal pure returns (OwnershipStake[] memory) 
+    {
+        OwnershipStake[] memory stakes = new OwnershipStake[](structure.stakes.length);
+        for (uint8 i = 0; i < structure.stakes.length; i++) {
+            stakes[i] = structure.stakes[i];
+        }
+        return stakes;
     }
 
     function _resetProposal(uint256 rightId) internal {        
 
-        OwnershipStake[] memory holdersWhoVoted = _shareholders[rightId];
+        OwnershipStake[] memory holdersWhoVoted = _shareholders[rightId].stakes;
 
         for (uint8 i = 0; i < holdersWhoVoted.length; i++) {
             delete(_proposalVotes[rightId]);
@@ -201,9 +213,9 @@ abstract contract CopyrightBase is ICopyright {
     modifier isShareholderOrApproved(uint256 rightId, address addr) 
     {
         uint8 c = 0;
-        for (uint8 i = 0; i < _shareholders[rightId].length; i++) 
+        for (uint8 i = 0; i < _shareholders[rightId].stakes.length; i++) 
         {
-            if (_shareholders[rightId][i].owner == addr) c ++;
+            if (_shareholders[rightId].stakes[i].owner == addr) c ++;
         }
         require(c == 1 || _approvedAddress[rightId] == addr, NOT_SHAREHOLDER);
         _;
@@ -218,7 +230,7 @@ abstract contract CopyrightBase is ICopyright {
     // TODO: could cause a problem
     modifier validId(uint256 rightId)
     {
-        require(_shareholders[rightId].length == 0 || _shareholders[rightId][0].owner != address(0), NOT_VALID_RIGHT);
+        require(_shareholders[rightId].exists, NOT_VALID_RIGHT);
         _;
     }
 
@@ -233,19 +245,5 @@ abstract contract CopyrightBase is ICopyright {
         _;
     }
 
-    modifier atomicLocked() 
-    {
-        require(!_locked, THREAD_LOCKED);
-
-        _locked = true;
-        _;
-        _locked = false;
-    }
-
-    modifier isApproved(uint256 rightId, address addr)
-    {
-        require(_approvedAddress[rightId] == addr, NOT_APPROVED);
-        _;
-    }
-
+    // TODO: atomic locking
 }

@@ -5,3 +5,8 @@ struct OwnershipStake {
     address owner;
     uint8 share;
 }
+
+struct OwnershipStructure {
+    bool exists;
+    OwnershipStake[] stakes;
+}
