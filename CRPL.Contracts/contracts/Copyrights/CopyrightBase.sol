@@ -5,8 +5,10 @@ import "../ICopyright.sol";
 import "../Structs/OwnershipStake.sol";
 import "../Structs/ProposalVote.sol";
 import "../Utils/IdCounters.sol";
+import "../ICopyrightMeta.sol";
+import "../Structs/Meta.sol";
 
-abstract contract CopyrightBase is ICopyright {
+abstract contract CopyrightBase is ICopyrightMeta {
     using IdCounters for IdCounters.IdCounter;
 
     bool internal _locked;
@@ -21,9 +23,13 @@ abstract contract CopyrightBase is ICopyright {
     string constant INVALID_SHARE = "INVALID_SHARE";
     string constant NO_SHAREHOLDERS = "NO_SHAREHOLDERS";
     string constant ALREADY_VOTED = "ALREADY_VOTED";
+    string constant EXPIRED = "EXPIRED";
 
     // rightId -> ownership structures
     mapping (uint256 => OwnershipStructure) internal _shareholders;
+    
+    // rightId -> metadata
+    mapping(uint256 => Meta) internal _metadata;
 
     // owner -> number of copyrights
     mapping (address => uint256) internal _numOfRights;
@@ -49,7 +55,7 @@ abstract contract CopyrightBase is ICopyright {
         _name = name;
     }
 
-    function OwnershipOf(uint256 rightId) public override validId(rightId) view returns (OwnershipStake[] memory) {
+    function OwnershipOf(uint256 rightId) public override validId(rightId) isExpired(rightId) view returns (OwnershipStake[] memory) {
         return _mapToOwnershipStakes(_shareholders[rightId]);
     }
 
@@ -57,7 +63,12 @@ abstract contract CopyrightBase is ICopyright {
         return _numOfRights[owner];
     }
 
-    function Register(OwnershipStake[] memory to) public validShareholders(to) {
+    function CopyrightMeta(uint256 rightId) public override validId(rightId) isExpired(rightId) view returns (Meta memory) 
+    {
+        return _metadata[rightId];
+    }
+
+    function Register(OwnershipStake[] memory to, Meta memory meta) public validShareholders(to) {
 
         uint256 rightId = _copyCount.next();
 
@@ -70,6 +81,7 @@ abstract contract CopyrightBase is ICopyright {
             _shareholders[rightId].stakes.push(to[i]);
         }
         
+        _metadata[rightId] = meta;
         _shareholders[rightId].exists = true;
         
         _approvedAddress[_copyCount.getCurrent()] = msg.sender;
@@ -78,12 +90,7 @@ abstract contract CopyrightBase is ICopyright {
         emit Approved(rightId, msg.sender);
     }
 
-    function _register (OwnershipStake[] memory to) internal validShareholders(to) returns (uint256) {
-        Register(to);
-        return _copyCount.getCurrent();
-    }
-
-    function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external override validId(rightId) validShareholders(restructured) isShareholderOrApproved(rightId, msg.sender) payable {
+    function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external override validId(rightId) isExpired(rightId) validShareholders(restructured) isShareholderOrApproved(rightId, msg.sender) payable {
         
         for (uint8 i = 0; i < restructured.length; i++) {
 
@@ -96,15 +103,15 @@ abstract contract CopyrightBase is ICopyright {
         emit ProposedRestructure(rightId, _getProposedRestructure(rightId));
     }
 
-    function Proposal(uint256 rightId) external override validId(rightId) view returns (RestructureProposal memory) {
+    function Proposal(uint256 rightId) external override validId(rightId) isExpired(rightId) view returns (RestructureProposal memory) {
         return _getProposedRestructure(rightId);
     }
 
-    function CurrentVotes(uint256 rightId) external override validId(rightId) view returns (ProposalVote[] memory) {
+    function CurrentVotes(uint256 rightId) external override validId(rightId) isExpired(rightId) view returns (ProposalVote[] memory) {
         return _proposalVotes[rightId];
     }
 
-    function BindRestructure(uint256 rightId, bool accepted) external override validId(rightId) isShareholderOrApproved(rightId, msg.sender) payable 
+    function BindRestructure(uint256 rightId, bool accepted) external override validId(rightId) isExpired(rightId) isShareholderOrApproved(rightId, msg.sender) payable 
     {
         _checkHasVoted(rightId, msg.sender);
      
@@ -242,6 +249,12 @@ abstract contract CopyrightBase is ICopyright {
         {
             require(holders[i].owner != address(0), INVALID_ADDR);
         }
+        _;
+    }
+
+    modifier isExpired(uint256 rightId)
+    {
+        require(_metadata[rightId].expires > block.timestamp, EXPIRED);
         _;
     }
 

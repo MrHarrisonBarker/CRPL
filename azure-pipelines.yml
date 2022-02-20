@@ -4,6 +4,34 @@ trigger:
   batch: true
 
 stages:
+  - stage: SmartContracts
+    pool:
+      vmImage: ubuntu-latest
+      demands: npm
+    
+    jobs:
+      - job: Test
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '14.x'
+            displayName: 'Install Node.js'
+
+          - script: |
+              npm i --also=dev
+            workingDirectory: 'CRPL.Contracts'
+            displayName: 'Install dependencies'
+
+          - script: |
+              npm run compile
+            workingDirectory: 'CRPL.Contracts'
+            displayName: 'Compile contracts'
+
+          - script: |
+              npm run coverage
+            workingDirectory: 'CRPL.Contracts'
+            displayName: 'Run tests and coverage'
+
   - stage: DotNet_Angular
     pool:
       vmImage: ubuntu-latest
@@ -54,45 +82,17 @@ stages:
               customCommand: run test -- --watch=false --code-coverage --browsers=ChromeHeadless
               workingDir: 'CRPL.Web/ClientApp'
 
-  - stage: SmartContracts
-    pool:
-      vmImage: ubuntu-latest
-      demands: npm
-    
-    jobs:
-      - job: Test
-        steps:
-          - task: NodeTool@0
-            inputs:
-              versionSpec: '14.x'
-            displayName: 'Install Node.js'
-
-          - script: |
-              npm i --also=dev
-            workingDirectory: 'CRPL.Contracts'
-            displayName: 'Install dependencies'
-
-          - script: |
-              npm run compile
-            workingDirectory: 'CRPL.Contracts'
-            displayName: 'Compile contracts'
-
-          - script: |
-              npm run coverage
-            workingDirectory: 'CRPL.Contracts'
-            displayName: 'Run tests and coverage'
-
           - task: reportgenerator@4
-              displayName: 'Combine code coverage reports'
-              condition: succeededOrFailed()
-              inputs:
-                reports: '$(Build.SourcesDirectory)/CRPL.Web/ClientApp/coverage/**/cobertura-coverage.xml;$(Agent.TempDirectory)/**/coverage.cobertura.xml;CRPL.Contracts/coverage/cobertura-coverage.xml'
-                targetdir: '$(Build.SourcesDirectory)/CodeCoverage'
-                reporttypes: 'HtmlInline_AzurePipelines;Cobertura;Badges'
-                
+            displayName: 'Combine code coverage reports'
+            condition: succeededOrFailed()
+            inputs:
+              reports: '$(Build.SourcesDirectory)/CRPL.Web/ClientApp/coverage/**/cobertura-coverage.xml;$(Agent.TempDirectory)/**/coverage.cobertura.xml;CRPL.Contracts/coverage/cobertura-coverage.xml'
+              targetdir: '$(Build.SourcesDirectory)/CodeCoverage'
+              reporttypes: 'HtmlInline_AzurePipelines;Cobertura;Badges'
+
           - task: PublishCodeCoverageResults@1
-              displayName: 'Publish code coverage report'
-              condition: succeededOrFailed()
-              inputs:
-                codeCoverageTool: 'Cobertura'
-                summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+            displayName: 'Publish code coverage report'
+            condition: succeededOrFailed()
+            inputs:
+              codeCoverageTool: 'Cobertura'
+              summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
