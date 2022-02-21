@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CRPL.Data.Account;
-using CRPL.Data.Applications;
 using CRPL.Tests.Factories;
 using CRPL.Tests.Factories.Synchronisers;
 using CRPL.Tests.Mocks;
@@ -14,7 +13,7 @@ using NUnit.Framework;
 namespace CRPL.Tests.Synchronisers.OwnershipSynchroniser;
 
 [TestFixture]
-public class SynchroniseOne
+public class SynchroniseBatch
 {
     private static readonly List<RegisteredWork> Works = new()
     {
@@ -66,7 +65,7 @@ public class SynchroniseOne
             }
         }
     };
-
+    
     [Test]
     public async Task Should_Be_The_Same()
     {
@@ -78,10 +77,10 @@ public class SynchroniseOne
 
             var (ownershipSynchroniser, connectionMock, contractRepoMock, expiryQueueMock) = new OwnershipSynchroniserFactory().Create(context, mappings);
 
-            await ownershipSynchroniser.SynchroniseOne(new Guid("C714A94E-BE61-4D7B-A4CE-28F0667FAEAD"));
+            await ownershipSynchroniser.SynchroniseBatch(0);
         }
     }
-
+    
     [Test]
     public async Task Should_Be_Different()
     {
@@ -93,7 +92,7 @@ public class SynchroniseOne
 
             var (ownershipSynchroniser, connectionMock, contractRepoMock, expiryQueueMock) = new OwnershipSynchroniserFactory().Create(context, mappings);
 
-            await ownershipSynchroniser.SynchroniseOne(Works.First().Id);
+            await ownershipSynchroniser.SynchroniseBatch(0);
 
             var work = context.RegisteredWorks
                 .Include(x => x.UserWorks).ThenInclude(x => x.UserAccount)

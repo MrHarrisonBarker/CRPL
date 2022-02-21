@@ -117,7 +117,7 @@ public class CopyrightService : ICopyrightService
     public async Task BindProposal(BindProposalWorkInput proposalInput)
     {
         Logger.LogInformation("Binding proposal using work {Id}", proposalInput.WorkId);
-        var work = await Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == proposalInput.WorkId);
+        var work = await Context.RegisteredWorks.Include(x => x.AssociatedApplication).FirstOrDefaultAsync(x => x.Id == proposalInput.WorkId);
         if (work == null) throw new WorkNotFoundException(proposalInput.WorkId);
 
         await sendBind(work, proposalInput.Accepted);

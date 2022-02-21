@@ -7,7 +7,7 @@ import {AlertService} from "../_Services/alert.service";
 import {ActivatedRouteSnapshot, Router, RouterStateSnapshot} from "@angular/router";
 import {AuthGuard} from "./auth.guard";
 import {setProp} from "../test.utils";
-import {BehaviorSubject, of} from "rxjs";
+import {BehaviorSubject, of, throwError} from "rxjs";
 import {AccountStatus, UserAccountViewModel} from "../_Models/Account/UserAccountViewModel";
 
 describe('CompleteUserAndAuthGuard', () =>
@@ -92,7 +92,7 @@ describe('CompleteUserAndAuthGuard', () =>
 
     setProp<BehaviorSubject<boolean>>(authMock, 'IsAuthenticated', new BehaviorSubject<boolean>(false));
     authMock.getToken.and.returnValue("TEST TOKEN");
-    routerMock.navigate.and.returnValue(new Promise<boolean>(() => true));
+    // routerMock.navigate.and.returnValue(new Promise<boolean>(() => true));
     authMock.Authenticate.and.returnValue(of(mockUser));
 
     guard.canActivate({} as ActivatedRouteSnapshot, <RouterStateSnapshot>{url: 'testUrl'}).subscribe(res =>
@@ -102,5 +102,20 @@ describe('CompleteUserAndAuthGuard', () =>
     });
   });
 
+  it('should catch authentication error', () =>
+  {
+    setProp<BehaviorSubject<boolean>>(authMock, 'IsAuthenticated', new BehaviorSubject<boolean>(false));
+    authMock.getToken.and.returnValue("TEST TOKEN");
+    routerMock.navigate.and.returnValue(new Promise<boolean>(() => true));
+    authMock.Authenticate.and.returnValue(throwError(new Error("This is an error")));
+    authMock.Authenticate.and.returnValue(of(null));
 
+    guard.canActivate({} as ActivatedRouteSnapshot, <RouterStateSnapshot>{url: 'testUrl'}).subscribe(res => {
+      console.log(res);
+      expect(res).toBeFalsy();
+      expect(routerMock).toHaveBeenCalled();
+      expect(alertMock).toHaveBeenCalledWith({Message: "There was a problem when authenticating your account", Type: "danger"});
+    });
+
+  });
 });

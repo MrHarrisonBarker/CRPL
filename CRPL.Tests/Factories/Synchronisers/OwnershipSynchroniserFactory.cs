@@ -4,6 +4,7 @@ using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
 using CRPL.Web.Core.ChainSync.Synchronisers;
+using CRPL.Web.Services.Background.SlientExpiry;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -11,7 +12,7 @@ namespace CRPL.Tests.Factories.Synchronisers;
 
 public class OwnershipSynchroniserFactory
 {
-    public OwnershipSynchroniser Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public (OwnershipSynchroniser, Mock<IBlockchainConnection> connectionMock, Mock<IContractRepository> contractRepoMock, Mock<IExpiryQueue> expiryQueueMock) Create(ApplicationContext context, Dictionary<string, object>? mappings)
     {
         var web3Mock = new MockWeb3(mappings);
 
@@ -23,7 +24,14 @@ public class OwnershipSynchroniserFactory
         {
             Address = "TEST CONTRACT"
         });
+
+        var expiryQueueMock = new Mock<IExpiryQueue>();
         
-        return new OwnershipSynchroniser(new Logger<OwnershipSynchroniser>(new LoggerFactory()), context, connectionMock.Object, contractRepoMock.Object);
+        return (new OwnershipSynchroniser(
+            new Logger<OwnershipSynchroniser>(new LoggerFactory()),
+            context,
+            connectionMock.Object,
+            contractRepoMock.Object,
+            expiryQueueMock.Object), connectionMock, contractRepoMock, expiryQueueMock);
     }
 }
