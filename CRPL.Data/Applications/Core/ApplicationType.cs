@@ -4,6 +4,5 @@ public enum ApplicationType
 {
     CopyrightRegistration,
     OwnershipRestructure,
-    CopyrightTypeChange,
     Dispute
 }

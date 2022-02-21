@@ -13,8 +13,6 @@ public static class ApplicationMapper
                 return mapper.Map<CopyrightRegistrationApplication, CopyrightRegistrationViewModel>((CopyrightRegistrationApplication)application);
             case ApplicationType.OwnershipRestructure:
                 return mapper.Map<OwnershipRestructureApplication, OwnershipRestructureViewModel>((OwnershipRestructureApplication)application);
-            case ApplicationType.CopyrightTypeChange:
-                break;
             case ApplicationType.Dispute:
                 break;
             default:

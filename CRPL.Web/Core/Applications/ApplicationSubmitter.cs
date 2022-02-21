@@ -14,8 +14,6 @@ public static class ApplicationSubmitter
                 return CopyrightRegistrationSubmitter((CopyrightRegistrationApplication)submittedApplication, registrationService);
             case ApplicationType.OwnershipRestructure:
                 return await OwnershipRestructureSubmitter((OwnershipRestructureApplication)submittedApplication, copyrightService);
-            case ApplicationType.CopyrightTypeChange:
-                break;
             case ApplicationType.Dispute:
                 break;
             default:

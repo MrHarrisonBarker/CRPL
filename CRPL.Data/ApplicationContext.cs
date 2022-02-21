@@ -1,4 +1,5 @@
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ public class ApplicationContext : DbContext
     public DbSet<Application> Applications { get; set; }
     public DbSet<CopyrightRegistrationApplication> CopyrightRegistrationApplications { get; set; }
     public DbSet<OwnershipRestructureApplication> OwnershipRestructureApplications { get; set; }
+    public DbSet<DisputeApplication> DisputeApplications { get; set; }
 
     public DbSet<UserApplication> UserApplications { get; set; }
 

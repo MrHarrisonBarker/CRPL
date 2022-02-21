@@ -19,8 +19,6 @@ public static class ApplicationUpdater
                 return await CopyrightRegistrationUpdater((CopyrightRegistrationApplication)application, (CopyrightRegistrationInputModel)inputModel, userService);
             case ApplicationType.OwnershipRestructure:
                 return await OwnershipRestructureUpdater((OwnershipRestructureApplication)application, (OwnershipRestructureInputModel)inputModel, userService, copyrightService);
-            case ApplicationType.CopyrightTypeChange:
-                break;
             case ApplicationType.Dispute:
                 break;
             default:
