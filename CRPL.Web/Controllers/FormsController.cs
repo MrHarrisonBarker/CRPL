@@ -75,6 +75,20 @@ public class FormsController : ControllerBase
             throw;
         }
     }
+    
+    [HttpPost("copyright/dispute")]
+    public async Task<DisputeViewModel> UpdateDispute(DisputeInputModel inputModel)
+    {
+        try
+        {
+            return await FormsService.Update<DisputeViewModel>(inputModel);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when updating copyright registration application");
+            throw;
+        }
+    }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> Cancel(Guid id)
