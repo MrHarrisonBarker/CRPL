@@ -173,6 +173,27 @@ public class UserService : IUserService
 
         Context.UserAccounts.Update(user);
 
+        AssignUserToApplication(user, applicationId);
+
+        Context.SaveChanges();
+    }
+    
+    public void AssignToApplication(Guid id, Guid applicationId)
+    {
+        Logger.LogInformation("Assigning {Id} to application {Id}", id, applicationId);
+
+        var user = Context.UserAccounts.Include(x => x.Applications).FirstOrDefault(x => x.Id == id);
+        if (user == null) throw new UserNotFoundException(id);
+
+        Context.UserAccounts.Update(user);
+
+        AssignUserToApplication(user, applicationId);
+
+        Context.SaveChanges();
+    }
+
+    private void AssignUserToApplication(UserAccount user, Guid applicationId)
+    {
         if (user.Applications == null) user.Applications = new List<UserApplication>();
 
         if (user.Applications.FirstOrDefault(x => x.ApplicationId == applicationId) != null)
@@ -185,8 +206,6 @@ public class UserService : IUserService
         {
             ApplicationId = applicationId
         });
-
-        Context.SaveChanges();
     }
 
     public async Task<RegisteredWork> AssignToWork(string address, RegisteredWork work)
@@ -199,7 +218,7 @@ public class UserService : IUserService
         // if (!user.UserWorks.Any(x => x.WorkId == work.Id))
         // {
         user.UserWorks ??= new List<UserWork>();
-        
+
         Logger.LogInformation("Assigning {Address} to work {Id}", address, work.RightId);
         user.UserWorks.Add(new UserWork()
         {

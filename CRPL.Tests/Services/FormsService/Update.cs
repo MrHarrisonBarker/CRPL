@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CRPL.Data.Account;
+using CRPL.Data.Applications;
 using CRPL.Data.Applications.Core;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
@@ -46,13 +48,13 @@ public class Update
             {
                 new() { Owner = "test_0", Share = 100 }
             };
-            
+
             var proposedStructure = new List<OwnershipStake>
             {
                 new() { Owner = "test_0", Share = 300 },
                 new() { Owner = "test_1", Share = 10 }
             };
-            
+
             var updatedApplication = await formsService.Update<OwnershipRestructureViewModel>(new OwnershipRestructureInputModel()
             {
                 CurrentStructure = currentStructure,
@@ -187,25 +189,66 @@ public class Update
     [Test]
     public async Task Should_Update_Dispute_Application()
     {
-        
     }
 
     [Test]
     public async Task Should_Create_New_Dispute_Application()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(null,null, null))
+        await using (var context = new TestDbApplicationContextFactory().CreateContext(new List<RegisteredWork>(), new List<Application>(), new List<UserAccount>()))
         {
             var formsService = new FormsServiceFactory().Create(context);
 
             var updatedApplication = await formsService.Update<DisputeViewModel>(new DisputeInputModel()
             {
-                Id = new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"),
                 DisputeType = DisputeType.Usage,
                 Reason = "This is a reason"
             });
 
             updatedApplication.Reason.Should().Be("This is a reason");
             updatedApplication.DisputeType.Should().Be(DisputeType.Usage);
+        }
+    }
+
+    [Test]
+    public async Task Should_Assign_When_Dispute_Application()
+    {
+        await using (var context = new TestDbApplicationContextFactory().CreateContext(new List<RegisteredWork>
+                     {
+                         new()
+                         {
+                             Id = new Guid("8B0750C1-9FB6-4A1D-ABA0-41C581E59753"),
+                             Title = "Hello world",
+                             Status = RegisteredWorkStatus.Registered,
+                             Registered = DateTime.Now
+                         }
+                     }, new List<Application>(), new List<UserAccount>()
+                     {
+                         new()
+                         {
+                             Id = new Guid("3B26A0BF-B393-4703-9158-4EEDACB943AC"),
+                             Wallet = new UserWallet() { PublicAddress = TestConstants.TestAccountAddress }
+                         }
+                     }))
+        {
+            var formsService = new FormsServiceFactory().Create(context);
+
+            await formsService.Update<DisputeViewModel>(new DisputeInputModel()
+            {
+                DisputeType = DisputeType.Usage,
+                Reason = "This is a reason",
+                DisputedWorkId = new Guid("8B0750C1-9FB6-4A1D-ABA0-41C581E59753"),
+                AccuserId = new Guid("3B26A0BF-B393-4703-9158-4EEDACB943AC")
+            });
+
+            var updatedApplication = context.DisputeApplications
+                .Include(x => x.AssociatedWork)
+                .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
+                .First();
+
+            updatedApplication.Reason.Should().Be("This is a reason");
+            updatedApplication.DisputeType.Should().Be(DisputeType.Usage);
+            updatedApplication.AssociatedWork.Id.Should().Be(new Guid("8B0750C1-9FB6-4A1D-ABA0-41C581E59753"));
+            updatedApplication.AssociatedUsers.First().UserAccount.Id.Should().Be(new Guid("3B26A0BF-B393-4703-9158-4EEDACB943AC"));
         }
     }
 }

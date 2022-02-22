@@ -21,7 +21,7 @@ public static class ApplicationUpdater
             case ApplicationType.OwnershipRestructure:
                 return await OwnershipRestructureUpdater((OwnershipRestructureApplication)application, (OwnershipRestructureInputModel)inputModel, userService, copyrightService);
             case ApplicationType.Dispute:
-                return await DisputeUpdater((DisputeApplication)application, (DisputeInputModel)inputModel, userService);
+                return await DisputeUpdater((DisputeApplication)application, (DisputeInputModel)inputModel, userService, copyrightService);
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -61,14 +61,18 @@ public static class ApplicationUpdater
         return application;
     }
 
-    private static async Task<Application> DisputeUpdater(DisputeApplication application, DisputeInputModel inputModel, IUserService userService)
+    private static async Task<Application> DisputeUpdater(DisputeApplication application, DisputeInputModel inputModel, IUserService userService, ICopyrightService copyrightService)
     {
-        application.UpdateProperties(inputModel, Encodables.Concat(new List<string> { "Id" }).ToList());
+        application.UpdateProperties(inputModel, Encodables.Concat(new List<string> { "Id", "DisputedWork", "Accuser"}).ToList());
 
-        if (application.ContactAddress != null)
+        if (inputModel.AccuserId.HasValue)
+        { 
+            userService.AssignToApplication(inputModel.AccuserId.Value, application.Id);
+        }
+        
+        if (inputModel.DisputedWorkId.HasValue)
         {
-            if (!(userService.AreUsersReal(new List<string> { application.DisputingWallet }))) throw new Exception("Not all the users could be found");
-            userService.AssignToApplication(application.ContactAddress, application.Id);
+            await copyrightService.AttachWorkToApplicationAndCheckValid(inputModel.DisputedWorkId.Value, application);
         }
         
         return application;

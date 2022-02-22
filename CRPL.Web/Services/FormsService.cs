@@ -94,9 +94,10 @@ public class FormsService : IFormsService
             }
 
             if (application == null) throw new Exception("Could not determine the application type!");
-        }
 
-        Context.Applications.Update(application);
+            Context.Applications.Add(application);
+        } else Context.Applications.Update(application);
+        
         await application.Update(inputModel, Mapper, UserService, CopyrightService);
         application.Modified = DateTime.Now;
 

@@ -57,7 +57,9 @@ public class AutoMapping : Profile
             .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
             .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
 
-        CreateMap<DisputeApplication, DisputeViewModel>();
+        CreateMap<DisputeApplication, DisputeViewModel>()
+            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
+            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));;
         
         CreateMap<CRPL.Data.StructuredOwnership.OwnershipStake, CRPL.Contracts.Structs.OwnershipStakeContract>();
     }

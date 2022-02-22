@@ -23,6 +23,7 @@ public interface IUserService
     public Task<UserAccountStatusModel> UpdateAccount(Guid accountId, AccountInputModel accountInputModel);
     public Task<string> UpdateWallet(Guid accountId, WalletInputModel walletInputModel);
     public void AssignToApplication(string address, Guid applicationId);
+    public void AssignToApplication(Guid id, Guid applicationId);
     public Task<RegisteredWork> AssignToWork(string address, RegisteredWork work);
     
     // +----------------------+

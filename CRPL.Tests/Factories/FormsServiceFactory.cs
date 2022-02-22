@@ -26,6 +26,6 @@ public class FormsServiceFactory
             context, mapper, appSettings, 
             new UserServiceFactory().Create(context),
             new Mock<IRegistrationService>().Object,
-            new Mock<ICopyrightService>().Object);
+            new CopyrightServiceFactory().Create(context, null));
     }
 }
