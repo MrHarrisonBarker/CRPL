@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CRPL.Data.Applications.Core;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Data.StructuredOwnership;
@@ -180,6 +181,31 @@ public class Update
                 OwnershipStakes = new List<OwnershipStake> { new() { Owner = "NON EXISTENT ADDRESS", Share = 100 } },
                 Title = "TEST APPLICATION"
             })).Should().ThrowAsync<Exception>();
+        }
+    }
+
+    [Test]
+    public async Task Should_Update_Dispute_Application()
+    {
+        
+    }
+
+    [Test]
+    public async Task Should_Create_New_Dispute_Application()
+    {
+        await using (var context = new TestDbApplicationContextFactory().CreateContext(null,null, null))
+        {
+            var formsService = new FormsServiceFactory().Create(context);
+
+            var updatedApplication = await formsService.Update<DisputeViewModel>(new DisputeInputModel()
+            {
+                Id = new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"),
+                DisputeType = DisputeType.Usage,
+                Reason = "This is a reason"
+            });
+
+            updatedApplication.Reason.Should().Be("This is a reason");
+            updatedApplication.DisputeType.Should().Be(DisputeType.Usage);
         }
     }
 }

@@ -1,4 +1,5 @@
 using AutoMapper;
+using CRPL.Data.Applications.DataModels;
 using CRPL.Data.StructuredOwnership;
 
 namespace CRPL.Data.Applications.ViewModels;
@@ -14,7 +15,7 @@ public static class ApplicationMapper
             case ApplicationType.OwnershipRestructure:
                 return mapper.Map<OwnershipRestructureApplication, OwnershipRestructureViewModel>((OwnershipRestructureApplication)application);
             case ApplicationType.Dispute:
-                break;
+                return mapper.Map<DisputeApplication, DisputeViewModel>((DisputeApplication)application);
             default:
                 throw new ArgumentOutOfRangeException();
         }

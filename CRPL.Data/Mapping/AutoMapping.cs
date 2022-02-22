@@ -2,6 +2,7 @@ using AutoMapper;
 using CRPL.Data.Account;
 using CRPL.Data.Account.ViewModels;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.ViewModels;
 
 namespace CRPL.Data;
@@ -37,6 +38,7 @@ public class AutoMapping : Profile
 
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModelWithoutAssociated>();
         CreateMap<OwnershipRestructureApplication, OwnershipRestructureViewModelWithoutAssociated>();
+        // CreateMap<DisputeApplication, DisputeViewModel>()
 
         CreateMap<Application, ApplicationViewModel>()
             .ForMember(model => model.AssociatedWork, x => x.MapFrom(src => src.AssociatedWork))
@@ -55,6 +57,8 @@ public class AutoMapping : Profile
             .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
             .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
 
+        CreateMap<DisputeApplication, DisputeViewModel>();
+        
         CreateMap<CRPL.Data.StructuredOwnership.OwnershipStake, CRPL.Contracts.Structs.OwnershipStakeContract>();
     }
 }

@@ -1,8 +1,8 @@
 using CRPL.Data.Applications.Core;
 
-namespace CRPL.Data.Applications.ViewModels;
+namespace CRPL.Data.Applications.InputModels;
 
-public class DisputeViewModel : ApplicationViewModel
+public class DisputeInputModel : ApplicationInputModel
 {
     public DisputeType? DisputeType { get; set; }
     public string? Reason { get; set; }

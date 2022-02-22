@@ -2,6 +2,7 @@ using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Exceptions;
@@ -50,8 +51,11 @@ public class FormsService : IFormsService
     public async Task CancelApplication(Guid id)
     {
         Logger.LogInformation("Canceling application '{Id}'", id);
-        var application = await Context.Applications.FirstOrDefaultAsync(x => x.Id == id);
+        var application = await Context.Applications
+            .Include(x => x.AssociatedWork)
+            .FirstOrDefaultAsync(x => x.Id == id);
         if (application == null) throw new ApplicationNotFoundException(id);
+        // if (application.AssociatedWork != null) Context.RegisteredWorks.Remove(application.AssociatedWork);
         Context.Applications.Remove(application);
         await Context.SaveChangesAsync();
     }
@@ -83,6 +87,9 @@ public class FormsService : IFormsService
                     break;
                 case "OwnershipRestructureViewModel":
                     application = new OwnershipRestructureApplication { Id = new Guid() };
+                    break;
+                case "DisputeViewModel":
+                    application = new DisputeApplication { Id = new Guid() };
                     break;
             }
 

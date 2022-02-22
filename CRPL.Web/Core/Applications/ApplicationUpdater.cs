@@ -1,5 +1,6 @@
 using AutoMapper;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Data.StructuredOwnership;
@@ -20,7 +21,7 @@ public static class ApplicationUpdater
             case ApplicationType.OwnershipRestructure:
                 return await OwnershipRestructureUpdater((OwnershipRestructureApplication)application, (OwnershipRestructureInputModel)inputModel, userService, copyrightService);
             case ApplicationType.Dispute:
-                break;
+                return await DisputeUpdater((DisputeApplication)application, (DisputeInputModel)inputModel, userService);
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -57,6 +58,19 @@ public static class ApplicationUpdater
             application.CheckAndAssignStakes(userService, inputModel.OwnershipStakes);
         }
 
+        return application;
+    }
+
+    private static async Task<Application> DisputeUpdater(DisputeApplication application, DisputeInputModel inputModel, IUserService userService)
+    {
+        application.UpdateProperties(inputModel, Encodables.Concat(new List<string> { "Id" }).ToList());
+
+        if (application.ContactAddress != null)
+        {
+            if (!(userService.AreUsersReal(new List<string> { application.DisputingWallet }))) throw new Exception("Not all the users could be found");
+            userService.AssignToApplication(application.ContactAddress, application.Id);
+        }
+        
         return application;
     }
 
