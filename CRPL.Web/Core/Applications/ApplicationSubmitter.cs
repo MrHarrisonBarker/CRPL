@@ -1,4 +1,5 @@
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Services.Interfaces;
 
@@ -15,7 +16,7 @@ public static class ApplicationSubmitter
             case ApplicationType.OwnershipRestructure:
                 return await OwnershipRestructureSubmitter((OwnershipRestructureApplication)submittedApplication, copyrightService);
             case ApplicationType.Dispute:
-                break;
+                return await DisputeSubmitter((DisputeApplication)submittedApplication, copyrightService);
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -39,5 +40,14 @@ public static class ApplicationSubmitter
         ownershipRestructureApplication.Status = ApplicationStatus.Submitted;
         
         return ownershipRestructureApplication;
+    }
+
+    private static async Task<Application> DisputeSubmitter(DisputeApplication disputeApplication, ICopyrightService copyrightService)
+    {
+        
+        
+        disputeApplication.Status = ApplicationStatus.Submitted;
+        
+        return disputeApplication;
     }
 }
