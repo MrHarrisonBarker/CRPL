@@ -1,0 +1,43 @@
+<div id="form-wrapper">
+  <form clrForm clrLayout="compact" [formGroup]="DisputeForm" clrLabelSize="4">
+
+    <h3>Dispute application</h3>
+    <hr/>
+
+    <clr-select-container>
+      <label>Type of dispute</label> <select clrSelect name="options" formControlName="DisputeType">
+      <option [value]="type" *ngFor="let type of DisputeTypes">{{type}}</option>
+    </select>
+    </clr-select-container>
+
+    <clr-textarea-container>
+      <label>Reason</label> <textarea clrTextarea formControlName="Reason" name="Reason" required></textarea>
+      <clr-control-error>This field cannot be empty!</clr-control-error>
+    </clr-textarea-container>
+
+    <clr-date-container>
+      <label>Date of discovery</label> <input type="date" clrDate name="Spotted" formControlName="Spotted"/>
+    </clr-date-container>
+
+    <clr-input-container>
+      <label class="clr-control-label">Number of infractions</label> <input clrInput type="number" name="Infractions" required formControlName="Infractions"/>
+      <clr-control-error>This field cannot be empty!</clr-control-error>
+    </clr-input-container>
+
+    <clr-input-container>
+      <label class="clr-control-label">Contact address</label> <input clrInput name="ContactAddress" required formControlName="ContactAddress"/>
+      <clr-control-error>This field cannot be empty!</clr-control-error>
+    </clr-input-container>
+
+    <clr-input-container>
+      <label class="clr-control-label">Link to infraction</label> <input clrInput name="LinkToInfraction" required formControlName="LinkToInfraction"/>
+      <clr-control-error>This field cannot be empty!</clr-control-error>
+    </clr-input-container>
+
+    <clr-textarea-container>
+      <label>Expected recourse</label> <textarea clrTextarea formControlName="ExpectedRecourse" name="ExpectedRecourse" required></textarea>
+      <clr-control-error>This field cannot be empty!</clr-control-error>
+    </clr-textarea-container>
+
+  </form>
+</div>

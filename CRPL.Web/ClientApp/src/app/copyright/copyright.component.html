@@ -14,7 +14,18 @@
     </button>
     <div>
       <button type="button" class="btn btn-primary btn-sm" [disabled]="!IsOwner()" (click)="NavigateToDashboard()">managment</button>
+      <button type="button" class="btn btn-danger btn-sm" [disabled]="IsOwner()" (click)="DisputeOpen = true">dispute</button>
     </div>
   </div>
   <copyright-view [Copyright]="Copyright" [ShowActions]="false"></copyright-view>
 </div>
+
+<clr-modal [(clrModalOpen)]="DisputeOpen" clrModalSize="xl">
+  <h3 class="modal-title">Dispute this copyright</h3>
+  <div class="modal-body">
+    <dispute-form *ngIf="DisputeOpen" [RegisteredWork]="Copyright" [ExistingApplication]="ExistingDispute"></dispute-form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline" (click)="DisputeOpen = false; CancelDispute()">Cancel</button>
+  </div>
+</clr-modal>

@@ -17,3 +17,8 @@ public class DisputeViewModel : ApplicationViewModel
     public RegisteredWorkViewModel DisputedWork { get; set; }
     public UserAccountViewModel Accuser { get; set; }
 }
+
+public class DisputeViewModelWithoutAssociated : ApplicationViewModelWithoutAssociated
+{
+    
+}

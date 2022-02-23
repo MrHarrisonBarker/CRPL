@@ -11,6 +11,8 @@ import {OwnershipRestructureViewModel} from "../_Models/Applications/OwnershipRe
 import {OwnershipRestructureInputModel} from "../_Models/Applications/OwnershipRestructureInputModel";
 import {tap} from "rxjs/operators";
 import {WarehouseService} from "./warehouse.service";
+import {DisputeInputModel} from "../_Models/Applications/DisputeInputModel";
+import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
 
 @Injectable({
   providedIn: 'root'
@@ -71,6 +73,12 @@ export class FormsService
   public SubmitOwnershipRestructure (id: string): Observable<OwnershipRestructureViewModel>
   {
     return this.http.post<OwnershipRestructureViewModel>(this.BaseUrl + FormsPaths.OwnershipRestructureSubmit + "/" + id, null)
+               .pipe(tap(application => this.warehouse.UpdateApplication(application)));
+  }
+
+  public UpdateDispute (inputModel: DisputeInputModel): Observable<DisputeViewModel>
+  {
+    return this.http.post<DisputeViewModel>(this.BaseUrl + FormsPaths.Dispute, inputModel)
                .pipe(tap(application => this.warehouse.UpdateApplication(application)));
   }
 }

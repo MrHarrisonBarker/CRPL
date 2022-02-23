@@ -38,7 +38,7 @@ public class AutoMapping : Profile
 
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModelWithoutAssociated>();
         CreateMap<OwnershipRestructureApplication, OwnershipRestructureViewModelWithoutAssociated>();
-        // CreateMap<DisputeApplication, DisputeViewModel>()
+        CreateMap<DisputeApplication, DisputeViewModelWithoutAssociated>();
 
         CreateMap<Application, ApplicationViewModel>()
             .ForMember(model => model.AssociatedWork, x => x.MapFrom(src => src.AssociatedWork))

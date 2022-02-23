@@ -6,6 +6,10 @@ import {ClarityIcons, undoIcon} from "@cds/core/icon";
 import {Location} from "@angular/common";
 import {AuthService} from "../_Services/auth.service";
 import {AlertService} from "../_Services/alert.service";
+import {OwnershipRestructureViewModel} from "../_Models/Applications/OwnershipRestructureViewModel";
+import {ApplicationType} from "../_Models/Applications/ApplicationViewModel";
+import {ApplicationStatus} from "../_Models/Applications/ApplicationStatus";
+import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
 
 @Component({
   selector: 'app-copyright',
@@ -16,6 +20,7 @@ export class CopyrightComponent implements OnInit
 {
   public Copyright!: RegisteredWorkViewModel;
   public Loaded: boolean = false;
+  public DisputeOpen: boolean = false;
 
   constructor (
     private route: ActivatedRoute,
@@ -57,5 +62,19 @@ export class CopyrightComponent implements OnInit
   public NavigateToDashboard (): void
   {
     this.router.navigate(['/dashboard', {workId: this.Copyright.Id}]);
+  }
+
+  get ExistingDispute (): DisputeViewModel
+  {
+    if (this.Copyright.AssociatedApplication)
+    {
+      return this.Copyright.AssociatedApplication.find(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Incomplete) as OwnershipRestructureViewModel;
+    }
+    return undefined as any;
+  }
+
+  public CancelDispute (): void
+  {
+
   }
 }
