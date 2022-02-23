@@ -18,7 +18,7 @@ export class AuthService
   private Ethereum = (window as any).ethereum;
   private readonly BaseUrl;
 
-  private AuthenticationToken?: string = "";
+  public AuthenticationToken?: string = "";
   private Address?: string = "";
 
   public UserAccount: BehaviorSubject<UserAccountViewModel> = new BehaviorSubject<UserAccountViewModel>(null as any);
