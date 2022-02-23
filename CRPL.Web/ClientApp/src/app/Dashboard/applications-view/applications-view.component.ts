@@ -7,6 +7,7 @@ import {WarehouseService} from "../../_Services/warehouse.service";
 import {AlertService} from "../../_Services/alert.service";
 import {FormsService} from "../../_Services/forms.service";
 import {ClarityIcons, trashIcon} from "@cds/core/icon";
+import {DisputeViewModel} from "../../_Models/Applications/DisputeViewModel";
 
 @Component({
   selector: 'applications-view [Application] [ShowForms]',
@@ -42,6 +43,11 @@ export class ApplicationsViewComponent implements OnInit
   get ApplicationAsOwnershipRestructure() : OwnershipRestructureViewModel
   {
     return (this.Application as OwnershipRestructureViewModel);
+  }
+
+  get ApplicationAsDispute() : DisputeViewModel
+  {
+    return (this.Application as DisputeViewModel);
   }
 
   get ExistingWork(): RegisteredWorkViewModel

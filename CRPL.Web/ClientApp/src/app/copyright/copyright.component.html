@@ -23,7 +23,7 @@
 <clr-modal [(clrModalOpen)]="DisputeOpen" clrModalSize="xl">
   <h3 class="modal-title">Dispute this copyright</h3>
   <div class="modal-body">
-    <dispute-form *ngIf="DisputeOpen" [RegisteredWork]="Copyright" [ExistingApplication]="ExistingDispute"></dispute-form>
+    <dispute-form *ngIf="DisputeOpen" [RegisteredWork]="Copyright"></dispute-form>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline" (click)="DisputeOpen = false; CancelDispute()">Cancel</button>

@@ -50,12 +50,12 @@ export class DisputeFormComponent implements OnInit, OnDestroy
 
     if (!this.authService.IsAuthenticated.getValue()) throw new Error("Not authenticated");
 
-    // NO WORK
-    if (!this.RegisteredWork)
+    // NO WORK AND APPLICATION
+    if (!this.RegisteredWork && !this.ExistingApplication)
     {
       this.alertService.Alert({Type: 'danger', Message: 'No work found!'})
       // this.NoWork = true;
-      throw new Error("No work found!");
+      throw new Error("No work and no application!");
     }
 
     // NO APPLICATION
@@ -111,7 +111,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy
       AccuserId: this.authService.UserAccount.getValue().Id,
       ContactAddress: this.DisputeForm.value.ContactAddress,
       DisputeType: this.DisputeForm.value.DisputeType,
-      DisputedWorkId: this.RegisteredWork.Id,
+      DisputedWorkId: this.ExistingApplication.DisputedWork != undefined ? this.ExistingApplication.DisputedWork.Id : this.RegisteredWork.Id,
       ExpectedRecourse: this.DisputeForm.value.ExpectedRecourse,
       Id: this.ExistingApplication != undefined ? this.ExistingApplication.Id : undefined,
       Infractions: this.DisputeForm.value.Infractions,
@@ -129,6 +129,14 @@ export class DisputeFormComponent implements OnInit, OnDestroy
 
   private populate (): void
   {
-
+    this.DisputeForm.patchValue({
+      DisputeType: this.ExistingApplication.DisputeType,
+      Reason: this.ExistingApplication.Reason,
+      Spotted: this.ExistingApplication.Spotted,
+      Infractions: this.ExistingApplication.Infractions,
+      ExpectedRecourse: this.ExistingApplication.ExpectedRecourse,
+      ContactAddress: this.ExistingApplication.ContactAddress,
+      LinkToInfraction: this.ExistingApplication.LinkToInfraction
+    });
   }
 }

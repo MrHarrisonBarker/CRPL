@@ -64,17 +64,7 @@ export class CopyrightComponent implements OnInit
     this.router.navigate(['/dashboard', {workId: this.Copyright.Id}]);
   }
 
-  get ExistingDispute (): DisputeViewModel
-  {
-    if (this.Copyright.AssociatedApplication)
-    {
-      return this.Copyright.AssociatedApplication.find(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Incomplete) as OwnershipRestructureViewModel;
-    }
-    return undefined as any;
-  }
-
   public CancelDispute (): void
   {
-
   }
 }
