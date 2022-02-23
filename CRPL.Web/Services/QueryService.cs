@@ -3,6 +3,8 @@ using System.Numerics;
 using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
+using CRPL.Data.Applications;
+using CRPL.Data.Applications.ViewModels;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Web.Core.Query;
@@ -48,12 +50,14 @@ public class QueryService : IQueryService
         return await injectFromChain(Mapper.Map<RegisteredWorkWithAppsViewModel>(await Context.RegisteredWorks
             .Include(x => x.AssociatedApplication)
             .Include(x => x.UserWorks).ThenInclude(x => x.UserAccount)
-            .FirstOrDefaultAsync(x => x.Id == id)));
+            .PruneApplications().FirstOrDefaultAsync(x => x.Id == id)));
     }
 
     public async Task<List<RegisteredWorkViewModel>> GetAll(int from, int take = 100)
     {
         return await Context.RegisteredWorks
+            .AsNoTracking()
+            .Include(x => x.AssociatedApplication)
             .Where(x => x.Status != RegisteredWorkStatus.Created)
             .OrderBy(x => x.Created)
             .Skip(from).Take(take)
@@ -80,7 +84,18 @@ public class QueryService : IQueryService
             }
         }
         
-        return works.Skip(from).Take(take).Select(x => Mapper.Map<RegisteredWorkViewModel>(x)).ToListAsync();
+        return works.Skip(from).Take(take).PruneApplications().Select(x => Mapper.Map<RegisteredWorkViewModel>(x)).ToListAsync();
+    }
+
+    public async Task<List<DisputeViewModelWithoutAssociated>> GetAllDisputes(int @from, int take = 100)
+    {
+        return await Context.DisputeApplications
+            .AsNoTracking()
+            .Where(x => x.Status == ApplicationStatus.Submitted)
+            .OrderBy(x => x.Created)
+            .Skip(from).Take(take)
+            .Select(x => Mapper.Map<DisputeViewModelWithoutAssociated>(x))
+            .ToListAsync();
     }
 
     public async Task<List<RegisteredWorkWithAppsViewModel>> GetUsersWorks(Guid id)
@@ -89,7 +104,8 @@ public class QueryService : IQueryService
         var works = await Context.RegisteredWorks
             .Include(x => x.AssociatedApplication)
             .Include(x => x.UserWorks).ThenInclude(x => x.UserAccount)
-            .Where(x => x.UserWorks.Any(u => u.UserId == id)).Select(x => Mapper.Map<RegisteredWorkWithAppsViewModel>(x)).ToListAsync();
+            .Where(x => x.UserWorks.Any(u => u.UserId == id))
+            .PruneApplications().Select(x => Mapper.Map<RegisteredWorkWithAppsViewModel>(x)).ToListAsync();
 
         foreach (var registeredWork in works)
         {

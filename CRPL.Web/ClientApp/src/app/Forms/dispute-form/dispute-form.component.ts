@@ -111,7 +111,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy
       AccuserId: this.authService.UserAccount.getValue().Id,
       ContactAddress: this.DisputeForm.value.ContactAddress,
       DisputeType: this.DisputeForm.value.DisputeType,
-      DisputedWorkId: this.ExistingApplication.DisputedWork != undefined ? this.ExistingApplication.DisputedWork.Id : this.RegisteredWork.Id,
+      DisputedWorkId: this.ExistingApplication != undefined ? this.ExistingApplication.AssociatedWork?.Id : this.RegisteredWork.Id,
       ExpectedRecourse: this.DisputeForm.value.ExpectedRecourse,
       Id: this.ExistingApplication != undefined ? this.ExistingApplication.Id : undefined,
       Infractions: this.DisputeForm.value.Infractions,
@@ -130,7 +130,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy
   private populate (): void
   {
     this.DisputeForm.patchValue({
-      DisputeType: this.ExistingApplication.DisputeType,
+      DisputeType: DisputeType[this.ExistingApplication.DisputeType],
       Reason: this.ExistingApplication.Reason,
       Spotted: this.ExistingApplication.Spotted,
       Infractions: this.ExistingApplication.Infractions,
