@@ -52,6 +52,7 @@ import {
 import {WorkApplicationsComponent} from './Core/work-applications/work-applications.component';
 import {DisputeFormComponent} from './Forms/dispute-form/dispute-form.component';
 import {RememberedGuard} from "./_Guards/remembered.guard";
+import { CopyrightMinComponent } from './copyright/copyright-min/copyright-min.component';
 
 @NgModule({
   declarations: [
@@ -87,7 +88,8 @@ import {RememberedGuard} from "./_Guards/remembered.guard";
     CpyRestructureViewFailedComponent,
     CopyrightViewExpiredComponent,
     WorkApplicationsComponent,
-    DisputeFormComponent
+    DisputeFormComponent,
+    CopyrightMinComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

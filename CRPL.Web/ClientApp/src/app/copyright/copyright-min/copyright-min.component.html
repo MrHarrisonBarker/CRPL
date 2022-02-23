@@ -1,0 +1,21 @@
+<div class="card" id="copyright-min">
+  <div class="card-block">
+    <div class="card-title flex-between">
+      <div><em>"{{Copyright.Title}}"</em></div>
+      <copyright-status [status]="Copyright.Status"></copyright-status>
+    </div>
+    <div class="card-text" id="copyright-info">
+      <div class="flex-between">
+        <p class="card-text text-muted"><em><a [routerLink]="['/cpy',Copyright.Id]">{{Copyright.Id}}</a></em></p>
+        <p class="card-text" style="margin-right: 0.5rem"><em class="text-muted">right id: <a target="_blank">{{Copyright?.RightId}}</a></em></p>
+      </div>
+
+      <div><em class="text-muted">transaction:</em>&nbsp;&nbsp;<a target="_blank" [href]="Copyright.RegisteredTransactionUri">{{Copyright.RegisteredTransactionId | slice:0:32}}</a></div>
+
+      <div style="display: flex">
+        <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Copyright.Created | date:'medium'}}</p>
+        <p class="card-text"><b>registered:</b> {{Copyright?.Registered | date:'medium'}}</p>
+      </div>
+    </div>
+  </div>
+</div>
