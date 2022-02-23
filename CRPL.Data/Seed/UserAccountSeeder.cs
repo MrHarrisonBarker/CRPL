@@ -20,8 +20,8 @@ public class UserAccountSeeder
                 Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
                 Email = null,
                 Status = UserAccount.AccountStatus.Complete,
-                FirstName = "Test",
-                LastName = "User",
+                FirstName = "Harrison",
+                LastName = "Barker",
                 PhoneNumber = "07852276048",
                 RegisteredJurisdiction = "GBR",
                 DateOfBirth = new UserAccount.DOB

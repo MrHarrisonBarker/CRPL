@@ -47,7 +47,10 @@ public class UseSeedingBuilder
             context.RegisteredWorks.RemoveRange(context.RegisteredWorks);
             context.UserApplications.RemoveRange(context.UserApplications);
             context.UserWorks.RemoveRange(context.UserWorks);
+            context.UserAccounts.RemoveRange(context.UserAccounts);
             context.SaveChanges();
+            
+            new UserAccountSeeder(context).Seed();
         }
     }
 }
