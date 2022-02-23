@@ -41,7 +41,7 @@ abstract contract CopyrightBase is ICopyrightMeta {
     mapping (uint256 => ProposalVote[]) internal _proposalVotes;
 
     // rightId -> number of votes
-    mapping (uint256 => uint8) internal _numOfPropVotes;
+    mapping (uint256 => uint256) internal _numOfPropVotes;
 
     // rightId -> approved address
     mapping (uint256 => address) internal _approvedAddress;
@@ -73,7 +73,7 @@ abstract contract CopyrightBase is ICopyrightMeta {
         uint256 rightId = _copyCount.next();
 
         // registering copyright across all shareholders
-        for (uint8 i = 0; i < to.length; i++) {
+        for (uint256 i = 0; i < to.length; i++) {
 
             require(to[i].share > 0, INVALID_SHARE);
 
@@ -92,7 +92,7 @@ abstract contract CopyrightBase is ICopyrightMeta {
 
     function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external override validId(rightId) isExpired(rightId) validShareholders(restructured) isShareholderOrApproved(rightId, msg.sender) payable {
         
-        for (uint8 i = 0; i < restructured.length; i++) {
+        for (uint256 i = 0; i < restructured.length; i++) {
 
             require(restructured[i].share > 0, INVALID_SHARE);
 
@@ -119,7 +119,7 @@ abstract contract CopyrightBase is ICopyrightMeta {
         _proposalVotes[rightId].push(ProposalVote(msg.sender, accepted));
         _numOfPropVotes[rightId] ++;
 
-        for (uint8 i = 0; i < _proposalVotes[rightId].length; i ++) 
+        for (uint256 i = 0; i < _proposalVotes[rightId].length; i ++) 
         {
             if (!_proposalVotes[rightId][i].accepted) 
             {
@@ -189,7 +189,7 @@ abstract contract CopyrightBase is ICopyrightMeta {
     function _mapToOwnershipStakes(OwnershipStructure memory structure) internal pure returns (OwnershipStake[] memory) 
     {
         OwnershipStake[] memory stakes = new OwnershipStake[](structure.stakes.length);
-        for (uint8 i = 0; i < structure.stakes.length; i++) {
+        for (uint256 i = 0; i < structure.stakes.length; i++) {
             stakes[i] = structure.stakes[i];
         }
         return stakes;
@@ -199,7 +199,7 @@ abstract contract CopyrightBase is ICopyrightMeta {
 
         OwnershipStake[] memory holdersWhoVoted = _shareholders[rightId].stakes;
 
-        for (uint8 i = 0; i < holdersWhoVoted.length; i++) {
+        for (uint256 i = 0; i < holdersWhoVoted.length; i++) {
             delete(_proposalVotes[rightId]);
         }
 
@@ -209,7 +209,7 @@ abstract contract CopyrightBase is ICopyrightMeta {
 
     function _checkHasVoted(uint256 rightId, address addr) internal view
     {
-        for (uint8 i = 0; i < _proposalVotes[rightId].length; i ++)
+        for (uint256 i = 0; i < _proposalVotes[rightId].length; i ++)
         {
             require(_proposalVotes[rightId][i].voter != addr, ALREADY_VOTED);
         }
@@ -219,8 +219,8 @@ abstract contract CopyrightBase is ICopyrightMeta {
 
     modifier isShareholderOrApproved(uint256 rightId, address addr) 
     {
-        uint8 c = 0;
-        for (uint8 i = 0; i < _shareholders[rightId].stakes.length; i++) 
+        uint256 c = 0;
+        for (uint256 i = 0; i < _shareholders[rightId].stakes.length; i++) 
         {
             if (_shareholders[rightId].stakes[i].owner == addr) c ++;
         }
@@ -245,7 +245,7 @@ abstract contract CopyrightBase is ICopyrightMeta {
     {
         require(holders.length > 0, NO_SHAREHOLDERS);
 
-        for (uint8 i = 0; i < holders.length; i ++) 
+        for (uint256 i = 0; i < holders.length; i ++) 
         {
             require(holders[i].owner != address(0), INVALID_ADDR);
         }
