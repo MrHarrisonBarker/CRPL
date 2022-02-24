@@ -2,8 +2,8 @@
   <section cds-theme="dark">
     <clr-tabs>
       <clr-tab>
-        <button clrTabLink>Copyrights</button>
-        <clr-tab-content *clrIfActive="true">
+        <button clrTabLink (click)="ResetSelected()">Copyrights</button>
+        <clr-tab-content>
           <div class="content-container">
             <nav class="sidenav">
               <section class="sidenav-content">
@@ -66,7 +66,7 @@
         </clr-tab-content>
       </clr-tab>
       <clr-tab>
-        <button clrTabLink>Disputes</button>
+        <button clrTabLink (click)="ResetSelected()">Disputes</button>
         <clr-tab-content>
           <div class="content-container">
             <nav class="sidenav">

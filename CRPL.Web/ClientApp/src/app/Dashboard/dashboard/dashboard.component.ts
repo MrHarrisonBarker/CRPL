@@ -39,8 +39,6 @@ export class DashboardComponent implements OnInit, OnDestroy
     public warehouse: WarehouseService,
     private route: ActivatedRoute)
   {
-    this.alertService.TriggerChange.subscribe(x => this.decChanges);
-
     this.CompletedApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Complete)));
     this.SubmittedApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Submitted)));
     this.PartialApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Incomplete)));
@@ -52,31 +50,27 @@ export class DashboardComponent implements OnInit, OnDestroy
     this.RegisteredCopyrights = this.warehouse.__MyWorks.pipe(map(x => x.filter(a => a.Status == RegisteredWorkStatus.Registered || a.Status == RegisteredWorkStatus.Expired)));
   }
 
-  private decChanges()
-  {
-
-  }
-
   async ngOnInit (): Promise<any>
   {
 
     // GET EVERYTHING
-    await forkJoin([this.formsService.GetMyApplications(), this.copyrightService.GetMyCopyrights(), this.copyrightService.GetMyDisputed()]).subscribe(x =>
+    await forkJoin([this.formsService.GetMyApplications(), this.copyrightService.GetMyCopyrights(), this.copyrightService.GetMyDisputed()]).subscribe(async x =>
     {
-
-      // ROUTE WORK
-      if (this.route.snapshot.paramMap.has("workId")) this.Selected = this.warehouse.MyWorks.find(x => x.Id == this.route.snapshot.paramMap.get("workId")) as RegisteredWorkViewModel
-
-      // ROUTE APPLICATION
-      if (this.route.snapshot.paramMap.has("applicationId"))
-      {
-        this.Selected = this.warehouse.MyApplications.find(x => x.Id == this.route.snapshot.paramMap.get("applicationId")) as ApplicationViewModel
-        this.IsApplication = true;
-      }
-
       this.Loaded = true;
-
     });
+
+    // ROUTE WORK
+    if (this.route.snapshot.paramMap.has("workId"))
+    {
+      await this.warehouse.__MyWorks.pipe(map(w => w.find(x => x.Id == this.route.snapshot.paramMap.get("workId")))).subscribe(x => this.Selected = x as RegisteredWorkViewModel);
+    }
+
+    // ROUTE APPLICATION
+    if (this.route.snapshot.paramMap.has("applicationId"))
+    {
+      await this.warehouse.__MyApplications.pipe(map(w => w.find(x => x.Id == this.route.snapshot.paramMap.get("applicationId")))).subscribe(x => this.Selected = x as ApplicationViewModel);
+      this.IsApplication = true;
+    }
 
     console.log(this.route.snapshot.paramMap.keys);
   }
@@ -85,12 +79,12 @@ export class DashboardComponent implements OnInit, OnDestroy
   {
   }
 
-  get SelectedAsCopyright () : RegisteredWorkViewModel
+  get SelectedAsCopyright (): RegisteredWorkViewModel
   {
     return (this.Selected as RegisteredWorkViewModel);
   }
 
-  get SelectedAsApplication () : ApplicationViewModel
+  get SelectedAsApplication (): ApplicationViewModel
   {
     return (this.Selected as ApplicationViewModel);
   }
@@ -106,5 +100,10 @@ export class DashboardComponent implements OnInit, OnDestroy
   {
     if (right.AssociatedApplication) return right.AssociatedApplication?.filter(x => x.ApplicationType == 2).length;
     return 0;
+  }
+
+  public ResetSelected ()
+  {
+    this.Selected = null as any;
   }
 }
