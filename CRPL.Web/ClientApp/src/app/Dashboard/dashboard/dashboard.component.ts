@@ -9,6 +9,7 @@ import {AlertService} from "../../_Services/alert.service";
 import {WarehouseService} from "../../_Services/warehouse.service";
 import {ActivatedRoute} from "@angular/router";
 import {map} from "rxjs/operators";
+import {DisputeViewModel} from "../../_Models/Applications/DisputeViewModel";
 
 @Component({
   selector: 'app-dashboard',
@@ -25,6 +26,7 @@ export class DashboardComponent implements OnInit, OnDestroy
   public SubmittedApplications!: Observable<ApplicationViewModel[]>;
   public PartialApplications!: Observable<ApplicationViewModel[]>;
   public FailedApplications!: Observable<ApplicationViewModel[]>;
+  public Disputed!: Observable<DisputeViewModel[]>;
 
   public RegisteredCopyrights!: Observable<RegisteredWorkViewModel[]>;
 
@@ -42,6 +44,8 @@ export class DashboardComponent implements OnInit, OnDestroy
     this.PartialApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Incomplete)));
     this.FailedApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Failed)));
 
+    this.Disputed = this.warehouse.__MyDisputed;
+
     this.RegisteredCopyrights = this.warehouse.__MyWorks.pipe(map(x => x.filter(a => a.Status == RegisteredWorkStatus.Registered || a.Status == RegisteredWorkStatus.Expired)));
   }
 
@@ -54,7 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy
   {
 
     // GET EVERYTHING
-    await forkJoin([this.formsService.GetMyApplications(), this.copyrightService.GetMyCopyrights()]).subscribe(x =>
+    await forkJoin([this.formsService.GetMyApplications(), this.copyrightService.GetMyCopyrights(), this.copyrightService.GetMyDisputed()]).subscribe(x =>
     {
 
       // ROUTE WORK
@@ -93,5 +97,11 @@ export class DashboardComponent implements OnInit, OnDestroy
     console.log("selected", selected);
     this.Selected = selected;
     this.IsApplication = isApplication;
+  }
+
+  public NumberOfDisputes (right: RegisteredWorkViewModel): number
+  {
+    if (right.AssociatedApplication) return right.AssociatedApplication?.filter(x => x.ApplicationType == 2).length;
+    return 0;
   }
 }

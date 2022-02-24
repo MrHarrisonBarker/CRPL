@@ -1,5 +1,6 @@
 using CRPL.Data;
 using CRPL.Data.Account;
+using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,6 +43,20 @@ public class QueryController : ControllerBase
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when getting users works");
+            throw;
+        }
+    }
+    
+    [HttpGet("my/{id}/disputed")]
+    public async Task<List<DisputeViewModel>> GetMyDisputedWork(Guid id)
+    {
+        try
+        {
+            return await QueryService.GetAllOwnersDisputes(id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when getting users disputed works");
             throw;
         }
     }

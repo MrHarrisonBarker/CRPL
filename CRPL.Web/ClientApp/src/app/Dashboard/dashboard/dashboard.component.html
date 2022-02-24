@@ -10,10 +10,12 @@
                 <section class="nav-group collapsible">
                   <input id="copyrightsNav" type="checkbox"/> <label for="copyrightsNav">Copyrights</label>
                   <ul class="nav-list">
-                    <li *ngFor="let right of RegisteredCopyrights | async"><a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">
-                      <span *ngIf="right.Status == 4">{{right.Meta?.Title}}</span>
-                      <span *ngIf="right.Status == 6"><span style="margin-right:0.2rem">{{right.Title}}</span><copyright-status [status]="6"></copyright-status></span>
-                    </a></li>
+                    <li *ngFor="let right of RegisteredCopyrights | async">
+                      <a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">
+                        <span *ngIf="right.Status == 4" style="margin-right:0.2rem">{{right.Meta?.Title}}</span><span class="badge badge-danger" *ngIf="NumberOfDisputes(right) > 0">{{NumberOfDisputes(right)}}</span>
+                        <span *ngIf="right.Status == 6"><span style="margin-right:0.2rem">{{right.Title}}</span><copyright-status [status]="6"></copyright-status></span>
+                      </a>
+                    </li>
                   </ul>
                 </section>
                 <section class="nav-group collapsible">
@@ -60,6 +62,14 @@
                 <applications-view [Application]="SelectedAsApplication" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
               </div>
             </div>
+          </div>
+        </clr-tab-content>
+      </clr-tab>
+      <clr-tab>
+        <button clrTabLink>Disputes</button>
+        <clr-tab-content>
+          <div class="content-container">
+            {{Disputed | async | json}}
           </div>
         </clr-tab-content>
       </clr-tab>

@@ -8,6 +8,7 @@ import {Observable} from "rxjs";
 import {BindProposalInput, BindProposalWorkInput} from "../_Models/StructuredOwnership/BindProposalInput";
 import {WarehouseService} from "./warehouse.service";
 import {tap} from "rxjs/operators";
+import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,12 @@ export class CopyrightService
   {
     return this.http.get<RegisteredWorkViewModel[]>(this.BaseUrl + QueryPaths.GetMy + "/" + this.authService.UserAccount.getValue().Id)
                .pipe(tap(works => this.warehouse.MyWorks = works));
+  }
+
+  public GetMyDisputed (): Observable<DisputeViewModel[]>
+  {
+    return this.http.get<DisputeViewModel[]>(this.BaseUrl + QueryPaths.GetMy + "/" + this.authService.UserAccount.getValue().Id + "/disputed")
+               .pipe(tap(works => this.warehouse.MyDisputed = works));
   }
 
   public BindProposal (input: BindProposalInput): Observable<any>

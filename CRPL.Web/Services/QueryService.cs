@@ -98,6 +98,18 @@ public class QueryService : IQueryService
             .ToListAsync();
     }
 
+    public async Task<List<DisputeViewModel>> GetAllOwnersDisputes(Guid id)
+    {
+        Logger.LogInformation("Getting {Id}'s disputes on their work", id);
+        return await Context.DisputeApplications
+            .AsNoTracking()
+            .AsSplitQuery()
+            .Include(x => x.AssociatedWork).ThenInclude(x => x.UserWorks).ThenInclude(x => x.UserAccount)
+            .Where(x => x.AssociatedWork.UserWorks.Any(u => u.UserId == id))
+            .Where(x => x.Status == ApplicationStatus.Complete || x.Status == ApplicationStatus.Submitted)
+            .Select(x => Mapper.Map<DisputeViewModel>(x)).ToListAsync();
+    }
+
     public async Task<List<RegisteredWorkWithAppsViewModel>> GetUsersWorks(Guid id)
     {
         Logger.LogInformation("Getting {Id}'s works", id);

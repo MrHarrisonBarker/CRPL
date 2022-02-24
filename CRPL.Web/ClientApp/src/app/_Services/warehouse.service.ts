@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {ApplicationViewModel} from "../_Models/Applications/ApplicationViewModel";
 import {RegisteredWorkViewModel} from "../_Models/Works/RegisteredWork";
 import {Subject} from "rxjs";
+import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,11 @@ export class WarehouseService
   set MyApplications (value: ApplicationViewModel[])
   {
     this.__MyApplications.next(value);
+  }
+
+  set MyDisputed (value: DisputeViewModel[])
+  {
+    this.__MyDisputed.next(value);
   }
 
   public UpdateApplication (value: ApplicationViewModel)
@@ -42,6 +48,7 @@ export class WarehouseService
 
   public __MyApplications: Subject<ApplicationViewModel[]> = new Subject<ApplicationViewModel[]>();
   public __MyWorks: Subject<RegisteredWorkViewModel[]> = new Subject<RegisteredWorkViewModel[]>();
+  public __MyDisputed: Subject<DisputeViewModel[]> = new Subject<DisputeViewModel[]>();
 
   constructor ()
   {
