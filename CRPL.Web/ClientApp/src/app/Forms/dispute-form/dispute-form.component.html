@@ -46,5 +46,11 @@
       <clr-control-helper>${{externalService.CurrentPrice.getValue() * DisputeForm.value['ExpectedRecourseData']}} (this exchange rate may change)</clr-control-helper>
     </clr-input-container>
 
+    <clr-checkbox-wrapper>
+      <input type="checkbox" clrCheckbox name="ula" required value="ula" [formControl]="Accepted"/> <label>accept ula</label>
+    </clr-checkbox-wrapper>
+
+    <button class="btn btn-primary" [disabled]="DisputeForm.invalid || Accepted.invalid" (click)="Submit()">Submit</button>
+
   </form>
 </div>

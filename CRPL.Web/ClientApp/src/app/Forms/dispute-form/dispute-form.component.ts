@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {FormsService} from "../../_Services/forms.service";
 import {ValidatorsService} from "../../_Services/validators.service";
@@ -27,6 +27,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy
 
   public DisputeTypes: string[] = Object.values(DisputeType).filter(value => typeof value != 'number') as string[];
   public ExpectedRecourseTypes: string[] = Object.values(ExpectedRecourse).filter(value => typeof value != 'number') as string[];
+  public Accepted!: FormControl;
 
   constructor (
     private formBuilder: FormBuilder,
@@ -47,6 +48,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy
       ContactAddress: ['', Validators.required],
       LinkToInfraction: ['', Validators.required]
     });
+    this.Accepted = this.formBuilder.control(false, [Validators.required]);
   }
 
   get ExpectedRecourse() {
@@ -150,8 +152,10 @@ export class DisputeFormComponent implements OnInit, OnDestroy
     });
   }
 
-  public ExchangeRate(eth: number)
+  public Submit (): void
   {
-
+    this.unsubscribe.next();
+    if (this.ExistingApplication?.Id) this.formsService.SubmitDispute(this.ExistingApplication.Id)
+                                          .subscribe(x => this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]));
   }
 }

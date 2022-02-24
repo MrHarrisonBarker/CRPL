@@ -1,5 +1,6 @@
 using System.Net;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Services.Interfaces;
@@ -129,6 +130,20 @@ public class FormsController : ControllerBase
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when submitting ownership restructure application");
+            throw;
+        }
+    }
+    
+    [HttpPost("copyright/submit/dispute/{id}")]
+    public async Task<DisputeViewModel> SubmitDispute(Guid id)
+    {
+        try
+        {
+            return await FormsService.Submit<DisputeApplication, DisputeViewModel>(id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when submitting dispute application");
             throw;
         }
     }

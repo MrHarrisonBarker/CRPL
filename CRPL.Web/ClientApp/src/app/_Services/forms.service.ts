@@ -81,4 +81,10 @@ export class FormsService
     return this.http.post<DisputeViewModel>(this.BaseUrl + FormsPaths.Dispute, inputModel)
                .pipe(tap(application => this.warehouse.UpdateApplication(application)));
   }
+
+  public SubmitDispute(id: string) : Observable<DisputeViewModel>
+  {
+    return this.http.post<DisputeViewModel>(this.BaseUrl + FormsPaths.DisputeSubmit + "/" + id, null)
+               .pipe(tap(application => this.warehouse.UpdateApplication(application)));
+  }
 }
