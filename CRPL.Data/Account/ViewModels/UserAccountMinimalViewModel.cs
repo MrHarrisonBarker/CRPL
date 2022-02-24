@@ -7,4 +7,5 @@ public class UserAccountMinimalViewModel
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string WalletPublicAddress { get; set; }
+    public string? WalletAddressUri { get; set; }
 }

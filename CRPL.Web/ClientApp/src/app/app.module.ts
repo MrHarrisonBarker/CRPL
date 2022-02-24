@@ -53,6 +53,10 @@ import {WorkApplicationsComponent} from './Core/work-applications/work-applicati
 import {DisputeFormComponent} from './Forms/dispute-form/dispute-form.component';
 import {RememberedGuard} from "./_Guards/remembered.guard";
 import { CopyrightMinComponent } from './copyright/copyright-min/copyright-min.component';
+import { DisputeViewCompletedComponent } from './Dashboard/dispute-view/dispute-view-completed/dispute-view-completed.component';
+import { DisputeViewSubmittedComponent } from './Dashboard/dispute-view/dispute-view-submitted/dispute-view-submitted.component';
+import { EnumPipe } from './Core/enum.pipe';
+import { UserCardComponent } from './Core/user-card/user-card.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +93,11 @@ import { CopyrightMinComponent } from './copyright/copyright-min/copyright-min.c
     CopyrightViewExpiredComponent,
     WorkApplicationsComponent,
     DisputeFormComponent,
-    CopyrightMinComponent
+    CopyrightMinComponent,
+    DisputeViewCompletedComponent,
+    DisputeViewSubmittedComponent,
+    EnumPipe,
+    UserCardComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

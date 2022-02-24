@@ -4,4 +4,5 @@ export interface UserAccountMinimalViewModel
     FirstName: string;
     LastName: string;
     WalletPublicAddress: string;
+    WalletAddressUri?: string;
 }

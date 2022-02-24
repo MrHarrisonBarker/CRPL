@@ -1,0 +1,7 @@
+<div style="display: flex; flex-direction: column">
+  <p class="card-text">{{User.FirstName}} {{User.LastName}}</p>
+  <div class="flex-between">
+    <p class="text-muted card-text"><em>{{User.Id}}</em></p>
+    <a class="card-text" target="_blank" [href]="User.WalletAddressUri">{{User.WalletPublicAddress}}</a>
+  </div>
+</div>
