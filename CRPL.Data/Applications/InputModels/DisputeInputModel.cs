@@ -8,7 +8,8 @@ public class DisputeInputModel : ApplicationInputModel
     public string Reason { get; set; }
     public DateTime? Spotted { get; set; }
     public int? Infractions { get; set; }
-    public string? ExpectedRecourse { get; set; }
+    public ExpectedRecourse? ExpectedRecourse { get; set; }
+    public string? ExpectedRecourseData { get; set; }
     public string? ContactAddress { get; set; }
     public string? LinkToInfraction { get; set; }
      

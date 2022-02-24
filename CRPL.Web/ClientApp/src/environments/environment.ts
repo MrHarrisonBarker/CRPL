@@ -3,7 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  etherScanKey: "ZKIHM2D1USRCWMQUN7FKW6HKFUA6H718A2"
 };
 
 /*

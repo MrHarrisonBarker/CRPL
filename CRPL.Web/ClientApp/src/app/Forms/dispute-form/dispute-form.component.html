@@ -1,5 +1,5 @@
 <div id="form-wrapper">
-  <form clrForm clrLayout="compact" [formGroup]="DisputeForm" clrLabelSize="4">
+  <form clrForm clrLayout="compact" [formGroup]="DisputeForm" clrLabelSize="4" autocomplete="off">
 
     <h3>Dispute application</h3>
     <hr/>
@@ -34,10 +34,17 @@
       <clr-control-error>This field cannot be empty!</clr-control-error>
     </clr-input-container>
 
-    <clr-textarea-container>
-      <label>Expected recourse</label> <textarea clrTextarea formControlName="ExpectedRecourse" name="ExpectedRecourse" required></textarea>
+    <clr-select-container>
+      <label>Expected recourse</label> <select clrSelect required name="ExpectedRecourse" formControlName="ExpectedRecourse">
+      <option [value]="type" *ngFor="let type of ExpectedRecourseTypes">{{type}}</option>
+    </select>
+    </clr-select-container>
+
+    <clr-input-container *ngIf="ExpectedRecourse == ExpectedRecourseTypes[1]">
+      <label class="clr-control-label">Charge (eth)</label> <input autocomplete="false" type="number" clrInput name="ExpectedRecourseData" required formControlName="ExpectedRecourseData"/>
       <clr-control-error>This field cannot be empty!</clr-control-error>
-    </clr-textarea-container>
+      <clr-control-helper>${{externalService.CurrentPrice.getValue() * DisputeForm.value['ExpectedRecourseData']}} (this exchange rate may change)</clr-control-helper>
+    </clr-input-container>
 
   </form>
 </div>

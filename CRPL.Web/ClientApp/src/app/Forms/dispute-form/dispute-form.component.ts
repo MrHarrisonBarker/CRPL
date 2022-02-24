@@ -6,10 +6,11 @@ import {ValidatorsService} from "../../_Services/validators.service";
 import {AlertService} from "../../_Services/alert.service";
 import {Router} from "@angular/router";
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
-import {DisputeViewModel} from "../../_Models/Applications/DisputeViewModel";
+import {DisputeViewModel, ExpectedRecourse} from "../../_Models/Applications/DisputeViewModel";
 import {debounceTime, distinctUntilChanged, switchMap, takeUntil, tap} from "rxjs/operators";
 import {Observable, Subject} from "rxjs";
 import {DisputeInputModel, DisputeType} from "../../_Models/Applications/DisputeInputModel";
+import {ExternalService} from "../../_Services/external.service";
 
 @Component({
   selector: 'dispute-form',
@@ -25,6 +26,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy
   private unsubscribe = new Subject<void>();
 
   public DisputeTypes: string[] = Object.values(DisputeType).filter(value => typeof value != 'number') as string[];
+  public ExpectedRecourseTypes: string[] = Object.values(ExpectedRecourse).filter(value => typeof value != 'number') as string[];
 
   constructor (
     private formBuilder: FormBuilder,
@@ -32,17 +34,23 @@ export class DisputeFormComponent implements OnInit, OnDestroy
     private formsService: FormsService,
     private validatorService: ValidatorsService,
     private alertService: AlertService,
-    private router: Router)
+    private router: Router,
+    public externalService: ExternalService)
   {
     this.DisputeForm = this.formBuilder.group({
       DisputeType: [this.DisputeTypes[0], Validators.required],
       Reason: ['', Validators.required],
       Spotted: ['' , Validators.required],
       Infractions: [1, [Validators.required, Validators.min(1)]],
-      ExpectedRecourse: ['', Validators.required],
+      ExpectedRecourse: [this.ExpectedRecourseTypes[0], Validators.required],
+      ExpectedRecourseData: [0.1],
       ContactAddress: ['', Validators.required],
       LinkToInfraction: ['', Validators.required]
     });
+  }
+
+  get ExpectedRecourse() {
+    return this.DisputeForm.value.ExpectedRecourse;
   }
 
   async ngOnInit (): Promise<any>
@@ -113,6 +121,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy
       DisputeType: this.DisputeForm.value.DisputeType,
       DisputedWorkId: this.ExistingApplication != undefined ? this.ExistingApplication.AssociatedWork?.Id : this.RegisteredWork.Id,
       ExpectedRecourse: this.DisputeForm.value.ExpectedRecourse,
+      ExpectedRecourseData: this.DisputeForm.value.ExpectedRecourseData,
       Id: this.ExistingApplication != undefined ? this.ExistingApplication.Id : undefined,
       Infractions: this.DisputeForm.value.Infractions,
       LinkToInfraction: this.DisputeForm.value.LinkToInfraction,
@@ -135,8 +144,14 @@ export class DisputeFormComponent implements OnInit, OnDestroy
       Spotted: this.ExistingApplication.Spotted,
       Infractions: this.ExistingApplication.Infractions,
       ExpectedRecourse: this.ExistingApplication.ExpectedRecourse,
+      ExpectedRecourseData: this.ExistingApplication.ExpectedRecourseData,
       ContactAddress: this.ExistingApplication.ContactAddress,
       LinkToInfraction: this.ExistingApplication.LinkToInfraction
     });
+  }
+
+  public ExchangeRate(eth: number)
+  {
+
   }
 }

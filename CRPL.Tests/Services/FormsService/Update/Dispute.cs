@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using CRPL.Data.Account;
@@ -34,7 +35,8 @@ public class Dispute
                              ContactAddress = "ADDRESS",
                              DisputeType = DisputeType.Ownership,
                              LinkToInfraction = "LINK",
-                             ExpectedRecourse = "GET RID OF IT"
+                             ExpectedRecourse = ExpectedRecourse.ChangeOfOwnership,
+                             ExpectedRecourseData = "GET RID OF IT"
                          }
                      }, new List<UserAccount>()))
         {
@@ -48,7 +50,8 @@ public class Dispute
                 Infractions = 10,
                 Spotted = DateTime.MinValue,
                 LinkToInfraction = "NEW LINK",
-                ExpectedRecourse = "NEW",
+                ExpectedRecourse = ExpectedRecourse.Payment,
+                ExpectedRecourseData = "100",
                 ContactAddress = "NEW ADDRESS",
             });
 
@@ -57,7 +60,8 @@ public class Dispute
             updatedApplication.Infractions.Should().Be(10);
             updatedApplication.Spotted.Should().Be(DateTime.MinValue);
             updatedApplication.LinkToInfraction.Should().BeEquivalentTo("NEW LINK");
-            updatedApplication.ExpectedRecourse.Should().BeEquivalentTo("NEW");
+            updatedApplication.ExpectedRecourse.Should().Be(ExpectedRecourse.Payment);
+            updatedApplication.ExpectedRecourseData.Should().BeEquivalentTo("100");
             updatedApplication.ContactAddress.Should().BeEquivalentTo("NEW ADDRESS");
         }
     }
@@ -113,9 +117,10 @@ public class Dispute
 
             var updatedApplication = context.DisputeApplications
                 .Include(x => x.AssociatedWork)
-                .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
-                .First();
-
+                .Include(x => x.AssociatedUsers)
+                .ThenInclude(x => x.UserAccount)
+                .FirstOrDefault();
+            
             updatedApplication.Reason.Should().Be("This is a reason");
             updatedApplication.DisputeType.Should().Be(DisputeType.Usage);
             updatedApplication.AssociatedWork.Id.Should().Be(new Guid("8B0750C1-9FB6-4A1D-ABA0-41C581E59753"));

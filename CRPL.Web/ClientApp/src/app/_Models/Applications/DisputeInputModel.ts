@@ -1,4 +1,5 @@
 import {ApplicationInputModel} from "./ApplicationInputModel";
+import { ExpectedRecourse } from "./DisputeViewModel";
 
 export enum DisputeType
 {
@@ -12,7 +13,8 @@ export interface DisputeInputModel extends ApplicationInputModel
   Reason?: string;
   Spotted?: Date;
   Infractions: number;
-  ExpectedRecourse: string;
+  ExpectedRecourse: ExpectedRecourse;
+  ExpectedRecourseData: string;
   ContactAddress: string;
   LinkToInfraction?: string;
 
