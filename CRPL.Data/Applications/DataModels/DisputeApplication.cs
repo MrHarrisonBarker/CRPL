@@ -14,4 +14,5 @@ public class DisputeApplication : Application
     public string? ExpectedRecourseData { get; set; }
     public string? ContactAddress { get; set; }
     public string? LinkToInfraction { get; set; }
+    public ResolveResult ResolveResult { get; set; }
 }

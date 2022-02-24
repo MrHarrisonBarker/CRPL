@@ -9,6 +9,14 @@ export enum ExpectedRecourse
   Payment
 }
 
+export interface ResolveResult
+{
+  Rejected: boolean;
+  Transaction?: string;
+  TransactionUri?: string;
+  Message?: string;
+}
+
 export interface DisputeViewModel extends ApplicationViewModel
 {
   DisputeType: DisputeType;
@@ -19,6 +27,7 @@ export interface DisputeViewModel extends ApplicationViewModel
   ExpectedRecourseData: string;
   ContactAddress: string;
   LinkToInfraction: string;
+  ResolveResult: ResolveResult;
 
   DisputedWork: RegisteredWorkViewModel;
   Accuser: UserAccountMinimalViewModel;

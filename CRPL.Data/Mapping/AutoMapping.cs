@@ -2,6 +2,7 @@ using AutoMapper;
 using CRPL.Data.Account;
 using CRPL.Data.Account.ViewModels;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.Core;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.ViewModels;
 
@@ -32,7 +33,7 @@ public class AutoMapping : Profile
             .ForMember(src => src.Meta, x =>
                 x.Ignore())
             .ForMember(model => model.RegisteredTransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.RegisteredTransactionId));
-        
+
 
         CreateMap<Application, ApplicationViewModelWithoutAssociated>().IncludeAllDerived()
             .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
@@ -40,6 +41,9 @@ public class AutoMapping : Profile
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModelWithoutAssociated>();
         CreateMap<OwnershipRestructureApplication, OwnershipRestructureViewModelWithoutAssociated>();
         CreateMap<DisputeApplication, DisputeViewModelWithoutAssociated>();
+
+        CreateMap<ResolveResult, ResolveResultWithUri>()
+            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.Transaction));
 
         CreateMap<Application, ApplicationViewModel>()
             .ForMember(model => model.AssociatedWork, x => x.MapFrom(src => src.AssociatedWork))
@@ -60,8 +64,9 @@ public class AutoMapping : Profile
 
         CreateMap<DisputeApplication, DisputeViewModel>()
             .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
-            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));;
-        
+            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
+        ;
+
         CreateMap<CRPL.Data.StructuredOwnership.OwnershipStake, CRPL.Contracts.Structs.OwnershipStakeContract>();
     }
 }
