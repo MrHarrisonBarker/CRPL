@@ -69,7 +69,32 @@
         <button clrTabLink>Disputes</button>
         <clr-tab-content>
           <div class="content-container">
-            {{Disputed | async | json}}
+            <nav class="sidenav">
+              <section class="sidenav-content">
+                <section class="nav-group">
+                  <input id="OpenDisputes" type="checkbox" />
+                  <label for="OpenDisputes">Open disputes</label>
+                  <ul class="nav-list">
+                    <li *ngFor="let dispute of OpenDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="Select(dispute, true)">{{dispute.AssociatedWork?.Title}}</a></li>
+                  </ul>
+                </section>
+                <section class="nav-group">
+                  <input id="ClosedDisputes" type="checkbox" />
+                  <label for="ClosedDisputes">Closed disputes</label>
+                  <ul class="nav-list">
+                    <li *ngFor="let dispute of ClosedDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="Select(dispute, true)">{{dispute.AssociatedWork?.Title}}</a></li>
+                  </ul>
+                </section>
+              </section>
+            </nav>
+            <div class="content-area">
+              <div *ngIf="!Selected" class="centre-align">
+                <img src="https://i.giphy.com/media/baPIkfAo0Iv5K/giphy.webp"/>
+              </div>
+              <div *ngIf="Selected">
+                <applications-view [Application]="SelectedAsApplication" [ShowForms]="true" [Cancelable]="false" *ngIf="IsApplication"></applications-view>
+              </div>
+            </div>
           </div>
         </clr-tab-content>
       </clr-tab>

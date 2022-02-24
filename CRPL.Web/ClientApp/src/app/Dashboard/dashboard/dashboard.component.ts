@@ -26,7 +26,9 @@ export class DashboardComponent implements OnInit, OnDestroy
   public SubmittedApplications!: Observable<ApplicationViewModel[]>;
   public PartialApplications!: Observable<ApplicationViewModel[]>;
   public FailedApplications!: Observable<ApplicationViewModel[]>;
-  public Disputed!: Observable<DisputeViewModel[]>;
+
+  public OpenDisputes!: Observable<DisputeViewModel[]>;
+  public ClosedDisputes!: Observable<DisputeViewModel[]>;
 
   public RegisteredCopyrights!: Observable<RegisteredWorkViewModel[]>;
 
@@ -44,7 +46,8 @@ export class DashboardComponent implements OnInit, OnDestroy
     this.PartialApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Incomplete)));
     this.FailedApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Failed)));
 
-    this.Disputed = this.warehouse.__MyDisputed;
+    this.OpenDisputes = this.warehouse.__MyDisputed.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Submitted)));
+    this.ClosedDisputes = this.warehouse.__MyDisputed.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Complete || a.Status == ApplicationStatus.Failed)));
 
     this.RegisteredCopyrights = this.warehouse.__MyWorks.pipe(map(x => x.filter(a => a.Status == RegisteredWorkStatus.Registered || a.Status == RegisteredWorkStatus.Expired)));
   }

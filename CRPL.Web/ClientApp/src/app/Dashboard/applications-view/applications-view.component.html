@@ -1,5 +1,5 @@
 <div>
-  <div class="flex-between">
+  <div class="flex-between" *ngIf="Cancelable">
     <div></div>
     <button class="btn btn-danger btn-sm" style="margin-right: 0" (click)="Cancel()" *ngIf="Application.Status < 2">
       <span style="margin-right:0.2rem">cancel application</span>

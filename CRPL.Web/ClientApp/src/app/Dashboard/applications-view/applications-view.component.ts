@@ -18,6 +18,7 @@ export class ApplicationsViewComponent implements OnInit
 {
   @Input() Application!: ApplicationViewModel;
   @Input() ShowForms: boolean = false;
+  @Input() Cancelable: boolean = true;
 
   constructor (private warehouse: WarehouseService, private alertService: AlertService, private formsService: FormsService)
   {

@@ -104,6 +104,7 @@ public class QueryService : IQueryService
         return await Context.DisputeApplications
             .AsNoTracking()
             .AsSplitQuery()
+            .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
             .Include(x => x.AssociatedWork).ThenInclude(x => x.UserWorks).ThenInclude(x => x.UserAccount)
             .Where(x => x.AssociatedWork.UserWorks.Any(u => u.UserId == id))
             .Where(x => x.Status == ApplicationStatus.Complete || x.Status == ApplicationStatus.Submitted)
