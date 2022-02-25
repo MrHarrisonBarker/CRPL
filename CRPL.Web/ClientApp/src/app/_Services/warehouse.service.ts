@@ -43,8 +43,8 @@ export class WarehouseService
     this.__MyApplications.next(this._MyApplications.filter(x => x.Id != id))
   }
 
-  private _MyApplications: ApplicationViewModel[] = [];
-  private _MyWorks: RegisteredWorkViewModel[] = [];
+  public _MyApplications: ApplicationViewModel[] = [];
+  public _MyWorks: RegisteredWorkViewModel[] = [];
 
   public __MyApplications: Subject<ApplicationViewModel[]> = new Subject<ApplicationViewModel[]>();
   public __MyWorks: Subject<RegisteredWorkViewModel[]> = new Subject<RegisteredWorkViewModel[]>();
