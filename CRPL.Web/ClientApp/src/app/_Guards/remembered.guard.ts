@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree} from '@angular/router';
+import {ActivatedRouteSnapshot, CanActivate, CanActivateChild, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {Observable, of} from 'rxjs';
 import {AuthService} from "../_Services/auth.service";
 import {AlertService} from "../_Services/alert.service";
@@ -8,7 +8,7 @@ import {map, switchMap} from "rxjs/operators";
 @Injectable({
   providedIn: 'root'
 })
-export class RememberedGuard implements CanActivate
+export class RememberedGuard implements CanActivate, CanActivateChild
 {
 
   constructor (private authService: AuthService, private alertService: AlertService)
@@ -21,6 +21,11 @@ export class RememberedGuard implements CanActivate
   {
     if (this.authService.AuthenticationToken != null && !this.authService.IsAuthenticated.getValue()) return this.authService.Authenticate(this.authService.AuthenticationToken).pipe(map(x => x != null));
     return of (true);
+  }
+
+  canActivateChild (childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean>
+  {
+    return this.canActivate(childRoute, state);
   }
 
 }

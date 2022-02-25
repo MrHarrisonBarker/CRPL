@@ -58,6 +58,7 @@ import { DisputeViewSubmittedComponent } from './Dashboard/dispute-view/dispute-
 import { UserCardComponent } from './Core/user-card/user-card.component';
 import { DisputeMinComponent } from './dispute/dispute-min/dispute-min.component';
 import { ResolveStatusComponent } from './Core/resolve-status/resolve-status.component';
+import {SettingsComponent} from "./User/settings/settings.component";
 
 @NgModule({
   declarations: [
@@ -100,6 +101,7 @@ import { ResolveStatusComponent } from './Core/resolve-status/resolve-status.com
     UserCardComponent,
     DisputeMinComponent,
     ResolveStatusComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -110,7 +112,11 @@ import { ResolveStatusComponent } from './Core/resolve-status/resolve-status.com
     RouterModule.forRoot([
       {path: '', component: HomeComponent, pathMatch: 'full', canActivate: [RememberedGuard]},
       {path: 'apps', component: ApplicationsComponent, canActivate: [RememberedGuard, CompleteUserAndAuthGuard]},
-      {path: 'user/info', component: InfoWizardComponent, canActivate: [RememberedGuard, AuthGuard]},
+      {path: 'u', canActivateChild: [RememberedGuard, AuthGuard], children: [
+          {path: 'settings', component: SettingsComponent},
+          {path: 'info', component: InfoWizardComponent},
+        ]
+      },
       {
         path: 'application/:id',
         component: IndervidualApplicationComponent,

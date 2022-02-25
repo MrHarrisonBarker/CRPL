@@ -54,7 +54,7 @@ export class CompleteUserAndAuthGuard implements CanActivate
         console.log("the user has not complete their profile navigating to wizard");
 
         this.alertService.Alert({Message: "You have not completed the signup process yet, complete to gain access", Type: "information"});
-        this.router.navigate(['/user/info']).then(r => null);
+        this.router.navigate(['/u/info']).then(r => null);
 
         return false;
       })).pipe(catchError(err =>

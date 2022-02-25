@@ -1,0 +1,19 @@
+<div class="content-container">
+  <div class="card" id="settings-card">
+    <div class="card-block">
+      <p>{{UserAccount.FirstName}} {{UserAccount.LastName}}</p>
+      <div class="card-text">
+        <p class="text-muted">{{UserAccount.Email}}</p>
+        <p class="text-muted">{{UserAccount.DialCode}} {{UserAccount.PhoneNumber}}</p>
+      </div>
+      <div class="flex-between">
+        <div><a target="_blank" [href]="UserAccount.WalletAddressUri">{{UserAccount.WalletPublicAddress}}</a></div>
+        <button class="btn btn-sm">transfer wallet</button>
+      </div>
+    </div>
+    <div class="card-footer">
+      <button class="btn btn-sm btn-info" (click)="EditAccount()">edit account info</button>
+      <button class="btn btn-sm btn-danger" (click)="Delete()">delete account</button>
+    </div>
+  </div>
+</div>

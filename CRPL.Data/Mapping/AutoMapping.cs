@@ -14,7 +14,9 @@ public class AutoMapping : Profile
     {
         CreateMap<UserAccount, UserAccountViewModel>()
             .ForMember(model => model.WalletPublicAddress, x =>
-                x.MapFrom(a => a.Wallet.PublicAddress));
+                x.MapFrom(a => a.Wallet.PublicAddress))
+            .ForMember(model => model.WalletAddressUri, x =>
+                x.MapFrom(src => "https://etherscan.io/address/" + src.Wallet.PublicAddress));
 
         CreateMap<UserAccount, UserAccountMinimalViewModel>()
             .ForMember(model => model.WalletAddressUri, x => x.MapFrom(src => "https://etherscan.io/address/" + src.Wallet.PublicAddress));

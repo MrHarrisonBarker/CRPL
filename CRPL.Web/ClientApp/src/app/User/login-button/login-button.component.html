@@ -5,7 +5,7 @@
   </button>
   <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
     <label class="dropdown-header" aria-hidden="true">Account</label>
-    <div aria-label="Account Preferences" clrDropdownItem (click)="NavigateToPreferences()">Preferences</div>
+    <div aria-label="Account Preferences" clrDropdownItem (click)="NavigateToSettings()">Settings</div>
     <div aria-label="Logout" clrDropdownItem (click)="Logout()">Logout</div>
     <div class="dropdown-divider" role="separator" aria-hidden="true"></div>
     <label aria-label="Dashboard" clrDropdownItem [routerLink]="['/dashboard']">Dashboard</label>

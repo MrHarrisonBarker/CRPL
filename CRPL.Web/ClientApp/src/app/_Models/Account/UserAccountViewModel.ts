@@ -19,4 +19,5 @@ export interface UserAccountViewModel
   PhoneNumber: string;
   Status: AccountStatus;
   WalletPublicAddress: string;
+  WalletAddressUri: string;
 }

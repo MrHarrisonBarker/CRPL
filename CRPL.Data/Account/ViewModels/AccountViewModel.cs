@@ -20,4 +20,5 @@ public class UserAccountViewModel
     public UserAccount.AccountStatus Status { get; set; }
     
     public string WalletPublicAddress { get; set; }
+    public string? WalletAddressUri { get; set; }
 }

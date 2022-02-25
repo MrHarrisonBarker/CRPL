@@ -42,7 +42,7 @@ export class LoginButtonComponent implements OnInit
       {
         this.alertService.Alert({Message: "Successfully logged in!", Type: "success"});
         if (this.authService.UserAccount.getValue().Status == AccountStatus.Created || this.authService.UserAccount.getValue().Status == AccountStatus.Incomplete){
-          this.router.navigate(['/user/info']);
+          this.router.navigate(['/u/info']);
         }
       }
       if (!res.Account) this.alertService.Alert({Message: res.Log, Type: "danger"});
@@ -54,8 +54,8 @@ export class LoginButtonComponent implements OnInit
     this.authService.Logout();
   }
 
-  public NavigateToPreferences (): void
+  public NavigateToSettings (): void
   {
-
+    this.router.navigate(['/u/settings']);
   }
 }
