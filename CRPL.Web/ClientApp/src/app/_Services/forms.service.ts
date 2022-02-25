@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {AuthService} from "./auth.service";
-import {HttpClient, HttpResponse} from "@angular/common/http";
+import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {AlertService} from "./alert.service";
 import {Observable} from "rxjs";
 import {CopyrightRegistrationInputModel} from "../_Models/Applications/CopyrightRegistrationInputModel";
@@ -97,6 +97,6 @@ export class FormsService
 
   public RecordPayment (disputeId: string, transaction: string)
   {
-    return this.http.post(this.BaseUrl + FormsPaths.RecordPayment + "/" + disputeId, transaction);
+    return this.http.post(this.BaseUrl + FormsPaths.RecordPayment + "/" + disputeId, null, {params: new HttpParams().set('transaction', transaction)});
   }
 }

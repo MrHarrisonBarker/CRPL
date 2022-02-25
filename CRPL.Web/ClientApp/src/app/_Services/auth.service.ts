@@ -9,6 +9,7 @@ import jwtDecode, {JwtPayload} from "jwt-decode";
 import {UserAccountViewModel} from "../_Models/Account/UserAccountViewModel";
 import {Router} from "@angular/router";
 import {AlertService} from "./alert.service";
+import {WarehouseService} from "./warehouse.service";
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,8 @@ export class AuthService
     private http: HttpClient,
     @Inject('BASE_URL') baseUrl: string,
     private router: Router,
-    private alertService: AlertService)
+    private alertService: AlertService,
+    private warehouseService: WarehouseService)
   {
     this.BaseUrl = baseUrl;
     this.checkForToken();
@@ -177,6 +179,8 @@ export class AuthService
     this.UserAccount.next(null as any);
     this.Address = undefined;
     this.AuthenticationToken = undefined;
+
+    this.warehouseService.FireSale();
 
     this.alertService.Alert({Message: "Successfully logged out! See you soon", Type: "success"})
     this.router.navigate(["/"]).then(r => null);

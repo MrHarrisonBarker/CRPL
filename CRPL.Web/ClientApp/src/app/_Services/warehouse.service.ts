@@ -9,6 +9,13 @@ import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
 })
 export class WarehouseService
 {
+  public FireSale()
+  {
+    this.__MyDisputed.next([]);
+    this.__MyApplications.next([]);
+    this.__MyWorks.next([]);
+  }
+
   set MyWorks (value: RegisteredWorkViewModel[])
   {
     this.__MyWorks.next(value);

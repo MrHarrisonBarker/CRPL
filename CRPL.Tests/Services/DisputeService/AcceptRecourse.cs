@@ -34,6 +34,7 @@ public class AcceptRecourse
             dispute.ResolveResult.Rejected.Should().BeFalse();
             dispute.ResolveResult.Transaction.Should().BeNull();
             dispute.ResolveResult.ResolvedStatus.Should().Be(ResolveStatus.NeedsOnChainAction);
+            dispute.Status.Should().Be(ApplicationStatus.Complete);
         }
     }
 

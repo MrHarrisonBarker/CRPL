@@ -29,6 +29,8 @@ public class DisputeService : IDisputeService
 
     public async Task<DisputeViewModel> AcceptRecourse(Guid disputeId, string message)
     {
+        Logger.LogInformation("Accepting recourse for dispute {Id}", disputeId);
+        
         var dispute = await Context.DisputeApplications.FirstOrDefaultAsync(x => x.Id == disputeId);
         if (dispute == null) throw new DisputeNotFoundException(disputeId);
 
@@ -47,6 +49,8 @@ public class DisputeService : IDisputeService
 
     public async Task<DisputeViewModel> RejectRecourse(Guid disputeId, string message)
     {
+        Logger.LogInformation("Rejecting recourse for dispute {Id}", disputeId);
+        
         var dispute = await Context.DisputeApplications.FirstOrDefaultAsync(x => x.Id == disputeId);
         if (dispute == null) throw new DisputeNotFoundException(disputeId);
 
@@ -66,19 +70,23 @@ public class DisputeService : IDisputeService
 
     public async Task RecordPaymentAndResolve(Guid disputeId, string transaction)
     {
+        Logger.LogInformation("Recording payment and resolving dispute {Id}", disputeId);
+        
         var dispute = await Context.DisputeApplications.FirstOrDefaultAsync(x => x.Id == disputeId);
         if (dispute == null) throw new DisputeNotFoundException(disputeId);
 
         if (dispute.Status != ApplicationStatus.Submitted) throw new Exception("Dispute not submitted");
 
-        var receipt = await BlockchainConnection.Web3().Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transaction);
-
-        if (receipt.Status.Value == BigInteger.Zero) throw new Exception("That payment has failed");
+        // TODO: receipt checking doesn't work in current implementation as the transaction is probably not confirmed by this time 
+        // var receipt = await BlockchainConnection.Web3().Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transaction);
+        // if (receipt == null) throw new Exception("Transaction not found!");
+        // if (receipt.Status.Value == BigInteger.Zero) throw new Exception("That payment has failed");
         
         Context.Update(dispute);
         
         dispute.ResolveResult.Transaction = transaction;
         dispute.ResolveResult.ResolvedStatus = ResolveStatus.Resolved;
+        dispute.Status = ApplicationStatus.Complete;
 
         await Context.SaveChangesAsync();
     }

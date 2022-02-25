@@ -9,9 +9,19 @@ export enum ExpectedRecourse
   Payment
 }
 
+export enum ResolvedStatus
+{
+  Created,
+  NeedsOnChainAction,
+  Processing,
+  Resolved,
+  Failed
+}
+
 export interface ResolveResult
 {
   Rejected: boolean;
+  ResolvedStatus: ResolvedStatus;
   Transaction?: string;
   TransactionUri?: string;
   Message?: string;
