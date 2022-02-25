@@ -1,3 +1,11 @@
+<div *ngIf="Owner | async">
+  <h4>Resolve dispute</h4>
+  <div>
+    <button class="btn btn-primary btn-sm">accept recourse</button>
+    <button class="btn btn-danger btn-sm">refuse recourse</button>
+  </div>
+</div>
+
 <div class="card">
   <div class="card-block">
     <div class="card-title">
@@ -42,7 +50,8 @@
         <p>contact the disputer here: {{Application.ContactAddress}}</p>
       </div>
       <div *ngIf="Application.ExpectedRecourse == 1">
-
+        <h5 class="card-text">The expected recourse is to pay {{Application.ExpectedRecourseData}}eth to <a [href]="Application.AssociatedUsers[0].WalletAddressUri" target="_blank">{{Application.AssociatedUsers[0].WalletPublicAddress}}</a></h5>
+        <p>contact the disputer here: {{Application.ContactAddress}}</p>
       </div>
     </div>
 

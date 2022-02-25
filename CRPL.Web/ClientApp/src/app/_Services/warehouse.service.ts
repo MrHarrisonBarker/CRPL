@@ -24,6 +24,25 @@ export class WarehouseService
     this.__MyDisputed.next(value);
   }
 
+  public UpdateWork (value: RegisteredWorkViewModel)
+  {
+
+  }
+
+  public UpdateDispute (value: DisputeViewModel)
+  {
+    let index = this._MyDisputed.findIndex(x => x.Id == value.Id);
+    if (index == -1)
+    {
+      this._MyDisputed.push(value);
+      this.__MyDisputed.next(this._MyDisputed);
+    } else
+    {
+      this._MyDisputed[index] = value;
+      this.__MyDisputed.next(this._MyDisputed);
+    }
+  }
+
   public UpdateApplication (value: ApplicationViewModel)
   {
     let index = this._MyApplications.findIndex(x => x.Id == value.Id);
@@ -45,6 +64,7 @@ export class WarehouseService
 
   public _MyApplications: ApplicationViewModel[] = [];
   public _MyWorks: RegisteredWorkViewModel[] = [];
+  public _MyDisputed: DisputeViewModel[] = [];
 
   public __MyApplications: Subject<ApplicationViewModel[]> = new Subject<ApplicationViewModel[]>();
   public __MyWorks: Subject<RegisteredWorkViewModel[]> = new Subject<RegisteredWorkViewModel[]>();
@@ -58,5 +78,6 @@ export class WarehouseService
       console.log("Current applications", x);
     });
     this.__MyWorks.subscribe(x => this._MyWorks = x);
+    this.__MyDisputed.subscribe(x => this._MyDisputed = x);
   }
 }

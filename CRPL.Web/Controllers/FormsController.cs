@@ -14,15 +14,17 @@ public class FormsController : ControllerBase
 {
     private readonly ILogger<FormsController> Logger;
     private readonly IFormsService FormsService;
+    private readonly IDisputeService DisputeService;
 
-    public FormsController(ILogger<FormsController> logger, IFormsService formsService)
+    public FormsController(ILogger<FormsController> logger, IFormsService formsService, IDisputeService disputeService)
     {
         Logger = logger;
         FormsService = formsService;
+        DisputeService = disputeService;
     }
 
     [HttpGet("{id}")]
-    public async Task<ApplicationViewModel> Get([FromRoute]Guid id)
+    public async Task<ApplicationViewModel> Get([FromRoute] Guid id)
     {
         try
         {
@@ -62,7 +64,7 @@ public class FormsController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpPost("copyright/ownership")]
     public async Task<OwnershipRestructureViewModel> UpdateOwnershipStructure(OwnershipRestructureInputModel inputModel)
     {
@@ -76,7 +78,7 @@ public class FormsController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpPost("copyright/dispute")]
     public async Task<DisputeViewModel> UpdateDispute(DisputeInputModel inputModel)
     {
@@ -105,7 +107,7 @@ public class FormsController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpPost("copyright/submit/registration/{id}")]
     public async Task<CopyrightRegistrationViewModel> SubmitCopyrightRegistration(Guid id)
     {
@@ -119,7 +121,7 @@ public class FormsController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpPost("copyright/submit/ownership/{id}")]
     public async Task<OwnershipRestructureViewModel> SubmitOwnershipRestructure(Guid id)
     {
@@ -133,7 +135,7 @@ public class FormsController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpPost("copyright/submit/dispute/{id}")]
     public async Task<DisputeViewModel> SubmitDispute(Guid id)
     {
@@ -144,6 +146,34 @@ public class FormsController : ControllerBase
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when submitting dispute application");
+            throw;
+        }
+    }
+
+    [HttpPost("copyright/resolve/dispute")]
+    public async Task<DisputeViewModel> ResolveDispute([FromBody]ResolveDisputeInputModel inputModel)
+    {
+        try
+        {
+            return inputModel.Accept ? await DisputeService.AcceptRecourse(inputModel.DisputeId, inputModel.Message) : await DisputeService.RejectRecourse(inputModel.DisputeId, inputModel.Message);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when resolving dispute application");
+            throw;
+        }
+    }
+    
+    [HttpPost("copyright/record/payment/dispute/{id}")]
+    public async Task RecordPayment(Guid id, string transaction)
+    {
+        try
+        {
+            await DisputeService.RecordPaymentAndResolve(id, transaction);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when recording payment for dispute resolve");
             throw;
         }
     }

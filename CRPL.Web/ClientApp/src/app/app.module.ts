@@ -55,7 +55,6 @@ import {RememberedGuard} from "./_Guards/remembered.guard";
 import { CopyrightMinComponent } from './copyright/copyright-min/copyright-min.component';
 import { DisputeViewCompletedComponent } from './Dashboard/dispute-view/dispute-view-completed/dispute-view-completed.component';
 import { DisputeViewSubmittedComponent } from './Dashboard/dispute-view/dispute-view-submitted/dispute-view-submitted.component';
-import { EnumPipe } from './Core/enum.pipe';
 import { UserCardComponent } from './Core/user-card/user-card.component';
 
 @NgModule({
@@ -96,8 +95,7 @@ import { UserCardComponent } from './Core/user-card/user-card.component';
     CopyrightMinComponent,
     DisputeViewCompletedComponent,
     DisputeViewSubmittedComponent,
-    EnumPipe,
-    UserCardComponent
+    UserCardComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

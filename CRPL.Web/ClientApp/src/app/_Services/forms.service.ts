@@ -13,6 +13,7 @@ import {tap} from "rxjs/operators";
 import {WarehouseService} from "./warehouse.service";
 import {DisputeInputModel} from "../_Models/Applications/DisputeInputModel";
 import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
+import {ResolveDisputeInputModel} from "../_Models/Applications/ResolveDisputeInputModel";
 
 @Injectable({
   providedIn: 'root'
@@ -82,9 +83,20 @@ export class FormsService
                .pipe(tap(application => this.warehouse.UpdateApplication(application)));
   }
 
-  public SubmitDispute(id: string) : Observable<DisputeViewModel>
+  public SubmitDispute (id: string): Observable<DisputeViewModel>
   {
     return this.http.post<DisputeViewModel>(this.BaseUrl + FormsPaths.DisputeSubmit + "/" + id, null)
                .pipe(tap(application => this.warehouse.UpdateApplication(application)));
+  }
+
+  public ResolveDispute (inputModel: ResolveDisputeInputModel)
+  {
+    return this.http.post<DisputeViewModel>(this.BaseUrl + FormsPaths.ResolveDispute, inputModel)
+               .pipe(tap(application => this.warehouse.UpdateDispute(application)));
+  }
+
+  public RecordPayment (disputeId: string, transaction: string)
+  {
+    return this.http.post(this.BaseUrl + FormsPaths.RecordPayment + "/" + disputeId, transaction);
   }
 }

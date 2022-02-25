@@ -7,6 +7,7 @@ using CRPL.Data.Applications;
 using CRPL.Data.Applications.Core;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Tests.Factories;
+using CRPL.Web.Exceptions;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Nethereum.Hex.HexTypes;
@@ -48,6 +49,18 @@ public class RecordPaymentAndResolve
             dispute.ResolveResult.Should().NotBeNull();
             dispute.ResolveResult.Transaction.Should().BeEquivalentTo("HASH");
             dispute.ResolveResult.ResolvedStatus.Should().Be(ResolveStatus.Resolved);
+        }
+    }
+    
+    [Test]
+    public async Task Should_Throw_When_No_Dispute()
+    {
+        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        {
+            var disputeService = new DisputeServiceFactory().Create(context, null);
+            
+            await FluentActions.Invoking(async () => await disputeService.RecordPaymentAndResolve(Guid.Empty, ""))
+                .Should().ThrowAsync<DisputeNotFoundException>();
         }
     }
 }
