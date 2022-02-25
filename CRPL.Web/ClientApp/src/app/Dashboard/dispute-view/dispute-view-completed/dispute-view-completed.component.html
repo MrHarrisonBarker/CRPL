@@ -1,0 +1,60 @@
+<div class="card">
+  <div class="card-block">
+    <div class="card-title">
+      <div class="flex-between">
+        <div>{{DisputeType}} dispute of <em>"{{Application.AssociatedWork?.Title}}"</em></div>
+        <application-status [status]="Application.Status"></application-status>
+      </div>
+      <div class="flex-between">
+        <p class="text-muted">copyright id: <em>{{Application.AssociatedWork?.Id}}</em></p>
+        <a style="margin-right: 0.5rem"><em>{{Application.AssociatedWork?.RightId}}</em></a>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="flex-between">
+      <p class="card-text text-muted"><em>{{Application.Id}}</em></p>
+    </div>
+    <div style="display: flex">
+      <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Application.Created | date:'medium'}}</p>
+      <p class="card-text"><b>modified:</b> {{Application.Modified | date:'medium'}}</p>
+    </div>
+
+    <div id="resolve-result" class="card-text">
+      <clr-alert clrAlertType="danger" [clrAlertClosable]="false" *ngIf="Application.ResolveResult.Rejected">
+        <clr-alert-item>
+          <span class="alert-text">
+              <span>This dispute was rejected by the rights holder</span>
+          </span>
+        </clr-alert-item>
+      </clr-alert>
+
+      <div class="flex-between" *ngIf="!Application.ResolveResult.Rejected">
+        <div class="card-text">The expected recourse for this dipute was <b>{{ExpectedRecourse}}</b></div>
+        <resolve-status [Resolve]="Application.ResolveResult"></resolve-status>
+      </div>
+      <div class="card-text"><b>resolving transaction: </b><a target="_blank" [href]="Application.ResolveResult.TransactionUri">{{Application.ResolveResult.Transaction | slice:0:22}}</a></div>
+    </div>
+
+    <div class="card-text" id="dispute-context">
+      <div class="flex-between">
+        <p class="card-text"><b>spotted: </b> {{Application.Spotted | date:'medium'}}</p>
+        <p class="card-text"><b>number of infraction: </b> {{Application.Infractions}}</p>
+      </div>
+      <div id="dispute-meta">
+        <div id="dispute-reason">
+          <h5 class="card-text">Reason for dispute</h5>
+          <p>{{Application.Reason}}</p>
+          <a [href]="Application.LinkToInfraction">link to infraction</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-text" id="accuser">
+      <h5 class="card-text">Disputing user</h5>
+      <hr/>
+      <user-card [User]="Application.AssociatedUsers[0]"></user-card>
+    </div>
+  </div>
+</div>
