@@ -2,7 +2,7 @@ export interface StructuredQuery
 {
   Keyword?: string;
   SortBy?: Sortable;
-  WorkFilters?: Map<WorkFilter, string>;
+  WorkFilters?: Record<WorkFilter, string>;
 }
 
 export enum WorkFilter
@@ -15,4 +15,5 @@ export enum Sortable
 {
   Created,
   Title,
+  Registered
 }

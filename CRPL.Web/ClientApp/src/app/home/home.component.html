@@ -9,7 +9,7 @@
   </clr-tab>
   <clr-tab>
     <button clrTabLink>Disputes</button>
-    <clr-tab-content *clrIfActive="true">
+    <clr-tab-content *clrIfActive>
       <div class="card-list">
         <dispute-min [Dispute]="dispute" *ngFor="let dispute of OpenDisputes"></dispute-min>
       </div>

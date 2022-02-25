@@ -38,9 +38,11 @@ export class QueryService
     });
   }
 
-  public Search ()
+  public Search (page: number, query: StructuredQuery): Observable<RegisteredWorkViewModel[]>
   {
-
+    return this.http.post<RegisteredWorkViewModel[]>(this.BaseUrl + QueryPaths.Search, query, {
+      params: new HttpParams().set('from', page * this.pageWidth).set('take', this.pageWidth)
+    });
   }
 
   public GetDisputes(page: number): Observable<DisputeViewModel[]>

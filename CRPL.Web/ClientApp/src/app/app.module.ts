@@ -59,6 +59,7 @@ import { UserCardComponent } from './Core/user-card/user-card.component';
 import { DisputeMinComponent } from './dispute/dispute-min/dispute-min.component';
 import { ResolveStatusComponent } from './Core/resolve-status/resolve-status.component';
 import {SettingsComponent} from "./User/settings/settings.component";
+import { SearchComponent } from './search/search.component';
 
 @NgModule({
   declarations: [
@@ -101,7 +102,8 @@ import {SettingsComponent} from "./User/settings/settings.component";
     UserCardComponent,
     DisputeMinComponent,
     ResolveStatusComponent,
-    SettingsComponent
+    SettingsComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
@@ -117,6 +119,7 @@ import {SettingsComponent} from "./User/settings/settings.component";
           {path: 'info', component: InfoWizardComponent},
         ]
       },
+      {path: 'search', component: SearchComponent, canActivate: [RememberedGuard]},
       {
         path: 'application/:id',
         component: IndervidualApplicationComponent,

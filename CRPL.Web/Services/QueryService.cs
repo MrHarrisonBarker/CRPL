@@ -80,7 +80,7 @@ public class QueryService : IQueryService
             {
                 query.WorkFilters.TryGetValue(workFilter, out var data);
                 if (data == null) throw new Exception("Search filter not found!");
-                works = works.Apply(workFilter, data);
+                if (!String.IsNullOrEmpty(data)) works = works.Apply(workFilter, data);
             }
         }
         
