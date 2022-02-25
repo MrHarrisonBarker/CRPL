@@ -88,4 +88,18 @@ public class QueryController : ControllerBase
             throw;
         }
     }
+    
+    [HttpGet("disputes")]
+    public async Task<List<DisputeViewModelWithoutAssociated>> GetOpenDisputes(int from, int take = 100)
+    {
+        try
+        {
+            return await QueryService.GetAllDisputes(from, take);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when getting all open disputes");
+            throw;
+        }
+    }
 }

@@ -56,6 +56,8 @@ import { CopyrightMinComponent } from './copyright/copyright-min/copyright-min.c
 import { DisputeViewCompletedComponent } from './Dashboard/dispute-view/dispute-view-completed/dispute-view-completed.component';
 import { DisputeViewSubmittedComponent } from './Dashboard/dispute-view/dispute-view-submitted/dispute-view-submitted.component';
 import { UserCardComponent } from './Core/user-card/user-card.component';
+import { DisputeMinComponent } from './dispute/dispute-min/dispute-min.component';
+import { ResolveStatusComponent } from './Core/resolve-status/resolve-status.component';
 
 @NgModule({
   declarations: [
@@ -96,6 +98,8 @@ import { UserCardComponent } from './Core/user-card/user-card.component';
     DisputeViewCompletedComponent,
     DisputeViewSubmittedComponent,
     UserCardComponent,
+    DisputeMinComponent,
+    ResolveStatusComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),

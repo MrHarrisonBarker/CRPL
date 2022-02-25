@@ -1,4 +1,18 @@
-<div id="recent-copyrights">
-  <copyright-min [Copyright]="copyright" *ngFor="let copyright of RecentCopyrights"></copyright-min>
-</div>
-<!--{{RecentCopyrights | json}}-->
+<clr-tabs>
+  <clr-tab>
+    <button clrTabLink>Copyrights</button>
+    <clr-tab-content *clrIfActive>
+      <div class="card-list">
+        <copyright-min [Copyright]="copyright" *ngFor="let copyright of RecentCopyrights"></copyright-min>
+      </div>
+    </clr-tab-content>
+  </clr-tab>
+  <clr-tab>
+    <button clrTabLink>Disputes</button>
+    <clr-tab-content *clrIfActive="true">
+      <div class="card-list">
+        <dispute-min [Dispute]="dispute" *ngFor="let dispute of OpenDisputes"></dispute-min>
+      </div>
+    </clr-tab-content>
+  </clr-tab>
+</clr-tabs>

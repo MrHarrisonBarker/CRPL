@@ -25,4 +25,5 @@ public abstract class ApplicationViewModelWithoutAssociated
     public DateTime Created { get; set; }
     public DateTime Modified { get; set; }
     public ApplicationStatus Status { get; set; }
+    public RegisteredWorkViewModel? AssociatedWork { get; set; }
 }

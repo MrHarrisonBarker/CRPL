@@ -90,7 +90,9 @@ public class QueryService : IQueryService
     public async Task<List<DisputeViewModelWithoutAssociated>> GetAllDisputes(int @from, int take = 100)
     {
         return await Context.DisputeApplications
+            .Include(x => x.AssociatedWork)
             .AsNoTracking()
+            .AsSplitQuery()
             .Where(x => x.Status == ApplicationStatus.Submitted)
             .OrderBy(x => x.Created)
             .Skip(from).Take(take)

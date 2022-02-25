@@ -1,0 +1,28 @@
+<div class="card" id="dispute-min">
+  <div class="card-block">
+    <div class="card-title">
+      <div class="flex-between">
+        <div>{{DisputeType}} dispute of <em>"{{Dispute.AssociatedWork?.Title}}"</em></div>
+        <application-status [status]="Dispute.Status"></application-status>
+      </div>
+      <div class="flex-between">
+        <p class="text-muted card-text">copyright id: <em><a [routerLink]="['/cpy',Dispute.AssociatedWork?.Id]">{{Dispute.AssociatedWork?.Id | slice:0:24}}...</a></em></p>
+        <a style="margin-right: 0.5rem"><em>{{Dispute.AssociatedWork?.RightId}}</em></a>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="flex-between">
+      <p class="card-text text-muted"><em>{{Dispute.Id}}</em></p>
+    </div>
+    <div style="display: flex">
+      <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Dispute.Created | date:'short'}}</p>
+      <p class="card-text"><b>modified:</b> {{Dispute.Modified | date:'short'}}</p>
+    </div>
+    <div class="flex-between">
+      <p class="card-text"><b>Expected recourse:</b> {{ExpectedRecourse}}</p>
+      <resolve-status [Resolve]="Dispute.ResolveResult"></resolve-status>
+    </div>
+  </div>
+</div>

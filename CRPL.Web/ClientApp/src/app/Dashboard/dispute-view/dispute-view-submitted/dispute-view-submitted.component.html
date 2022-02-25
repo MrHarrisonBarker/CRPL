@@ -22,7 +22,7 @@
         <application-status [status]="Application.Status"></application-status>
       </div>
       <div class="flex-between">
-        <p class="text-muted">copyright id: <em>{{Application.Id}}</em></p>
+        <p class="text-muted">copyright id: <em>{{Application.AssociatedWork?.Id}}</em></p>
         <a style="margin-right: 0.5rem"><em>{{Application.AssociatedWork?.RightId}}</em></a>
       </div>
     </div>
