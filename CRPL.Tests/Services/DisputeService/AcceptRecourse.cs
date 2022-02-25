@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.Core;
 using CRPL.Data.Applications.DataModels;
@@ -13,7 +12,7 @@ using NUnit.Framework;
 namespace CRPL.Tests.Services.DisputeService;
 
 [TestFixture]
-public class RejectRecourse
+public class AcceptRecourse
 {
     [Test]
     public async Task Should_Update_Result()
@@ -29,12 +28,12 @@ public class RejectRecourse
         {
             var disputeService = new DisputeServiceFactory().Create(context, null);
 
-            var dispute = await disputeService.RejectRecourse(new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"), "I reject this dispute");
+            var dispute = await disputeService.AcceptRecourse(new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"), "I accept this dispute");
 
-            dispute.ResolveResult.Message.Should().BeEquivalentTo("I reject this dispute");
-            dispute.ResolveResult.Rejected.Should().BeTrue();
+            dispute.ResolveResult.Message.Should().BeEquivalentTo("I accept this dispute");
+            dispute.ResolveResult.Rejected.Should().BeFalse();
             dispute.ResolveResult.Transaction.Should().BeNull();
-            dispute.ResolveResult.ResolvedStatus.Should().Be(ResolveStatus.Resolved);
+            dispute.ResolveResult.ResolvedStatus.Should().Be(ResolveStatus.NeedsOnChainAction);
         }
     }
 
@@ -45,7 +44,7 @@ public class RejectRecourse
         {
             var disputeService = new DisputeServiceFactory().Create(context, null);
             
-            await FluentActions.Invoking(async () => await disputeService.RejectRecourse(Guid.Empty, ""))
+            await FluentActions.Invoking(async () => await disputeService.AcceptRecourse(Guid.Empty, ""))
                 .Should().ThrowAsync<DisputeNotFoundException>();
         }
     }
