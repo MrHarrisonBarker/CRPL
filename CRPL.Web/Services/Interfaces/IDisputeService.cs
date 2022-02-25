@@ -6,4 +6,5 @@ public interface IDisputeService
 {
     public Task<DisputeViewModel> AcceptRecourse(Guid disputeId, string message);
     public Task<DisputeViewModel> RejectRecourse(Guid disputeId, string message);
+    public Task RecordPaymentAndResolve(Guid disputeId, string transaction);
 }
