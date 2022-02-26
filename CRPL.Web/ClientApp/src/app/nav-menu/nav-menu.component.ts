@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ClarityIcons, homeIcon, searchIcon} from "@cds/core/icon";
+import {ClarityIcons, searchIcon} from "@cds/core/icon";
 
 @Component({
   selector: 'app-nav-menu',

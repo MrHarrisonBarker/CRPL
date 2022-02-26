@@ -1,28 +1,47 @@
-<input placeholder="hello world" name="search" [(ngModel)]="SearchKeyword"/>
+<div class="content-container" style="flex-direction: column">
+  <div id="search">
+    <div id="search-bar">
+      <input placeholder="hello world" name="search" [(ngModel)]="SearchKeyword"/>
+      <button class="btn" (click)="Search()">search</button>
+    </div>
 
-<div id="filter-sort-bar">
-  <select clrSelect name="options" [(ngModel)]="SortBy">
-    <option [value]="sortable" *ngFor="let sortable of Sortables">{{sortable}}</option>
-  </select>
+    <div id="filter-sort-bar">
+      <clr-date-container>
+        <label>registered after</label> <input type="date" clrDate name="RegisteredAfter" [(ngModel)]="RegisteredAfter"/>
+      </clr-date-container>
 
-  <select clrSelect name="options" [(ngModel)]="TypeOfWork">
-    <option value="">---</option>
-    <option [value]="type" *ngFor="let type of WorkTypes">{{type}}</option>
-  </select>
+      <clr-date-container>
+        <label>registered before</label> <input type="date" clrDate name="RegisteredBefore" [(ngModel)]="RegisteredBefore"/>
+      </clr-date-container>
 
-  <clr-date-container>
-    <label>registered after</label>
-    <input type="date" clrDate name="RegisteredAfter" [(ngModel)]="RegisteredAfter" />
-  </clr-date-container>
+      <clr-select-container>
+        <label>Sort by</label> <select clrSelect name="options" [(ngModel)]="SortBy">
+        <option [value]="sortable" *ngFor="let sortable of Sortables">{{sortable}}</option>
+      </select>
+      </clr-select-container>
 
-  <clr-date-container>
-    <label>registered before</label>
-    <input type="date" clrDate name="RegisteredBefore" [(ngModel)]="RegisteredBefore" />
-  </clr-date-container>
+      <clr-select-container>
+        <label>Type of work</label> <select clrSelect name="options" [(ngModel)]="TypeOfWork">
+        <option value="">---</option>
+        <option [value]="type" *ngFor="let type of WorkTypes">{{type}}</option>
+      </select>
+      </clr-select-container>
+    </div>
+  </div>
 
+  <div class="content-container">
+    <div class="card-list">
+      <copyright-min [Copyright]="copyright" *ngFor="let copyright of Copyrights | async"></copyright-min>
+    </div>
+  </div>
 
+  <div class="pagination">
+    <button type="button" class="btn btn-icon" [disabled]="Page == 0" (click)="PageBack()">
+      <cds-icon shape="step-forward-2" flip="horizontal"></cds-icon>
+    </button>
+    <div>{{Page}}</div>
+    <button type="button" class="btn btn-icon" (click)="PageForward()">
+      <cds-icon shape="step-forward-2"></cds-icon>
+    </button>
+  </div>
 </div>
-
-<button class="btn" (click)="Search()">search</button>
-
-{{SortBy | json}}

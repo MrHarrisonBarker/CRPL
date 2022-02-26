@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {QueryService} from "../_Services/query.service";
 import {Sortable, StructuredQuery, WorkFilter} from "../_Models/StructuredQuery/StructuredQuery";
 import {WorkType} from "../_Models/WorkType";
+import {RegisteredWorkViewModel} from "../_Models/Works/RegisteredWork";
+import {Subject} from "rxjs";
+import {ClarityIcons, stepForward2Icon} from "@cds/core/icon";
 
 @Component({
   selector: 'app-search',
@@ -18,11 +21,16 @@ export class SearchComponent implements OnInit
   public SearchKeyword!: string;
   public RegisteredAfter: any;
   public RegisteredBefore: any;
-  public SortBy: keyof  typeof Sortable = "Registered";
-  public TypeOfWork: keyof  typeof WorkType = "" as any;
+  public SortBy: keyof typeof Sortable = "Registered";
+  public TypeOfWork: keyof typeof WorkType = "" as any;
+
+  public Copyrights: Subject<RegisteredWorkViewModel[]> = new Subject<RegisteredWorkViewModel[]>();
+
+  private CurrentQuery!: StructuredQuery;
 
   constructor (private queryService: QueryService)
   {
+    ClarityIcons.addIcons(stepForward2Icon);
   }
 
   ngOnInit (): void
@@ -44,9 +52,22 @@ export class SearchComponent implements OnInit
       if (this.TypeOfWork) query.WorkFilters[WorkFilter.WorkType] = this.TypeOfWork;
     }
 
-    console.log(query);
-
-    this.queryService.Search(this.Page, query).subscribe(x => console.log(x));
+    this.CurrentQuery = query;
+    this.queryService.Search(this.Page, query).subscribe(x => this.Copyrights.next(x));
   }
 
+  public PageBack (): void
+  {
+    if (this.Page > 0)
+    {
+      this.Page--;
+      this.queryService.Search(this.Page, this.CurrentQuery).subscribe(x => this.Copyrights.next(x));
+    }
+  }
+
+  public PageForward (): void
+  {
+    this.Page++;
+    this.queryService.Search(this.Page, this.CurrentQuery).subscribe(x => this.Copyrights.next(x));
+  }
 }

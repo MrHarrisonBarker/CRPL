@@ -74,3 +74,10 @@ pre span {
 .container {
   flex: 1;
 }
+
+.card-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin: 0 1rem;
+}

@@ -6,8 +6,7 @@ import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-home',
-  templateUrl: './home.component.html',
-  styles: ['.card-list {display: flex; flex-direction: row; flex-wrap: wrap; margin: 0 1rem;}']
+  templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit
 {
