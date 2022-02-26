@@ -9,6 +9,7 @@ export enum WorkFilter
 {
   RegisteredAfter,
   RegisteredBefore,
+  WorkType
 }
 
 export enum Sortable

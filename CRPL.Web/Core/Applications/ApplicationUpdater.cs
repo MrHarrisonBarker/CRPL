@@ -63,7 +63,7 @@ public static class ApplicationUpdater
 
     private static async Task<Application> DisputeUpdater(DisputeApplication application, DisputeInputModel inputModel, IUserService userService, ICopyrightService copyrightService)
     {
-        application.UpdateProperties(inputModel, Encodables.Concat(new List<string> { "Id", "DisputedWork", "Accuser"}).ToList());
+        application.UpdateProperties(inputModel, Encodables.Concat(new List<string> { "Id", "DisputedWork", "Accuser", "ResolveResult"}).ToList());
 
         if (inputModel.AccuserId.HasValue)
         { 

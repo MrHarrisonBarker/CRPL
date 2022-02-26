@@ -56,6 +56,7 @@ public class RegistrationService : IRegistrationService
             }).ToList(),
             Hash = application.WorkHash,
             Title = application.Title,
+            WorkType = application.WorkType,
             Status = RegisteredWorkStatus.ProcessingVerification
         };
 

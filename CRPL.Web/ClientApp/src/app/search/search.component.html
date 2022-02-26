@@ -5,6 +5,11 @@
     <option [value]="sortable" *ngFor="let sortable of Sortables">{{sortable}}</option>
   </select>
 
+  <select clrSelect name="options" [(ngModel)]="TypeOfWork">
+    <option value="">---</option>
+    <option [value]="type" *ngFor="let type of WorkTypes">{{type}}</option>
+  </select>
+
   <clr-date-container>
     <label>registered after</label>
     <input type="date" clrDate name="RegisteredAfter" [(ngModel)]="RegisteredAfter" />
@@ -14,6 +19,8 @@
     <label>registered before</label>
     <input type="date" clrDate name="RegisteredBefore" [(ngModel)]="RegisteredBefore" />
   </clr-date-container>
+
+
 </div>
 
 <button class="btn" (click)="Search()">search</button>

@@ -23,6 +23,7 @@ public enum WorkFilter
 {
     RegisteredAfter,
     RegisteredBefore,
+    WorkType
 }
 
 public enum Sortable
