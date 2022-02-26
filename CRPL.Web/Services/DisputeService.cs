@@ -57,6 +57,8 @@ public class DisputeService : IDisputeService
 
         await Context.SaveChangesAsync();
 
+        if (dispute.ExpectedRecourse == ExpectedRecourse.ChangeOfOwnership) await RestructureAndResolve(disputeId);
+
         return Mapper.Map<DisputeViewModel>(dispute);
     }
 

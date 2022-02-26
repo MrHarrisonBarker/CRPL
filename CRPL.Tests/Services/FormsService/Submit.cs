@@ -10,7 +10,7 @@ using NUnit.Framework;
 namespace CRPL.Tests.Services.FormsService;
 
 [TestFixture]
-public class Submit
+public class SubmitTest
 {
     [Test]
     public async Task Should_Be_Submitted()

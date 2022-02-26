@@ -27,7 +27,8 @@ public class RecordPaymentAndResolve
                          new DisputeApplication()
                          {
                              Id = new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"),
-                             Status = ApplicationStatus.Submitted
+                             Status = ApplicationStatus.Submitted,
+                             ExpectedRecourse = ExpectedRecourse.Payment
                          }
                      }))
         {

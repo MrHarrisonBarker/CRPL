@@ -6,7 +6,6 @@ using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
 using CRPL.Web.Services;
-using CRPL.Web.Services.Background;
 using CRPL.Web.Services.Background.SlientExpiry;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -15,7 +14,7 @@ namespace CRPL.Tests.Factories;
 
 public class CopyrightServiceFactory
 {
-    public CopyrightService Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public (CopyrightService, Mock<IBlockchainConnection> connectionMock, Mock<IContractRepository> contractRepoMock, Mock<IExpiryQueue> expiryQueueMock) Create(ApplicationContext context, Dictionary<string, object>? mappings)
     {
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);
@@ -33,12 +32,12 @@ public class CopyrightServiceFactory
 
         var expiryQueueMock = new Mock<IExpiryQueue>();
         
-        return new CopyrightService(
+        return (new CopyrightService(
             new Logger<CopyrightService>(new LoggerFactory()),
             context,
             mapper,
             connectionMock.Object,
             contractRepoMock.Object,
-            expiryQueueMock.Object);
+            expiryQueueMock.Object), connectionMock, contractRepoMock, expiryQueueMock);
     }
 }

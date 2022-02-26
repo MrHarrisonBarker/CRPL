@@ -60,18 +60,23 @@ public class CopyrightService : ICopyrightService
     {
         if (application.AssociatedWork == null) throw new WorkNotFoundException();
 
+        // Create propose transaction message
         var propose = new ProposeRestructureFunction
         {
             RightId = BigInteger.Parse(application.AssociatedWork.RightId),
             Restructured = application.ProposedStructure.Decode().Select(x => Mapper.Map<OwnershipStakeContract>(x)).ToList()
         };
 
+        // Trying to propose the restructure
         try
         {
+            // Send transaction
             var transactionId = await new CRPL.Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                 .ProposeRestructureRequestAsync(propose);
 
             Context.Update(application);
+            
+            // Save transaction hash
             application.TransactionId = transactionId;
             application.AssociatedWork.ProposalTransactionId = transactionId;
 
@@ -81,6 +86,7 @@ public class CopyrightService : ICopyrightService
 
             return application;
         }
+        // catch expired copyrights (boilerplate)
         catch (SmartContractRevertException revertException)
         {
             if (revertException.RevertMessage == "EXPIRED")

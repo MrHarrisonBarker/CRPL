@@ -21,11 +21,13 @@ public class FormsServiceFactory
             EncryptionKey = "Bj3PtC818hVHkNH3nzI0HN8wJXY0oHdo"
         });
 
+        var copyrightService = new CopyrightServiceFactory().Create(context, null);
+
         return new FormsService(
             new Logger<FormsService>(new LoggerFactory()), 
             context, mapper, appSettings, 
             new UserServiceFactory().Create(context),
             new Mock<IRegistrationService>().Object,
-            new CopyrightServiceFactory().Create(context, null));
+            copyrightService.Item1);
     }
 }

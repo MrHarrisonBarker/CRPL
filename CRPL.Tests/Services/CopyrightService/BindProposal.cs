@@ -49,7 +49,7 @@ public class BindProposal
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, Applications))
         {
-            var copyrightService = new CopyrightServiceFactory().Create(context, null);
+            var (copyrightService, connectionMock, contractRepoMock, expiryQueueMock) = new CopyrightServiceFactory().Create(context, null);
 
             await copyrightService.BindProposal(new BindProposalInput() { ApplicationId = Applications.First().Id, Accepted = true});
         }
@@ -60,7 +60,7 @@ public class BindProposal
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, Applications))
         {
-            var copyrightService = new CopyrightServiceFactory().Create(context, null);
+            var (copyrightService, connectionMock, contractRepoMock, expiryQueueMock) = new CopyrightServiceFactory().Create(context, null);
 
             await copyrightService.BindProposal(new BindProposalWorkInput() { WorkId = Works.First().Id, Accepted = true});
         }
@@ -71,7 +71,7 @@ public class BindProposal
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var copyrightService = new CopyrightServiceFactory().Create(context, null);
+            var (copyrightService, connectionMock, contractRepoMock, expiryQueueMock) = new CopyrightServiceFactory().Create(context, null);
 
             await FluentActions.Invoking(async () => await copyrightService.BindProposal(new BindProposalInput() { ApplicationId = Guid.Empty }))
                 .Should().ThrowAsync<ApplicationNotFoundException>();
@@ -83,7 +83,7 @@ public class BindProposal
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var copyrightService = new CopyrightServiceFactory().Create(context, null);
+            var (copyrightService, connectionMock, contractRepoMock, expiryQueueMock) = new CopyrightServiceFactory().Create(context, null);
 
             await FluentActions.Invoking(async () => await copyrightService.BindProposal(new BindProposalWorkInput() { WorkId = Guid.Empty }))
                 .Should().ThrowAsync<WorkNotFoundException>();

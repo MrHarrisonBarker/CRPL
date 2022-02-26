@@ -15,9 +15,6 @@ public class DisputeViewModel : ApplicationViewModel
     public string? ContactAddress { get; set; }
     public string? LinkToInfraction { get; set; }
     public ResolveResultWithUri ResolveResult { get; set; }
-
-    public RegisteredWorkViewModel DisputedWork { get; set; }
-    public UserAccountMinimalViewModel Accuser { get; set; }
 }
 
 public class DisputeViewModelWithoutAssociated : ApplicationViewModelWithoutAssociated
