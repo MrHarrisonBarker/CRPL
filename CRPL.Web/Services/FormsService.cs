@@ -17,8 +17,8 @@ public class FormsService : IFormsService
     private readonly ILogger<FormsService> Logger;
     private readonly ApplicationContext Context;
     private readonly IMapper Mapper;
+    private readonly IServiceProvider ServiceProvider;
     private readonly IUserService UserService;
-    private readonly IRegistrationService RegistrationService;
     private readonly ICopyrightService CopyrightService;
     private readonly AppSettings Options;
 
@@ -27,15 +27,15 @@ public class FormsService : IFormsService
         ApplicationContext context,
         IMapper mapper,
         IOptions<AppSettings> options,
+        IServiceProvider serviceProvider,
         IUserService userService,
-        IRegistrationService registrationService,
         ICopyrightService copyrightService)
     {
         Logger = logger;
         Context = context;
         Mapper = mapper;
+        ServiceProvider = serviceProvider;
         UserService = userService;
-        RegistrationService = registrationService;
         CopyrightService = copyrightService;
         Options = options.Value;
     }
@@ -91,6 +91,9 @@ public class FormsService : IFormsService
                 case "DisputeViewModel":
                     application = new DisputeApplication { Id = new Guid() };
                     break;
+                case "DeleteAccountViewModel":
+                    application = new DeleteAccountApplication() { Id = new Guid() };
+                    break;
             }
 
             if (application == null) throw new Exception("Could not determine the application type!");
@@ -119,7 +122,7 @@ public class FormsService : IFormsService
         if (application.Status == ApplicationStatus.Complete) throw new Exception("The application has already been complete!");
         if (application.Status == ApplicationStatus.Submitted) throw new Exception("The application has already been submitted!");
 
-        var submittedApplication = (T)await application.Submit(RegistrationService, CopyrightService);
+        var submittedApplication = (T)await application.Submit(ServiceProvider);
         submittedApplication.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();

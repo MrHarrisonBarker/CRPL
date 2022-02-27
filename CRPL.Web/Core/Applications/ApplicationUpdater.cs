@@ -22,10 +22,19 @@ public static class ApplicationUpdater
                 return await OwnershipRestructureUpdater((OwnershipRestructureApplication)application, (OwnershipRestructureInputModel)inputModel, userService, copyrightService);
             case ApplicationType.Dispute:
                 return await DisputeUpdater((DisputeApplication)application, (DisputeInputModel)inputModel, userService, copyrightService);
+            case ApplicationType.DeleteAccount:
+                return await DeleteAccountUpdater((DeleteAccountApplication)application, (DeleteAccountInputModel)inputModel);
+            case ApplicationType.WalletTransfer:
             default:
                 throw new ArgumentOutOfRangeException();
         }
 
+        return application;
+    }
+
+    private static async Task<Application> DeleteAccountUpdater(DeleteAccountApplication application, DeleteAccountInputModel inputModel)
+    {
+        application.AccountId = inputModel.AccountId;
         return application;
     }
 

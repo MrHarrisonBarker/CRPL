@@ -4,5 +4,7 @@ public enum ApplicationType
 {
     CopyrightRegistration,
     OwnershipRestructure,
-    Dispute
+    Dispute,
+    DeleteAccount,
+    WalletTransfer
 }

@@ -24,6 +24,7 @@ public static class ServiceExtensions
             services.AddScoped<ICopyrightService, CopyrightService>();
             services.AddScoped<IQueryService, QueryService>();
             services.AddScoped<IDisputeService, DisputeService>();
+            services.AddScoped<IAccountManagementService, AccountManagementService>();
             
             services.AddHostedService<BlockchainEventListener>();
             services.AddHostedService<EventProcessingService>();
