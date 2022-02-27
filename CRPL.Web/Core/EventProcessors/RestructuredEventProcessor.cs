@@ -49,9 +49,19 @@ public static class RestructuredEventProcessor
         logger.LogInformation("Setting restructure application to complete");
         // setting application status to complete
         var application = (OwnershipRestructureApplication)work.AssociatedApplication.FirstOrDefault(x => x.Status == ApplicationStatus.Submitted && x.ApplicationType == ApplicationType.OwnershipRestructure)!;
+        
+        // getting the application again from the database, this was done to also get the origin
+        application = await context.OwnershipRestructureApplications
+            .Include(x => x.Origin)
+            .FirstOrDefaultAsync(x => x.Id == application.Id);
+        
         if (application == null) throw new ApplicationNotFoundException();
+        
         application.Status = ApplicationStatus.Complete;
         application.BindStatus = BindStatus.Bound;
+        
+        // if the restructure is a result of another application set that application now to complete
+        if (application.Origin != null) application.Origin.Status = ApplicationStatus.Complete;
 
         await context.SaveChangesAsync();
     }

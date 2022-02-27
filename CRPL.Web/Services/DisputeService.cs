@@ -138,7 +138,9 @@ public class DisputeService : IDisputeService
                 }
             },
             CurrentStructure = ownershipOf.ReturnValue1.Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
-            WorkId = dispute.AssociatedWork.Id
+            WorkId = dispute.AssociatedWork.Id,
+            RestructureReason = RestructureReason.Dispute,
+            Origin = dispute
         });
 
         await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(form.Id);

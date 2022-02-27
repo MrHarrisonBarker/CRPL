@@ -147,6 +147,9 @@ public class RestructureAndResolve
             restructure.BindStatus.Should().Be(BindStatus.NoProposal);
             restructure.AssociatedUsers.Count().Should().Be(2);
             restructure.AssociatedWork.Id.Should().Be(new Guid("0FB0C1C0-B3C6-4C1B-88BE-9DCC53D4DAA5"));
+
+            restructure.Origin.Id.Should().Be(new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"));
+            restructure.RestructureReason.Should().Be(RestructureReason.Dispute);
         }
     }
 

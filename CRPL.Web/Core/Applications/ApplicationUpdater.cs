@@ -44,6 +44,9 @@ public static class ApplicationUpdater
             application.ProposedStructure = inputModel.ProposedStructure.Encode();
         }
 
+        application.Origin = inputModel.Origin;
+        application.RestructureReason = inputModel.RestructureReason;
+
         return application;
     }
 
