@@ -37,7 +37,8 @@ formsPaths = {
   Cancel: formsPaths.BasePath,
   ResolveDispute: formsPaths.BasePath + "/copyright/resolve/dispute",
   RecordPayment: formsPaths.BasePath + "/copyright/record/payment/dispute",
-  DeleteUser: formsPaths.BasePath + "/user"
+  DeleteUser: formsPaths.BasePath + "/user",
+  TransferWallet: formsPaths.BasePath + "/wallet"
 }
 
 userPaths = {

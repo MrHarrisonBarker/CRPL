@@ -151,7 +151,7 @@ public class FormsController : ControllerBase
     }
 
     [HttpPost("copyright/resolve/dispute")]
-    public async Task<DisputeViewModel> ResolveDispute([FromBody]ResolveDisputeInputModel inputModel)
+    public async Task<DisputeViewModel> ResolveDispute([FromBody] ResolveDisputeInputModel inputModel)
     {
         try
         {
@@ -163,7 +163,7 @@ public class FormsController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpPost("copyright/record/payment/dispute/{id}")]
     public async Task RecordPayment(Guid id, string transaction)
     {
@@ -177,7 +177,7 @@ public class FormsController : ControllerBase
             throw;
         }
     }
-    
+
     [HttpDelete("user/{id}")]
     public async Task<DeleteAccountViewModel> DeleteUser(Guid id)
     {
@@ -193,6 +193,26 @@ public class FormsController : ControllerBase
         catch (Exception e)
         {
             Logger.LogError(e, "Exception thrown when deleting user {Id}", id);
+            throw;
+        }
+    }
+
+    [HttpPatch("wallet/{id}/to/{address}")]
+    public async Task<WalletTransferViewModel> WalletTransfer(Guid id, string address)
+    {
+        try
+        {
+            var application = await FormsService.Update<WalletTransferViewModel>(new WalletTransferInputModel()
+            {
+                UserId = id,
+                WalletAddress = address
+            });
+            
+            return await FormsService.Submit<WalletTransferApplication, WalletTransferViewModel>(application.Id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when transferring {Id}'s wallet to {Address}", id, address);
             throw;
         }
     }

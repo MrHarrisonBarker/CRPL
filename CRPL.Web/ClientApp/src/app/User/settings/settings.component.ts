@@ -13,6 +13,8 @@ import {AlertService} from "../../_Services/alert.service";
 export class SettingsComponent implements OnInit
 {
   public UserAccount!: UserAccountViewModel;
+  TransferModel: boolean = false;
+  WalletAddress!: string;
 
   constructor (private authService: AuthService, private router: Router, private formsService: FormsService, private alertService: AlertService)
   {
@@ -38,4 +40,9 @@ export class SettingsComponent implements OnInit
     });
   }
 
+  public Submit (): void
+  {
+    this.formsService.WalletTransfer(this.WalletAddress).subscribe(x => console.log(x));
+    this.TransferModel = false;
+  }
 }

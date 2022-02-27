@@ -104,4 +104,9 @@ export class FormsService
   {
     return this.http.delete(this.BaseUrl + FormsPaths.DeleteUser + "/" + this.authService.UserAccount.getValue().Id);
   }
+
+  public WalletTransfer(address: string) : Observable<any>
+  {
+    return this.http.patch(this.BaseUrl + FormsPaths.TransferWallet + "/" + this.authService.UserAccount.getValue().Id + "/to/" + address, null);
+  }
 }
