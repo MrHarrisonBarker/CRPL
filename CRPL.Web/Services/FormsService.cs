@@ -101,7 +101,7 @@ public class FormsService : IFormsService
             Context.Applications.Add(application);
         } else Context.Applications.Update(application);
         
-        await application.Update(inputModel, Mapper, UserService, CopyrightService);
+        application = await application.Update(inputModel, Mapper, UserService, CopyrightService);
         application.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();

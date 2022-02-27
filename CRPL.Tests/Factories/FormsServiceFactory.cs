@@ -1,8 +1,10 @@
+using System;
 using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Web.Services;
 using CRPL.Web.Services.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -22,12 +24,24 @@ public class FormsServiceFactory
         });
 
         var copyrightService = new CopyrightServiceFactory().Create(context, null);
+        
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(x => x.GetService(typeof(ApplicationContext))).Returns(context);
+        serviceProvider.Setup(x => x.GetService(typeof(ICopyrightService))).Returns(copyrightService.Item1);
+        serviceProvider.Setup(x => x.GetService(typeof(IAccountManagementService))).Returns(new Mock<IAccountManagementService>().Object);
+        serviceProvider.Setup(x => x.GetService(typeof(IRegistrationService))).Returns(new Mock<IRegistrationService>().Object);
+
+        var serviceScope = new Mock<IServiceScope>();
+        serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
+
+        var serviceScopeFactory = new Mock<IServiceScopeFactory>();
+        serviceScopeFactory.Setup(x => x.CreateScope()).Returns(serviceScope.Object);
 
         return new FormsService(
             new Logger<FormsService>(new LoggerFactory()), 
             context, mapper, appSettings, 
-            new UserServiceFactory().Create(context),
-            new Mock<IRegistrationService>().Object,
+            serviceProvider.Object,
+            new Mock<IUserService>().Object,
             copyrightService.Item1);
     }
 }

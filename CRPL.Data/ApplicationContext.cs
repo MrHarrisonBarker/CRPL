@@ -14,6 +14,7 @@ public class ApplicationContext : DbContext
     public DbSet<CopyrightRegistrationApplication> CopyrightRegistrationApplications { get; set; }
     public DbSet<OwnershipRestructureApplication> OwnershipRestructureApplications { get; set; }
     public DbSet<DisputeApplication> DisputeApplications { get; set; }
+    public DbSet<DeleteAccountApplication> DeleteAccountApplications { get; set; }
 
     public DbSet<UserApplication> UserApplications { get; set; }
 

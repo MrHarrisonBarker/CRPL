@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using CRPL.Data.Applications;
+using CRPL.Tests.Factories;
 using CRPL.Web.Services;
 using CRPL.Web.Services.Interfaces;
 using FluentAssertions;
@@ -15,20 +16,22 @@ public class OwnershipRestructureSubmitter
     [Test]
     public async Task Should_Submit()
     {
-        var application = new OwnershipRestructureApplication
+        await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            Id = new Guid("7E6C7A18-5EC8-4C35-8DBE-F8A71A0C2E92"),
-            Status = ApplicationStatus.Incomplete
-        };
+            var (applicationContext, serviceProvider, copyrightServiceMock, accountManagementServiceMock, registrationServiceMock) = new ApplicationSubmitterFactory().Create(context);
 
-        var registrationServiceMock = new Mock<IRegistrationService>();
-        var copyrightServiceMock = new Mock<ICopyrightService>();
+            var application = new OwnershipRestructureApplication
+            {
+                Id = new Guid("7E6C7A18-5EC8-4C35-8DBE-F8A71A0C2E92"),
+                Status = ApplicationStatus.Incomplete
+            };
 
-        copyrightServiceMock.Setup(x => x.ProposeRestructure(application)).ReturnsAsync(application);
+            copyrightServiceMock.Setup(x => x.ProposeRestructure(application)).ReturnsAsync(application);
 
-        var submitted = await application.Submit(registrationServiceMock.Object, copyrightServiceMock.Object);
+            var submitted = await application.Submit(serviceProvider);
 
-        copyrightServiceMock.Verify(x => x.ProposeRestructure(application));
-        submitted.Status.Should().Be(ApplicationStatus.Submitted);
+            copyrightServiceMock.Verify(x => x.ProposeRestructure(application));
+            submitted.Status.Should().Be(ApplicationStatus.Submitted);
+        }
     }
 }

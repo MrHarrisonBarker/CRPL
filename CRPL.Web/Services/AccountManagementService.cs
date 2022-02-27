@@ -22,6 +22,7 @@ public class AccountManagementService : IAccountManagementService
     private readonly IBlockchainConnection BlockchainConnection;
     private readonly IContractRepository ContractRepository;
     private readonly IFormsService FormsService;
+    private readonly ICopyrightService CopyrightService;
 
     public AccountManagementService(
         ILogger<AccountManagementService> logger,
@@ -41,6 +42,8 @@ public class AccountManagementService : IAccountManagementService
     
     public async Task<Application> DeleteUser(DeleteAccountApplication deleteAccountApplication)
     {
+        Logger.LogInformation("Deleting user! {Id}", deleteAccountApplication.AccountId);
+        
         var user = await Context.UserAccounts
             .Include(x => x.UserWorks).ThenInclude(x => x.RegisteredWork)
             .FirstOrDefaultAsync(x => x.Id == deleteAccountApplication.AccountId);
@@ -51,24 +54,34 @@ public class AccountManagementService : IAccountManagementService
             var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                 .OwnershipOfQueryAsync(BigInteger.Parse(userWork.RegisteredWork.RightId));
 
-            var application = await FormsService.Update<DeleteAccountViewModel>(new OwnershipRestructureInputModel()
+            if (ownershipOf.ReturnValue1.Count == 1)
             {
-                Origin = deleteAccountApplication,
-                CurrentStructure = ownershipOf.ReturnValue1.Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
-                ProposedStructure = ownershipOf.ReturnValue1
-                    .Where(x => !string.Equals(x.Owner, user.Wallet.PublicAddress, StringComparison.OrdinalIgnoreCase))
-                    .Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
-                RestructureReason = RestructureReason.DeleteAccount,
-                WorkId = userWork.WorkId
-            });
+                Logger.LogInformation("Single owner copyright so burning!");
+                // TODO: burn copyright
+            }
+            else
+            {
+                Logger.LogInformation("Multi ownership copyright so creating proposal");
+                
+                var application = await FormsService.Update<OwnershipRestructureViewModel>(new OwnershipRestructureInputModel
+                {
+                    Origin = deleteAccountApplication,
+                    CurrentStructure = ownershipOf.ReturnValue1.Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
+                    ProposedStructure = ownershipOf.ReturnValue1
+                        .Where(x => !string.Equals(x.Owner, user.Wallet.PublicAddress, StringComparison.OrdinalIgnoreCase))
+                        .Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
+                    RestructureReason = RestructureReason.DeleteAccount,
+                    WorkId = userWork.WorkId
+                });
             
-            await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(application.Id);
+                await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(application.Id);
+            }
         }
 
         Context.UserAccounts.Remove(user);
 
         await Context.SaveChangesAsync();
 
-        throw new NotImplementedException();
+        return deleteAccountApplication;
     }
 }
