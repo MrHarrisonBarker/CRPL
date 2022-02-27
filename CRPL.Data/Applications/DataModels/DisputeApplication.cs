@@ -12,6 +12,7 @@ public class DisputeApplication : Application
     public int? Infractions { get; set; }
     public ExpectedRecourse? ExpectedRecourse { get; set; }
     public string? ExpectedRecourseData { get; set; }
+    public Application? ExpectedRecourseApplication { get; set; }
     public string? ContactAddress { get; set; }
     public string? LinkToInfraction { get; set; }
     public ResolveResult ResolveResult { get; set; }
