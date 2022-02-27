@@ -24,7 +24,7 @@ public class FormsServiceFactory
         });
 
         var copyrightService = new CopyrightServiceFactory().Create(context, null);
-        
+
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(x => x.GetService(typeof(ApplicationContext))).Returns(context);
         serviceProvider.Setup(x => x.GetService(typeof(ICopyrightService))).Returns(copyrightService.Item1);
@@ -38,10 +38,8 @@ public class FormsServiceFactory
         serviceScopeFactory.Setup(x => x.CreateScope()).Returns(serviceScope.Object);
 
         return new FormsService(
-            new Logger<FormsService>(new LoggerFactory()), 
-            context, mapper, appSettings, 
-            serviceProvider.Object,
-            new Mock<IUserService>().Object,
-            copyrightService.Item1);
+            new Logger<FormsService>(new LoggerFactory()),
+            context, mapper, appSettings,
+            serviceProvider.Object);
     }
 }

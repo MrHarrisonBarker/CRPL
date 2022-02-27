@@ -6,5 +6,5 @@ namespace CRPL.Web.Services.Interfaces;
 public interface IAccountManagementService
 {
     public Task<Application> DeleteUser(DeleteAccountApplication deleteAccountApplication);
-    // public Task<Application> WalletTransfer()
+    public Task<Application> WalletTransfer(WalletTransferApplication walletTransferApplication);
 }

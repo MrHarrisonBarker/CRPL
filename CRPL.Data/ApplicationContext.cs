@@ -15,6 +15,7 @@ public class ApplicationContext : DbContext
     public DbSet<OwnershipRestructureApplication> OwnershipRestructureApplications { get; set; }
     public DbSet<DisputeApplication> DisputeApplications { get; set; }
     public DbSet<DeleteAccountApplication> DeleteAccountApplications { get; set; }
+    public DbSet<WalletTransferApplication> WalletTransferApplications { get; set; }
 
     public DbSet<UserApplication> UserApplications { get; set; }
 

@@ -33,19 +33,21 @@ public static class ApplicationUpdater
             case ApplicationType.DeleteAccount:
                 return await DeleteAccountUpdater((DeleteAccountApplication)application, (DeleteAccountInputModel)inputModel);
             case ApplicationType.WalletTransfer:
-                return await WalletTransferUpdater((WalletTransferApplication)application, (WalletTransferInputModel)inputModel, blockchainConnection, contractRepo);
+                return await WalletTransferUpdater((WalletTransferApplication)application, (WalletTransferInputModel)inputModel, blockchainConnection, userService);
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
 
-    private static async Task<Application> WalletTransferUpdater(WalletTransferApplication application, WalletTransferInputModel inputModel, IBlockchainConnection blockchainConnection, IContractRepository contractRepository)
+    private static async Task<Application> WalletTransferUpdater(WalletTransferApplication application, WalletTransferInputModel inputModel, IBlockchainConnection blockchainConnection, IUserService userService)
     {
         application.WalletAddress = inputModel.WalletAddress;
         
         // check if wallet exists on the blockchain
         var balance = await blockchainConnection.Web3().Eth.GetBalance.SendRequestAsync(application.WalletAddress);
         if (balance == null) throw new WalletNotFoundException();
+        
+        userService.AssignToApplication(inputModel.UserId, application.Id);
 
         return application;
     }

@@ -48,6 +48,7 @@ public class AccountManagementService : IAccountManagementService
             .Include(x => x.UserWorks).ThenInclude(x => x.RegisteredWork).ThenInclude(x => x.AssociatedApplication)
             .Include(x => x.Applications).ThenInclude(x => x.Application)
             .FirstOrDefaultAsync(x => x.Id == deleteAccountApplication.AccountId);
+        
         if (user == null) throw new UserNotFoundException(deleteAccountApplication.AccountId);
         
         foreach (var userWork in user.UserWorks)
@@ -97,5 +98,50 @@ public class AccountManagementService : IAccountManagementService
         await Context.SaveChangesAsync();
 
         return deleteAccountApplication;
+    }
+
+    public async Task<Application> WalletTransfer(WalletTransferApplication walletTransferApplication)
+    {
+        Logger.LogInformation("Transferring wallet to {Address}", walletTransferApplication.WalletAddress);
+
+        var user = await Context.UserAccounts
+            .Include(x => x.UserWorks).ThenInclude(x => x.RegisteredWork)
+            .FirstOrDefaultAsync(x => x.Id == walletTransferApplication.AssociatedUsers[0].UserId);
+        
+        if (user != null) throw new UserNotFoundException(walletTransferApplication.AssociatedUsers[0].UserId);
+
+        // Transfer all copyrights to new wallet
+        foreach (var userWork in user.UserWorks)
+        {
+            if (userWork.RegisteredWork.Status == RegisteredWorkStatus.Registered)
+            {
+                var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+                    .OwnershipOfQueryAsync(BigInteger.Parse(userWork.RegisteredWork.RightId));
+
+                Logger.LogInformation("Transferring copyrights to new wallet");
+                
+                // Creating restructure applications for all works
+                var application = await FormsService.Update<OwnershipRestructureViewModel>(new OwnershipRestructureInputModel
+                {
+                    Origin = walletTransferApplication,
+                    CurrentStructure = ownershipOf.ReturnValue1.Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
+                    ProposedStructure = ownershipOf.ReturnValue1.Select(x =>
+                    {
+                        if (x.Owner.Equals(user.Wallet.PublicAddress, StringComparison.OrdinalIgnoreCase))
+                        {
+                            x.Owner = walletTransferApplication.WalletAddress;
+                        }
+                        return Mapper.Map<OwnershipStake>(x);
+                    }).ToList(),
+                    RestructureReason = RestructureReason.TransferWallet,
+                    WorkId = userWork.WorkId
+                });
+            
+                await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(application.Id);
+                
+            }
+        }
+
+        return walletTransferApplication;
     }
 }

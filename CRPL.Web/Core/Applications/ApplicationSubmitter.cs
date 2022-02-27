@@ -24,11 +24,17 @@ public static class ApplicationSubmitter
             case ApplicationType.DeleteAccount:
                 return await DeleteAccountSubmitter((DeleteAccountApplication)submittedApplication, accountManagementService);
             case ApplicationType.WalletTransfer:
+                return await WalletTransferSubmitter((WalletTransferApplication)submittedApplication, accountManagementService);
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
 
-        return submittedApplication;
+    private static async Task<Application> WalletTransferSubmitter(WalletTransferApplication walletTransferApplication, IAccountManagementService accountManagementService)
+    {
+        walletTransferApplication.Status = ApplicationStatus.Submitted;
+        
+        return await accountManagementService.WalletTransfer(walletTransferApplication);
     }
 
     private static async Task<Application> DeleteAccountSubmitter(DeleteAccountApplication deleteAccountApplication, IAccountManagementService accountManagementService)
