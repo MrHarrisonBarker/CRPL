@@ -1,10 +1,6 @@
-using System.Numerics;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.DataModels;
-using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
-using CRPL.Data.BlockchainUtils;
-using CRPL.Data.ContractDeployment;
 using CRPL.Web.Services.Interfaces;
 
 namespace CRPL.Web.Services;
@@ -13,15 +9,14 @@ public static class ApplicationSubmitter
 {
     public static async Task<Application> Submit(this Application submittedApplication, IServiceProvider serviceProvider)
     {
-        using var scope = serviceProvider.CreateScope();
-        var registrationService = scope.ServiceProvider.GetRequiredService<IRegistrationService>();
-        var copyrightService = scope.ServiceProvider.GetRequiredService<ICopyrightService>();
-        var accountManagementService = scope.ServiceProvider.GetRequiredService<IAccountManagementService>();
+        var registrationService = serviceProvider.GetRequiredService<IRegistrationService>();
+        var copyrightService = serviceProvider.GetRequiredService<ICopyrightService>();
+        var accountManagementService = serviceProvider.GetRequiredService<IAccountManagementService>();
         
         switch (submittedApplication.ApplicationType)
         {
             case ApplicationType.CopyrightRegistration:
-                return CopyrightRegistrationSubmitter((CopyrightRegistrationApplication)submittedApplication, registrationService);
+                return await CopyrightRegistrationSubmitter((CopyrightRegistrationApplication)submittedApplication, registrationService);
             case ApplicationType.OwnershipRestructure:
                 return await OwnershipRestructureSubmitter((OwnershipRestructureApplication)submittedApplication, copyrightService);
             case ApplicationType.Dispute:
@@ -43,9 +38,9 @@ public static class ApplicationSubmitter
         return await accountManagementService.DeleteUser(deleteAccountApplication);
     }
 
-    private static Application CopyrightRegistrationSubmitter(CopyrightRegistrationApplication copyrightRegistrationApplication, IRegistrationService registrationService)
+    private static async Task<Application> CopyrightRegistrationSubmitter(CopyrightRegistrationApplication copyrightRegistrationApplication, IRegistrationService registrationService)
     {
-        registrationService.StartRegistration(copyrightRegistrationApplication);
+        await registrationService.StartRegistration(copyrightRegistrationApplication);
 
         copyrightRegistrationApplication.Status = ApplicationStatus.Submitted;
         

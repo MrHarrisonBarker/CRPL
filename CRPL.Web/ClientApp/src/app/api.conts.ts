@@ -10,6 +10,7 @@ let worksPaths: WorksPaths = {
 }
 
 let formsPaths: FormsPaths = {
+  DeleteUser: "", TransferWallet: "",
   RecordPayment: "", ResolveDispute: "",
   Dispute: "", DisputeSubmit: "",
   Cancel: "",
@@ -35,7 +36,8 @@ formsPaths = {
   GetMy: formsPaths.BasePath + "/users",
   Cancel: formsPaths.BasePath,
   ResolveDispute: formsPaths.BasePath + "/copyright/resolve/dispute",
-  RecordPayment: formsPaths.BasePath + "/copyright/record/payment/dispute"
+  RecordPayment: formsPaths.BasePath + "/copyright/record/payment/dispute",
+  DeleteUser: formsPaths.BasePath + "/user"
 }
 
 userPaths = {
@@ -95,6 +97,8 @@ interface FormsPaths {
   readonly RecordPayment: string;
   readonly GetMy: string;
   readonly Cancel: string;
+  readonly DeleteUser: string;
+  readonly TransferWallet: string;
 }
 
 interface CopyrightPaths {

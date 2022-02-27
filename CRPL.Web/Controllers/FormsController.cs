@@ -177,4 +177,23 @@ public class FormsController : ControllerBase
             throw;
         }
     }
+    
+    [HttpDelete("user/{id}")]
+    public async Task<DeleteAccountViewModel> DeleteUser(Guid id)
+    {
+        try
+        {
+            var application = await FormsService.Update<DeleteAccountViewModel>(new DeleteAccountInputModel()
+            {
+                AccountId = id
+            });
+
+            return await FormsService.Submit<DeleteAccountApplication, DeleteAccountViewModel>(application.Id);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Exception thrown when deleting user {Id}", id);
+            throw;
+        }
+    }
 }

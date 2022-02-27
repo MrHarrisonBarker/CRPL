@@ -21,7 +21,7 @@ public class StartRegistration
 
             var user = await context.UserAccounts.FirstAsync();
 
-            var registeredWork = registrationService.StartRegistration(new CopyrightRegistrationApplication()
+            var registeredWork = await registrationService.StartRegistration(new CopyrightRegistrationApplication()
             {
                 WorkHash = new byte[] { 0, 0, 1 },
                 Title = "Hello world",

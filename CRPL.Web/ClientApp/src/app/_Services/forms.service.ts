@@ -99,4 +99,9 @@ export class FormsService
   {
     return this.http.post(this.BaseUrl + FormsPaths.RecordPayment + "/" + disputeId, null, {params: new HttpParams().set('transaction', transaction)});
   }
+
+  public DeleteUser (): Observable<any>
+  {
+    return this.http.delete(this.BaseUrl + FormsPaths.DeleteUser + "/" + this.authService.UserAccount.getValue().Id);
+  }
 }

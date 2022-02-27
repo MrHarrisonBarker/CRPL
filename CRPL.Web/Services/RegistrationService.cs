@@ -40,7 +40,7 @@ public class RegistrationService : IRegistrationService
         VerificationQueue = verificationQueue;
     }
 
-    public RegisteredWork StartRegistration(CopyrightRegistrationApplication application)
+    public async Task<RegisteredWork> StartRegistration(CopyrightRegistrationApplication application)
     {
         Logger.LogInformation("Started a copyright registration {Id}", application.Id);
 
@@ -52,7 +52,7 @@ public class RegistrationService : IRegistrationService
             },
             UserWorks = application.AssociatedUsers.Select(x => new UserWork()
             {
-                UserAccount = x.UserAccount
+                UserId = x.UserAccount.Id
             }).ToList(),
             Hash = application.WorkHash,
             Title = application.Title,
@@ -60,8 +60,8 @@ public class RegistrationService : IRegistrationService
             Status = RegisteredWorkStatus.ProcessingVerification
         };
 
-        Context.RegisteredWorks.Add(registeredWork);
-        Context.SaveChanges();
+        await Context.RegisteredWorks.AddAsync(registeredWork);
+        await Context.SaveChangesAsync();
         
         VerificationQueue.QueueWork(registeredWork.Id);
 

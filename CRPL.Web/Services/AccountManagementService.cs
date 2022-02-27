@@ -45,39 +45,53 @@ public class AccountManagementService : IAccountManagementService
         Logger.LogInformation("Deleting user! {Id}", deleteAccountApplication.AccountId);
         
         var user = await Context.UserAccounts
-            .Include(x => x.UserWorks).ThenInclude(x => x.RegisteredWork)
+            .Include(x => x.UserWorks).ThenInclude(x => x.RegisteredWork).ThenInclude(x => x.AssociatedApplication)
+            .Include(x => x.Applications).ThenInclude(x => x.Application)
             .FirstOrDefaultAsync(x => x.Id == deleteAccountApplication.AccountId);
         if (user == null) throw new UserNotFoundException(deleteAccountApplication.AccountId);
         
         foreach (var userWork in user.UserWorks)
         {
-            var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
-                .OwnershipOfQueryAsync(BigInteger.Parse(userWork.RegisteredWork.RightId));
-
-            if (ownershipOf.ReturnValue1.Count == 1)
+            if (userWork.RegisteredWork.Status == RegisteredWorkStatus.Registered)
             {
-                Logger.LogInformation("Single owner copyright so burning!");
-                // TODO: burn copyright
+                var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+                    .OwnershipOfQueryAsync(BigInteger.Parse(userWork.RegisteredWork.RightId));
+
+                if (ownershipOf.ReturnValue1.Count == 1)
+                {
+                    Logger.LogInformation("Single owner copyright so burning!"); 
+                    // TODO: burn copyright
+                    Context.Applications.RemoveRange(userWork.RegisteredWork.AssociatedApplication);
+                    Context.RegisteredWorks.Remove(userWork.RegisteredWork);
+                }
+                else
+                {
+                    Logger.LogInformation("Multi ownership copyright so creating proposal");
+                
+                    var application = await FormsService.Update<OwnershipRestructureViewModel>(new OwnershipRestructureInputModel
+                    {
+                        Origin = deleteAccountApplication,
+                        CurrentStructure = ownershipOf.ReturnValue1.Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
+                        ProposedStructure = ownershipOf.ReturnValue1
+                            .Where(x => !string.Equals(x.Owner, user.Wallet.PublicAddress, StringComparison.OrdinalIgnoreCase))
+                            .Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
+                        RestructureReason = RestructureReason.DeleteAccount,
+                        WorkId = userWork.WorkId
+                    });
+            
+                    await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(application.Id);
+                }
             }
             else
             {
-                Logger.LogInformation("Multi ownership copyright so creating proposal");
-                
-                var application = await FormsService.Update<OwnershipRestructureViewModel>(new OwnershipRestructureInputModel
-                {
-                    Origin = deleteAccountApplication,
-                    CurrentStructure = ownershipOf.ReturnValue1.Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
-                    ProposedStructure = ownershipOf.ReturnValue1
-                        .Where(x => !string.Equals(x.Owner, user.Wallet.PublicAddress, StringComparison.OrdinalIgnoreCase))
-                        .Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
-                    RestructureReason = RestructureReason.DeleteAccount,
-                    WorkId = userWork.WorkId
-                });
-            
-                await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(application.Id);
+                Logger.LogInformation("Removing non-registered work");
+                Context.Applications.RemoveRange(userWork.RegisteredWork.AssociatedApplication);
+                Context.RegisteredWorks.Remove(userWork.RegisteredWork);
             }
         }
 
+        Context.Applications.RemoveRange(user.Applications.Select(x => x.Application));
+        Context.UserApplications.RemoveRange(user.Applications);
         Context.UserAccounts.Remove(user);
 
         await Context.SaveChangesAsync();

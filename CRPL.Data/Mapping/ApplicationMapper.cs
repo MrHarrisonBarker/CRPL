@@ -16,11 +16,12 @@ public static class ApplicationMapper
                 return mapper.Map<OwnershipRestructureApplication, OwnershipRestructureViewModel>((OwnershipRestructureApplication)application);
             case ApplicationType.Dispute:
                 return mapper.Map<DisputeApplication, DisputeViewModel>((DisputeApplication)application);
+            case ApplicationType.DeleteAccount:
+                return mapper.Map<DeleteAccountApplication, DeleteAccountViewModel>((DeleteAccountApplication)application);
+            case ApplicationType.WalletTransfer:
             default:
                 throw new ArgumentOutOfRangeException();
         }
-
-        throw new Exception();
     }
 
     public static List<OwnershipStake> Decode(this string src)
