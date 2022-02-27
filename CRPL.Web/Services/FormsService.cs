@@ -17,27 +17,21 @@ public class FormsService : IFormsService
     private readonly ILogger<FormsService> Logger;
     private readonly ApplicationContext Context;
     private readonly IMapper Mapper;
+    private readonly IOptions<AppSettings> Options;
     private readonly IServiceProvider ServiceProvider;
-    private readonly IUserService UserService;
-    private readonly ICopyrightService CopyrightService;
-    private readonly AppSettings Options;
 
     public FormsService(
         ILogger<FormsService> logger,
         ApplicationContext context,
         IMapper mapper,
         IOptions<AppSettings> options,
-        IServiceProvider serviceProvider,
-        IUserService userService,
-        ICopyrightService copyrightService)
+        IServiceProvider serviceProvider)
     {
         Logger = logger;
         Context = context;
         Mapper = mapper;
+        Options = options;
         ServiceProvider = serviceProvider;
-        UserService = userService;
-        CopyrightService = copyrightService;
-        Options = options.Value;
     }
 
     public async Task<ApplicationViewModel> GetApplication(Guid id)
@@ -101,7 +95,7 @@ public class FormsService : IFormsService
             Context.Applications.Add(application);
         } else Context.Applications.Update(application);
         
-        application = await application.Update(inputModel, Mapper, UserService, CopyrightService);
+        application = await application.Update(inputModel, ServiceProvider);
         application.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();

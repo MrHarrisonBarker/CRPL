@@ -3,7 +3,10 @@ using CRPL.Data.Applications;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
+using CRPL.Data.BlockchainUtils;
+using CRPL.Data.ContractDeployment;
 using CRPL.Data.StructuredOwnership;
+using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 
 namespace CRPL.Web.Services;
@@ -12,8 +15,13 @@ public static class ApplicationUpdater
 {
     private static readonly List<string> Encodables = new() { "OwnershipStakes" };
 
-    public static async Task<Application> Update(this Application application, ApplicationInputModel inputModel, IMapper mapper, IUserService userService, ICopyrightService copyrightService)
+    public static async Task<Application> Update(this Application application, ApplicationInputModel inputModel, IServiceProvider serviceProvider)
     {
+        var userService = serviceProvider.GetRequiredService<IUserService>();
+        var copyrightService = serviceProvider.GetRequiredService<ICopyrightService>();
+        var blockchainConnection = serviceProvider.GetRequiredService<IBlockchainConnection>();
+        var contractRepo = serviceProvider.GetRequiredService<IContractRepository>();
+
         switch (application.ApplicationType)
         {
             case ApplicationType.CopyrightRegistration:
@@ -25,9 +33,19 @@ public static class ApplicationUpdater
             case ApplicationType.DeleteAccount:
                 return await DeleteAccountUpdater((DeleteAccountApplication)application, (DeleteAccountInputModel)inputModel);
             case ApplicationType.WalletTransfer:
+                return await WalletTransferUpdater((WalletTransferApplication)application, (WalletTransferInputModel)inputModel, blockchainConnection, contractRepo);
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    private static async Task<Application> WalletTransferUpdater(WalletTransferApplication application, WalletTransferInputModel inputModel, IBlockchainConnection blockchainConnection, IContractRepository contractRepository)
+    {
+        application.WalletAddress = inputModel.WalletAddress;
+        
+        // check if wallet exists on the blockchain
+        var balance = await blockchainConnection.Web3().Eth.GetBalance.SendRequestAsync(application.WalletAddress);
+        if (balance == null) throw new WalletNotFoundException();
 
         return application;
     }
