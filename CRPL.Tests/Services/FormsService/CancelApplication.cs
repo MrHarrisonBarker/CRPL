@@ -16,7 +16,7 @@ public class CancelApplication
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock)  = new FormsServiceFactory().Create(context);
 
             await formsService.CancelApplication(new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"));
 
@@ -29,7 +29,7 @@ public class CancelApplication
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock)  = new FormsServiceFactory().Create(context);
 
             await FluentActions.Invoking(async () => await formsService.CancelApplication(Guid.Empty)).Should().ThrowAsync<ApplicationNotFoundException>();
         }

@@ -16,7 +16,7 @@ public class GetMyApplications
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock)  = new FormsServiceFactory().Create(context);
 
             var applications = await formsService.GetMyApplications(new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"));
 

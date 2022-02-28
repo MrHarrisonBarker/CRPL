@@ -26,7 +26,7 @@ public class Dispute
                          }
                      }))
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock)  = new FormsServiceFactory().Create(context);
 
             var application = await formsService.Submit<DisputeApplication, DisputeViewModel>(new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"));
 

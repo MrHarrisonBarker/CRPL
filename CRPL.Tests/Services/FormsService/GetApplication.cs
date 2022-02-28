@@ -16,7 +16,7 @@ public class GetApplication
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock)  = new FormsServiceFactory().Create(context);
 
             var application = await formsService.GetApplication(new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"));
 
@@ -30,7 +30,7 @@ public class GetApplication
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock)  = new FormsServiceFactory().Create(context);
 
             var application = await formsService.GetApplication(new Guid("83EB5EDF-43BA-4F34-B14F-219F85B0FF5F"));
 

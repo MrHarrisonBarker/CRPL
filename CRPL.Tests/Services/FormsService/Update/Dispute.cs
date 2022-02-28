@@ -40,7 +40,7 @@ public class Dispute
                          }
                      }, new List<UserAccount>()))
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock)  = new FormsServiceFactory().Create(context);
 
             var updatedApplication = await formsService.Update<DisputeViewModel>(new DisputeInputModel()
             {
@@ -71,7 +71,7 @@ public class Dispute
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext(new List<RegisteredWork>(), new List<Application>(), new List<UserAccount>()))
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock)  = new FormsServiceFactory().Create(context);
 
             var updatedApplication = await formsService.Update<DisputeViewModel>(new DisputeInputModel()
             {
@@ -105,7 +105,7 @@ public class Dispute
                          }
                      }))
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock)  = new FormsServiceFactory().Create(context);
 
             await formsService.Update<DisputeViewModel>(new DisputeInputModel()
             {

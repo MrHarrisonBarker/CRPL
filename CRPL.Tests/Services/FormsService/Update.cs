@@ -11,6 +11,7 @@ using CRPL.Data.StructuredOwnership;
 using CRPL.Tests.Factories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using NUnit.Framework;
 
 namespace CRPL.Tests.Services.FormsService;
@@ -23,7 +24,7 @@ public class UpdateTest
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock) = new FormsServiceFactory().Create(context);
 
             var updatedApplication = await formsService.Update<CopyrightRegistrationViewModel>(new CopyrightRegistrationInputModel()
             {
@@ -42,7 +43,7 @@ public class UpdateTest
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock) = new FormsServiceFactory().Create(context);
 
             var currentStructure = new List<OwnershipStake>
             {
@@ -72,7 +73,7 @@ public class UpdateTest
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock) = new FormsServiceFactory().Create(context);
 
             var updatedApplication = await formsService.Update<CopyrightRegistrationViewModel>(new CopyrightRegistrationInputModel()
             {
@@ -92,7 +93,7 @@ public class UpdateTest
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock) = new FormsServiceFactory().Create(context);
 
             var ownership = new List<OwnershipStake>
             {
@@ -116,7 +117,7 @@ public class UpdateTest
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock) = new FormsServiceFactory().Create(context);
 
             var updatedApplication = await formsService.Update<CopyrightRegistrationViewModel>(new CopyrightRegistrationInputModel()
             {
@@ -135,7 +136,7 @@ public class UpdateTest
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock) = new FormsServiceFactory().Create(context);
 
             var updatedApplication = await formsService.Update<CopyrightRegistrationViewModel>(new CopyrightRegistrationInputModel()
             {
@@ -158,16 +159,19 @@ public class UpdateTest
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock) = new FormsServiceFactory().Create(context);
+
+            userServiceMock.Setup(x => x.AssignToApplication(It.IsAny<string>(), It.IsAny<Guid>()));
 
             var updatedApplication = await formsService.Update<CopyrightRegistrationViewModel>(new CopyrightRegistrationInputModel()
             {
+                Id = new Guid("875FBE5E-43D0-4E42-B790-68B91C8CAE4D"),
                 OwnershipStakes = new List<OwnershipStake> { new() { Owner = TestConstants.TestAccountAddress, Share = 100 } },
                 Title = "TEST APPLICATION"
             });
 
-            updatedApplication.AssociatedUsers.Should().NotBeNull();
-            updatedApplication.AssociatedUsers.FirstOrDefault(x => x.Id == new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C")).Should().NotBeNull();
+            userServiceMock.Verify(x => x.AreUsersReal(It.IsAny<List<string>>()), Times.AtLeastOnce);
+            userServiceMock.Verify(x => x.AssignToApplication(It.IsAny<string>(), It.IsAny<Guid>()), Times.AtLeastOnce);
         }
     }
 
@@ -176,7 +180,9 @@ public class UpdateTest
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var formsService = new FormsServiceFactory().Create(context);
+            var (formsService, userServiceMock) = new FormsServiceFactory().Create(context);
+
+            userServiceMock.Setup(x => x.AreUsersReal(It.IsAny<List<string>>())).Returns(false);
 
             await FluentActions.Invoking(async () => await formsService.Update<CopyrightRegistrationViewModel>(new CopyrightRegistrationInputModel()
             {
