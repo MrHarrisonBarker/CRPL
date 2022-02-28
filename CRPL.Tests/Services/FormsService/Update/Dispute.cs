@@ -12,6 +12,7 @@ using CRPL.Data.Applications.ViewModels;
 using CRPL.Tests.Factories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using NUnit.Framework;
 
 namespace CRPL.Tests.Services.FormsService.Update;
@@ -85,7 +86,7 @@ public class Dispute
     }
 
     [Test]
-    public async Task Should_Assign_User_And_Work()
+    public async Task Should_Assign_User()
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext(new List<RegisteredWork>
                      {
@@ -115,16 +116,7 @@ public class Dispute
                 AccuserId = new Guid("3B26A0BF-B393-4703-9158-4EEDACB943AC")
             });
 
-            var updatedApplication = context.DisputeApplications
-                .Include(x => x.AssociatedWork)
-                .Include(x => x.AssociatedUsers)
-                .ThenInclude(x => x.UserAccount)
-                .FirstOrDefault();
-            
-            updatedApplication.Reason.Should().Be("This is a reason");
-            updatedApplication.DisputeType.Should().Be(DisputeType.Usage);
-            updatedApplication.AssociatedWork.Id.Should().Be(new Guid("8B0750C1-9FB6-4A1D-ABA0-41C581E59753"));
-            updatedApplication.AssociatedUsers.First().UserAccount.Id.Should().Be(new Guid("3B26A0BF-B393-4703-9158-4EEDACB943AC"));
+            userServiceMock.Verify(x => x.AssignToApplication(It.IsAny<Guid>(), It.IsAny<Guid>()));
         }
     }
 }

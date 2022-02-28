@@ -108,7 +108,7 @@ public class AccountManagementService : IAccountManagementService
             .Include(x => x.UserWorks).ThenInclude(x => x.RegisteredWork)
             .FirstOrDefaultAsync(x => x.Id == walletTransferApplication.AssociatedUsers[0].UserId);
         
-        if (user != null) throw new UserNotFoundException(walletTransferApplication.AssociatedUsers[0].UserId);
+        if (user == null) throw new UserNotFoundException(walletTransferApplication.AssociatedUsers[0].UserId);
 
         // Transfer all copyrights to new wallet
         foreach (var userWork in user.UserWorks)
@@ -121,7 +121,8 @@ public class AccountManagementService : IAccountManagementService
                 Logger.LogInformation("Transferring copyrights to new wallet");
                 
                 // Creating restructure applications for all works
-                var application = await FormsService.Update<OwnershipRestructureViewModel>(new OwnershipRestructureInputModel
+
+                var restructure = new OwnershipRestructureInputModel
                 {
                     Origin = walletTransferApplication,
                     CurrentStructure = ownershipOf.ReturnValue1.Select(x => Mapper.Map<OwnershipStake>(x)).ToList(),
@@ -131,11 +132,14 @@ public class AccountManagementService : IAccountManagementService
                         {
                             x.Owner = walletTransferApplication.WalletAddress;
                         }
+
                         return Mapper.Map<OwnershipStake>(x);
                     }).ToList(),
                     RestructureReason = RestructureReason.TransferWallet,
                     WorkId = userWork.WorkId
-                });
+                };
+                
+                var application = await FormsService.Update<OwnershipRestructureViewModel>(restructure);
             
                 await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(application.Id);
                 

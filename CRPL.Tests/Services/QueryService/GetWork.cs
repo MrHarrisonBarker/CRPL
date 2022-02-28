@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CRPL.Tests.Factories;
+using CRPL.Tests.Mocks;
 using FluentAssertions;
 using Moq;
 using Nethereum.ABI.FunctionEncoding;
@@ -31,10 +32,10 @@ public class GetWork
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, new Dictionary<string, object>()
-            {
-                { "eth_call", new SmartContractRevertException("EXPIRED","") }
-            });
+            var mappings = MockWebUtils.DefaultMappings;
+            mappings["eth_call"] = new SmartContractRevertException("EXPIRED", "");
+            
+            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, mappings);
 
             var workId = new Guid("D54F35CC-3C8A-471C-A641-2BB5A59A8963");
             var work = await queryService.GetWork(workId);
