@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 namespace CRPL.Tests.Factories;
 
-[TestFixture]
 public class ApplicationSubmitterFactory
 {
     public (ApplicationContext context, IServiceProvider Object, Mock<ICopyrightService> copyrightServiceMock, Mock<IAccountManagementService> accountManagementServiceMock, Mock<IRegistrationService> registrationServiceMock) Create(ApplicationContext context)

@@ -47,28 +47,22 @@ public class AutoMapping : Profile
         CreateMap<ResolveResult, ResolveResultWithUri>()
             .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.Transaction));
 
-        CreateMap<Application, ApplicationViewModel>()
+        CreateMap<Application, ApplicationViewModel>().IncludeAllDerived()
             .ForMember(model => model.AssociatedWork, x => x.MapFrom(src => src.AssociatedWork))
             .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
             .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
 
         CreateMap<CopyrightRegistrationApplication, CopyrightRegistrationViewModel>()
             .ForMember(model => model.OwnershipStakes, x =>
-                x.MapFrom(src => src.OwnershipStakes.Decode()))
-            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
-            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
+                x.MapFrom(src => src.OwnershipStakes.Decode()));
 
         CreateMap<OwnershipRestructureApplication, OwnershipRestructureViewModel>()
             .ForMember(model => model.CurrentStructure, x => x.MapFrom(src => src.CurrentStructure.Decode()))
-            .ForMember(model => model.ProposedStructure, x => x.MapFrom(src => src.ProposedStructure.Decode()))
-            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
-            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
+            .ForMember(model => model.ProposedStructure, x => x.MapFrom(src => src.ProposedStructure.Decode()));
 
-        CreateMap<DisputeApplication, DisputeViewModel>()
-            .ForMember(model => model.AssociatedUsers, x => x.MapFrom(src => src.AssociatedUsers.Select(u => u.UserAccount)))
-            .ForMember(model => model.TransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.TransactionId));
-
+        CreateMap<DisputeApplication, DisputeViewModel>();
         CreateMap<DeleteAccountApplication, DeleteAccountViewModel>();
+        CreateMap<WalletTransferApplication, WalletTransferViewModel>();
 
         CreateMap<CRPL.Data.StructuredOwnership.OwnershipStake, CRPL.Contracts.Structs.OwnershipStakeContract>();
         CreateMap<CRPL.Contracts.Structs.OwnershipStakeContract, CRPL.Data.StructuredOwnership.OwnershipStake>();

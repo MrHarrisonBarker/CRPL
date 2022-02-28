@@ -1,4 +1,5 @@
 using CRPL.Contracts.Copyright.ContractDefinition;
+using CRPL.Contracts.Structs;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Web.Exceptions;
@@ -27,28 +28,29 @@ public static class RestructuredEventProcessor
 
         context.Update(work);
 
-        logger.LogInformation("Assigning new shareholders and removing old");
         // assigning new shareholders to the work and removing old ones
+        logger.LogInformation("Assigning new shareholders and removing old");
+        
         context.UserWorks.RemoveRange(work.UserWorks);
         work.UserWorks.Clear();
-        foreach (var x in restructuredEvent.Event.Proposal.NewStructure)
+        
+        foreach (var ownershipStake in restructuredEvent.Event.Proposal.NewStructure)
         {
-            var user = await context.UserAccounts.FirstOrDefaultAsync(u => u.Wallet.PublicAddress.ToLower() == x.Owner.ToLower());
-            
-            if (user == null) throw new UserNotFoundException(x.Owner);
-            
-            logger.LogInformation("Assigning {Address} to work {Id}", x.Owner, work.RightId);
-            
-            context.UserWorks.Add(new UserWork()
-            {
-                UserId = user.Id,
-                WorkId = work.Id
-            });
+            await AssignWorkToUser(logger, context, ownershipStake, work);
         }
 
         logger.LogInformation("Setting restructure application to complete");
-        // setting application status to complete
-        var application = (OwnershipRestructureApplication)work.AssociatedApplication.FirstOrDefault(x => x.Status == ApplicationStatus.Submitted && x.ApplicationType == ApplicationType.OwnershipRestructure)!;
+        
+        await SetApplicationStatus(work, context);
+
+        await context.SaveChangesAsync();
+    }
+
+    private static async Task SetApplicationStatus(RegisteredWork work, ApplicationContext context)
+    {
+        var application = (OwnershipRestructureApplication)work.AssociatedApplication.FirstOrDefault(x => x.Status == ApplicationStatus.Submitted && x.ApplicationType == ApplicationType.OwnershipRestructure);
+
+        if (application == null) throw new ApplicationNotFoundException();
         
         // getting the application again from the database, this was done to also get the origin
         application = await context.OwnershipRestructureApplications
@@ -56,13 +58,26 @@ public static class RestructuredEventProcessor
             .FirstOrDefaultAsync(x => x.Id == application.Id);
         
         if (application == null) throw new ApplicationNotFoundException();
-        
+
         application.Status = ApplicationStatus.Complete;
         application.BindStatus = BindStatus.Bound;
-        
+
         // if the restructure is a result of another application set that application now to complete
         if (application.Origin != null) application.Origin.Status = ApplicationStatus.Complete;
+    }
 
-        await context.SaveChangesAsync();
+    private static async Task AssignWorkToUser(ILogger<EventProcessingService> logger, ApplicationContext context, OwnershipStakeContract x, RegisteredWork work)
+    {
+        var user = await context.UserAccounts.FirstOrDefaultAsync(u => u.Wallet.PublicAddress.ToLower() == x.Owner.ToLower());
+
+        if (user == null) throw new UserNotFoundException(x.Owner);
+
+        logger.LogInformation("Assigning {Address} to work {Id}", x.Owner, work.RightId);
+
+        context.UserWorks.Add(new UserWork()
+        {
+            UserId = user.Id,
+            WorkId = work.Id
+        });
     }
 }
