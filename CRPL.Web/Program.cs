@@ -70,7 +70,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseSeeding();
+if (app.Environment.IsDevelopment()) app.UseSeeding();
+
 app.WakeServices();
 
 // Configure the HTTP request pipeline.

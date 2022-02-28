@@ -30,7 +30,7 @@ public static class ServiceExtensions
             services.AddHostedService<EventProcessingService>();
             services.AddHostedService<VerificationPipelineService>();
             services.AddHostedService<ExpiryProcessingService>();
-            services.AddHostedService<ChainSyncService>();
+            // services.AddHostedService<ChainSyncService>();
 
             services.AddScoped<ISynchroniser, OwnershipSynchroniser>();
         }

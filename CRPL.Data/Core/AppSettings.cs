@@ -11,7 +11,6 @@ public class AppSettings
     // public Blockchains CurrentChain { get; set; }
 
     public List<Chain> Chains { get; set; }
-    public SystemAccount SystemAccount { get; set; }
 }
 
 public class SystemAccount
@@ -26,4 +25,5 @@ public class Chain
     public string Url { get; set; }
     public string Id { get; set; }
     public BigInteger ChainIdInt() => BigInteger.Parse(Id);
+    public SystemAccount SystemAccount { get; set; }
 }

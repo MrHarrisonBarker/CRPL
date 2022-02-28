@@ -15,20 +15,19 @@ public class BlockchainConnection : IBlockchainConnection
     private readonly AppSettings AppSettings;
     private Web3 _Web3;
     private readonly Nethereum.Web3.Accounts.Account Account;
-    private readonly Chain CurrentChain;
 
     public BlockchainConnection(ILogger<BlockchainConnection> logger, IOptions<AppSettings> appSettings)
     {
         Logger = logger;
         AppSettings = appSettings.Value;
 
-        CurrentChain = AppSettings.Chains.First(x => x.Name == Environment.GetEnvironmentVariable("CURRENT_CHAIN"));
+        var currentChain = AppSettings.Chains.FirstOrDefault(x => x.Name == Environment.GetEnvironmentVariable("CURRENT_CHAIN"));
 
-        if (CurrentChain == null) throw new Exception("No current chain found!");
+        if (currentChain == null) throw new Exception("No current chain found!");
 
-        Account = new Nethereum.Web3.Accounts.Account(AppSettings.SystemAccount.PrivateKey, CurrentChain.ChainIdInt());
+        Account = new Nethereum.Web3.Accounts.Account(currentChain.SystemAccount.PrivateKey, currentChain.ChainIdInt());
 
-        _Web3 = new Web3(Account, AppSettings.Chains.First().Url);
+        _Web3 = new Web3(Account, currentChain.Url);
     }
 
     public Web3 Web3() => _Web3;
