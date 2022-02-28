@@ -1,13 +1,14 @@
 <div class="content-container">
   <div class="card" id="settings-card">
     <div class="card-block">
-      <p>{{UserAccount.FirstName}} {{UserAccount.LastName}}</p>
-      <div class="card-text">
-        <p class="text-muted">{{UserAccount.Email}}</p>
-        <p class="text-muted">{{UserAccount.DialCode}} {{UserAccount.PhoneNumber}}</p>
+      <div class="card-title">{{UserAccount.FirstName}} {{UserAccount.LastName}}</div>
+      <div>
+        <p class="text-muted card-text"><b>email: </b>{{UserAccount.Email}}</p>
+        <p class="text-muted card-text"><b>phone: </b> {{UserAccount.DialCode}} {{UserAccount.PhoneNumber}}</p>
+        <div></div>
       </div>
       <div class="flex-between">
-        <div><a target="_blank" [href]="UserAccount.WalletAddressUri">{{UserAccount.WalletPublicAddress}}</a></div>
+        <div><p class="text-muted card-text"><b>wallet address: </b><a target="_blank" [href]="UserAccount.WalletAddressUri">{{UserAccount.WalletPublicAddress}}</a></p></div>
         <button class="btn btn-sm" (click)="TransferModel = true">transfer wallet</button>
       </div>
     </div>
@@ -19,7 +20,7 @@
 </div>
 
 <clr-modal [(clrModalOpen)]="TransferModel">
-  <h3 class="modal-title">I have a nice title</h3>
+  <h3 class="modal-title">Transfer assets to wallet</h3>
   <div class="modal-body">
     <input clrInput placeholder="address" name="address" [(ngModel)]="WalletAddress" />
   </div>

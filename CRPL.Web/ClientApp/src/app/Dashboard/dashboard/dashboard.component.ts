@@ -96,9 +96,9 @@ export class DashboardComponent implements OnInit, OnDestroy
     this.IsApplication = isApplication;
   }
 
-  public NumberOfDisputes (right: RegisteredWorkViewModel): number
+  public NumberOfOpenDisputes (right: RegisteredWorkViewModel): number
   {
-    if (right.AssociatedApplication) return right.AssociatedApplication?.filter(x => x.ApplicationType == 2).length;
+    if (right.AssociatedApplication) return right.AssociatedApplication?.filter(x => x.ApplicationType == 2 && x.Status != ApplicationStatus.Complete).length;
     return 0;
   }
 

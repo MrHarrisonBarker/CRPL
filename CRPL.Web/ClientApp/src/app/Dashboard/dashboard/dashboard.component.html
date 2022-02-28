@@ -12,7 +12,7 @@
                   <ul class="nav-list">
                     <li *ngFor="let right of RegisteredCopyrights | async">
                       <a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">
-                        <span *ngIf="right.Status == 4" style="margin-right:0.2rem">{{right.Meta?.Title}}</span><span class="badge badge-danger" *ngIf="NumberOfDisputes(right) > 0">{{NumberOfDisputes(right)}}</span>
+                        <span *ngIf="right.Status == 4" style="margin-right:0.2rem">{{right.Meta?.Title}}</span><span class="badge badge-danger" *ngIf="NumberOfOpenDisputes(right) > 0">{{NumberOfOpenDisputes(right)}}</span>
                         <span *ngIf="right.Status == 6"><span style="margin-right:0.2rem">{{right.Title}}</span><copyright-status [status]="6"></copyright-status></span>
                       </a>
                     </li>
