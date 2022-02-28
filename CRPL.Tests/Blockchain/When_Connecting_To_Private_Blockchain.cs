@@ -28,13 +28,13 @@ public class When_Connecting_To_Private_Blockchain
                 {
                     Name = "LOCAL",
                     Url = "http://localhost:8545",
-                    Id = "444444444500"
+                    Id = "444444444500",
+                    SystemAccount = new SystemAccount()
+                    {
+                        AccountId = TestConstants.TestAccountAddress,
+                        PrivateKey = TestConstants.TestAccountPrivateKey
+                    }
                 }
-            },
-            SystemAccount = new SystemAccount()
-            {
-                AccountId = TestConstants.TestAccountAddress,
-                PrivateKey = TestConstants.TestAccountPrivateKey
             }
         });
         

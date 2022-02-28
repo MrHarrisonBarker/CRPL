@@ -31,13 +31,13 @@ public class When_Interacting_with_Standard_Contract
                 {
                     Name = "LOCAL",
                     Url = "http://localhost:8545",
-                    Id = "444444444500"
+                    Id = "444444444500",
+                    SystemAccount = new SystemAccount()
+                    {
+                        AccountId = TestConstants.TestAccountAddress,
+                        PrivateKey = TestConstants.TestAccountPrivateKey
+                    }
                 }
-            },
-            SystemAccount = new SystemAccount()
-            {
-                AccountId = TestConstants.TestAccountAddress,
-                PrivateKey = TestConstants.TestAccountPrivateKey
             }
         });
         
@@ -54,7 +54,7 @@ public class When_Interacting_with_Standard_Contract
     [Test]
     public async Task Should_Register_New_Copyright()
     {
-        var funcMessage = new RegisterWithMetaFunction()
+        var funcMessage = new RegisterFunction()
         {
             To = new List<OwnershipStakeContract>
             {
@@ -64,7 +64,7 @@ public class When_Interacting_with_Standard_Contract
                     Share = 100
                 }
             },
-            Def = new Meta()
+            Meta = new Meta()
             {
                 Title = "Hello world",
                 Expires = 0,
@@ -89,7 +89,7 @@ public class When_Interacting_with_Standard_Contract
             }
         };
 
-        var receipt = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractAddress).RegisterWithMetaRequestAndWaitForReceiptAsync(funcMessage);
+        var receipt = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractAddress).RegisterRequestAndWaitForReceiptAsync(funcMessage);
 
         receipt.Should().NotBeNull();
         receipt.Status.Value.Should().Be(1);
@@ -104,7 +104,7 @@ public class When_Interacting_with_Standard_Contract
     [Test]
     public async Task Should_Get_Ownership()
     {
-        var funcMessage = new RegisterWithMetaFunction()
+        var funcMessage = new RegisterFunction()
         {
             To = new List<OwnershipStakeContract>
             {
@@ -114,7 +114,7 @@ public class When_Interacting_with_Standard_Contract
                     Share = 100
                 }
             },
-            Def = new Meta()
+            Meta = new Meta()
             {
                 Title = "Hello world",
                 Expires = 0,
@@ -138,7 +138,7 @@ public class When_Interacting_with_Standard_Contract
                 }
             }
         };
-        var receipt = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractAddress).RegisterWithMetaRequestAndWaitForReceiptAsync(funcMessage);
+        var receipt = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractAddress).RegisterRequestAndWaitForReceiptAsync(funcMessage);
 
         receipt.Should().NotBeNull();
         receipt.Status.Value.Should().Be(1);
