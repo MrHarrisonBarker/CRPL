@@ -54,6 +54,7 @@ describe('AuthService', () =>
     (httpMock: HttpTestingController, authService: AuthService) =>
     {
       let mockUser: UserAccountViewModel = {
+        WalletAddressUri: "",
         DateOfBirth: {Day: 0, Month: 0, Year: 0},
         DialCode: "",
         Email: "",
@@ -81,6 +82,7 @@ describe('AuthService', () =>
     (httpMock: HttpTestingController, authService: AuthService) =>
     {
       let mockUser: UserAccountViewModel = {
+        WalletAddressUri: "",
         DateOfBirth: {Day: 0, Month: 0, Year: 0},
         DialCode: "",
         Email: "",

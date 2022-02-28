@@ -44,6 +44,7 @@ describe('UserService', () =>
     (httpMock: HttpTestingController, userService: UserService) =>
     {
       let mockUser: UserAccountViewModel = {
+        WalletAddressUri: "",
         DateOfBirth: {Day: 0, Month: 0, Year: 0},
         DialCode: "",
         Email: "",

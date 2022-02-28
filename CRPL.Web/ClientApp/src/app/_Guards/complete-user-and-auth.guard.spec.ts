@@ -78,6 +78,7 @@ describe('CompleteUserAndAuthGuard', () =>
   it('should route to info wizard if user not complete', () =>
   {
     let mockUser: UserAccountViewModel = {
+      WalletAddressUri: "",
       DateOfBirth: {Day: 0, Month: 0, Year: 0},
       DialCode: "",
       Email: "",

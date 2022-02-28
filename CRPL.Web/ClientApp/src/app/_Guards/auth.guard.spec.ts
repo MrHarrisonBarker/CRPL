@@ -82,6 +82,7 @@ describe('AuthGuard', () =>
   it('should return true if authenticated', () =>
   {
     let mockUser: UserAccountViewModel = {
+      WalletAddressUri: "",
       DateOfBirth: {Day: 0, Month: 0, Year: 0},
       DialCode: "",
       Email: "",
