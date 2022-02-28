@@ -2,6 +2,8 @@ using System;
 using AutoMapper;
 using CRPL.Data;
 using CRPL.Data.Account;
+using CRPL.Data.BlockchainUtils;
+using CRPL.Data.ContractDeployment;
 using CRPL.Web.Services;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,11 +25,14 @@ public class FormsServiceFactory
             EncryptionKey = "Bj3PtC818hVHkNH3nzI0HN8wJXY0oHdo"
         });
 
-        var copyrightService = new CopyrightServiceFactory().Create(context, null);
+        var (copyrightService, connectionMock, contractRepoMock, expiryQueueMock) = new CopyrightServiceFactory().Create(context, null);
 
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(x => x.GetService(typeof(ApplicationContext))).Returns(context);
-        serviceProvider.Setup(x => x.GetService(typeof(ICopyrightService))).Returns(copyrightService.Item1);
+        serviceProvider.Setup(x => x.GetService(typeof(IUserService))).Returns(new Mock<IUserService>().Object);
+        serviceProvider.Setup(x => x.GetService(typeof(IBlockchainConnection))).Returns(connectionMock.Object);
+        serviceProvider.Setup(x => x.GetService(typeof(IContractRepository))).Returns(contractRepoMock.Object);
+        serviceProvider.Setup(x => x.GetService(typeof(ICopyrightService))).Returns(copyrightService);
         serviceProvider.Setup(x => x.GetService(typeof(IAccountManagementService))).Returns(new Mock<IAccountManagementService>().Object);
         serviceProvider.Setup(x => x.GetService(typeof(IRegistrationService))).Returns(new Mock<IRegistrationService>().Object);
 

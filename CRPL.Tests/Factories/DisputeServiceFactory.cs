@@ -6,6 +6,7 @@ using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
 using CRPL.Web.Services;
+using CRPL.Web.Services.Interfaces;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -13,7 +14,7 @@ namespace CRPL.Tests.Factories;
 
 public class DisputeServiceFactory
 {
-    public DisputeService Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public (DisputeService, Mock<IFormsService> formsServiceMock) Create(ApplicationContext context, Dictionary<string, object>? mappings)
     {
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);
@@ -29,12 +30,14 @@ public class DisputeServiceFactory
             Address = "TEST CONTRACT"
         });
 
-        return new DisputeService(
+        var formsServiceMock = new Mock<IFormsService>();
+        
+        return (new DisputeService(
             new Logger<DisputeService>(new LoggerFactory()),
             context,
             mapper,
             connectionMock.Object,
             contractRepoMock.Object,
-            new FormsServiceFactory().Create(context));
+            formsServiceMock.Object), formsServiceMock);
     }
 }

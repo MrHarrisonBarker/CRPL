@@ -52,7 +52,7 @@ public class AcceptRecourse
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, Applications))
         {
-            var disputeService = new DisputeServiceFactory().Create(context, null);
+            var (disputeService, formsServiceMock) = new DisputeServiceFactory().Create(context, null);
 
             var dispute = await disputeService.AcceptRecourse(new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"), "I accept this dispute");
 
@@ -69,7 +69,7 @@ public class AcceptRecourse
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var disputeService = new DisputeServiceFactory().Create(context, null);
+            var (disputeService, formsServiceMock) = new DisputeServiceFactory().Create(context, null);
 
             await FluentActions.Invoking(async () => await disputeService.AcceptRecourse(Guid.Empty, ""))
                 .Should().ThrowAsync<DisputeNotFoundException>();

@@ -106,7 +106,7 @@ public class DisputeService : IDisputeService
         await Context.SaveChangesAsync();
     }
 
-    public async Task RestructureAndResolve(Guid disputeId)
+    public async Task<OwnershipRestructureViewModel> RestructureAndResolve(Guid disputeId)
     {
         Logger.LogInformation("Creating a restructure proposal to satisfy a dispute expected recourse");
 
@@ -143,6 +143,6 @@ public class DisputeService : IDisputeService
             Origin = dispute
         });
 
-        await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(form.Id);
+        return await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(form.Id);
     }
 }

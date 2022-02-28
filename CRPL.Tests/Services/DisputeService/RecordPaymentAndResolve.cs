@@ -32,7 +32,7 @@ public class RecordPaymentAndResolve
                          }
                      }))
         {
-            var disputeService = new DisputeServiceFactory().Create(context, new Dictionary<string, object>()
+            var (disputeService, formsServiceMock) = new DisputeServiceFactory().Create(context, new Dictionary<string, object>()
             {
                 {
                     "eth_getTransactionReceipt", new TransactionReceipt()
@@ -58,7 +58,7 @@ public class RecordPaymentAndResolve
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var disputeService = new DisputeServiceFactory().Create(context, null);
+            var (disputeService, formsServiceMock) = new DisputeServiceFactory().Create(context, null);
             
             await FluentActions.Invoking(async () => await disputeService.RecordPaymentAndResolve(Guid.Empty, ""))
                 .Should().ThrowAsync<DisputeNotFoundException>();

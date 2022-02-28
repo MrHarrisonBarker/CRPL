@@ -27,7 +27,7 @@ public class RejectRecourse
                          }
                      }))
         {
-            var disputeService = new DisputeServiceFactory().Create(context, null);
+            var (disputeService, formsServiceMock) = new DisputeServiceFactory().Create(context, null);
 
             var dispute = await disputeService.RejectRecourse(new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"), "I reject this dispute");
 
@@ -43,7 +43,7 @@ public class RejectRecourse
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var disputeService = new DisputeServiceFactory().Create(context, null);
+            var (disputeService, formsServiceMock) = new DisputeServiceFactory().Create(context, null);
             
             await FluentActions.Invoking(async () => await disputeService.RejectRecourse(Guid.Empty, ""))
                 .Should().ThrowAsync<DisputeNotFoundException>();
