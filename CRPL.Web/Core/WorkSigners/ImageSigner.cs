@@ -14,7 +14,11 @@ public class ImageSigner : WorkSigner, IWorkSigner
     {
         var image = Image.Load(work.Work, out var format);
 
-        image.Metadata.ExifProfile.SetValue(ExifTag.Copyright, Signature);
+        if (image != null)
+        {
+            if (image.Metadata.ExifProfile == null) image.Metadata.ExifProfile = new ExifProfile();
+            image.Metadata.ExifProfile.SetValue(ExifTag.Copyright, Signature);
+        }
 
         using var memoryStream = new MemoryStream();
         image.Save(memoryStream, format);
