@@ -13,6 +13,7 @@ public class RegisteredWorkWithAppsViewModel
     public RegisteredWorkStatus Status { get; set; }
     public string? RightId { get; set; }
     public byte[]? Hash { get; set; }
+    public string? CidLink { get; set; }
     public string? RegisteredTransactionId { get; set; }
     public List<Contracts.Structs.OwnershipStakeContract>? OwnershipStructure { get; set; }
     public List<Contracts.Structs.ProposalVote>? CurrentVotes { get; set; }

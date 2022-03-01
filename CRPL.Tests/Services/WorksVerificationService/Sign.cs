@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CRPL.Data.Account;
@@ -32,11 +33,9 @@ public class Sign
         });
         var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
 
-        var signedWork = await worksVerificationService.Sign(new Guid("97FDE5E0-4DBD-4EF1-94F9-279A29E64689"));
+        var signedWork = await worksVerificationService.Sign(context.RegisteredWorks.First());
 
         signedWork.Should().NotBeNull();
-        var decodedString = Encoding.UTF8.GetString(signedWork.Work);
-        decodedString.Should().Contain("97fde5e0-4dbd-4ef1-94f9-279a29e64689");
     }
 
     [Test]
@@ -58,10 +57,10 @@ public class Sign
         });
         var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
 
-        var signedWork = await worksVerificationService.Sign(new Guid("97FDE5E0-4DBD-4EF1-94F9-279A29E64689"));
+        var signedWork = await worksVerificationService.Sign(context.RegisteredWorks.First());
         signedWork.Should().NotBeNull();
         
-        await FluentActions.Invoking(async () => await worksVerificationService.Sign( new Guid("97FDE5E0-4DBD-4EF1-94F9-279A29E64689")))
+        await FluentActions.Invoking(async () => await worksVerificationService.Sign( context.RegisteredWorks.First()))
             .Should().ThrowAsync<Exception>().WithMessage("Cannot get cached work,**");
     }
 
@@ -81,7 +80,7 @@ public class Sign
         });
         var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
 
-        await FluentActions.Invoking(async () => await worksVerificationService.Sign( new Guid("97FDE5E0-4DBD-4EF1-94F9-279A29E64689")))
+        await FluentActions.Invoking(async () => await worksVerificationService.Sign( context.RegisteredWorks.First()))
             .Should().ThrowAsync<WorkNotRegisteredException>();
     }
 
@@ -91,7 +90,7 @@ public class Sign
         await using var context = new TestDbApplicationContextFactory().CreateContext();
         var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
 
-        await FluentActions.Invoking(async () => await worksVerificationService.Sign(Guid.Empty))
+        await FluentActions.Invoking(async () => await worksVerificationService.Sign(null))
             .Should().ThrowAsync<WorkNotFoundException>();
     }
 }

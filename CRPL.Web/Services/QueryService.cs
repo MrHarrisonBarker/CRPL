@@ -47,10 +47,11 @@ public class QueryService : IQueryService
 
     public async Task<RegisteredWorkWithAppsViewModel> GetWork(Guid id)
     {
-        return await injectFromChain(Mapper.Map<RegisteredWorkWithAppsViewModel>(await Context.RegisteredWorks
+        var work = await Context.RegisteredWorks
             .Include(x => x.AssociatedApplication)
             .Include(x => x.UserWorks).ThenInclude(x => x.UserAccount)
-            .PruneApplications().FirstOrDefaultAsync(x => x.Id == id)));
+            .PruneApplications().FirstOrDefaultAsync(x => x.Id == id);
+        return await injectFromChain(Mapper.Map<RegisteredWorkWithAppsViewModel>(work));
     }
 
     public async Task<List<RegisteredWorkViewModel>> GetAll(int from, int take = 100)

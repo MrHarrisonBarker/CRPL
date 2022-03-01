@@ -22,7 +22,8 @@ public class AutoMapping : Profile
             .ForMember(model => model.WalletAddressUri, x => x.MapFrom(src => "https://etherscan.io/address/" + src.Wallet.PublicAddress));
 
         CreateMap<RegisteredWork, RegisteredWorkViewModel>()
-            .ForMember(model => model.RegisteredTransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.RegisteredTransactionId));
+            .ForMember(model => model.RegisteredTransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.RegisteredTransactionId))
+            .ForMember(model => model.CidLink, x => x.MapFrom(src => "https://ipfs.io/ipfs/" + src.Cid));
         CreateMap<RegisteredWork, RegisteredWorkWithAppsViewModel>()
             .ForMember(model => model.AssociatedUsers, x =>
                 x.MapFrom(src => src.UserWorks.Select(u => u.UserAccount)))
@@ -34,7 +35,8 @@ public class AutoMapping : Profile
                 x.Ignore())
             .ForMember(src => src.Meta, x =>
                 x.Ignore())
-            .ForMember(model => model.RegisteredTransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.RegisteredTransactionId));
+            .ForMember(model => model.RegisteredTransactionUri, x => x.MapFrom(src => "https://etherscan.io/tx/" + src.RegisteredTransactionId))
+            .ForMember(model => model.CidLink, x => x.MapFrom(src => "https://ipfs.io/ipfs/" + src.Cid));
 
 
         CreateMap<Application, ApplicationViewModelWithoutAssociated>().IncludeAllDerived()

@@ -96,6 +96,30 @@ public class RegisteredEventProcessor
     }
 
     [Test]
+    public async Task Should_Set_Cid()
+    {
+        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
+            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications));
+
+        var eventLog = new EventLog<RegisteredEventDTO>(new RegisteredEventDTO
+        {
+            To = new List<OwnershipStakeContract>
+            {
+                new() { Owner = TestConstants.TestAccountAddress, Share = 100 }
+            },
+            RightId = BigInteger.Parse("1")
+        }, new FilterLog
+        {
+            TransactionHash = Works.First().RegisteredTransactionId
+        });
+
+        await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
+
+        var work = await context.RegisteredWorks.FirstOrDefaultAsync(x => x.RightId == "1");
+        work.Cid.Should().NotBeNull();
+    }
+
+    [Test]
     public async Task Should_Throw_If_No_Work()
     {
         var (context, serviceProvider) = await new ServiceProviderWithContextFactory().Create();

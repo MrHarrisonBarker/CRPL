@@ -33,19 +33,19 @@ public class WorksController : ControllerBase
         }
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetSignedWork(Guid id)
-    {
-        try
-        {
-            var work = await WorksVerificationService.GetSigned(id);
-
-            return File(work.Work, work.ContentType, work.FileName);
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "Exception thrown when getting signed work");
-            throw;
-        }
-    }
+    // [HttpGet("{id}")]
+    // public async Task<IActionResult> GetSignedWork(Guid id)
+    // {
+    //     try
+    //     {
+    //         var work = await WorksVerificationService.GetSigned(id);
+    //
+    //         return File(work.Work, work.ContentType, work.FileName);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         Logger.LogError(e, "Exception thrown when getting signed work");
+    //         throw;
+    //     }
+    // }
 }

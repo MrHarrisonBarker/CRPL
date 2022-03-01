@@ -31,9 +31,9 @@ public static class RegisteredEventProcessor
 
         registeredWork.AssociatedApplication.First(x => x.ApplicationType == ApplicationType.CopyrightRegistration).Status = ApplicationStatus.Complete;
         
-        await context.SaveChangesAsync();
-        
         var worksVerificationService = scope.ServiceProvider.GetRequiredService<IWorksVerificationService>();
-        await worksVerificationService.Sign(registeredWork.Id);
+        await worksVerificationService.Sign(registeredWork);
+        
+        await context.SaveChangesAsync();
     }
 }

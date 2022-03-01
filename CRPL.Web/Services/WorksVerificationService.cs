@@ -6,6 +6,7 @@ using CRPL.Data.Works;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using CRPL.Web.WorkSigners;
+using Ipfs.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.Services;
@@ -26,7 +27,7 @@ public class WorksVerificationService : IWorksVerificationService
     public async Task VerifyWork(Guid workId)
     {
         Logger.LogInformation("Verifying {Id}", workId);
-        
+
         var work = await Context.RegisteredWorks
             .Include(x => x.AssociatedApplication)
             .FirstOrDefaultAsync(x => x.Id == workId);
@@ -37,7 +38,7 @@ public class WorksVerificationService : IWorksVerificationService
 
         Context.Update(work);
         Context.Update(application);
-        
+
         var collision = await Context.RegisteredWorks
             .FirstOrDefaultAsync(x => x.Hash == work.Hash && x.Id != workId);
 
@@ -85,20 +86,19 @@ public class WorksVerificationService : IWorksVerificationService
         return hash;
     }
 
-    public async Task<CachedWork> Sign(Guid workId)
+    public async Task<RegisteredWork> Sign(RegisteredWork work)
     {
-        Logger.LogInformation("Signing work for {Id}", workId);
+        Logger.LogInformation("Signing work for {Id}", work.Id);
 
-        var work = await Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == workId);
-        if (work == null) throw new WorkNotFoundException(workId);
         if (work.Status != RegisteredWorkStatus.Registered || !work.Registered.HasValue) throw new WorkNotRegisteredException();
-        
+
         Logger.LogInformation("Signing work {Hash}", work.Hash);
 
-        var signature = $"CRPL COPYRIGHT SIGNATURE ({work.Registered.Value.ToLongDateString()} at {work.Registered.Value.ToLongTimeString()}) // {work.Id} // registered on the chain at {work.RegisteredTransactionId} // right id {work.RightId}";
-        
+        var signature =
+            $"CRPL COPYRIGHT SIGNATURE ({work.Registered.Value.ToLongDateString()} at {work.Registered.Value.ToLongTimeString()}) // {work.Id} // registered on the chain at {work.RegisteredTransactionId} // right id {work.RightId}";
+
         var cachedWork = CachedWorkRepository.Get(work.Hash);
-        
+
         switch (cachedWork.ContentType)
         {
             case var type when type.Contains("image"):
@@ -116,10 +116,17 @@ public class WorksVerificationService : IWorksVerificationService
         }
 
         var signedWork = new UniversalSigner(signature).Sign(cachedWork);
-        
-        CachedWorkRepository.SetSigned(work.Hash, signedWork);
 
-        return signedWork;
+        var ipfsClient = new IpfsClient();
+        var node = await ipfsClient.FileSystem.AddAsync(new MemoryStream(signedWork.Work), signedWork.FileName);
+
+        work.Cid = node.Id.ToString();
+        Logger.LogInformation("Uploaded work to ipfs {Id}:{Link}", work.Cid, node.ToLink());
+
+        // saved on ipfs instead now!
+        // CachedWorkRepository.SetSigned(work.Hash, signedWork);
+
+        return work;
     }
 
     public async Task<CachedWork> GetSigned(Guid workId)
