@@ -22,6 +22,7 @@ public static class Utils
             Created = x.Created,
             Hash = x.Hash,
             Id = x.Id,
+            Cid = x.Cid,
             Registered = x.Registered,
             Status = x.Status,
             Title = x.Title,

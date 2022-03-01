@@ -37,6 +37,7 @@ export interface RegisteredWorkViewModel
   Status: RegisteredWorkStatus,
   RightId?: string,
   Hash?: string,
+  CidLink?: string,
   RegisteredTransactionId: string,
   RegisteredTransactionUri?: string;
   OwnershipStructure?: OwnershipStake[],

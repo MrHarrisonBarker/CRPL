@@ -82,13 +82,4 @@ export class CopyrightViewComponent implements OnInit
       Message: "The work has been synced with the blockchain"
     }));
   }
-
-  public Download (): void
-  {
-    this.worksService.GetSignedWork(this.Copyright.Id).subscribe(data =>
-    {
-      DownloadFile(this.Copyright.Meta?.Title + "-master", data);
-      console.log(data);
-    });
-  }
 }

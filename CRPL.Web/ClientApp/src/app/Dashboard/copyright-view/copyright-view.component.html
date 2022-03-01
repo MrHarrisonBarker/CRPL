@@ -50,11 +50,15 @@
           <span class="alert-text">
             <div class="flex-between">
               <span style="margin-right: 0.6rem">We've generated a digital master of the work you uploaded with a unique signature and relevant metadata showing your registration of this copyright</span>
-              <button class="btn btn-sm" (click)="Download()">Download</button>
+              <a [href]="Copyright.CidLink" target="_blank">Download</a>
             </div>
           </span>
           </clr-alert-item>
         </clr-alert>
+
+        <div *ngIf="ShowActions">
+          <div class="card-text"><b>IPFS link: </b><a [href]="Copyright.CidLink" target="_blank">{{Copyright.CidLink | slice:0:32}}...</a></div>
+        </div>
 
         <div class="card-text">
           <pre [innerHtml]="Meta"></pre>

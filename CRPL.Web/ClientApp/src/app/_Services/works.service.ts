@@ -28,9 +28,9 @@ export class WorksService
     return this.http.post(this.BaseUrl + WorksPaths.BasePath, data, {reportProgress: true, observe: 'events'});
   }
 
-  public GetSignedWork (id: string): Observable<Blob>
+  public GetSignedWork (url: string): Observable<Blob>
   {
-    return this.http.get(this.BaseUrl + WorksPaths.BasePath + "/" + encodeURI(id), {
+    return this.http.get(url, {
       reportProgress: true,
       responseType: 'blob'
     });
