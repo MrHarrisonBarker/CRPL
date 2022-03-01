@@ -128,7 +128,9 @@ the [FormsService](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/S
 interface for interacting and manipulating model driven forms (application), this code allows me to add new forms very
 easily with infrastructure already built. The working principle is leveraging the power of **OOP** to create a
 base [Application](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/Applications/DataModels/Application.cs)
-class that all subsequent applications inherit ([CopyrightRegistrationApplication]()) these application models are then
+class that all subsequent applications
+inherit ([CopyrightRegistrationApplication](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/Applications/DataModels/CopyrightRegistrationApplication.cs))
+these application models are then
 manipulated
 with [Submitters](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/Applications/ApplicationSubmitter.cs)
 and [Updaters](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/Applications/ApplicationUpdater.cs)
@@ -186,6 +188,78 @@ a list of what to do next hopefully producing a more accurate backlog of issues 
 
 This second sprint was very successful giving users the ability to register copyrights, restructure the ownership of
 those copyrights and injection of data stored on the blockchain.
+
+### Sprint 3 (20th Feb – 27th Feb)
+
+![burndown-3](./Sprint%20Reviews/burndown-3.png)
+
+#### Focus
+
+- Dispute filing
+- Dispute resolution
+- User focused UI elements
+- Copyright expiry
+- ChainSync&trade;
+- Account delete
+- Wallet transfer
+
+#### What was achieved
+
+All tasks and functionality assigned to this sprint have been completed.
+
+The first and most important piece of functionality to be implemented for this sprint was to file copyright disputes,
+this was done using my existing applications framework with
+a [DisputeApplication](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/Applications/DataModels/DisputeApplication.cs)
+data model representing what will be needed to file a dispute. Because of the existing framework this side of the
+implementation was quick and most of the development time was spent on changing and improving the data model for the
+needs of the application. Next was to create a
+new [dispute service](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/DisputeService.cs) for
+handling resolution of the dispute, a rights
+holder can then accept or reject the expected recourse described in the application. I've built two expected recourses:
+change of ownership that transfers the copyright to the accusing party and payment which transfers a set amount of Eth
+to the accuser stated in the application.
+
+Next was handling expiry of copyrights, instead of an explicit state expiry happens via a modifer or check that happens
+on requests and transactions with the contract and throws an error if the right is expired I catch this error and set
+the work as expired silently in a background service and queue.
+
+```Solidity
+modifier isExpired(uint256 rightId)
+{
+    require(_metadata[rightId].expires > block.timestamp, EXPIRED);
+    _;
+}
+```
+
+Now with a lot of state change and interaction with the chain I need a way of ensuring the system is in sync and
+consistent with the blockchain, to do this I
+created [ChainSync](https://github.com/MrHarrisonBarker/CRPL/tree/main/CRPL.Web/Core/ChainSync) which is made up of a
+background service that runs batches of synchronisation this synchronisation comes from any number
+of [ISynchronisers](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/ChainSync/Synchronisers/ISynchroniser.cs)
+and at this time
+an [OwnershipSynchroniser](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/ChainSync/Synchronisers/OwnershipSynchroniser.cs)
+has been implemented which checks the ownership structure on the chain and compares it with our database.
+
+The final feature to implement was two account configuration methods that: transfer ownership and delete account. These
+again used the application framework and a
+new [AccountManagementService](https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/AccountManagementService.cs)
+.
+
+#### What was not achieved
+
+All work assigned was completed however I am not confident all edge cases have been covered therefore the reliability of
+the code could be questioned.
+
+#### What went wrong
+
+When building out the dispute filing and resolution system the design and operation of the system was not throughout so
+significant time was spent trying different paths.
+
+#### Conclusion
+
+This sprint was very successful di~~~~spute a lot of work to be done in only a week, it gave the user the ability to file
+and resolve disputes, delete account and transfer assets to wallet. The system now recognises expired copyrights and
+keeps in sync with the blockchain.
 
 ## Licence
 
