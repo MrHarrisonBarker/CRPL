@@ -121,21 +121,12 @@ public class WorksVerificationService : IWorksVerificationService
         var node = await ipfsClient.FileSystem.AddAsync(new MemoryStream(signedWork.Work), signedWork.FileName);
 
         work.Cid = node.Id.ToString();
-        Logger.LogInformation("Uploaded work to ipfs {Id}:{Link}", work.Cid, node.ToLink());
+        Logger.LogInformation("Uploaded work to ipfs {Id}:{Link}", work.Cid, node.ToLink().ToString());
 
         // saved on ipfs instead now!
         // CachedWorkRepository.SetSigned(work.Hash, signedWork);
 
         return work;
-    }
-
-    public async Task<CachedWork> GetSigned(Guid workId)
-    {
-        var work = await Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == workId);
-        if (work == null) throw new WorkNotFoundException(workId);
-        if (work.Hash == null) throw new Exception($"Work has no hash {workId}");
-
-        return CachedWorkRepository.GetSigned(work.Hash);
     }
 
     private byte[] HashWork(byte[] work)

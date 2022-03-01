@@ -5,9 +5,7 @@ namespace CRPL.Data.Works;
 public interface ICachedWorkRepository
 {
     public CachedWork Get(byte[] hash);
-    public CachedWork GetSigned(byte[] hash);
     public void Set(byte[] hash, byte[] work, string contentType, string name);
-    public void SetSigned(byte[] hash, CachedWork signedWork);
 }
 
 public class CachedWorkRepository : ICachedWorkRepository
@@ -31,13 +29,6 @@ public class CachedWorkRepository : ICachedWorkRepository
         return work;
     }
 
-    public CachedWork GetSigned(byte[] hash)
-    {
-        Logger.LogInformation("Getting cached signed work {Hash}", hash);
-        if (!CachedSignedWorks.TryGetValue(Convert.ToBase64String(hash), out var work)) throw new Exception($"Cannot get cached signed work, {Convert.ToBase64String(hash)}");
-        return work;
-    }
-
     public void Set(byte[] hash, byte[] work, string contentType, string name)
     {
         Logger.LogInformation("caching work {Hash}", hash);
@@ -47,11 +38,5 @@ public class CachedWorkRepository : ICachedWorkRepository
             ContentType = contentType,
             FileName = name
         });
-    }
-
-    public void SetSigned(byte[] hash, CachedWork signedWork)
-    {
-        Logger.LogInformation("caching signed work {Hash}", hash);
-        CachedSignedWorks.Add(Convert.ToBase64String(hash), signedWork);
     }
 }
