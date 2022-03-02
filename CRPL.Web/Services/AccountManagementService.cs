@@ -40,7 +40,7 @@ public class AccountManagementService : IAccountManagementService
         FormsService = formsService;
     }    
     
-    public async Task<Application> DeleteUser(DeleteAccountApplication deleteAccountApplication)
+    public async Task<DeleteAccountApplication> DeleteUser(DeleteAccountApplication deleteAccountApplication)
     {
         Logger.LogInformation("Deleting user! {Id}", deleteAccountApplication.AccountId);
         
@@ -100,7 +100,7 @@ public class AccountManagementService : IAccountManagementService
         return deleteAccountApplication;
     }
 
-    public async Task<Application> WalletTransfer(WalletTransferApplication walletTransferApplication)
+    public async Task<WalletTransferApplication> WalletTransfer(WalletTransferApplication walletTransferApplication)
     {
         Logger.LogInformation("Transferring wallet to {Address}", walletTransferApplication.WalletAddress);
 

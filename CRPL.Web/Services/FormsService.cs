@@ -116,7 +116,7 @@ public class FormsService : IFormsService
         if (application.Status == ApplicationStatus.Complete) throw new Exception("The application has already been complete!");
         if (application.Status == ApplicationStatus.Submitted) throw new Exception("The application has already been submitted!");
 
-        var submittedApplication = (T)await application.Submit(ServiceProvider);
+        var submittedApplication = (T)await application.SubmitApplication(ServiceProvider);
         submittedApplication.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();

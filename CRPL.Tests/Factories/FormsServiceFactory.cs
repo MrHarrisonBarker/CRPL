@@ -16,6 +16,28 @@ namespace CRPL.Tests.Factories;
 
 public class FormsServiceFactory
 {
+    public readonly FormsService FormsService;
+    public readonly ServiceProviderWithContextFactory ServiceProviderWithContextFactory;
+
+    public FormsServiceFactory()
+    {
+    }
+
+    public FormsServiceFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
+    {
+        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
+        var mapper = new Mapper(configuration);
+
+        var appSettings = Options.Create(new AppSettings()
+        {
+            EncryptionKey = "Bj3PtC818hVHkNH3nzI0HN8wJXY0oHdo"
+        });
+
+        ServiceProviderWithContextFactory = new ServiceProviderWithContextFactory(context, mappings);
+
+        FormsService = new FormsService(new Logger<FormsService>(new LoggerFactory()), context, mapper, appSettings, ServiceProviderWithContextFactory.ServiceProviderMock.Object);
+    }
+
     public (FormsService, Mock<IUserService> userServiceMock) Create(ApplicationContext context)
     {
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
@@ -30,7 +52,7 @@ public class FormsServiceFactory
         var userServiceMock = new Mock<IUserService>();
 
         var serviceProvider = new Mock<IServiceProvider>();
-        
+
         serviceProvider.Setup(x => x.GetService(typeof(ApplicationContext))).Returns(context);
         serviceProvider.Setup(x => x.GetService(typeof(IUserService))).Returns(userServiceMock.Object);
         serviceProvider.Setup(x => x.GetService(typeof(IBlockchainConnection))).Returns(connectionMock.Object);
@@ -40,7 +62,7 @@ public class FormsServiceFactory
         serviceProvider.Setup(x => x.GetService(typeof(IRegistrationService))).Returns(new Mock<IRegistrationService>().Object);
 
         userServiceMock.Setup(x => x.AreUsersReal(It.IsAny<List<string>>())).Returns(true);
-        
+
         var serviceScope = new Mock<IServiceScope>();
         serviceScope.Setup(x => x.ServiceProvider).Returns(serviceProvider.Object);
 

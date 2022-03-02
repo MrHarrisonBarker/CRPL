@@ -10,6 +10,8 @@ public static class ApplicationUpdater
 {
     public static async Task<Application> UpdateApplication(this Application application, ApplicationInputModel inputModel, IServiceProvider serviceProvider)
     {
+        application.Modified = DateTime.Now;
+
         switch (application.ApplicationType)
         {
             case ApplicationType.CopyrightRegistration:
