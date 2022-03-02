@@ -50,29 +50,25 @@ public class AcceptRecourse
     [Test]
     public async Task Should_Update_Result()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, Applications))
-        {
-            var (disputeService, formsServiceMock) = new DisputeServiceFactory().Create(context, null);
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works, applications: Applications);
+        var disputeServiceFactory = new DisputeServiceFactory(dbFactory.Context);
 
-            var dispute = await disputeService.AcceptRecourse(new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"), "I accept this dispute");
+        var dispute = await disputeServiceFactory.DisputeService.AcceptRecourse(new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"), "I accept this dispute");
 
-            dispute.ResolveResult.Message.Should().BeEquivalentTo("I accept this dispute");
-            dispute.ResolveResult.Rejected.Should().BeFalse();
-            dispute.ResolveResult.Transaction.Should().BeNull();
-            dispute.ResolveResult.ResolvedStatus.Should().Be(ResolveStatus.NeedsOnChainAction);
-            dispute.Status.Should().Be(ApplicationStatus.Submitted);
-        }
+        dispute.ResolveResult.Message.Should().BeEquivalentTo("I accept this dispute");
+        dispute.ResolveResult.Rejected.Should().BeFalse();
+        dispute.ResolveResult.Transaction.Should().BeNull();
+        dispute.ResolveResult.ResolvedStatus.Should().Be(ResolveStatus.NeedsOnChainAction);
+        dispute.Status.Should().Be(ApplicationStatus.Submitted);
     }
 
     [Test]
     public async Task Should_Throw_When_No_Dispute()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var (disputeService, formsServiceMock) = new DisputeServiceFactory().Create(context, null);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var disputeServiceFactory = new DisputeServiceFactory(dbFactory.Context);
 
-            await FluentActions.Invoking(async () => await disputeService.AcceptRecourse(Guid.Empty, ""))
-                .Should().ThrowAsync<DisputeNotFoundException>();
-        }
+        await FluentActions.Invoking(async () => await disputeServiceFactory.DisputeService.AcceptRecourse(Guid.Empty, ""))
+            .Should().ThrowAsync<DisputeNotFoundException>();
     }
 }

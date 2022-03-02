@@ -14,30 +14,25 @@ namespace CRPL.Tests.Factories;
 
 public class DisputeServiceFactory
 {
-    public (DisputeService, Mock<IFormsService> formsServiceMock) Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public readonly DisputeService DisputeService;
+    public readonly  Mock<IFormsService> FormsServiceMock = new();
+    public readonly  Mock<IBlockchainConnection> BlockchainConnectionMock = new();
+    public readonly  Mock<IContractRepository> ContractRepositoryMock = new();
+
+    public DisputeServiceFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
     {
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);
-        
+
         var web3Mock = new MockWeb3(mappings);
 
-        var connectionMock = new Mock<IBlockchainConnection>();
-        connectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
-        
-        var contractRepoMock = new Mock<IContractRepository>();
-        contractRepoMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
+        BlockchainConnectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
+
+        ContractRepositoryMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
         {
             Address = "TEST CONTRACT"
         });
 
-        var formsServiceMock = new Mock<IFormsService>();
-        
-        return (new DisputeService(
-            new Logger<DisputeService>(new LoggerFactory()),
-            context,
-            mapper,
-            connectionMock.Object,
-            contractRepoMock.Object,
-            formsServiceMock.Object), formsServiceMock);
+        DisputeService = new DisputeService(new Logger<DisputeService>(new LoggerFactory()), context, mapper, BlockchainConnectionMock.Object, ContractRepositoryMock.Object, FormsServiceMock.Object);
     }
 }
