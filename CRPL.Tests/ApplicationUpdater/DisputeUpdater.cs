@@ -84,7 +84,7 @@ public class DisputeUpdater
         });
         var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
-        var updatedApplication = await dbFactory.Context.DisputeApplications.First().Update(new DisputeInputModel
+        await dbFactory.Context.DisputeApplications.First().Update(new DisputeInputModel
         {
             AccuserId = new Guid("61C66E21-3640-45EE-A814-41F1698537DD")
         }, serviceProviderFactory.ServiceProviderMock.Object);

@@ -9,6 +9,7 @@ using CRPL.Data.Applications.ViewModels;
 using CRPL.Data.StructuredOwnership;
 using CRPL.Tests.Factories;
 using CRPL.Web.Services;
+using CRPL.Web.Services.Updaters;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -70,14 +71,69 @@ public class CopyrightRegistrationUpdater
         updatedApplication.Modified.Should().BeCloseTo(DateTime.Now, TimeSpan.FromMinutes(1));
     }
 
-    // TODO: ownership stake update!
+    [Test]
+    public async Task Should_Update_And_Encode_Ownership_Stakes()
+    {
+        using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>()
+        {
+            new CopyrightRegistrationApplication
+            {
+                Id = new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF"),
+                Created = DateTime.Now,
+                Modified = DateTime.Now.AddDays(-1)
+            }
+        });
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
+        
+        serviceProviderFactory.UserServiceMock.Setup(x => x.AreUsersReal(It.IsAny<List<string>>())).Returns(true);
+        
+        var updatedApplication = await dbFactory.Context.CopyrightRegistrationApplications.First().Update(new CopyrightRegistrationInputModel
+        {
+            OwnershipStakes = new List<OwnershipStake>
+            {
+                new() {Owner = "ADDRESS_1", Share = 24},
+                new() {Owner = "ADDRESS_2", Share = 76}
+            }
+        }, serviceProviderFactory.ServiceProviderMock.Object);
+
+        updatedApplication.OwnershipStakes.Should().BeEquivalentTo("ADDRESS_1!24;ADDRESS_2!76;");
+    }
+
+    [Test]
+    public async Task Should_Assign_Owners()
+    {
+        using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>()
+        {
+            new CopyrightRegistrationApplication
+            {
+                Id = new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF"),
+                Created = DateTime.Now,
+                Modified = DateTime.Now.AddDays(-1)
+            }
+        });
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
+        
+        serviceProviderFactory.UserServiceMock.Setup(x => x.AreUsersReal(It.IsAny<List<string>>())).Returns(true);
+        
+        await dbFactory.Context.CopyrightRegistrationApplications.First().Update(new CopyrightRegistrationInputModel
+        {
+            OwnershipStakes = new List<OwnershipStake>
+            {
+                new() {Owner = "ADDRESS_1", Share = 24},
+                new() {Owner = "ADDRESS_2", Share = 76}
+            }
+        }, serviceProviderFactory.ServiceProviderMock.Object);
+        
+        serviceProviderFactory.UserServiceMock.Verify(x => x.AssignToApplication("address_1", new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF")), Times.Once);
+        serviceProviderFactory.UserServiceMock.Verify(x => x.AssignToApplication("address_2", new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF")), Times.Once);
+    }
 
     [Test]
     public async Task Should_Throw_If_No_Shareholder()
     {
         using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>()
         {
-            new CopyrightRegistrationApplication()
+            new CopyrightRegistrationApplication
             {
                 Id = new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF"),
                 Created = DateTime.Now,

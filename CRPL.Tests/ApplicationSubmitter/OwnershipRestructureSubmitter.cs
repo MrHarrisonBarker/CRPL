@@ -15,7 +15,7 @@ namespace CRPL.Tests.ApplicationSubmitter;
 public class OwnershipRestructureSubmitter
 {
     [Test]
-    public async Task Should_Submit()
+    public async Task Should_Submit_And_Propose()
     {
         using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>
         {

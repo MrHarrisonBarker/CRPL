@@ -3,6 +3,7 @@ using CRPL.Data.Applications.InputModels;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
+using Nethereum.Util;
 
 namespace CRPL.Web.Services.Updaters;
 
@@ -15,9 +16,8 @@ public static class WalletTransferUpdater
         
         application.WalletAddress = inputModel.WalletAddress;
 
-        // check if wallet exists on the blockchain
-        var balance = await blockchainConnection.Web3().Eth.GetBalance.SendRequestAsync(application.WalletAddress);
-        if (balance == null) throw new WalletNotFoundException();
+        // check if wallet address is valid
+        if (!new AddressUtil().IsValidEthereumAddressHexFormat(application.WalletAddress)) throw new WalletNotFoundException();
 
         userService.AssignToApplication(inputModel.UserId, application.Id);
 

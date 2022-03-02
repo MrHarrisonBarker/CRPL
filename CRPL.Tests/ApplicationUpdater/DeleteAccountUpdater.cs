@@ -6,7 +6,7 @@ using CRPL.Data.Applications;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Tests.Factories;
-using CRPL.Web.Services;
+using CRPL.Web.Services.Updaters;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -29,11 +29,11 @@ public class DeleteAccountUpdater
         });
         var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
-        var updatedApplication = (DeleteAccountApplication)await dbFactory.Context.Applications.First().UpdateApplication(new DeleteAccountInputModel
+        var updatedApplication = await dbFactory.Context.DeleteAccountApplications.First().Update(new DeleteAccountInputModel
         {
             Id = new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF"),
             AccountId = new Guid("8729B942-B8A4-46D3-BCCB-9997C865FF20")
-        }, serviceProviderFactory.ServiceProviderMock.Object);
+        });
 
         updatedApplication.AccountId.Should().Be(new Guid("8729B942-B8A4-46D3-BCCB-9997C865FF20"));
     }

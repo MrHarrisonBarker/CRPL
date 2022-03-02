@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Tests.Factories;
-using CRPL.Web.Services;
+using CRPL.Web.Services.Submitters;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -16,7 +16,7 @@ namespace CRPL.Tests.ApplicationSubmitter;
 public class CopyrightRegistrationSubmitter
 {
     [Test]
-    public async Task Should_Submit()
+    public async Task Should_Submit_And_Start_Registration()
     {
         using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>
         {
@@ -30,7 +30,7 @@ public class CopyrightRegistrationSubmitter
         });
         var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
-        var submittedApplication = await dbFactory.Context.CopyrightRegistrationApplications.First().SubmitApplication(serviceProviderFactory.ServiceProviderMock.Object);
+        var submittedApplication = await dbFactory.Context.CopyrightRegistrationApplications.First().Submit(serviceProviderFactory.ServiceProviderMock.Object);
 
         serviceProviderFactory.RegistrationServiceMock.Verify(x => x.StartRegistration(It.IsAny<CopyrightRegistrationApplication>()),Times.Once);
         submittedApplication.Status.Should().Be(ApplicationStatus.Submitted);

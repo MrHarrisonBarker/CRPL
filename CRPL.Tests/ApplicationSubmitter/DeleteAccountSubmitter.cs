@@ -16,11 +16,11 @@ namespace CRPL.Tests.ApplicationSubmitter;
 public class DeleteAccountSubmitter
 {
     [Test]
-    public async Task Should_Submit()
+    public async Task Should_Submit_And_Delete()
     {
         using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>
         {
-            new DeleteAccountApplication()
+            new DeleteAccountApplication
             {
                 Id = new Guid("7E6C7A18-5EC8-4C35-8DBE-F8A71A0C2E92"),
                 Created = DateTime.Now,
