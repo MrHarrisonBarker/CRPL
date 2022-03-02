@@ -34,7 +34,7 @@ var appSettings = appSettingsSection.Get<AppSettings>();
 
 builder.Services.AddAutoMapper(expression => expression.AddProfile(typeof(AutoMapping)));
 
-builder.Services.AddScoped<IBlockchainConnection, BlockchainConnection>();
+builder.Services.AddChainConnections();
 
 builder.Services.AddDbPipeline(appSettings);
 builder.Services.AddServicePipeline(appSettings);

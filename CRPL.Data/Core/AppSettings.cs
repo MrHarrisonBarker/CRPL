@@ -7,9 +7,7 @@ public class AppSettings
 {
     public string ConnectionString { get; set; }
     public string EncryptionKey { get; set; }
-
-    // public Blockchains CurrentChain { get; set; }
-
+    public string IpfsHost { get; set; } 
     public List<Chain> Chains { get; set; }
 }
 

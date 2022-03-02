@@ -36,7 +36,7 @@ public class Upload
     public async Task Should_Upload()
     {
         await using var context = new TestDbApplicationContextFactory().CreateContext();
-        var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
+        var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
 
         var hash = await worksVerificationService.Upload(moqFile());
 
@@ -50,7 +50,7 @@ public class Upload
     public async Task Should_Have_Content()
     {
         await using var context = new TestDbApplicationContextFactory().CreateContext();
-        var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
+        var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
 
         await FluentActions.Invoking(async () => await worksVerificationService.Upload(moqFile("")))
             .Should().ThrowAsync<Exception>().WithMessage("File needs to have content");
@@ -60,7 +60,7 @@ public class Upload
     public async Task Should_Already_Exist()
     {
         await using var context = new TestDbApplicationContextFactory().CreateContext();
-        var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
+        var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
     
         var file = moqFile();
         

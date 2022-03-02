@@ -62,7 +62,7 @@ public class VerifyWork
 
         await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, applications))
         {
-            var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
+            var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository)  = new WorksVerificationServiceFactory().Create(context);
 
             await worksVerificationService.VerifyWork(Works.Last().Id);
 
@@ -99,7 +99,7 @@ public class VerifyWork
 
         await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, applications))
         {
-            var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
+            var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository)  = new WorksVerificationServiceFactory().Create(context);
 
             await worksVerificationService.VerifyWork(Works.Last().Id);
 
@@ -117,7 +117,7 @@ public class VerifyWork
     {
         await using (var context = new TestDbApplicationContextFactory().CreateContext())
         {
-            var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
+            var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository)  = new WorksVerificationServiceFactory().Create(context);
 
             await FluentActions.Invoking(async () => await worksVerificationService.VerifyWork(Guid.Empty)).Should().ThrowAsync<WorkNotFoundException>();
         }

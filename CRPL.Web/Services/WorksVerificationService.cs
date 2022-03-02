@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
+using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Data.BlockchainUtils;
 using CRPL.Data.Workds;
 using CRPL.Data.Works;
 using CRPL.Web.Exceptions;
@@ -8,6 +10,7 @@ using CRPL.Web.Services.Interfaces;
 using CRPL.Web.WorkSigners;
 using Ipfs.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CRPL.Web.Services;
 
@@ -16,12 +19,21 @@ public class WorksVerificationService : IWorksVerificationService
     private readonly ILogger<WorksVerificationService> Logger;
     private readonly ApplicationContext Context;
     private readonly ICachedWorkRepository CachedWorkRepository;
+    private readonly IIpfsConnection IpfsConnection;
+    private readonly AppSettings AppSettings;
 
-    public WorksVerificationService(ILogger<WorksVerificationService> logger, ApplicationContext context, ICachedWorkRepository cachedWorkRepository)
+    public WorksVerificationService(
+        ILogger<WorksVerificationService> logger,
+        ApplicationContext context,
+        IOptions<AppSettings> appSettings,
+        ICachedWorkRepository cachedWorkRepository,
+        IIpfsConnection ipfsConnection)
     {
         Logger = logger;
         Context = context;
         CachedWorkRepository = cachedWorkRepository;
+        IpfsConnection = ipfsConnection;
+        AppSettings = appSettings.Value;
     }
 
     public async Task VerifyWork(Guid workId)
@@ -116,15 +128,11 @@ public class WorksVerificationService : IWorksVerificationService
         }
 
         var signedWork = new UniversalSigner(signature).Sign(cachedWork);
+        
+        var cid = await IpfsConnection.AddFile(new MemoryStream(signedWork.Work), signedWork.FileName);
 
-        var ipfsClient = new IpfsClient();
-        var node = await ipfsClient.FileSystem.AddAsync(new MemoryStream(signedWork.Work), signedWork.FileName);
-
-        work.Cid = node.Id.ToString();
-        Logger.LogInformation("Uploaded work to ipfs {Id}:{Link}", work.Cid, node.ToLink().ToString());
-
-        // saved on ipfs instead now!
-        // CachedWorkRepository.SetSigned(work.Hash, signedWork);
+        work.Cid = cid.ToString();
+        Logger.LogInformation("Uploaded work to ipfs at: {Id}", work.Cid);
 
         return work;
     }

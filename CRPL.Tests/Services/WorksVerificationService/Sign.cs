@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using CRPL.Data.Account;
 using CRPL.Tests.Factories;
 using CRPL.Web.Exceptions;
 using FluentAssertions;
+using Moq;
 using NUnit.Framework;
 
 namespace CRPL.Tests.Services.WorksVerificationService;
@@ -31,7 +32,7 @@ public class Sign
                 RightId = "1"
             }
         });
-        var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
+        var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
 
         var signedWork = await worksVerificationService.Sign(context.RegisteredWorks.First());
 
@@ -55,13 +56,38 @@ public class Sign
                 RightId = "1"
             }
         });
-        var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
+        {
+            var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
+
+            var signedWork = await worksVerificationService.Sign(context.RegisteredWorks.First());
+            signedWork.Should().NotBeNull();
+
+            await FluentActions.Invoking(async () => await worksVerificationService.Sign(context.RegisteredWorks.First()))
+                .Should().ThrowAsync<Exception>().WithMessage("Cannot get cached work,**");
+        }
+    }
+
+    [Test]
+    public async Task Should_Add_File_To_Ipfs()
+    {
+        await using var context = new TestDbApplicationContextFactory().CreateContext(new List<RegisteredWork>
+        {
+            new()
+            {
+                Id = new Guid("97FDE5E0-4DBD-4EF1-94F9-279A29E64689"),
+                Hash = new byte[] { 1, 1, 1, 1, 1 },
+                Status = RegisteredWorkStatus.Registered,
+                Created = DateTime.Now,
+                Title = "Hello world",
+                Registered = DateTime.Now
+            }
+        });
+        var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
 
         var signedWork = await worksVerificationService.Sign(context.RegisteredWorks.First());
-        signedWork.Should().NotBeNull();
-        
-        await FluentActions.Invoking(async () => await worksVerificationService.Sign( context.RegisteredWorks.First()))
-            .Should().ThrowAsync<Exception>().WithMessage("Cannot get cached work,**");
+
+        signedWork.Cid.Should().BeEquivalentTo("QmcLgUi4YEbzD7heFAWkKPZDphhEicXwm7ER82nahvXdqQ");
+        ipfsConnectionMock.Verify(x => x.AddFile(It.IsAny<MemoryStream>(), It.IsAny<string>()), Times.Once);
     }
 
     [Test]
@@ -78,19 +104,9 @@ public class Sign
                 Title = "Hello world"
             }
         });
-        var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
+        var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
 
-        await FluentActions.Invoking(async () => await worksVerificationService.Sign( context.RegisteredWorks.First()))
+        await FluentActions.Invoking(async () => await worksVerificationService.Sign(context.RegisteredWorks.First()))
             .Should().ThrowAsync<WorkNotRegisteredException>();
-    }
-
-    [Test]
-    public async Task Should_Throw_When_Not_Found()
-    {
-        await using var context = new TestDbApplicationContextFactory().CreateContext();
-        var worksVerificationService = new WorksVerificationServiceFactory().Create(context);
-
-        await FluentActions.Invoking(async () => await worksVerificationService.Sign(null))
-            .Should().ThrowAsync<WorkNotFoundException>();
     }
 }
