@@ -14,24 +14,26 @@ namespace CRPL.Tests.Factories;
 
 public class RegistrationServiceFactory
 {
-    public RegistrationService Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public RegistrationService RegistrationService;
+    public Mock<IVerificationQueue> VerificationQueueMock = new();
+    public Mock<IBlockchainConnection> BlockchainConnectionMock = new();
+    public Mock<IContractRepository> ContractRepositoryMock = new();
+
+    public RegistrationServiceFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
     {
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);
 
         var web3Mock = new MockWeb3(mappings);
 
-        var connectionMock = new Mock<IBlockchainConnection>();
-        connectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
-        
-        var contractRepoMock = new Mock<IContractRepository>();
-        contractRepoMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
+        BlockchainConnectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
+
+        ContractRepositoryMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
         {
             Address = "TEST CONTRACT"
         });
 
-        var queue = new Mock<IVerificationQueue>();
-
-        return new RegistrationService(new Mock<ILogger<UserService>>().Object, context, mapper, connectionMock.Object, contractRepoMock.Object, queue.Object);
+        RegistrationService = new RegistrationService(new Mock<ILogger<UserService>>().Object, context, mapper, BlockchainConnectionMock.Object, ContractRepositoryMock.Object,
+            VerificationQueueMock.Object);
     }
 }

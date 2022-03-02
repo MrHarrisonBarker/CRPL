@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Data.Applications.ViewModels;
 using CRPL.Tests.Factories;
 using CRPL.Tests.Mocks;
 using CRPL.Web.Exceptions;
@@ -14,118 +18,161 @@ namespace CRPL.Tests.Services.RegistrationService;
 [TestFixture]
 public class CompleteRegistration
 {
+    private List<Application> Applications;
+    private List<UserAccount> Users;
+
+    [SetUp]
+    public async Task SetUp()
+    {
+        Applications = new List<Application>
+        {
+            new CopyrightRegistrationApplication
+            {
+                Id = new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"),
+                Status = ApplicationStatus.Submitted,
+                Created = DateTime.Now,
+                Modified = DateTime.Now,
+                ApplicationType = ApplicationType.CopyrightRegistration,
+                OwnershipStakes = "0x0000000000000000000000000000000000099991!50;",
+                Legal = "LEGAL META",
+                Title = "HELLO WORLD",
+                WorkHash = Encoding.UTF8.GetBytes("HASH"),
+                WorkUri = "URI",
+                AssociatedUsers = new List<UserApplication>
+                {
+                    new() { UserId = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C") }
+                },
+                AssociatedWork = new RegisteredWork
+                {
+                    Id = Guid.NewGuid(),
+                    Created = DateTime.Now,
+                    Title = "Hello world",
+                    Status = RegisteredWorkStatus.Verified,
+                    WorkType = WorkType.Image
+                }
+            },
+            new CopyrightRegistrationApplication
+            {
+                Id = new Guid("CB9EE1A2-3842-4B51-AFF6-8BFFC383278A"),
+                Status = ApplicationStatus.Submitted,
+                Created = DateTime.Now,
+                AssociatedWork = new RegisteredWork
+                {
+                    Id = Guid.NewGuid(),
+                    Status = RegisteredWorkStatus.ProcessingVerification,
+                    Created = DateTime.Now,
+                    Title = "Not verified",
+                    WorkType = WorkType.Image
+                }
+            }
+        };
+
+        Users = new List<UserAccount>
+        {
+            new()
+            {
+                Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
+                Status = UserAccount.AccountStatus.Complete,
+                Wallet = new UserWallet { PublicAddress = "0x0000000000000000000000000000000000099991" }
+            }
+        };
+    }
+
     [Test]
     public async Task Should_Complete()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var mappings = MockWebUtils.DefaultMappings;
-            mappings["eth_sendTransaction"] = "TEST TRANSACTION";
+        var mappings = MockWebUtils.DefaultMappings;
+        mappings["eth_sendTransaction"] = "TEST TRANSACTION";
 
-            var registrationService = new RegistrationServiceFactory().Create(context, mappings);
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: Users, applications: Applications);
+        var registrationServiceFactory = new RegistrationServiceFactory(dbFactory.Context, mappings);
 
-            var registeredWork = await registrationService.CompleteRegistration(new Guid("CDBEE1A0-D266-43AB-BB0A-16E3CD07451E"));
+        var registeredWork = await registrationServiceFactory.RegistrationService.CompleteRegistration(new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"));
 
-            registeredWork.Should().NotBeNull();
-            registeredWork.RegisteredTransactionId.Should().BeEquivalentTo("TEST TRANSACTION");
-        }
+        registeredWork.Should().NotBeNull();
+        registeredWork.RegisteredTransactionId.Should().BeEquivalentTo("TEST TRANSACTION");
     }
 
     [Test]
     public async Task Should_Set_Status_To_Sent()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var mappings = MockWebUtils.DefaultMappings;
-            mappings["eth_sendTransaction"] = "TEST TRANSACTION";
+        var mappings = MockWebUtils.DefaultMappings;
+        mappings["eth_sendTransaction"] = "TEST TRANSACTION";
 
-            var registrationService = new RegistrationServiceFactory().Create(context, mappings);
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: Users, applications: Applications);
+        var registrationServiceFactory = new RegistrationServiceFactory(dbFactory.Context, mappings);
 
-            var registeredWork = await registrationService.CompleteRegistration(new Guid("CDBEE1A0-D266-43AB-BB0A-16E3CD07451E"));
+        var registeredWork = await registrationServiceFactory.RegistrationService.CompleteRegistration(new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30"));
 
-            registeredWork.Should().NotBeNull();
-            registeredWork.Status.Should().Be(RegisteredWorkStatus.SentToChain);
-        }
+        registeredWork.Should().NotBeNull();
+        registeredWork.Status.Should().Be(RegisteredWorkStatus.SentToChain);
     }
 
     [Test]
     public async Task Should_Set_Status_Failed_When_Throw()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var mappings = MockWebUtils.DefaultMappings;
-            mappings["eth_sendTransaction"] = new Exception("TEST EXCEPTION");
+        var mappings = MockWebUtils.DefaultMappings;
+        mappings["eth_sendTransaction"] = new Exception("TEST EXCEPTION");
 
-            var registrationService = new RegistrationServiceFactory().Create(context, mappings);
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: Users, applications: Applications);
+        var registrationServiceFactory = new RegistrationServiceFactory(dbFactory.Context, mappings);
 
-            var applicationId = new Guid("CDBEE1A0-D266-43AB-BB0A-16E3CD07451E");
+        var applicationId = new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30");
 
-            await FluentActions.Invoking(async () => await registrationService.CompleteRegistration(applicationId))
-                .Should().ThrowAsync<Exception>();
+        await FluentActions.Invoking(async () => await registrationServiceFactory.RegistrationService.CompleteRegistration(applicationId))
+            .Should().ThrowAsync<Exception>();
 
-            var application = await context.CopyrightRegistrationApplications
-                .Include(x => x.AssociatedWork)
-                .FirstOrDefaultAsync(x => x.Id == applicationId);
+        var application = await dbFactory.Context.CopyrightRegistrationApplications
+            .Include(x => x.AssociatedWork)
+            .FirstOrDefaultAsync(x => x.Id == applicationId);
 
-            application.Status.Should().Be(ApplicationStatus.Failed);
-            application.AssociatedWork.Status.Should().Be(RegisteredWorkStatus.Rejected);
-        }
+        application.Status.Should().Be(ApplicationStatus.Failed);
+        application.AssociatedWork.Status.Should().Be(RegisteredWorkStatus.Rejected);
     }
 
     [Test]
     public async Task Should_Not_Set_Failed_If_Wrong_Throw()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var registrationService = new RegistrationServiceFactory().Create(context, null);
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: Users, applications: Applications);
+        var registrationServiceFactory = new RegistrationServiceFactory(dbFactory.Context);
 
-            var applicationId = new Guid("E4D79015-9228-498A-9B16-3F76CB14104D");
-            
-            await FluentActions.Invoking(async () => await registrationService.CompleteRegistration(applicationId))
-                .Should().ThrowAsync<WorkNotVerifiedException>();
-            
-            var application = await context.CopyrightRegistrationApplications
-                .Include(x => x.AssociatedWork)
-                .FirstOrDefaultAsync(x => x.Id == applicationId);
+        var applicationId = new Guid("CB9EE1A2-3842-4B51-AFF6-8BFFC383278A");
 
-            application.Status.Should().NotBe(ApplicationStatus.Failed);
-            application.AssociatedWork.Status.Should().NotBe(RegisteredWorkStatus.Rejected);
-        }
-    }
+        await FluentActions.Invoking(async () => await registrationServiceFactory.RegistrationService.CompleteRegistration(applicationId))
+            .Should().ThrowAsync<WorkNotVerifiedException>();
 
-    [Test]
-    public async Task Should_Throw_If_Work_Not_Verified()
-    {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var registrationService = new RegistrationServiceFactory().Create(context, null);
+        var application = await dbFactory.Context.CopyrightRegistrationApplications
+            .Include(x => x.AssociatedWork)
+            .FirstOrDefaultAsync(x => x.Id == applicationId);
 
-            await FluentActions.Invoking(async () => await registrationService.CompleteRegistration(new Guid("E4D79015-9228-498A-9B16-3F76CB14104D")))
-                .Should().ThrowAsync<WorkNotVerifiedException>();
-        }
+        application.Status.Should().NotBe(ApplicationStatus.Failed);
+        application.AssociatedWork.Status.Should().NotBe(RegisteredWorkStatus.Rejected);
     }
 
     [Test]
     public async Task Should_Throw_If_No_Application()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var registrationService = new RegistrationServiceFactory().Create(context, null);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var registrationServiceFactory = new RegistrationServiceFactory(dbFactory.Context);
 
-            await FluentActions.Invoking(async () => await registrationService.CompleteRegistration(Guid.Empty))
-                .Should().ThrowAsync<ApplicationNotFoundException>();
-        }
+        await FluentActions.Invoking(async () => await registrationServiceFactory.RegistrationService.CompleteRegistration(Guid.Empty))
+            .Should().ThrowAsync<ApplicationNotFoundException>();
     }
 
     [Test]
     public async Task Should_Throw_If_No_Associated_Work()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>()
         {
-            var registrationService = new RegistrationServiceFactory().Create(context, null);
+            new CopyrightRegistrationApplication()
+            {
+                Id = Guid.NewGuid(),
+                Title = "Hello world"
+            }
+        });
+        var registrationServiceFactory = new RegistrationServiceFactory(dbFactory.Context);
 
-            await FluentActions.Invoking(async () => await registrationService.CompleteRegistration(new Guid("0A47AF77-53E7-4CF1-B7DC-3B4E5E7D2C30")))
-                .Should().ThrowAsync<Exception>().WithMessage("There is no work associated with this application!");
-        }
+        await FluentActions.Invoking(async () => await registrationServiceFactory.RegistrationService.CompleteRegistration(dbFactory.Context.CopyrightRegistrationApplications.First().Id))
+            .Should().ThrowAsync<Exception>().WithMessage("There is no work associated with this application!");
     }
 }
