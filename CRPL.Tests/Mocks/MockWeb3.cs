@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
 using Nethereum.JsonRpc.Client;
@@ -12,10 +13,16 @@ public static class MockWebUtils
 {
     public static Dictionary<string, object> DefaultMappings = new()
     {
-        {"eth_estimateGas", new Nethereum.Hex.HexTypes.HexBigInteger(BigInteger.One)},
-        {"eth_call", ""},
-        {"eth_sendTransaction", ""}
+        { "eth_estimateGas", new Nethereum.Hex.HexTypes.HexBigInteger(BigInteger.One) },
+        { "eth_call", "" },
+        { "eth_sendTransaction", "" }
     };
+
+    public static Dictionary<string, object> FromDefault(Dictionary<string, object> extra)
+    {
+        var mappings = DefaultMappings;
+        return mappings.Concat(extra).ToDictionary(pair => pair.Key, pair => pair.Value);
+    }
 }
 
 public class MockWeb3
