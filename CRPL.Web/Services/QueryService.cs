@@ -85,7 +85,7 @@ public class QueryService : IQueryService
             }
         }
         
-        return works.Skip(from).Take(take).PruneApplications().Select(x => Mapper.Map<RegisteredWorkViewModel>(x)).ToListAsync();
+        return works.Skip(from).Take(take).PruneApplications().Where(x => x.Status == RegisteredWorkStatus.Registered).Select(x => Mapper.Map<RegisteredWorkViewModel>(x)).ToListAsync();
     }
 
     public async Task<List<DisputeViewModelWithoutAssociated>> GetAllDisputes(int @from, int take = 100)

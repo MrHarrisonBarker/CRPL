@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.Core;
 using CRPL.Data.Applications.DataModels;
@@ -18,23 +17,31 @@ public class GetAllDisputes
     [Test]
     public async Task Should_Get_All()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(applications: new List<Application>
-                     {
-                         new DisputeApplication
-                         {
-                             Id = new Guid("21271541-2CC3-4456-BA1D-01BA1790B6A2"),
-                             Created = DateTime.Now,
-                             DisputeType = DisputeType.Usage,
-                             Reason = "THIS IS A REASON"
-                         }
-                     }))
+        using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>
         {
-            var (queryService, connectionMock, contractRepoMock, expiryQueueMock) = new QueryServiceFactory().Create(context, null);
+            new DisputeApplication
+            {
+                Id = Guid.NewGuid(),
+                Created = DateTime.Now,
+                DisputeType = DisputeType.Usage,
+                Reason = "THIS IS A REASON",
+                Status = ApplicationStatus.Submitted
+            },
+            new DisputeApplication
+            {
+                Id = Guid.NewGuid(),
+                Created = DateTime.Now,
+                DisputeType = DisputeType.Usage,
+                Reason = "THIS IS A REASON",
+                Status = ApplicationStatus.Complete
+            }
+        });
+        var queryServiceFactory = new QueryServiceFactory(dbFactory.Context);
 
-            var disputes = await queryService.GetAllDisputes(0);
-            disputes.Should().NotBeNull();
-            disputes.Should().NotContainNulls();
-            disputes.Count.Should().Be(context.DisputeApplications.Count(x => x.Status == ApplicationStatus.Complete));
-        }
+        var disputes = await queryServiceFactory.QueryService.GetAllDisputes(0);
+        disputes.Should().NotBeNull();
+        disputes.Should().NotContainNulls();
+        disputes.Count.Should().Be(dbFactory.Context.DisputeApplications.Count(x => x.Status == ApplicationStatus.Complete));
+        disputes.Count.Should().BePositive();
     }
 }
