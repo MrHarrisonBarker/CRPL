@@ -9,7 +9,9 @@ namespace CRPL.Tests.Factories;
 
 public class UserServiceFactory
 {
-    public UserService Create(ApplicationContext context)
+    public readonly UserService UserService;
+
+    public UserServiceFactory(ApplicationContext context)
     {
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);
@@ -19,6 +21,6 @@ public class UserServiceFactory
             EncryptionKey = "Bj3PtC818hVHkNH3nzI0HN8wJXY0oHdo"
         });
 
-        return new UserService(new Logger<UserService>(new LoggerFactory()), context, mapper, appSettings);
+        UserService = new UserService(new Logger<UserService>(new LoggerFactory()), context, mapper, appSettings);
     }
 }

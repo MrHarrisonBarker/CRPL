@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CRPL.Data.Account;
@@ -16,88 +17,131 @@ public class UpdateAccount
     [Test]
     public async Task Should_Update_UserAccount()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
-
-            var status = await userService.UpdateAccount(TestConstants.TestAccountIds[UserAccount.AccountStatus.Incomplete], new AccountInputModel
+            new()
             {
-                RegisteredJurisdiction = "USA",
-                DateOfBirth = new UserAccount.DOB
+                Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
+                Email = null,
+                Status = UserAccount.AccountStatus.Incomplete,
+                FirstName = "Incomplete",
+                LastName = "User",
+                PhoneNumber = null,
+                RegisteredJurisdiction = null,
+                DateOfBirth = null,
+                Wallet = new UserWallet()
                 {
-                    Day = 16,
-                    Month = 1,
-                    Year = 1974
+                    PublicAddress = "test_1"
                 }
-            });
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            status.UserAccount.Status.Should().Be(UserAccount.AccountStatus.Incomplete);
-            status.UserAccount.RegisteredJurisdiction.Should().BeEquivalentTo("USA");
-            status.UserAccount.DateOfBirth.Day.Should().Be(16);
-            status.UserAccount.DateOfBirth.Month.Should().Be(1);
-            status.UserAccount.DateOfBirth.Year.Should().Be(1974);
+        var status = await userServiceFactory.UserService.UpdateAccount(new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"), new AccountInputModel
+        {
+            RegisteredJurisdiction = "USA",
+            DateOfBirth = new UserAccount.DOB
+            {
+                Day = 16,
+                Month = 1,
+                Year = 1974
+            }
+        });
 
-            var userAccount = context.UserAccounts.First(x => x.Id == TestConstants.TestAccountIds[UserAccount.AccountStatus.Incomplete]);
-            
-            userAccount.RegisteredJurisdiction.Should().BeEquivalentTo("USA");
-            userAccount.DateOfBirth.Day.Should().Be(16);
-            userAccount.DateOfBirth.Month.Should().Be(1);
-            userAccount.DateOfBirth.Year.Should().Be(1974);
-        }
+        status.UserAccount.Status.Should().Be(UserAccount.AccountStatus.Incomplete);
+        status.UserAccount.RegisteredJurisdiction.Should().BeEquivalentTo("USA");
+        status.UserAccount.DateOfBirth.Day.Should().Be(16);
+        status.UserAccount.DateOfBirth.Month.Should().Be(1);
+        status.UserAccount.DateOfBirth.Year.Should().Be(1974);
+
+        var userAccount = dbFactory.Context.UserAccounts.First(x => x.Id == new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"));
+
+        userAccount.RegisteredJurisdiction.Should().BeEquivalentTo("USA");
+        userAccount.DateOfBirth.Day.Should().Be(16);
+        userAccount.DateOfBirth.Month.Should().Be(1);
+        userAccount.DateOfBirth.Year.Should().Be(1974);
     }
 
     [Test]
     public async Task Should_Update_Status_When_Complete()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
-
-            var status = await userService.UpdateAccount(TestConstants.TestAccountIds[UserAccount.AccountStatus.Incomplete], new AccountInputModel
+            new()
             {
-                Email = "test@test.co.uk",
-                DialCode = "0",
-                PhoneNumber = "1",
-                RegisteredJurisdiction = "USA",
-                DateOfBirth = new UserAccount.DOB
+                Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
+                Email = null,
+                Status = UserAccount.AccountStatus.Incomplete,
+                FirstName = "Incomplete",
+                LastName = "User",
+                PhoneNumber = null,
+                RegisteredJurisdiction = null,
+                DateOfBirth = null,
+                Wallet = new UserWallet()
                 {
-                    Day = 16,
-                    Month = 1,
-                    Year = 1974
-                },
+                    PublicAddress = "test_1"
+                }
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            });
+        var status = await userServiceFactory.UserService.UpdateAccount(new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"), new AccountInputModel
+        {
+            Email = "test@test.co.uk",
+            DialCode = "0",
+            PhoneNumber = "1",
+            RegisteredJurisdiction = "USA",
+            DateOfBirth = new UserAccount.DOB
+            {
+                Day = 16,
+                Month = 1,
+                Year = 1974
+            },
+        });
 
-            status.PartialFields.Count().Should().Be(0);
-            status.UserAccount.Status.Should().Be(UserAccount.AccountStatus.Complete);
+        status.PartialFields.Count().Should().Be(0);
+        status.UserAccount.Status.Should().Be(UserAccount.AccountStatus.Complete);
 
-            var userAccount = context.UserAccounts.First(x => x.Id == TestConstants.TestAccountIds[UserAccount.AccountStatus.Incomplete]);
+        var userAccount = dbFactory.Context.UserAccounts.First(x => x.Id == new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"));
 
-            userAccount.Status.Should().Be(UserAccount.AccountStatus.Complete);
-        }
+        userAccount.Status.Should().Be(UserAccount.AccountStatus.Complete);
     }
 
     [Test]
     public async Task Should_Return_Partials()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
-            var status = await userService.UpdateAccount(TestConstants.TestAccountIds[UserAccount.AccountStatus.Incomplete], new AccountInputModel());
+            new()
+            {
+                Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
+                Email = null,
+                Status = UserAccount.AccountStatus.Incomplete,
+                FirstName = "Incomplete",
+                LastName = "User",
+                PhoneNumber = null,
+                RegisteredJurisdiction = null,
+                DateOfBirth = null,
+                Wallet = new UserWallet()
+                {
+                    PublicAddress = "test_1"
+                }
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            status.PartialFields.Count().Should().BePositive();
-            status.PartialFields.First(x => x.Field == "RegisteredJurisdiction").Type.Should().BeEquivalentTo("string");
-        }
+        var status = await userServiceFactory.UserService.UpdateAccount(new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"), new AccountInputModel());
+
+        status.PartialFields.Count().Should().BePositive();
+        status.PartialFields.First(x => x.Field == "RegisteredJurisdiction").Type.Should().BeEquivalentTo("string");
     }
 
     [Test]
     public async Task Should_Throw_Not_Found()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var userService = new UserServiceFactory().Create(context);
-            
-            await FluentActions.Invoking(async () => await userService.UpdateAccount(Guid.Empty, new AccountInputModel())).Should().ThrowAsync<UserNotFoundException>();
-        }
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
+
+        await FluentActions.Invoking(async () => await userServiceFactory.UserService.UpdateAccount(Guid.Empty, new AccountInputModel())).Should().ThrowAsync<UserNotFoundException>();
     }
 }

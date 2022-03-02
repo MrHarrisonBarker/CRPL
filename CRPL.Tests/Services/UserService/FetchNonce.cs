@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CRPL.Data.Account;
 using CRPL.Tests.Factories;
 using FluentAssertions;
 using NUnit.Framework;
@@ -12,47 +15,62 @@ public class FetchNonce
     [Test]
     public async Task Should_Fetch_New()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Wallet = new UserWallet { PublicAddress = TestConstants.TestAccountAddress }
+            }
+        });
 
-            var nonce = await userService.FetchNonce("test_2");
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            nonce.Should().NotBeNull();
-            nonce.Length.Should().Be(64);
-        }
+        var nonce = await userServiceFactory.UserService.FetchNonce(TestConstants.TestAccountAddress);
+
+        nonce.Should().NotBeNull();
+        nonce.Length.Should().Be(64);
     }
-    
+
     [Test]
     public async Task Should_Save_Nonce()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Wallet = new UserWallet
+                {
+                    PublicAddress = TestConstants.TestAccountAddress,
+                    Nonce = "NONCE"
+                }
+            }
+        });
 
-            await userService.FetchNonce("test_2");
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            var nonce = context.UserAccounts.First(x => x.Wallet.PublicAddress == "test_2").Wallet.Nonce;
-            
-            nonce.Should().NotBeNull();
-            nonce.Length.Should().Be(64);
-        }
+        await userServiceFactory.UserService.FetchNonce(TestConstants.TestAccountAddress);
+
+        var nonce = dbFactory.Context.UserAccounts.First(x => x.Wallet.PublicAddress == TestConstants.TestAccountAddress).Wallet.Nonce;
+
+        nonce.Should().NotBeNull();
+        nonce.Length.Should().Be(64);
     }
 
     [Test]
     public async Task Should_Save_New_Account()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var userService = new UserServiceFactory().Create(context);
-            
-            var nonce = await userService.FetchNonce("random_address");
-            
-            nonce.Should().NotBeNull();
+        using var dbFactory = new TestDbApplicationContextFactory();
 
-            var user = context.UserAccounts.First(x => x.Wallet.PublicAddress == "random_address");
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            user.Should().NotBeNull();
-        }
+        var nonce = await userServiceFactory.UserService.FetchNonce("random_address");
+
+        nonce.Should().NotBeNull();
+
+        var user = dbFactory.Context.UserAccounts.First(x => x.Wallet.PublicAddress == "random_address");
+
+        user.Should().NotBeNull();
     }
 }

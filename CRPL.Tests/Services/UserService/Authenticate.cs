@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using CRPL.Data.Account;
 using CRPL.Tests.Factories;
 using CRPL.Web.Exceptions;
 using FluentAssertions;
@@ -12,22 +15,26 @@ public class Authenticate
     [Test]
     public async Task Should_Throw()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var userService = new UserServiceFactory().Create(context);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            await FluentActions.Invoking(async () => await userService.Authenticate("")).Should().ThrowAsync<InvalidAuthenticationException>();
-        }
+        await FluentActions.Invoking(async () => await userServiceFactory.UserService.Authenticate("")).Should().ThrowAsync<InvalidAuthenticationException>();
     }
 
     [Test]
     public async Task Should_Authenticate()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Wallet = new UserWallet { PublicAddress = "0xaea270413700371a8a28ab8b5ece05201bdf49de" },
+                AuthenticationToken = "TEST_TOKEN"
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            (await userService.Authenticate("TEST_TOKEN")).Should().NotBeNull();
-        }
+        (await userServiceFactory.UserService.Authenticate("TEST_TOKEN")).Should().NotBeNull();
     }
 }

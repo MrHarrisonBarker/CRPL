@@ -284,7 +284,7 @@ public class UserService : IUserService
         Logger.LogInformation("verified address {VAddress} compared to {Address}", verifiedAddress, user.Wallet.PublicAddress);
 
         // if the wallet owner is not the signer
-        if (!string.Equals(verifiedAddress, user.Wallet.PublicAddress, StringComparison.Ordinal))
+        if (!string.Equals(verifiedAddress, user.Wallet.PublicAddress, StringComparison.OrdinalIgnoreCase))
             throw new InvalidSignatureException(authenticateInputModel.Signature, authenticateInputModel.WalletAddress);
 
         user.AuthenticationToken = generateToken(user, 30);

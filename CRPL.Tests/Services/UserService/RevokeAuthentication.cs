@@ -16,31 +16,28 @@ public class RevokeAuthentication
     [Test]
     public async Task Should_Revoke()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(userAccounts:new List<UserAccount>
-                     {
-                         new()
-                         {
-                             Id = new Guid("45C89178-DB68-476C-8B23-269FA6675821"),
-                             AuthenticationToken = "TEST_TOKEN",
-                             Wallet = new UserWallet() {PublicAddress = "TEST ADDRESS"}
-                         }
-                     }))
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>
         {
-            var userService = new UserServiceFactory().Create(context);
+            new()
+            {
+                Id = new Guid("45C89178-DB68-476C-8B23-269FA6675821"),
+                AuthenticationToken = "TEST_TOKEN",
+                Wallet = new UserWallet() { PublicAddress = "TEST ADDRESS" }
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            await userService.RevokeAuthentication("TEST_TOKEN");
+        await userServiceFactory.UserService.RevokeAuthentication("TEST_TOKEN");
 
-            context.UserAccounts.FirstOrDefault(x => x.AuthenticationToken == "TEST_TOKEN").Should().BeNull();
-        }
+        dbFactory.Context.UserAccounts.FirstOrDefault(x => x.AuthenticationToken == "TEST_TOKEN").Should().BeNull();
     }
 
     [Test]
     public async Task Should_Throw()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var userService = new UserServiceFactory().Create(context);
-            await FluentActions.Invoking(async () => await userService.RevokeAuthentication("")).Should().ThrowAsync<UserNotFoundException>();
-        }
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
+        
+        await FluentActions.Invoking(async () => await userServiceFactory.UserService.RevokeAuthentication("")).Should().ThrowAsync<UserNotFoundException>();
     }
 }

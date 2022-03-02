@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using CRPL.Data.Account;
 using CRPL.Tests.Factories;
 using FluentAssertions;
 using NUnit.Framework;
@@ -11,22 +14,26 @@ public class IsUniquePhone
     [Test]
     public async Task Should_Be_Unique()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var userService = new UserServiceFactory().Create(context);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            (await userService.IsUniquePhoneNumber("+4400000000000")).Should().BeTrue();
-        }
+        (await userServiceFactory.UserService.IsUniquePhoneNumber("+4400000000000")).Should().BeTrue();
     }
 
     [Test]
     public async Task Should_Not_Be_Unique()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>
         {
-            var userService = new UserServiceFactory().Create(context);
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Wallet = new UserWallet { PublicAddress = "" },
+                PhoneNumber = "07852276048"
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            (await userService.IsUniquePhoneNumber("+4407852276048")).Should().BeFalse();
-        }
+        (await userServiceFactory.UserService.IsUniquePhoneNumber("07852276048")).Should().BeFalse();
     }
 }

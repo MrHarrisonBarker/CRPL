@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,108 +19,146 @@ public class AuthenticateSignature
     [Test]
     public async Task Should_Throw_Not_Found()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var userService = new UserServiceFactory().Create(context);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            await FluentActions.Invoking(async () => await userService.AuthenticateSignature(new AuthenticateSignatureInputModel())).Should().ThrowAsync<UserNotFoundException>();
-        }
+        await FluentActions.Invoking(async () => await userServiceFactory.UserService.AuthenticateSignature(new AuthenticateSignatureInputModel())).Should().ThrowAsync<UserNotFoundException>();
     }
 
     [Test]
     public async Task Should_Be_Invalid()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
-
-            var signature = "0x425bf720bd2a076fe9a523c1e77ddc6a99e659fd0553c7a2bed7aa57599c602e397191cef61b85ec7641dc7d087536bcfe6ed6b9eb89e8dbc0160d1e5d87c4dc1b";
-            var address = TestConstants.TestAccountWallets[UserAccount.AccountStatus.Complete];
-
-            await FluentActions.Invoking(async () => await userService.AuthenticateSignature(new AuthenticateSignatureInputModel()
+            new()
             {
-                WalletAddress = address,
-                Signature = signature
-            })).Should().ThrowAsync<InvalidSignatureException>().WithMessage($"Invalid signature! {signature} did not match the address {address}");
-        }
+                Id = Guid.NewGuid(),
+                Wallet = new UserWallet { PublicAddress = "test_2" }
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
+
+        var signature = "0x425bf720bd2a076fe9a523c1e77ddc6a99e659fd0553c7a2bed7aa57599c602e397191cef61b85ec7641dc7d087536bcfe6ed6b9eb89e8dbc0160d1e5d87c4dc1b";
+
+        await FluentActions.Invoking(async () => await userServiceFactory.UserService.AuthenticateSignature(new AuthenticateSignatureInputModel()
+        {
+            WalletAddress = "test_2",
+            Signature = signature
+        })).Should().ThrowAsync<InvalidSignatureException>().WithMessage($"Invalid signature! {signature} did not match the address test_2");
     }
 
     [Test]
     public async Task Should_Generate_Authentication_Token()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>
         {
-            var userService = new UserServiceFactory().Create(context);
-
-            var sig = new EthereumMessageSigner().EncodeUTF8AndSign("Signing a unique nonce NONCE", new EthECKey(TestConstants.TestAccountPrivateKey));
-
-            var result = await userService.AuthenticateSignature(new AuthenticateSignatureInputModel()
+            new()
             {
-                Signature = sig,
-                WalletAddress = TestConstants.TestAccountAddress
-            });
+                Id = Guid.NewGuid(),
+                Wallet = new UserWallet
+                {
+                    PublicAddress = TestConstants.TestAccountAddress,
+                    Nonce = "NONCE"
+                }
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            result.Token.Should().NotBeNullOrEmpty();
-            result.Token.Should().NotBeEquivalentTo("TEST_TOKEN");
-        }
+        var sig = new EthereumMessageSigner().EncodeUTF8AndSign("Signing a unique nonce NONCE", new EthECKey(TestConstants.TestAccountPrivateKey));
+
+        var result = await userServiceFactory.UserService.AuthenticateSignature(new AuthenticateSignatureInputModel
+        {
+            Signature = sig,
+            WalletAddress = TestConstants.TestAccountAddress
+        });
+
+        result.Token.Should().NotBeNullOrEmpty();
+        result.Token.Should().NotBeEquivalentTo("TEST_TOKEN");
     }
 
     [Test]
     public async Task Should_Authenticate_For_30_Days()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
-
-            var sig = new EthereumMessageSigner().EncodeUTF8AndSign("Signing a unique nonce NONCE", new EthECKey(TestConstants.TestAccountPrivateKey));
-
-            var result = await userService.AuthenticateSignature(new AuthenticateSignatureInputModel()
+            new()
             {
-                Signature = sig,
-                WalletAddress = TestConstants.TestAccountAddress
-            });
+                Id = Guid.NewGuid(),
+                Wallet = new UserWallet
+                {
+                    PublicAddress = TestConstants.TestAccountAddress,
+                    Nonce = "NONCE"
+                }
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(result.Token);
-            token.ValidTo.Should().BeAfter(DateTime.Now.AddDays(29).AddHours(23));
-        }
+        var sig = new EthereumMessageSigner().EncodeUTF8AndSign("Signing a unique nonce NONCE", new EthECKey(TestConstants.TestAccountPrivateKey));
+
+        var result = await userServiceFactory.UserService.AuthenticateSignature(new AuthenticateSignatureInputModel()
+        {
+            Signature = sig,
+            WalletAddress = TestConstants.TestAccountAddress
+        });
+
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(result.Token);
+        token.ValidTo.Should().BeAfter(DateTime.Now.AddDays(29).AddHours(23));
     }
 
     [Test]
     public async Task Should_Return_User_If_Authenticated()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
-
-            var sig = new EthereumMessageSigner().EncodeUTF8AndSign("Signing a unique nonce NONCE", new EthECKey(TestConstants.TestAccountPrivateKey));
-
-            var result = await userService.AuthenticateSignature(new AuthenticateSignatureInputModel()
+            new()
             {
-                Signature = sig,
-                WalletAddress = TestConstants.TestAccountAddress
-            });
-            
-            result.Account.Should().NotBeNull();
-            result.Account.WalletPublicAddress.Should().BeEquivalentTo(TestConstants.TestAccountAddress);
-        }
+                Id = Guid.NewGuid(),
+                Wallet = new UserWallet
+                {
+                    PublicAddress = TestConstants.TestAccountAddress,
+                    Nonce = "NONCE"
+                }
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
+
+        var sig = new EthereumMessageSigner().EncodeUTF8AndSign("Signing a unique nonce NONCE", new EthECKey(TestConstants.TestAccountPrivateKey));
+
+        var result = await userServiceFactory.UserService.AuthenticateSignature(new AuthenticateSignatureInputModel()
+        {
+            Signature = sig,
+            WalletAddress = TestConstants.TestAccountAddress
+        });
+
+        result.Account.Should().NotBeNull();
+        result.Account.WalletPublicAddress.Should().BeEquivalentTo(TestConstants.TestAccountAddress);
     }
 
     [Test]
     public async Task Should_Regenerate_Nonce()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>()
         {
-            var userService = new UserServiceFactory().Create(context);
-
-            var sig = new EthereumMessageSigner().EncodeUTF8AndSign("Signing a unique nonce NONCE", new EthECKey(TestConstants.TestAccountPrivateKey));
-
-            var result = await userService.AuthenticateSignature(new AuthenticateSignatureInputModel()
+            new()
             {
-                Signature = sig,
-                WalletAddress = TestConstants.TestAccountAddress
-            });
+                Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
+                Wallet = new UserWallet
+                {
+                    PublicAddress = TestConstants.TestAccountAddress,
+                    Nonce = "NONCE"
+                }
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            context.UserAccounts.First(x => x.Id == new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C")).Wallet.Nonce.Should().NotBeNullOrEmpty();
-        }
+        var sig = new EthereumMessageSigner().EncodeUTF8AndSign("Signing a unique nonce NONCE", new EthECKey(TestConstants.TestAccountPrivateKey));
+
+        var result = await userServiceFactory.UserService.AuthenticateSignature(new AuthenticateSignatureInputModel()
+        {
+            Signature = sig,
+            WalletAddress = TestConstants.TestAccountAddress
+        });
+
+        dbFactory.Context.UserAccounts.First(x => x.Id == new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C")).Wallet.Nonce.Should().NotBeNullOrEmpty();
     }
 }

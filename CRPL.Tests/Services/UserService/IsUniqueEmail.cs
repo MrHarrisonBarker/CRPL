@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using CRPL.Data.Account;
 using CRPL.Tests.Factories;
 using FluentAssertions;
 using NUnit.Framework;
@@ -11,22 +14,26 @@ public class IsUniqueEmail
     [Test]
     public async Task Should_Be_Unique()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var userService = new UserServiceFactory().Create(context);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            (await userService.IsUniqueEmail("unique@test.co.uk")).Should().BeTrue();
-        }
+        (await userServiceFactory.UserService.IsUniqueEmail("unique@test.co.uk")).Should().BeTrue();
     }
 
     [Test]
     public async Task Should_Not_Be_Unique()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(userAccounts: new List<UserAccount>
         {
-            var userService = new UserServiceFactory().Create(context);
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Wallet = new UserWallet {PublicAddress = ""},
+                Email = "mail@harrisonbarker.co.uk"
+            }
+        });
+        var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-            (await userService.IsUniqueEmail("mail@harrisonbarker.co.uk")).Should().BeFalse();
-        }
+        (await userServiceFactory.UserService.IsUniqueEmail("mail@harrisonbarker.co.uk")).Should().BeFalse();
     }
 }
