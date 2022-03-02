@@ -6,6 +6,7 @@ using CRPL.Contracts.Structs;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
+using CRPL.Data.StructuredOwnership;
 using CRPL.Tests.Factories;
 using CRPL.Web.Services;
 using FluentAssertions;
@@ -33,7 +34,7 @@ public class CopyrightRegistrationUpdater
 
         serviceProviderFactory.UserServiceMock.Setup(x => x.AreUsersReal(It.IsAny<List<string>>()));
         serviceProviderFactory.UserServiceMock.Setup(x => x.AssignToApplication(It.IsAny<string>(), It.IsAny<Guid>()));
-        
+
         var updatedApplication = (CopyrightRegistrationApplication)await dbFactory.Context.Applications.First().UpdateApplication(new CopyrightRegistrationInputModel
         {
             Id = new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF"),
@@ -68,6 +69,29 @@ public class CopyrightRegistrationUpdater
 
         updatedApplication.Modified.Should().BeCloseTo(DateTime.Now, TimeSpan.FromMinutes(1));
     }
-    
+
     // TODO: ownership stake update!
+
+    [Test]
+    public async Task Should_Throw_If_No_Shareholder()
+    {
+        using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>()
+        {
+            new CopyrightRegistrationApplication()
+            {
+                Id = new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF"),
+                Created = DateTime.Now,
+                Modified = DateTime.Now.AddDays(-1)
+            }
+        });
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
+
+        serviceProviderFactory.UserServiceMock.Setup(x => x.AreUsersReal(It.IsAny<List<string>>())).Returns(false);
+        serviceProviderFactory.UserServiceMock.Setup(x => x.AssignToApplication(It.IsAny<string>(), It.IsAny<Guid>()));
+
+        await FluentActions.Invoking(async () => await dbFactory.Context.Applications.First().UpdateApplication(new CopyrightRegistrationInputModel
+        {
+            OwnershipStakes = new List<OwnershipStake> { new() { Owner = "test_0", Share = 100 } }
+        }, serviceProviderFactory.ServiceProviderMock.Object)).Should().ThrowAsync<Exception>().WithMessage("Not all the users could be found");
+    }
 }
