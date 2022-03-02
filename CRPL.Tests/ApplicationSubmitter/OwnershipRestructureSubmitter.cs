@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CRPL.Data.Applications;
 using CRPL.Tests.Factories;
-using CRPL.Web.Services;
+using CRPL.Web.Services.Submitters;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -15,22 +17,23 @@ public class OwnershipRestructureSubmitter
     [Test]
     public async Task Should_Submit()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
+        using var dbFactory = new TestDbApplicationContextFactory(applications: new List<Application>
         {
-            var (applicationContext, serviceProvider, copyrightServiceMock, accountManagementServiceMock, registrationServiceMock) = new ApplicationSubmitterFactory().Create(context);
-
-            var application = new OwnershipRestructureApplication
+            new OwnershipRestructureApplication()
             {
                 Id = new Guid("7E6C7A18-5EC8-4C35-8DBE-F8A71A0C2E92"),
+                Created = DateTime.Now,
+                Modified = DateTime.Now.AddDays(-1),
                 Status = ApplicationStatus.Incomplete
-            };
+            }
+        });
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
-            copyrightServiceMock.Setup(x => x.ProposeRestructure(application)).ReturnsAsync(application);
+        serviceProviderFactory.CopyrightServiceMock.Setup(x => x.ProposeRestructure(dbFactory.Context.OwnershipRestructureApplications.First())).ReturnsAsync(dbFactory.Context.OwnershipRestructureApplications.First());
 
-            var submitted = await application.SubmitApplication(serviceProvider);
-
-            copyrightServiceMock.Verify(x => x.ProposeRestructure(application));
-            submitted.Status.Should().Be(ApplicationStatus.Submitted);
-        }
+        var submittedApplication = await dbFactory.Context.OwnershipRestructureApplications.First().Submit(serviceProviderFactory.ServiceProviderMock.Object);
+        
+        serviceProviderFactory.CopyrightServiceMock.Verify(x => x.ProposeRestructure(dbFactory.Context.OwnershipRestructureApplications.First()));
+        submittedApplication.Status.Should().Be(ApplicationStatus.Submitted);
     }
 }

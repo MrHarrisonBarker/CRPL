@@ -29,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ApplicationUpdater" />
     <Folder Include="Blockchain\ContractRepository" />
     <Folder Include="WorkSigners\TestAssets" />
   </ItemGroup>
