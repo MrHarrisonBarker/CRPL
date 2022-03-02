@@ -1,9 +1,9 @@
 using System.IO;
 using CRPL.Data;
-using CRPL.Web.Services;
 using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.Works;
+using CRPL.Web.Services;
 using Ipfs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -13,21 +13,27 @@ namespace CRPL.Tests.Factories;
 
 public class WorksVerificationServiceFactory
 {
-    public (WorksVerificationService, Mock<IIpfsConnection> ipfsConnectionMock, CachedWorkRepository cachedWorkRepository) Create(ApplicationContext context)
+    public readonly WorksVerificationService WorksVerificationService;
+    public readonly Mock<IIpfsConnection> IpfsConnectionMock = new();
+    public readonly Mock<ICachedWorkRepository> CachedWorkRepositoryMock = new();
+    
+    public WorksVerificationServiceFactory(ApplicationContext context)
     {
-        var cachedWorkRepository = new CachedWorkRepository(new Logger<CachedWorkRepository>(new LoggerFactory()));
-        
-        cachedWorkRepository.Set(new byte[]{ 1, 1, 1, 1, 1 }, new byte[]{0}, "","");
-
         var appSettings = Options.Create(new AppSettings());
-
-        var ipfsConnectionMock = new Mock<IIpfsConnection>();
+        
         Cid id = new Cid()
         {
             Hash = "QmcLgUi4YEbzD7heFAWkKPZDphhEicXwm7ER82nahvXdqQ"
         };
-        ipfsConnectionMock.Setup(x => x.AddFile(It.IsAny<MemoryStream>(), It.IsAny<string>())).ReturnsAsync(id);
+        IpfsConnectionMock.Setup(x => x.AddFile(It.IsAny<MemoryStream>(), It.IsAny<string>())).ReturnsAsync(id);
 
-        return (new WorksVerificationService(new Logger<WorksVerificationService>(new LoggerFactory()), context, appSettings, cachedWorkRepository, ipfsConnectionMock.Object), ipfsConnectionMock, cachedWorkRepository);
+        CachedWorkRepositoryMock.Setup(x => x.Get(It.IsAny<byte[]>())).Returns(new CachedWork()
+        {
+            Work = new byte[] { 0 },
+            ContentType = "Image",
+            FileName = "Filename"
+        });
+        
+        WorksVerificationService = new WorksVerificationService(new Logger<WorksVerificationService>(new LoggerFactory()), context, appSettings, CachedWorkRepositoryMock.Object, IpfsConnectionMock.Object);
     }
 }

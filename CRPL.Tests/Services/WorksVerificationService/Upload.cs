@@ -35,10 +35,10 @@ public class Upload
     [Test]
     public async Task Should_Upload()
     {
-        await using var context = new TestDbApplicationContextFactory().CreateContext();
-        var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var worksVerificationServiceFactory = new WorksVerificationServiceFactory(dbFactory.Context);
 
-        var hash = await worksVerificationService.Upload(moqFile());
+        var hash = await worksVerificationServiceFactory.WorksVerificationService.Upload(moqFile());
 
         hash.Should().NotBeNull();
 
@@ -49,24 +49,26 @@ public class Upload
     [Test]
     public async Task Should_Have_Content()
     {
-        await using var context = new TestDbApplicationContextFactory().CreateContext();
-        var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var worksVerificationServiceFactory = new WorksVerificationServiceFactory(dbFactory.Context);
 
-        await FluentActions.Invoking(async () => await worksVerificationService.Upload(moqFile("")))
+        await FluentActions.Invoking(async () => await worksVerificationServiceFactory.WorksVerificationService.Upload(moqFile("")))
             .Should().ThrowAsync<Exception>().WithMessage("File needs to have content");
     }
 
     [Test]
     public async Task Should_Already_Exist()
     {
-        await using var context = new TestDbApplicationContextFactory().CreateContext();
-        var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository) = new WorksVerificationServiceFactory().Create(context);
-    
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var worksVerificationServiceFactory = new WorksVerificationServiceFactory(dbFactory.Context);
+
         var file = moqFile();
         
-        await worksVerificationService.Upload(file);
+        await worksVerificationServiceFactory.WorksVerificationService.Upload(file);
+        
+        worksVerificationServiceFactory.CachedWorkRepositoryMock.Setup(x => x.Set(It.IsAny<byte[]>(), It.IsAny<byte[]>(), It.IsAny<string>(), It.IsAny<string>())).Throws<Exception>();
 
-        await FluentActions.Invoking(async () => await worksVerificationService.Upload(file))
+        await FluentActions.Invoking(async () => await worksVerificationServiceFactory.WorksVerificationService.Upload(file))
             .Should().ThrowAsync<Exception>();
     }
 }

@@ -22,7 +22,7 @@ public class VerifyWork
     [SetUp]
     public async Task Setup()
     {
-        Works = new()
+        Works = new List<RegisteredWork>
         {
             new()
             {
@@ -33,6 +33,24 @@ public class VerifyWork
                 RightId = "1",
                 RegisteredTransactionId = "TRANSACTION HASH",
                 Hash = Encoding.UTF8.GetBytes("Hello world")
+            },
+            new()
+            {
+                Id = new Guid("EB2CC368-5731-432A-BCEA-D6838266C0E3"),
+                Title = "Authentic work",
+                Created = DateTime.Now,
+                Status = RegisteredWorkStatus.ProcessingVerification,
+                RightId = "2",
+                RegisteredTransactionId = "TRANSACTION HASH",
+                Hash = Encoding.UTF8.GetBytes("Authentic Work"),
+                AssociatedApplication = new List<Application>
+                {
+                    new CopyrightRegistrationApplication
+                    {
+                        Id = Guid.NewGuid(),
+                        Status = ApplicationStatus.Submitted
+                    }
+                }
             }
         };
     }
@@ -40,86 +58,65 @@ public class VerifyWork
     [Test]
     public async Task Should_Be_Authentic()
     {
-        Works.Add(new RegisteredWork()
-        {
-            Id = new Guid("EB2CC368-5731-432A-BCEA-D6838266C0E3"),
-            Title = "Authentic work",
-            Created = DateTime.Now,
-            Status = RegisteredWorkStatus.ProcessingVerification,
-            RightId = "2",
-            RegisteredTransactionId = "TRANSACTION HASH",
-            Hash = Encoding.UTF8.GetBytes("Authentic Work")
-        });
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works);
+        var worksVerificationServiceFactory = new WorksVerificationServiceFactory(dbFactory.Context);
 
-        var applications = new List<Application>()
-        {
-            new CopyrightRegistrationApplication()
-            {
-                Id = new Guid("1F4EDD7E-8EEA-43FA-B696-E0D121DD28BE"),
-                AssociatedWork = Works.Last()
-            }
-        };
+        await worksVerificationServiceFactory.WorksVerificationService.VerifyWork(new Guid("EB2CC368-5731-432A-BCEA-D6838266C0E3"));
 
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, applications))
-        {
-            var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository)  = new WorksVerificationServiceFactory().Create(context);
+        var work = await dbFactory.Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == new Guid("EB2CC368-5731-432A-BCEA-D6838266C0E3"));
 
-            await worksVerificationService.VerifyWork(Works.Last().Id);
-
-            var work = await context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == Works.Last().Id);
-
-            work.VerificationResult.IsAuthentic.Should().BeTrue();
-            work.VerificationResult.Collision.Should().BeNull();
-            work.Status.Should().Be(RegisteredWorkStatus.Verified);
-        }
+        work.VerificationResult.IsAuthentic.Should().BeTrue();
+        work.VerificationResult.Collision.Should().BeNull();
+        work.Status.Should().Be(RegisteredWorkStatus.Verified);
     }
 
     [Test]
     public async Task Should_Not_Be_Authentic()
     {
-        Works.Add(new RegisteredWork()
+        Works.Add(new RegisteredWork
         {
-            Id = new Guid("EB2CC368-5731-432A-BCEA-D6838266C0E3"),
+            Id = new Guid("60223CD9-07E5-46A7-BC26-C3AB5C710731"),
             Title = "Copied work",
             Created = DateTime.Now,
             Status = RegisteredWorkStatus.ProcessingVerification,
             RightId = "2",
             RegisteredTransactionId = "TRANSACTION HASH",
-            Hash = Encoding.UTF8.GetBytes("Hello world")
+            Hash = Encoding.UTF8.GetBytes("Hello world"),
+            AssociatedApplication = new List<Application>
+            {
+                new CopyrightRegistrationApplication
+                {
+                    Id = Guid.NewGuid(),
+                    Status = ApplicationStatus.Submitted
+                }
+            }
         });
 
-        var applications = new List<Application>()
-        {
-            new CopyrightRegistrationApplication()
-            {
-                Id = new Guid("1F4EDD7E-8EEA-43FA-B696-E0D121DD28BE"),
-                AssociatedWork = Works.Last()
-            }
-        };
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works);
+        var worksVerificationServiceFactory = new WorksVerificationServiceFactory(dbFactory.Context);
 
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, applications))
-        {
-            var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository)  = new WorksVerificationServiceFactory().Create(context);
+        await worksVerificationServiceFactory.WorksVerificationService.VerifyWork(new Guid("60223CD9-07E5-46A7-BC26-C3AB5C710731"));
 
-            await worksVerificationService.VerifyWork(Works.Last().Id);
+        var work = await dbFactory.Context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == new Guid("60223CD9-07E5-46A7-BC26-C3AB5C710731"));
 
-            var work = await context.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == Works.Last().Id);
-
-            work.VerificationResult.IsAuthentic.Should().BeFalse();
-            work.VerificationResult.Collision.Should().NotBeNull();
-            work.VerificationResult.Collision.Should().Be(Works.First().Id);
-            work.Status.Should().Be(RegisteredWorkStatus.Rejected);
-        }
+        work.VerificationResult.IsAuthentic.Should().BeFalse();
+        work.VerificationResult.Collision.Should().NotBeNull();
+        work.VerificationResult.Collision.Should().Be(Works.First().Id);
+        work.Status.Should().Be(RegisteredWorkStatus.Rejected);
     }
 
     [Test]
     public async Task Should_Throw_If_No_Work()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var (worksVerificationService, ipfsConnectionMock, cachedWorkRepository)  = new WorksVerificationServiceFactory().Create(context);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var worksVerificationServiceFactory = new WorksVerificationServiceFactory(dbFactory.Context);
 
-            await FluentActions.Invoking(async () => await worksVerificationService.VerifyWork(Guid.Empty)).Should().ThrowAsync<WorkNotFoundException>();
-        }
+        await FluentActions.Invoking(async () => await worksVerificationServiceFactory.WorksVerificationService.VerifyWork(Guid.Empty)).Should().ThrowAsync<WorkNotFoundException>();
+    }
+
+    [Test]
+    public async Task Should_Throw_If_No_Application()
+    {
+        
     }
 }
