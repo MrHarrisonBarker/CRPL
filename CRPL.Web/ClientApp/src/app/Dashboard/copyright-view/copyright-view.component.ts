@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnInit} from '@angular/core';
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {ApplicationType} from "../../_Models/Applications/ApplicationViewModel";
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
@@ -19,11 +19,15 @@ export class CopyrightViewComponent implements OnInit
   @Input() ShowActions: boolean = true;
   public RestructureOpen: boolean = false;
 
+  private readonly BaseUrl;
+
   constructor (
     private copyrightService: CopyrightService,
     private alertService: AlertService,
-    private worksService: WorksService)
+    private worksService: WorksService,
+    @Inject('BASE_URL') baseUrl: string,)
   {
+    this.BaseUrl = baseUrl;
   }
 
   ngOnInit (): void
@@ -73,6 +77,11 @@ export class CopyrightViewComponent implements OnInit
   get Meta ()
   {
     return syntaxHighlight(JSON.stringify(this.Copyright.Meta, undefined, 4));
+  }
+
+  get ProxyLink (): string
+  {
+    return this.BaseUrl + 'proxy/cpy/' + this.Copyright.Id;
   }
 
   public Sync (): void

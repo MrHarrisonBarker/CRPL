@@ -84,7 +84,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseUsageProxy();
 
-// app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 

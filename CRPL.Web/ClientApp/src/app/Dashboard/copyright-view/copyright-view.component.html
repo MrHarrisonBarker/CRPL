@@ -57,7 +57,8 @@
         </clr-alert>
 
         <div *ngIf="ShowActions">
-          <div class="card-text"><b>IPFS link: </b><a [href]="Copyright.CidLink" target="_blank">{{Copyright.CidLink | slice:0:32}}...</a></div>
+          <p class="card-text no-margin"><b>IPFS link: </b><a [href]="Copyright.CidLink" target="_blank">{{Copyright.CidLink | slice:0:64}}...</a></p>
+          <p class="card-text no-margin"><b>Proxied usage tracking link: </b><a [href]="ProxyLink" target="_blank">{{ProxyLink | slice:0:64}}...</a></p>
         </div>
 
         <div class="card-text">
