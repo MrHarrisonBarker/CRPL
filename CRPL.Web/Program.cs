@@ -3,6 +3,7 @@ using CRPL.Data;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Web;
+using CRPL.Web.Core;
 using CRPL.Web.StartUp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -80,6 +81,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseUsageProxy();
 
 // app.UseHttpsRedirection();
 app.UseStaticFiles();

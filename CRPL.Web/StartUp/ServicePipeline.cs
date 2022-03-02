@@ -1,5 +1,4 @@
 using CRPL.Data;
-using CRPL.Web.Core.ChainSync;
 using CRPL.Web.Core.ChainSync.Synchronisers;
 using CRPL.Web.Services;
 using CRPL.Web.Services.Background;
