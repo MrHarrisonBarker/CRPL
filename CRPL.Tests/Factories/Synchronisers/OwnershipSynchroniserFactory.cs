@@ -12,26 +12,22 @@ namespace CRPL.Tests.Factories.Synchronisers;
 
 public class OwnershipSynchroniserFactory
 {
-    public (OwnershipSynchroniser, Mock<IBlockchainConnection> connectionMock, Mock<IContractRepository> contractRepoMock, Mock<IExpiryQueue> expiryQueueMock) Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public readonly OwnershipSynchroniser OwnershipSynchroniser;
+    public readonly Mock<IBlockchainConnection> BlockchainConnectionMock = new();
+    public readonly Mock<IContractRepository> ContractRepositoryMock = new();
+    public readonly Mock<IExpiryQueue> ExpiryQueueMock = new();
+
+    public OwnershipSynchroniserFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
     {
         var web3Mock = new MockWeb3(mappings);
-
-        var connectionMock = new Mock<IBlockchainConnection>();
-        connectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
-
-        var contractRepoMock = new Mock<IContractRepository>();
-        contractRepoMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
+        
+        BlockchainConnectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
+        
+        ContractRepositoryMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
         {
             Address = "TEST CONTRACT"
         });
 
-        var expiryQueueMock = new Mock<IExpiryQueue>();
-        
-        return (new OwnershipSynchroniser(
-            new Logger<OwnershipSynchroniser>(new LoggerFactory()),
-            context,
-            connectionMock.Object,
-            contractRepoMock.Object,
-            expiryQueueMock.Object), connectionMock, contractRepoMock, expiryQueueMock);
+        OwnershipSynchroniser = new OwnershipSynchroniser(new Logger<OwnershipSynchroniser>(new LoggerFactory()), context, BlockchainConnectionMock.Object, ContractRepositoryMock.Object, ExpiryQueueMock.Object);
     }
 }

@@ -65,41 +65,39 @@ public class SynchroniseBatch
             }
         }
     };
-    
+
     [Test]
     public async Task Should_Be_The_Same()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, userAccounts: Users))
-        {
-            var mappings = MockWebUtils.DefaultMappings;
-            mappings["eth_call"] =
-                "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000012890d2cce102216644c59dae5baed380d84830c0000000000000000000000000000000000000000000000000000000000000064";
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works, userAccounts: Users);
 
-            var (ownershipSynchroniser, connectionMock, contractRepoMock, expiryQueueMock) = new OwnershipSynchroniserFactory().Create(context, mappings);
+        var mappings = MockWebUtils.DefaultMappings;
+        mappings["eth_call"] =
+            "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000100000000000000000000000012890d2cce102216644c59dae5baed380d84830c0000000000000000000000000000000000000000000000000000000000000064";
 
-            await ownershipSynchroniser.SynchroniseBatch(0);
-        }
+        var ownershipSynchroniserFactory = new OwnershipSynchroniserFactory(dbFactory.Context, mappings);
+
+        await ownershipSynchroniserFactory.OwnershipSynchroniser.SynchroniseBatch(0);
     }
-    
+
     [Test]
     public async Task Should_Be_Different()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, userAccounts: Users))
-        {
-            var mappings = MockWebUtils.DefaultMappings;
-            mappings["eth_call"] =
-                "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000aea270413700371a8a28ab8b5ece05201bdf49de0000000000000000000000000000000000000000000000000000000000000064";
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works, userAccounts: Users);
 
-            var (ownershipSynchroniser, connectionMock, contractRepoMock, expiryQueueMock) = new OwnershipSynchroniserFactory().Create(context, mappings);
+        var mappings = MockWebUtils.DefaultMappings;
+        mappings["eth_call"] =
+            "0x00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000aea270413700371a8a28ab8b5ece05201bdf49de0000000000000000000000000000000000000000000000000000000000000064";
 
-            await ownershipSynchroniser.SynchroniseBatch(0);
+        var ownershipSynchroniserFactory = new OwnershipSynchroniserFactory(dbFactory.Context, mappings);
 
-            var work = context.RegisteredWorks
-                .Include(x => x.UserWorks).ThenInclude(x => x.UserAccount)
-                .FirstOrDefault(x => x.Id == Works.First().Id);
+        await ownershipSynchroniserFactory.OwnershipSynchroniser.SynchroniseBatch(0);
 
-            work.UserWorks.Count.Should().Be(1);
-            work.UserWorks.First().UserAccount.Wallet.PublicAddress.Should().BeEquivalentTo("0xaea270413700371a8a28ab8b5ece05201bdf49de");
-        }
+        var work = dbFactory.Context.RegisteredWorks
+            .Include(x => x.UserWorks).ThenInclude(x => x.UserAccount)
+            .FirstOrDefault(x => x.Id == Works.First().Id);
+
+        work.UserWorks.Count.Should().Be(1);
+        work.UserWorks.First().UserAccount.Wallet.PublicAddress.Should().BeEquivalentTo("0xaea270413700371a8a28ab8b5ece05201bdf49de");
     }
 }
