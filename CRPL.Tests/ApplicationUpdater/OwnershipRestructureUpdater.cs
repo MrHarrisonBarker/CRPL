@@ -53,9 +53,7 @@ public class OwnershipRestructureUpdater
 
         updatedApplication.CurrentStructure.Should().BeEquivalentTo(currentStructure.Encode());
         updatedApplication.ProposedStructure.Should().BeEquivalentTo(proposedStructure.Encode());
-
-        updatedApplication.Modified.Should().BeCloseTo(DateTime.Now, TimeSpan.FromMinutes(1));
-
+        
         serviceProviderFactory.CopyrightServiceMock.Verify(x => x.AttachWorkToApplicationAndCheckValid(It.IsAny<Guid>(), It.IsAny<Application>()), Times.AtLeastOnce);
     }
 

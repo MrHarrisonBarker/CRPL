@@ -42,10 +42,10 @@ public class WalletTransferUpdater
         {
             Id = new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF"),
             UserId = new Guid("8729B942-B8A4-46D3-BCCB-9997C865FF20"),
-            WalletAddress = "ADDRESS"
+            WalletAddress = TestConstants.TestAccountAddress
         }, serviceProviderFactory.ServiceProviderMock.Object);
 
-        updatedApplication.WalletAddress.Should().BeEquivalentTo("ADDRESS");
+        updatedApplication.WalletAddress.Should().BeEquivalentTo(TestConstants.TestAccountAddress);
 
         serviceProviderFactory.UserServiceMock.Verify(x => x.AssignToApplication(new Guid("8729B942-B8A4-46D3-BCCB-9997C865FF20"), new Guid("CC29C224-0F3D-48FA-A769-F72A56ADBAEF")), Times.Once);
     }

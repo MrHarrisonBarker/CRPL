@@ -25,30 +25,11 @@ public class SynchroniseOne
             Status = RegisteredWorkStatus.SentToChain,
             RightId = "1",
             RegisteredTransactionId = "TRANSACTION HASH",
-            UserWorks = new List<UserWork>()
+            UserWorks = new List<UserWork>
             {
                 new()
                 {
-                    UserAccount = new UserAccount()
-                    {
-                        Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
-                        Email = "test@user.co.uk",
-                        Status = UserAccount.AccountStatus.Complete,
-                        FirstName = "Complete",
-                        LastName = "User",
-                        PhoneNumber = "99999999999",
-                        RegisteredJurisdiction = "GBR",
-                        DateOfBirth = new UserAccount.DOB()
-                        {
-                            Year = 2000, Month = 7, Day = 24
-                        },
-                        Wallet = new UserWallet
-                        {
-                            PublicAddress = TestConstants.TestAccountAddress,
-                            Nonce = "NONCE"
-                        },
-                        AuthenticationToken = null
-                    }
+                    UserId = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C")
                 }
             }
         }
@@ -59,10 +40,30 @@ public class SynchroniseOne
         new()
         {
             Id = new Guid("F61BB4E5-E1C7-4F3E-A39A-93ABAFFE1AC9"),
-            Wallet = new UserWallet()
+            Wallet = new UserWallet
             {
                 PublicAddress = "0xaea270413700371a8a28ab8b5ece05201bdf49de"
             }
+        },
+        new()
+        {
+            Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
+            Email = "test@user.co.uk",
+            Status = UserAccount.AccountStatus.Complete,
+            FirstName = "Complete",
+            LastName = "User",
+            PhoneNumber = "99999999999",
+            RegisteredJurisdiction = "GBR",
+            DateOfBirth = new UserAccount.DOB
+            {
+                Year = 2000, Month = 7, Day = 24
+            },
+            Wallet = new UserWallet
+            {
+                PublicAddress = TestConstants.TestAccountAddress,
+                Nonce = "NONCE"
+            },
+            AuthenticationToken = null
         }
     };
 
