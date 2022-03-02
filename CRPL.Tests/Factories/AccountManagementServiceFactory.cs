@@ -14,30 +14,26 @@ namespace CRPL.Tests.Factories;
 
 public class AccountManagementServiceFactory
 {
-    public (AccountManagementService, Mock<IFormsService> formsServiceMock) Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public readonly AccountManagementService AccountManagementService;
+    public readonly Mock<IBlockchainConnection> BlockchainConnectionMock = new();
+    public readonly Mock<IContractRepository> ContractRepositoryMock = new();
+    public readonly Mock<IFormsService> FormsServiceMock = new();
+
+    public AccountManagementServiceFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
     {
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);
         
         var web3Mock = new MockWeb3(mappings);
 
-        var connectionMock = new Mock<IBlockchainConnection>();
-        connectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
+        BlockchainConnectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
 
-        var contractRepoMock = new Mock<IContractRepository>();
-        contractRepoMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
+        ContractRepositoryMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
         {
             Address = "TEST CONTRACT"
         });
 
-        var formsServiceMock = new Mock<IFormsService>();
-        
-        return (new AccountManagementService(
-            new Logger<AccountManagementService>(new LoggerFactory()),
-            context,
-            mapper,
-            connectionMock.Object,
-            contractRepoMock.Object,
-            formsServiceMock.Object), formsServiceMock);
+        AccountManagementService = new AccountManagementService(new Logger<AccountManagementService>(new LoggerFactory()), context, mapper, BlockchainConnectionMock.Object,
+            ContractRepositoryMock.Object, FormsServiceMock.Object);
     }
 }

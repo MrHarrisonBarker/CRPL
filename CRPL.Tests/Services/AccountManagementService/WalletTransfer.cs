@@ -76,25 +76,23 @@ public class WalletTransfer
     [Test]
     public async Task Should_Propose()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, Applications, UserAccounts))
-        {
-            var mappings = MockWebUtils.DefaultMappings;
-            mappings["eth_call"] =
-                "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000012890d2cce102216644c59dae5baed380d84830c0000000000000000000000000000000000000000000000000000000000000037000000000000000000000000aea270413700371a8a28ab8b5ece05201bdf49de000000000000000000000000000000000000000000000000000000000000002d";
-            
-            var (accountManagementService, formsServiceMock) = new AccountManagementServiceFactory().Create(context, mappings);
+        var mappings = MockWebUtils.DefaultMappings;
+        mappings["eth_call"] =
+            "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000012890d2cce102216644c59dae5baed380d84830c0000000000000000000000000000000000000000000000000000000000000037000000000000000000000000aea270413700371a8a28ab8b5ece05201bdf49de000000000000000000000000000000000000000000000000000000000000002d";
 
-            formsServiceMock.Setup(x => x.Update<OwnershipRestructureViewModel>(It.IsAny<ApplicationInputModel>())).Returns<ApplicationInputModel>((inputModel) =>
-                Task.FromResult(new OwnershipRestructureViewModel()
-                {
-                    Id = new Guid("186A2071-525D-4347-AF09-129745623C15")
-                }));
-            
-            var application = await context.WalletTransferApplications.Include(x => x.AssociatedUsers).FirstOrDefaultAsync(x => x.Id == new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"));
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works, applications: Applications, userAccounts: UserAccounts);
+        var accountManagementServiceFactory = new AccountManagementServiceFactory(dbFactory.Context, mappings);
 
-            await accountManagementService.WalletTransfer(application);
-            formsServiceMock.Verify(x => x.Update<OwnershipRestructureViewModel>(It.IsAny<ApplicationInputModel>()), Times.Once);
-            formsServiceMock.Verify(x => x.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(new Guid("186A2071-525D-4347-AF09-129745623C15")), Times.Once);
-        }
+        accountManagementServiceFactory.FormsServiceMock.Setup(x => x.Update<OwnershipRestructureViewModel>(It.IsAny<ApplicationInputModel>())).Returns<ApplicationInputModel>((inputModel) =>
+            Task.FromResult(new OwnershipRestructureViewModel()
+            {
+                Id = new Guid("186A2071-525D-4347-AF09-129745623C15")
+            }));
+
+        var application = await dbFactory.Context.WalletTransferApplications.Include(x => x.AssociatedUsers).FirstOrDefaultAsync(x => x.Id == new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"));
+
+        await accountManagementServiceFactory.AccountManagementService.WalletTransfer(application);
+        accountManagementServiceFactory.FormsServiceMock.Verify(x => x.Update<OwnershipRestructureViewModel>(It.IsAny<ApplicationInputModel>()), Times.Once);
+        accountManagementServiceFactory.FormsServiceMock.Verify(x => x.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(new Guid("186A2071-525D-4347-AF09-129745623C15")), Times.Once);
     }
 }

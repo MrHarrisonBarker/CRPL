@@ -4,16 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
-using CRPL.Data.Applications.Core;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Tests.Factories;
 using CRPL.Tests.Mocks;
-using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Nethereum.Web3;
 using NUnit.Framework;
 
 namespace CRPL.Tests.Services.AccountManagementService;
@@ -89,29 +86,27 @@ public class DeleteUser
             }
         };
     }
-    
+
     [Test]
     public async Task Should_Propose_When_Multi_Ownership()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, Applications, UserAccounts))
+        var mappings = MockWebUtils.DefaultMappings;
+        mappings["eth_call"] =
+            "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000012890d2cce102216644c59dae5baed380d84830c0000000000000000000000000000000000000000000000000000000000000037000000000000000000000000aea270413700371a8a28ab8b5ece05201bdf49de000000000000000000000000000000000000000000000000000000000000002d";
+
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works, applications: Applications, userAccounts: UserAccounts);
+        var accountManagementServiceFactory = new AccountManagementServiceFactory(dbFactory.Context, mappings);
+
+        accountManagementServiceFactory.FormsServiceMock.Setup(x => x.Update<OwnershipRestructureViewModel>(It.IsAny<ApplicationInputModel>())).ReturnsAsync(new OwnershipRestructureViewModel()
         {
-            var mappings = MockWebUtils.DefaultMappings;
-            mappings["eth_call"] =
-                "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000200000000000000000000000012890d2cce102216644c59dae5baed380d84830c0000000000000000000000000000000000000000000000000000000000000037000000000000000000000000aea270413700371a8a28ab8b5ece05201bdf49de000000000000000000000000000000000000000000000000000000000000002d";
+            Id = new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A")
+        });
 
-            var (accountManagementService, formsServiceMock) = new AccountManagementServiceFactory().Create(context, mappings);
+        var application = await dbFactory.Context.DeleteAccountApplications.FirstOrDefaultAsync(x => x.Id == new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"));
 
-            formsServiceMock.Setup(x => x.Update<OwnershipRestructureViewModel>(It.IsAny<ApplicationInputModel>())).ReturnsAsync(new OwnershipRestructureViewModel()
-            {
-                Id = new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A")
-            });
-            
-            var application = await context.DeleteAccountApplications.FirstOrDefaultAsync(x => x.Id == new Guid("DB27D402-B34E-42AE-AC6E-054AF46EB04A"));
+        await accountManagementServiceFactory.AccountManagementService.DeleteUser(application);
 
-            await accountManagementService.DeleteUser(application);
-            
-            formsServiceMock.Verify(x => x.Update<OwnershipRestructureViewModel>(It.IsAny<ApplicationInputModel>()));
-            formsServiceMock.Verify(x => x.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(application.Id));
-        }
+        accountManagementServiceFactory.FormsServiceMock.Verify(x => x.Update<OwnershipRestructureViewModel>(It.IsAny<ApplicationInputModel>()));
+        accountManagementServiceFactory.FormsServiceMock.Verify(x => x.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(application.Id));
     }
 }
