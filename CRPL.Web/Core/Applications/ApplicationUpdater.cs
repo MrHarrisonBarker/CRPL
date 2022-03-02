@@ -1,140 +1,29 @@
-using AutoMapper;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
-using CRPL.Data.BlockchainUtils;
-using CRPL.Data.ContractDeployment;
-using CRPL.Data.StructuredOwnership;
-using CRPL.Web.Exceptions;
-using CRPL.Web.Services.Interfaces;
+using CRPL.Web.Services.Updaters;
 
 namespace CRPL.Web.Services;
 
 public static class ApplicationUpdater
 {
-    private static readonly List<string> Encodables = new() { "OwnershipStakes" };
-
-    public static async Task<Application> Update(this Application application, ApplicationInputModel inputModel, IServiceProvider serviceProvider)
+    public static async Task<Application> UpdateApplication(this Application application, ApplicationInputModel inputModel, IServiceProvider serviceProvider)
     {
-        var userService = serviceProvider.GetRequiredService<IUserService>();
-        var copyrightService = serviceProvider.GetRequiredService<ICopyrightService>();
-        var blockchainConnection = serviceProvider.GetRequiredService<IBlockchainConnection>();
-        var contractRepo = serviceProvider.GetRequiredService<IContractRepository>();
-
         switch (application.ApplicationType)
         {
             case ApplicationType.CopyrightRegistration:
-                return await CopyrightRegistrationUpdater((CopyrightRegistrationApplication)application, (CopyrightRegistrationInputModel)inputModel, userService);
+                return await ((CopyrightRegistrationApplication)application).Update((CopyrightRegistrationInputModel)inputModel, serviceProvider);
             case ApplicationType.OwnershipRestructure:
-                return await OwnershipRestructureUpdater((OwnershipRestructureApplication)application, (OwnershipRestructureInputModel)inputModel, userService, copyrightService);
+                return await ((OwnershipRestructureApplication)application).Update((OwnershipRestructureInputModel)inputModel, serviceProvider);
             case ApplicationType.Dispute:
-                return await DisputeUpdater((DisputeApplication)application, (DisputeInputModel)inputModel, userService, copyrightService);
+                return await ((DisputeApplication)application).Update((DisputeInputModel)inputModel, serviceProvider);
             case ApplicationType.DeleteAccount:
-                return await DeleteAccountUpdater((DeleteAccountApplication)application, (DeleteAccountInputModel)inputModel);
+                return await ((DeleteAccountApplication)application).Update((DeleteAccountInputModel)inputModel);
             case ApplicationType.WalletTransfer:
-                return await WalletTransferUpdater((WalletTransferApplication)application, (WalletTransferInputModel)inputModel, blockchainConnection, userService);
+                return await ((WalletTransferApplication)application).Update((WalletTransferInputModel)inputModel, serviceProvider);
             default:
                 throw new ArgumentOutOfRangeException();
         }
-    }
-
-    private static async Task<Application> WalletTransferUpdater(WalletTransferApplication application, WalletTransferInputModel inputModel, IBlockchainConnection blockchainConnection, IUserService userService)
-    {
-        application.WalletAddress = inputModel.WalletAddress;
-        
-        // check if wallet exists on the blockchain
-        var balance = await blockchainConnection.Web3().Eth.GetBalance.SendRequestAsync(application.WalletAddress);
-        if (balance == null) throw new WalletNotFoundException();
-        
-        userService.AssignToApplication(inputModel.UserId, application.Id);
-
-        return application;
-    }
-
-    private static async Task<Application> DeleteAccountUpdater(DeleteAccountApplication application, DeleteAccountInputModel inputModel)
-    {
-        application.AccountId = inputModel.AccountId;
-        return application;
-    }
-
-    private static async Task<Application> OwnershipRestructureUpdater(OwnershipRestructureApplication application, OwnershipRestructureInputModel inputModel, IUserService userService,
-        ICopyrightService copyrightService)
-    {
-        // TODO: Should check if the current structure is the correct structure
-
-        if (inputModel.WorkId.HasValue) await copyrightService.AttachWorkToApplicationAndCheckValid(inputModel.WorkId.Value, application);
-
-        if (inputModel.CurrentStructure.Count > 0 && inputModel.ProposedStructure.Count > 0)
-        {
-            application.CheckAndAssignStakes(userService, inputModel.CurrentStructure.Concat(inputModel.ProposedStructure).ToList());
-
-            application.CurrentStructure = inputModel.CurrentStructure.Encode();
-            application.ProposedStructure = inputModel.ProposedStructure.Encode();
-        }
-
-        application.Origin = inputModel.Origin;
-        application.RestructureReason = inputModel.RestructureReason;
-
-        return application;
-    }
-
-    private static async Task<Application> CopyrightRegistrationUpdater(CopyrightRegistrationApplication application, CopyrightRegistrationInputModel inputModel, IUserService userService)
-    {
-        application.UpdateProperties(inputModel, Encodables.Concat(new List<string> { "Id" }).ToList());
-
-        if (inputModel.OwnershipStakes != null)
-        {
-            application.OwnershipStakes = inputModel.OwnershipStakes.Encode();
-
-            application.CheckAndAssignStakes(userService, inputModel.OwnershipStakes);
-        }
-
-        return application;
-    }
-
-    private static async Task<Application> DisputeUpdater(DisputeApplication application, DisputeInputModel inputModel, IUserService userService, ICopyrightService copyrightService)
-    {
-        application.UpdateProperties(inputModel, Encodables.Concat(new List<string> { "Id", "DisputedWork", "Accuser", "ResolveResult"}).ToList());
-
-        if (inputModel.AccuserId.HasValue)
-        { 
-            userService.AssignToApplication(inputModel.AccuserId.Value, application.Id);
-        }
-        
-        if (inputModel.DisputedWorkId.HasValue)
-        {
-            await copyrightService.AttachWorkToApplicationAndCheckValid(inputModel.DisputedWorkId.Value, application);
-        }
-        
-        return application;
-    }
-
-    private static Application UpdateProperties<T>(this Application application, T inputModel, List<string> ignored) where T : ApplicationInputModel
-    {
-        foreach (var property in typeof(T).GetProperties())
-        {
-            var destination = application.GetType().GetProperty(property.Name);
-            if (destination != null && !ignored.Contains(property.Name))
-            {
-                var val = property.GetValue(inputModel);
-                if (val != null) destination.SetValue(application, val);
-            }
-        }
-
-        return application;
-    }
-
-    private static Application CheckAndAssignStakes(this Application application, IUserService userService, List<OwnershipStake> stakes)
-    {
-        var owners = stakes.Select(x => x.Owner.ToLower()).Distinct().ToList();
-
-        if (!(userService.AreUsersReal(owners))) throw new Exception("Not all the users could be found");
-        foreach (var owner in owners)
-        {
-            userService.AssignToApplication(owner, application.Id);
-        }
-
-        return application;
     }
 }

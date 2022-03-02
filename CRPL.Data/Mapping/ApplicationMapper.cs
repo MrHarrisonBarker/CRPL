@@ -19,6 +19,7 @@ public static class ApplicationMapper
             case ApplicationType.DeleteAccount:
                 return mapper.Map<DeleteAccountApplication, DeleteAccountViewModel>((DeleteAccountApplication)application);
             case ApplicationType.WalletTransfer:
+                return mapper.Map<WalletTransferApplication, WalletTransferViewModel>((WalletTransferApplication)application);
             default:
                 throw new ArgumentOutOfRangeException();
         }

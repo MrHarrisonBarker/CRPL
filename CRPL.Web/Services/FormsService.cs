@@ -95,7 +95,7 @@ public class FormsService : IFormsService
             Context.Applications.Add(application);
         } else Context.Applications.Update(application);
         
-        application = await application.Update(inputModel, ServiceProvider);
+        application = await application.UpdateApplication(inputModel, ServiceProvider);
         application.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();
