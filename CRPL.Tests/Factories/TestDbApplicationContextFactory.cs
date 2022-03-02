@@ -176,15 +176,6 @@ public class TestDbApplicationContextFactory : IDisposable
         {
             new()
             {
-                Hash = new byte[] { 0 },
-                Id = new Guid("D54F35CC-3C8A-471C-A641-2BB5A59A8963"),
-                RightId = "1",
-                Title = "Hello world",
-                Registered = DateTime.Now.AddDays(-1),
-                Status = RegisteredWorkStatus.Registered
-            },
-            new()
-            {
                 Hash = new byte[] { 0, 0 },
                 Id = new Guid("C96560FD-6528-4921-9650-761AE96EF0DA"),
                 RightId = "2",

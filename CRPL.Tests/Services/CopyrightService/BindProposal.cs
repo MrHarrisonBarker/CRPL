@@ -47,46 +47,38 @@ public class BindProposal
     [Test]
     public async Task Should_Send_Transaction_With_Application()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, Applications))
-        {
-            var (copyrightService, connectionMock, contractRepoMock, expiryQueueMock) = new CopyrightServiceFactory().Create(context, null);
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works, applications: Applications);
+        var copyrightServiceFactory = new CopyrightServiceFactory(dbFactory.Context);
 
-            await copyrightService.BindProposal(new BindProposalInput() { ApplicationId = Applications.First().Id, Accepted = true});
-        }
+        await copyrightServiceFactory.CopyrightService.BindProposal(new BindProposalInput { ApplicationId = Applications.First().Id, Accepted = true });
     }
-    
+
     [Test]
     public async Task Should_Send_Transaction_With_Work()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext(Works, Applications))
-        {
-            var (copyrightService, connectionMock, contractRepoMock, expiryQueueMock) = new CopyrightServiceFactory().Create(context, null);
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works, applications: Applications);
+        var copyrightServiceFactory = new CopyrightServiceFactory(dbFactory.Context);
 
-            await copyrightService.BindProposal(new BindProposalWorkInput() { WorkId = Works.First().Id, Accepted = true});
-        }
+        await copyrightServiceFactory.CopyrightService.BindProposal(new BindProposalWorkInput { WorkId = Works.First().Id, Accepted = true });
     }
 
     [Test]
     public async Task Should_Throw_If_No_Application()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var (copyrightService, connectionMock, contractRepoMock, expiryQueueMock) = new CopyrightServiceFactory().Create(context, null);
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var copyrightServiceFactory = new CopyrightServiceFactory(dbFactory.Context);
 
-            await FluentActions.Invoking(async () => await copyrightService.BindProposal(new BindProposalInput() { ApplicationId = Guid.Empty }))
-                .Should().ThrowAsync<ApplicationNotFoundException>();
-        }
+        await FluentActions.Invoking(async () => await copyrightServiceFactory.CopyrightService.BindProposal(new BindProposalInput { ApplicationId = Guid.Empty }))
+            .Should().ThrowAsync<ApplicationNotFoundException>();
     }
 
     [Test]
     public async Task Should_Throw_If_No_Work()
     {
-        await using (var context = new TestDbApplicationContextFactory().CreateContext())
-        {
-            var (copyrightService, connectionMock, contractRepoMock, expiryQueueMock) = new CopyrightServiceFactory().Create(context, null);
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works, applications: Applications);
+        var copyrightServiceFactory = new CopyrightServiceFactory(dbFactory.Context);
 
-            await FluentActions.Invoking(async () => await copyrightService.BindProposal(new BindProposalWorkInput() { WorkId = Guid.Empty }))
-                .Should().ThrowAsync<WorkNotFoundException>();
-        }
+        await FluentActions.Invoking(async () => await copyrightServiceFactory.CopyrightService.BindProposal(new BindProposalWorkInput { WorkId = Guid.Empty }))
+            .Should().ThrowAsync<WorkNotFoundException>();
     }
 }

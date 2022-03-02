@@ -14,30 +14,26 @@ namespace CRPL.Tests.Factories;
 
 public class CopyrightServiceFactory
 {
-    public (CopyrightService, Mock<IBlockchainConnection> connectionMock, Mock<IContractRepository> contractRepoMock, Mock<IExpiryQueue> expiryQueueMock) Create(ApplicationContext context, Dictionary<string, object>? mappings)
+    public readonly CopyrightService CopyrightService;
+    public readonly Mock<IBlockchainConnection> BlockchainConnectionMock = new();
+    public readonly Mock<IContractRepository> ContractRepositoryMock = new();
+    public readonly Mock<IExpiryQueue> ExpiryQueueMock = new();
+
+    public CopyrightServiceFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
     {
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);
 
         var web3Mock = new MockWeb3(mappings);
 
-        var connectionMock = new Mock<IBlockchainConnection>();
-        connectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
+        BlockchainConnectionMock.Setup(x => x.Web3()).Returns(() => web3Mock.DummyWeb3);
 
-        var contractRepoMock = new Mock<IContractRepository>();
-        contractRepoMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
+        ContractRepositoryMock.Setup(x => x.DeployedContract(CopyrightContract.Copyright)).Returns(new DeployedContract()
         {
             Address = "TEST CONTRACT"
         });
 
-        var expiryQueueMock = new Mock<IExpiryQueue>();
-        
-        return (new CopyrightService(
-            new Logger<CopyrightService>(new LoggerFactory()),
-            context,
-            mapper,
-            connectionMock.Object,
-            contractRepoMock.Object,
-            expiryQueueMock.Object), connectionMock, contractRepoMock, expiryQueueMock);
+        CopyrightService = new CopyrightService(new Logger<CopyrightService>(new LoggerFactory()), context, mapper, BlockchainConnectionMock.Object, ContractRepositoryMock.Object,
+            ExpiryQueueMock.Object);
     }
 }
