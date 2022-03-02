@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using CRPL.Data.Applications;
 using CRPL.Tests.Factories;
 using CRPL.Web.Services;
-using CRPL.Web.Services.Interfaces;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -28,7 +27,7 @@ public class OwnershipRestructureSubmitter
 
             copyrightServiceMock.Setup(x => x.ProposeRestructure(application)).ReturnsAsync(application);
 
-            var submitted = await application.Submit(serviceProvider);
+            var submitted = await application.SubmitApplication(serviceProvider);
 
             copyrightServiceMock.Verify(x => x.ProposeRestructure(application));
             submitted.Status.Should().Be(ApplicationStatus.Submitted);

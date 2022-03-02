@@ -4,9 +4,7 @@ using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Tests.Factories;
 using CRPL.Web.Services;
-using CRPL.Web.Services.Interfaces;
 using FluentAssertions;
-using Moq;
 using NUnit.Framework;
 
 namespace CRPL.Tests.ApplicationSubmitter;
@@ -27,7 +25,7 @@ public class CopyrightRegistrationSubmitter
                 Status = ApplicationStatus.Incomplete
             };
 
-            var submitted = await application.Submit(serviceProvider);
+            var submitted = await application.SubmitApplication(serviceProvider);
         
             registrationServiceMock.Verify(x => x.StartRegistration(application));
             submitted.Status.Should().Be(ApplicationStatus.Submitted);
