@@ -15,6 +15,7 @@ using CRPL.Web.Services.Background.EventProcessors;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Moq;
 using Nethereum.Contracts;
 using Nethereum.RPC.Eth.DTOs;
 using NUnit.Framework;
@@ -50,8 +51,8 @@ public class RegisteredEventProcessor
     [Test]
     public async Task Should_Update_Work_Status()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
-            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications));
+        using var dbFactory = new TestDbApplicationContextFactory(Works, Applications);
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<RegisteredEventDTO>(new RegisteredEventDTO
         {
@@ -65,17 +66,17 @@ public class RegisteredEventProcessor
             TransactionHash = Works.First().RegisteredTransactionId
         });
 
-        await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
+        await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory()));
 
-        var work = await context.RegisteredWorks.FirstOrDefaultAsync(x => x.RightId == "1");
+        var work = await dbFactory.Context.RegisteredWorks.FirstOrDefaultAsync(x => x.RightId == "1");
         work.Status.Should().Be(RegisteredWorkStatus.Registered);
     }
 
     [Test]
     public async Task Should_Update_Application_Status()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
-            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications));
+        using var dbFactory = new TestDbApplicationContextFactory(Works, Applications);
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<RegisteredEventDTO>(new RegisteredEventDTO
         {
@@ -89,17 +90,17 @@ public class RegisteredEventProcessor
             TransactionHash = "TRANSACTION HASH"
         });
 
-        await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
+        await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory()));
 
-        var work = await context.RegisteredWorks.Include(x => x.AssociatedApplication).FirstOrDefaultAsync(x => x.RightId == "6");
+        var work = await dbFactory.Context.RegisteredWorks.Include(x => x.AssociatedApplication).FirstOrDefaultAsync(x => x.RightId == "6");
         work.AssociatedApplication.FirstOrDefault(x => x.ApplicationType == ApplicationType.CopyrightRegistration).Status.Should().Be(ApplicationStatus.Complete);
     }
 
     [Test]
-    public async Task Should_Set_Cid()
+    public async Task Should_Sign()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
-            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications));
+        using var dbFactory = new TestDbApplicationContextFactory(Works, Applications);
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<RegisteredEventDTO>(new RegisteredEventDTO
         {
@@ -113,23 +114,23 @@ public class RegisteredEventProcessor
             TransactionHash = Works.First().RegisteredTransactionId
         });
 
-        await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
+        await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory()));
 
-        var work = await context.RegisteredWorks.FirstOrDefaultAsync(x => x.RightId == "1");
-        work.Cid.Should().NotBeNull();
+        serviceProviderFactory.WorksVerificationServiceMock.Verify(x => x.Sign(It.IsAny<RegisteredWork>()), Times.Once);
     }
 
     [Test]
     public async Task Should_Throw_If_No_Work()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory().Create();
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<RegisteredEventDTO>(new RegisteredEventDTO(), new FilterLog()
         {
             TransactionHash = "BAD HASH"
         });
 
-        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory())))
+        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory())))
             .Should().ThrowAsync<WorkNotFoundException>();
     }
 }

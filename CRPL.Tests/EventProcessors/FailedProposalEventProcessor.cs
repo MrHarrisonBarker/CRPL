@@ -48,17 +48,17 @@ public class FailedProposalEventProcessor
     [Test]
     public async Task Should_Set_Status()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
-            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications));
+        using var dbFactory = new TestDbApplicationContextFactory(Works, Applications);
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<FailedProposalEventDTO>(new FailedProposalEventDTO()
         {
             RightId = BigInteger.Parse("1")
         }, new FilterLog());
 
-        await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
+        await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory()));
 
-        var application = await context.OwnershipRestructureApplications.FirstOrDefaultAsync(x => x.Id == Applications.First().Id);
+        var application = await dbFactory.Context.OwnershipRestructureApplications.FirstOrDefaultAsync(x => x.Id == Applications.First().Id);
 
         application.BindStatus.Should().Be(BindStatus.Rejected);
         application.Status.Should().Be(ApplicationStatus.Failed);
@@ -67,14 +67,15 @@ public class FailedProposalEventProcessor
     [Test]
     public async Task Should_Throw_If_No_Application()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory().Create();
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
         
         var eventLog = new EventLog<FailedProposalEventDTO>(new FailedProposalEventDTO()
         {
             RightId = BigInteger.MinusOne
         }, new FilterLog());
         
-        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory())))
+        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory())))
             .Should().ThrowAsync<ApplicationNotFoundException>();
     }
 }

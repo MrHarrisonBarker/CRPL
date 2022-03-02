@@ -101,40 +101,8 @@ public class RestructuredEventProcessor
     [Test]
     public async Task Should_Assign_Shareholders()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
-            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications, Users));
-
-        var eventLog = new EventLog<RestructuredEventDTO>(new RestructuredEventDTO()
-        {
-            Proposal = new RestructureProposal
-            {
-                NewStructure = new List<OwnershipStakeContract>
-                {
-                    new() { Owner = TestConstants.TestAccountAddress, Share = 45 },
-                    new() { Owner = "test_2", Share = 55 }
-                }
-            },
-            RightId = BigInteger.Parse("1")
-        }, new FilterLog());
-
-        await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
-
-        var work = await context.RegisteredWorks
-            .Include(x => x.AssociatedApplication)
-            .Include(x => x.UserWorks)
-            .ThenInclude(x => x.UserAccount)
-            .FirstOrDefaultAsync(x => x.RightId == "1");
-
-        work.Should().NotBeNull();
-        work.UserWorks[0].UserAccount.Wallet.PublicAddress.Should().BeEquivalentTo(TestConstants.TestAccountAddress);
-        work.UserWorks[1].UserAccount.Wallet.PublicAddress.Should().BeEquivalentTo("test_2");
-    }
-
-    [Test]
-    public async Task Should_Set_Status()
-    {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
-            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications, Users));
+        using var dbFactory = new TestDbApplicationContextFactory(Works, Applications, Users);
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<RestructuredEventDTO>(new RestructuredEventDTO
         {
@@ -149,9 +117,41 @@ public class RestructuredEventProcessor
             RightId = BigInteger.Parse("1")
         }, new FilterLog());
 
-        await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
+        await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory()));
 
-        var application = await context.OwnershipRestructureApplications.FirstOrDefaultAsync(x => x.Id == Applications.First().Id);
+        var work = await dbFactory.Context.RegisteredWorks
+            .Include(x => x.AssociatedApplication)
+            .Include(x => x.UserWorks)
+            .ThenInclude(x => x.UserAccount)
+            .FirstOrDefaultAsync(x => x.RightId == "1");
+
+        work.Should().NotBeNull();
+        work.UserWorks[0].UserAccount.Wallet.PublicAddress.Should().BeEquivalentTo(TestConstants.TestAccountAddress);
+        work.UserWorks[1].UserAccount.Wallet.PublicAddress.Should().BeEquivalentTo("test_2");
+    }
+
+    [Test]
+    public async Task Should_Set_Status()
+    {
+        using var dbFactory = new TestDbApplicationContextFactory(Works, Applications, Users);
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
+
+        var eventLog = new EventLog<RestructuredEventDTO>(new RestructuredEventDTO
+        {
+            Proposal = new RestructureProposal
+            {
+                NewStructure = new List<OwnershipStakeContract>
+                {
+                    new() { Owner = TestConstants.TestAccountAddress, Share = 45 },
+                    new() { Owner = "test_2", Share = 55 }
+                }
+            },
+            RightId = BigInteger.Parse("1")
+        }, new FilterLog());
+
+        await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory()));
+
+        var application = await dbFactory.Context.OwnershipRestructureApplications.FirstOrDefaultAsync(x => x.Id == Applications.First().Id);
 
         application.BindStatus.Should().Be(BindStatus.Bound);
         application.Status.Should().Be(ApplicationStatus.Complete);
@@ -160,22 +160,23 @@ public class RestructuredEventProcessor
     [Test]
     public async Task Should_Throw_If_No_Work()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory().Create();
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<RestructuredEventDTO>(new RestructuredEventDTO()
         {
             RightId = BigInteger.MinusOne
         }, new FilterLog());
 
-        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory())))
+        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory())))
             .Should().ThrowAsync<WorkNotFoundException>();
     }
 
     [Test]
     public async Task Should_Throw_If_No_User()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
-            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications));
+        using var dbFactory = new TestDbApplicationContextFactory(Works, Applications);
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<RestructuredEventDTO>(new RestructuredEventDTO()
         {
@@ -189,15 +190,15 @@ public class RestructuredEventProcessor
             RightId = BigInteger.Parse("1")
         }, new FilterLog());
 
-        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory())))
+        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory())))
             .Should().ThrowAsync<UserNotFoundException>();
     }
 
     [Test]
     public async Task Should_Throw_If_No_Application()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
-            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications, Users));
+        using var dbFactory = new TestDbApplicationContextFactory(Works, Applications, Users);
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<RestructuredEventDTO>(new RestructuredEventDTO()
         {
@@ -211,15 +212,15 @@ public class RestructuredEventProcessor
             RightId = BigInteger.Parse("2")
         }, new FilterLog());
 
-        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory())))
+        await FluentActions.Invoking(async () => await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory())))
             .Should().ThrowAsync<ApplicationNotFoundException>();
     }
 
     [Test]
     public async Task Should_Set_Origin_To_Complete()
     {
-        var (context, serviceProvider) = await new ServiceProviderWithContextFactory()
-            .Create(new TestDbApplicationContextFactory().CreateContext(Works, Applications, Users));
+        using var dbFactory = new TestDbApplicationContextFactory(Works, Applications, Users);
+        var serviceProviderFactory = new ServiceProviderWithContextFactory(dbFactory.Context);
 
         var eventLog = new EventLog<RestructuredEventDTO>(new RestructuredEventDTO
         {
@@ -234,9 +235,9 @@ public class RestructuredEventProcessor
             RightId = BigInteger.Parse("3")
         }, new FilterLog());
 
-        await eventLog.ProcessEvent(serviceProvider, new Logger<EventProcessingService>(new LoggerFactory()));
+        await eventLog.ProcessEvent(serviceProviderFactory.ServiceProviderMock.Object, new Logger<EventProcessingService>(new LoggerFactory()));
 
-        var application = await context.OwnershipRestructureApplications.Include(x => x.Origin).FirstOrDefaultAsync(x => x.Id == new Guid("4981A1FE-A9B9-4D73-A11A-5630E832D08D"));
+        var application = await dbFactory.Context.OwnershipRestructureApplications.Include(x => x.Origin).FirstOrDefaultAsync(x => x.Id == new Guid("4981A1FE-A9B9-4D73-A11A-5630E832D08D"));
 
         application.Origin.Status.Should().Be(ApplicationStatus.Complete);
     }
