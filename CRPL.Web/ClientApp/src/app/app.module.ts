@@ -52,14 +52,21 @@ import {
 import {WorkApplicationsComponent} from './Core/work-applications/work-applications.component';
 import {DisputeFormComponent} from './Forms/dispute-form/dispute-form.component';
 import {RememberedGuard} from "./_Guards/remembered.guard";
-import { CopyrightMinComponent } from './copyright/copyright-min/copyright-min.component';
-import { DisputeViewCompletedComponent } from './Dashboard/dispute-view/dispute-view-completed/dispute-view-completed.component';
-import { DisputeViewSubmittedComponent } from './Dashboard/dispute-view/dispute-view-submitted/dispute-view-submitted.component';
-import { UserCardComponent } from './Core/user-card/user-card.component';
-import { DisputeMinComponent } from './dispute/dispute-min/dispute-min.component';
-import { ResolveStatusComponent } from './Core/resolve-status/resolve-status.component';
+import {CopyrightMinComponent} from './copyright/copyright-min/copyright-min.component';
+import {
+  DisputeViewCompletedComponent
+} from './Dashboard/dispute-view/dispute-view-completed/dispute-view-completed.component';
+import {
+  DisputeViewSubmittedComponent
+} from './Dashboard/dispute-view/dispute-view-submitted/dispute-view-submitted.component';
+import {UserCardComponent} from './Core/user-card/user-card.component';
+import {DisputeMinComponent} from './dispute/dispute-min/dispute-min.component';
+import {ResolveStatusComponent} from './Core/resolve-status/resolve-status.component';
 import {SettingsComponent} from "./User/settings/settings.component";
-import { SearchComponent } from './search/search.component';
+import {SearchComponent} from './search/search.component';
+import {AngularFireModule} from "@angular/fire/compat";
+import {environment} from "../environments/environment";
+import {AngularFireMessagingModule} from "@angular/fire/compat/messaging";
 
 @NgModule({
   declarations: [
@@ -107,6 +114,8 @@ import { SearchComponent } from './search/search.component';
   ],
   imports: [
     BrowserModule.withServerTransition({appId: 'ng-cli-universal'}),
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireMessagingModule,
     BrowserAnimationsModule,
     ClarityModule,
     HttpClientModule,
