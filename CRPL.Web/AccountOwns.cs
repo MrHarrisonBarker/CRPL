@@ -26,7 +26,7 @@ public class AccountOwnsFilter : IAsyncAuthorizationFilter
             return;
         }
 
-        if (!await UserService.isShareholder(address, rightId))
+        if (!await UserService.IsShareholder(address, rightId))
         {
             context.Result = new UnauthorizedResult();
         }

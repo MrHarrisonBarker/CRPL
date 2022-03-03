@@ -49,11 +49,6 @@ public class UserService : IUserService
         };
     }
 
-    public Task<UserWallet> GetWallet(Guid accountId)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<bool> IsUniquePhoneNumber(string phoneNumber)
     {
         Logger.LogInformation("Checking is phone number '{Phone}' exists", phoneNumber);
@@ -159,11 +154,6 @@ public class UserService : IUserService
         return hasContact != 0;
     }
 
-    public Task<string> UpdateWallet(Guid accountId, WalletInputModel walletInputModel)
-    {
-        throw new NotImplementedException();
-    }
-
     public void AssignToApplication(string address, Guid applicationId)
     {
         Logger.LogInformation("Assigning {Address} to application {Id}", address, applicationId);
@@ -206,28 +196,6 @@ public class UserService : IUserService
         {
             ApplicationId = applicationId
         });
-    }
-
-    public async Task<RegisteredWork> AssignToWork(string address, RegisteredWork work)
-    {
-        var user = await Context.UserAccounts
-            .Include(x => x.UserWorks)
-            .FirstOrDefaultAsync(x => x.Wallet.PublicAddress.ToLower() == address.ToLower());
-        if (user == null) throw new UserNotFoundException(address);
-
-        // if (!user.UserWorks.Any(x => x.WorkId == work.Id))
-        // {
-        user.UserWorks ??= new List<UserWork>();
-
-        Logger.LogInformation("Assigning {Address} to work {Id}", address, work.RightId);
-        user.UserWorks.Add(new UserWork()
-        {
-            WorkId = work.Id,
-            UserId = user.Id
-        });
-        // }
-
-        return work;
     }
 
     // when no account exists create and save
@@ -342,7 +310,7 @@ public class UserService : IUserService
         await Context.SaveChangesAsync();
     }
 
-    public async Task<bool> isShareholder(string address, string rightId)
+    public async Task<bool> IsShareholder(string address, string rightId)
     {
         Logger.LogInformation("Checking if shareholder {Address}", address);
 
