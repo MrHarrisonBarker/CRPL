@@ -15,57 +15,64 @@ namespace CRPL.Tests.Synchronisers.OwnershipSynchroniser;
 [TestFixture]
 public class SynchroniseOne
 {
-    private static readonly List<RegisteredWork> Works = new()
+    private List<RegisteredWork> Works;
+    private List<UserAccount> Users;
+
+    [SetUp]
+    public async Task SetUp()
     {
-        new()
+        Works = new List<RegisteredWork>()
         {
-            Id = new Guid("C714A94E-BE61-4D7B-A4CE-28F0667FAEAD"),
-            Title = "Hello world",
-            Created = DateTime.Now,
-            Status = RegisteredWorkStatus.SentToChain,
-            RightId = "1",
-            RegisteredTransactionId = "TRANSACTION HASH",
-            UserWorks = new List<UserWork>
+            new()
             {
-                new()
+                Id = new Guid("C714A94E-BE61-4D7B-A4CE-28F0667FAEAD"),
+                Title = "Hello world",
+                Created = DateTime.Now,
+                Status = RegisteredWorkStatus.SentToChain,
+                RightId = "1",
+                RegisteredTransactionId = "TRANSACTION HASH",
+                UserWorks = new List<UserWork>
                 {
-                    UserId = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C")
+                    new()
+                    {
+                        UserId = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C")
+                    }
                 }
             }
-        }
-    };
-
-    private static readonly List<UserAccount> Users = new()
-    {
-        new()
+        };
+        
+        Users = new List<UserAccount>
         {
-            Id = new Guid("F61BB4E5-E1C7-4F3E-A39A-93ABAFFE1AC9"),
-            Wallet = new UserWallet
+            new()
             {
-                PublicAddress = "0xaea270413700371a8a28ab8b5ece05201bdf49de"
+                Id = new Guid("F61BB4E5-E1C7-4F3E-A39A-93ABAFFE1AC9"),
+                Wallet = new UserWallet
+                {
+                    PublicAddress = "0xaea270413700371a8a28ab8b5ece05201bdf49de"
+                }
+            },
+            new()
+            {
+                Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
+                Email = "test@user.co.uk",
+                Status = UserAccount.AccountStatus.Complete,
+                FirstName = "Complete",
+                LastName = "User",
+                PhoneNumber = "99999999999",
+                RegisteredJurisdiction = "GBR",
+                DateOfBirth = new UserAccount.DOB
+                {
+                    Year = 2000, Month = 7, Day = 24
+                },
+                Wallet = new UserWallet
+                {
+                    PublicAddress = TestConstants.TestAccountAddress,
+                    Nonce = "NONCE"
+                },
+                AuthenticationToken = null
             }
-        },
-        new()
-        {
-            Id = new Guid("A9B73346-DA66-4BD5-97FE-0A0113E52D4C"),
-            Email = "test@user.co.uk",
-            Status = UserAccount.AccountStatus.Complete,
-            FirstName = "Complete",
-            LastName = "User",
-            PhoneNumber = "99999999999",
-            RegisteredJurisdiction = "GBR",
-            DateOfBirth = new UserAccount.DOB
-            {
-                Year = 2000, Month = 7, Day = 24
-            },
-            Wallet = new UserWallet
-            {
-                PublicAddress = TestConstants.TestAccountAddress,
-                Nonce = "NONCE"
-            },
-            AuthenticationToken = null
-        }
-    };
+        };
+    }
 
     [Test]
     public async Task Should_Be_The_Same()
