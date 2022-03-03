@@ -31,7 +31,12 @@ public static class Utils
             VerificationResult = x.VerificationResult,
             ProposalTransactionId = x.ProposalTransactionId,
             RegisteredTransactionId = x.RegisteredTransactionId,
-            AssociatedApplication = x.AssociatedApplication.Where(a => a.ApplicationType != ApplicationType.Dispute || a.Status == ApplicationStatus.Complete || a.Status == ApplicationStatus.Submitted).ToList()
+            AssociatedApplication = x.AssociatedApplication.Where(a => a.ApplicationType != ApplicationType.Dispute || a.Status == ApplicationStatus.Complete || a.Status == ApplicationStatus.Submitted).ToList(),
+            LastPing = x.LastPing,
+            TimesPinged = x.TimesPinged,
+            LastProxyUse = x.LastProxyUse,
+            TimesProxyUsed = x.TimesProxyUsed,
+            WorkType = x.WorkType
         });
     }
 }

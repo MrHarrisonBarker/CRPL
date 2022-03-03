@@ -17,4 +17,10 @@ public class RegisteredWorkViewModel
     public string? CidLink { get; set; }
     public string? RegisteredTransactionId { get; set; }
     public string? RegisteredTransactionUri { get; set; }
+    
+    public long TimesProxyUsed { get; set; }
+    public DateTime? LastProxyUse { get; set; }
+    
+    public long TimesPinged { get; set; }
+    public DateTime? LastPing { get; set; }
 }

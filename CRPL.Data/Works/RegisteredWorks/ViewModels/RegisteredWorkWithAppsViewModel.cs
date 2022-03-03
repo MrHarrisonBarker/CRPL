@@ -22,4 +22,10 @@ public class RegisteredWorkWithAppsViewModel
     public List<UserAccountMinimalViewModel> AssociatedUsers { get; set; }
     public List<ApplicationViewModelWithoutAssociated> AssociatedApplication { get; set; }
     public string? RegisteredTransactionUri { get; set; }
+    
+    public long TimesProxyUsed { get; set; }
+    public DateTime? LastProxyUse { get; set; }
+    
+    public long TimesPinged { get; set; }
+    public DateTime? LastPing { get; set; }
 }
