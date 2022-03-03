@@ -5,7 +5,6 @@ import {HttpClientTestingModule, HttpTestingController} from "@angular/common/ht
 import {AuthService} from "./auth.service";
 import {AlertService} from "./alert.service";
 import {Router} from "@angular/router";
-import {UserService} from "./user.service";
 
 describe('WorksService', () =>
 {
@@ -59,7 +58,7 @@ describe('WorksService', () =>
         expect(response).toEqual(mockResponse);
       });
 
-      let request = httpMock.expectOne('works/' + encodeURI(mockId));
+      let request = httpMock.expectOne(encodeURI(mockId));
 
       request.flush(mockResponse);
     }));
