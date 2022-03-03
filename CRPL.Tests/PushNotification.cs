@@ -1,7 +1,12 @@
+using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CorePush.Google;
+using FirebaseAdmin;
+using FirebaseAdmin.Messaging;
+using Google.Apis.Auth.OAuth2;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace CRPL.Tests;
@@ -18,20 +23,84 @@ public class PushNotification
             ServerKey = "AAAABzPUYwk:APA91bFTiBwd-6LNEsEX33tmjoV5IyPuhDWB1mP7GgOOCj19vvyHstEQoKUQwUB0KV_lLt27PQ7-aBTySoFlVgasgId5S4M6utdcg0I1YTDY0tPVqZlq8cM2wOIeQqTC_m88UinG6920"
         }, new HttpClient());
 
-        await fcm.SendAsync("fQNOEu8pNdZbzs8GRh2dS7:APA91bFCLSG6-saskycAooHu9NG_zQ2zGxfTa1-2RIRrd1A9yUCmyJOl2pZdl4hqpFyHP--v54TxBiaIBX9PAWSwM8Mk0TrgFz8dR1KHEokRH_RXuwPbWMa4StZ3vctzgBw4YvyjQSZs", new Notification()
+        var payload = new Notification
+        {
+            Notifi = new Notification.NotificationPayload
             {
-                Notifi = new Notification.NotificationPayload()
+                Title = "Hello world different",
+                Body = "This is a body, this is new"
+            }
+        };
+
+        JObject payload1 = JObject.FromObject(payload);
+        payload1.Remove("token");
+        payload1.Add("token",
+            JToken.FromObject(
+                (object)"fQNOEu8pNdZbzs8GRh2dS7:APA91bG57K-zW7KKWdWnHBWRNxltx0BOsQ88zFxjUVp5RWGHGxSlbNWMq3FrG0utzsH9Z5ngU-SSyPG7YSPWLAym3vm4Z6uAa834iMuO_ALtxFrXB-n8lGlCKdLcnp9tmoJ9QJdNGMZd"));
+
+        await fcm.SendAsync(payload1);
+    }
+
+    [Test]
+    public async Task Should_Work()
+    {
+        FirebaseApp.Create(new AppOptions
+        {
+            Credential = GoogleCredential.FromFile("/Users/harrison/Desktop/CRPL/CRPL.Tests/crpl-c5132-firebase-adminsdk-pkggb-4bf090805b.json"),
+        });
+
+        // This registration token comes from the client FCM SDKs.
+        var registrationToken = "fQNOEu8pNdZbzs8GRh2dS7:APA91bGRjWd9ec4DTyHTsRV52jc53_mlMDuOfw5nEVT08wvA5xPUvxfSvnL4IzL41RbVB3oHWHXuuXUvMJmskglIIxKQSNVyiZe5qxBKOafsM3k3FRE4OEchF8TE2yVFCVFnJw9MeI52";
+
+        // See documentation on defining a message payload.
+        var message = new Message
+        {
+            Apns = new ApnsConfig
+            {
+                Aps = new Aps
+                {
+                    Alert = new ApsAlert
+                    {
+                        Title = "Hello apple",
+                        Body = "this is a notification",
+                        Subtitle = "this is a subtitle"
+                    }
+                }
+            },
+            Notification = new FirebaseAdmin.Messaging.Notification
+            {
+                Title = "Hello world",
+                Body = "This is a notification",
+                ImageUrl = "https://ipfs.io/ipfs/QmcLgUi4YEbzD7heFAWkKPZDphhEicXwm7ER82nahvXdqQ?filename=CRPL.png"
+            },
+            Webpush = new WebpushConfig
+            {
+                Notification = new WebpushNotification
+                {
+                    Title = "Hello world"
+                }
+            },
+            Android = new AndroidConfig
+            {
+                Notification = new AndroidNotification
                 {
                     Title = "Hello world",
-                    Body = "This is a body"
+                    Body = "This is a notification"
                 }
-            });
+            },
+            Token = registrationToken,
+        };
+
+        // Send a message to the device corresponding to the provided
+        // registration token.
+        string response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+        // Response is a message ID string.
+        Console.WriteLine("Successfully sent message: " + response);
     }
 }
 
 public class Notification
 {
-    [JsonProperty("collapseKey")] public string Collapse { get; set; }
     [JsonProperty("notification")] public NotificationPayload Notifi { get; set; }
 
     public class NotificationPayload
