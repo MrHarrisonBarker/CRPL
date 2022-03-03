@@ -4,6 +4,7 @@ using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
+using CRPL.Web.Services.Background.Usage;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -21,7 +22,8 @@ public class ServiceProviderWithContextFactory
     public readonly Mock<IQueryService> QueryServiceMock = new();
     public readonly Mock<IDisputeService> DisputeServiceMock = new();
     public readonly Mock<IAccountManagementService> AccountManagementServiceMock = new();
-    
+    public readonly Mock<IUsageQueue> UsageQueueMock = new();
+
     public readonly Mock<IBlockchainConnection> BlockchainConnectionMock = new();
     public readonly Mock<IContractRepository> ContractRepositoryMock = new();
 
@@ -38,6 +40,7 @@ public class ServiceProviderWithContextFactory
         ServiceProviderMock.Setup(x => x.GetService(typeof(IQueryService))).Returns(QueryServiceMock.Object);
         ServiceProviderMock.Setup(x => x.GetService(typeof(IDisputeService))).Returns(DisputeServiceMock.Object);
         ServiceProviderMock.Setup(x => x.GetService(typeof(IAccountManagementService))).Returns(AccountManagementServiceMock.Object);
+        ServiceProviderMock.Setup(x => x.GetService(typeof(IUsageQueue))).Returns(UsageQueueMock.Object);
         
         var web3Mock = new MockWeb3(mappings);
         

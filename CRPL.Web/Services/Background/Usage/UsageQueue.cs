@@ -14,6 +14,11 @@ public class UsageQueue : IUsageQueue
     private readonly ILogger<UsageQueue> Logger;
     private readonly ConcurrentQueue<WorkUsage> Queue = new();
     private readonly SemaphoreSlim Signal = new(0);
+
+    public UsageQueue(ILogger<UsageQueue> logger)
+    {
+        Logger = logger;
+    }
     
     public void QueueUsage(WorkUsage usage)
     {

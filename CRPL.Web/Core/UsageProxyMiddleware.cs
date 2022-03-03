@@ -1,6 +1,7 @@
 using CRPL.Data.Account;
+using CRPL.Data.Account.Works;
 using CRPL.Web.Exceptions;
-using Ipfs.Http;
+using CRPL.Web.Services.Background.Usage;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.Core;
@@ -25,27 +26,36 @@ public class UsageProxyMiddleware
 
             if (context.Request.Path.Value == null) throw new Exception("No Id!");
 
+            // getting work id from the url
             var id = context.Request.Path.Value.Split('/')[3];
-            if (id == null) throw new Exception("Id not found!");
-            var idAsGuid = Guid.Parse(id);
-
-            var work = await applicationContext.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == idAsGuid);
-            if (work == null) throw new WorkNotFoundException(idAsGuid);
-
+            if (string.IsNullOrEmpty(id)) throw new Exception("Id not found!");
+            
+            // getting and checking work exists
+            var work = await applicationContext.RegisteredWorks.FirstOrDefaultAsync(x => x.Id == Guid.Parse(id));
+            if (work == null) throw new WorkNotFoundException(Guid.Parse(id));
             if (work.Cid == null) throw new Exception("Cid doesn't exist!");
             
             var target = new UriBuilder("https://ipfs.io/ipfs/" + work.Cid).Uri;
             
+            // making request to proxied uri using ipfs gateway
             using var client = new HttpClient();
             var responseMessage = await client.GetAsync(target, HttpCompletionOption.ResponseHeadersRead, context.RequestAborted);
             
+            // Building response and request headers based on the response from the proxied resource
             context.Response.StatusCode = (int)responseMessage.StatusCode;
-            
             CopyFromTargetResponseHeaders(context, responseMessage, work.Cid);
             ScrubRequestHeaders(context, work.Cid);
+
+            // registering the usage by adding to the queue
+            var usageQueue = scope.ServiceProvider.GetRequiredService<IUsageQueue>();
+            usageQueue.QueueUsage(new WorkUsage
+            {
+                TimeStamp = DateTime.Now,
+                UsageType = UsageType.Proxy,
+                WorkId = work.Id
+            });
             
             await responseMessage.Content.CopyToAsync(context.Response.Body);
-            
             return;
         }
 

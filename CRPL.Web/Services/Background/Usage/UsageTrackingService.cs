@@ -21,6 +21,8 @@ public class UsageTrackingService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
+        Logger.LogInformation("Starting usage tracking service");
+
         while (!cancellationToken.IsCancellationRequested)
         {
             var workUsage = await UsageQueue.DequeueAsync(cancellationToken);

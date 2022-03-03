@@ -98,7 +98,7 @@ describe('CompleteUserAndAuthGuard', () =>
 
     guard.canActivate({} as ActivatedRouteSnapshot, <RouterStateSnapshot>{url: 'testUrl'}).subscribe(res =>
     {
-      expect(routerMock.navigate).toHaveBeenCalledWith(['/u/info']);
+      expect(routerMock.navigate).toHaveBeenCalled();
       expect(res).toBeFalsy();
     });
   });
