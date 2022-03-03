@@ -1,19 +1,21 @@
 using System.Text;
 using CRPL.Data;
-using CRPL.Data.BlockchainUtils;
-using CRPL.Data.ContractDeployment;
 using CRPL.Web;
 using CRPL.Web.Core;
 using CRPL.Web.StartUp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Serialization;
 using Serilog;
 using Serilog.Events;
 using Serilog.Exceptions;
 using Serilog.Sinks.SystemConsole.Themes;
-using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var appSettingsSection = builder.Configuration.GetSection("AppSettings");
+builder.Services.Configure<AppSettings>(appSettingsSection);
+var appSettings = appSettingsSection.Get<AppSettings>();
 
 builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Information()
@@ -23,14 +25,10 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
         .Enrich.FromLogContext()
         .Enrich.WithExceptionDetails()
         .WriteTo.Console(theme: AnsiConsoleTheme.Code, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3} {SourceContext}] {Message:lj}{NewLine}{Exception}")
-    // .WriteTo.Seq("http://localhost:80", apiKey: "UgrmhkMuEVCZxOX89WUm")
+        .WriteTo.Seq("http://www.seq-ingest.harrisonbarker.co.uk", apiKey: appSettings.SeqKey)
 );
 
 // Add services to the container.
-
-var appSettingsSection = builder.Configuration.GetSection("AppSettings");
-builder.Services.Configure<AppSettings>(appSettingsSection);
-var appSettings = appSettingsSection.Get<AppSettings>();
 
 builder.Services.AddAutoMapper(expression => expression.AddProfile(typeof(AutoMapping)));
 

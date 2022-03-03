@@ -1,5 +1,4 @@
 using System.Numerics;
-using CRPL.Data.BlockchainUtils;
 
 namespace CRPL.Data;
 
@@ -7,6 +6,7 @@ public class AppSettings
 {
     public string ConnectionString { get; set; }
     public string EncryptionKey { get; set; }
+    public string SeqKey { get; set; }
     public string IpfsHost { get; set; } 
     public List<Chain> Chains { get; set; }
 }
