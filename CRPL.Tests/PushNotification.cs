@@ -2,6 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CorePush.Google;
+using CRPL.Web.Core;
 using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
@@ -46,50 +47,14 @@ public class PushNotification
     {
         FirebaseApp.Create(new AppOptions
         {
-            Credential = GoogleCredential.FromFile("/Users/harrison/Desktop/CRPL/CRPL.Tests/crpl-c5132-firebase-adminsdk-pkggb-4bf090805b.json"),
+            Credential = GoogleCredential.FromFile("/Users/harrison/Desktop/CRPL/CRPL.Web/crpl-c5132-firebase-adminsdk-pkggb-4bf090805b.json"),
         });
 
         // This registration token comes from the client FCM SDKs.
         var registrationToken = "fQNOEu8pNdZbzs8GRh2dS7:APA91bGRjWd9ec4DTyHTsRV52jc53_mlMDuOfw5nEVT08wvA5xPUvxfSvnL4IzL41RbVB3oHWHXuuXUvMJmskglIIxKQSNVyiZe5qxBKOafsM3k3FRE4OEchF8TE2yVFCVFnJw9MeI52";
 
         // See documentation on defining a message payload.
-        var message = new Message
-        {
-            Apns = new ApnsConfig
-            {
-                Aps = new Aps
-                {
-                    Alert = new ApsAlert
-                    {
-                        Title = "Hello apple",
-                        Body = "this is a notification",
-                        Subtitle = "this is a subtitle"
-                    }
-                }
-            },
-            Notification = new FirebaseAdmin.Messaging.Notification
-            {
-                Title = "Hello world",
-                Body = "This is a notification",
-                ImageUrl = "https://ipfs.io/ipfs/QmcLgUi4YEbzD7heFAWkKPZDphhEicXwm7ER82nahvXdqQ?filename=CRPL.png"
-            },
-            Webpush = new WebpushConfig
-            {
-                Notification = new WebpushNotification
-                {
-                    Title = "Hello world"
-                }
-            },
-            Android = new AndroidConfig
-            {
-                Notification = new AndroidNotification
-                {
-                    Title = "Hello world",
-                    Body = "This is a notification"
-                }
-            },
-            Token = registrationToken,
-        };
+        var message = PushNotificationUtils.NewNotification(registrationToken, "Hello world", "this is notification","https://upload.wikimedia.org/wikipedia/commons/a/ac/BrownhillsCouncilHouse.jpg");
 
         // Send a message to the device corresponding to the provided
         // registration token.

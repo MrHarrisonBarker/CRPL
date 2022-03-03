@@ -1,9 +1,10 @@
 using System.Text;
-using CorePush.Google;
 using CRPL.Data;
 using CRPL.Web;
 using CRPL.Web.Core;
 using CRPL.Web.StartUp;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
@@ -38,11 +39,10 @@ builder.Services.AddChainConnections();
 builder.Services.AddDbPipeline(appSettings);
 builder.Services.AddServicePipeline(appSettings);
 
-builder.Services.AddHttpClient<FcmSender>();
-
-var section = builder.Configuration.GetSection("FcmSettings");
-var settings = new FcmSettings();
-section.Bind(settings);
+FirebaseApp.Create(new AppOptions
+{
+    Credential = GoogleCredential.FromFile("./crpl-c5132-firebase-adminsdk-pkggb-4bf090805b.json"),
+});
 
 var key = Encoding.ASCII.GetBytes(appSettings.EncryptionKey);
 builder.Services.AddAuthentication(x =>
