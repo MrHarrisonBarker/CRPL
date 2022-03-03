@@ -27,4 +27,10 @@ public class RegisteredWork
     public string? ProposalTransactionId { get; set; }
     public List<UserWork> UserWorks { get; set; }
     public List<Application> AssociatedApplication { get; set; }
+    
+    public long TimesProxyUsed { get; set; }
+    public DateTime? LastProxyUse { get; set; }
+    
+    public long TimesPinged { get; set; }
+    public DateTime? LastPing { get; set; }
 }
