@@ -42,4 +42,5 @@ public class UserAccount
     public string? AuthenticationToken { get; set; }
     
     public List<UserApplication>? Applications { get; set; }
+    public string? FcmToken { get; set; }
 }
