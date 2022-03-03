@@ -1,8 +1,10 @@
 using CRPL.Data;
+using CRPL.Web.Core.ChainSync;
 using CRPL.Web.Core.ChainSync.Synchronisers;
 using CRPL.Web.Services;
 using CRPL.Web.Services.Background;
 using CRPL.Web.Services.Background.SlientExpiry;
+using CRPL.Web.Services.Background.Usage;
 using CRPL.Web.Services.Background.VerificationPipeline;
 using CRPL.Web.Services.Interfaces;
 
@@ -29,7 +31,8 @@ public static class ServiceExtensions
             services.AddHostedService<EventProcessingService>();
             services.AddHostedService<VerificationPipelineService>();
             services.AddHostedService<ExpiryProcessingService>();
-            // services.AddHostedService<ChainSyncService>();
+            services.AddHostedService<ChainSyncService>();
+            services.AddHostedService<UsageTrackingService>();
 
             services.AddScoped<ISynchroniser, OwnershipSynchroniser>();
         }

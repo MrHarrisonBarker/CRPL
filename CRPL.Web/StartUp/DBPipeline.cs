@@ -10,6 +10,7 @@ using CRPL.Data.StructuredOwnership;
 using CRPL.Data.Works;
 using CRPL.Web.Services.Background;
 using CRPL.Web.Services.Background.SlientExpiry;
+using CRPL.Web.Services.Background.Usage;
 using CRPL.Web.Services.Background.VerificationPipeline;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Http.Features;
@@ -121,6 +122,7 @@ public class UseWakeServices
         app.Services.GetService<ICachedWorkRepository>();
         app.Services.GetService<IEventQueue>();
         app.Services.GetService<IVerificationQueue>();
+        app.Services.GetService<IUsageQueue>();
     }
 }
 
@@ -143,6 +145,7 @@ public class DbPipelineBuilder
         services.AddSingleton<IEventQueue, EventQueue>();
         services.AddSingleton<IVerificationQueue, VerificationQueue>();
         services.AddSingleton<IExpiryQueue, ExpiryQueue>();
+        services.AddSingleton<IUsageQueue, UsageQueue>();
 
         services.Configure<FormOptions>(o =>
         {
