@@ -22,12 +22,23 @@ export class AlertService
     return this._alert;
   }
 
+  get locked (): boolean
+  {
+    return this._locked.getValue();
+  }
+
   private _alert: Subject<AlertMeta> = new Subject<AlertMeta>();
   private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public TriggerChange: EventEmitter<any> = new EventEmitter<any>();
+  private _locked: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor ()
   {
+  }
+
+  set locked(locked: boolean)
+  {
+    this._locked.next(locked);
   }
 
   public Alert (meta: AlertMeta): void

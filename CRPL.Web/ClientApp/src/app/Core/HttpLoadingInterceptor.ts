@@ -17,6 +17,11 @@ export class HttpLoadingInterceptor implements HttpInterceptor
   ): Observable<HttpEvent<any>>
   {
     this.alertService.StartLoading();
-    return next.handle(request).pipe(finalize(() => this.alertService.StopLoading())) as Observable<HttpEvent<any>>;
+    this.alertService.locked = true;
+    return next.handle(request).pipe(finalize(() =>
+    {
+      this.alertService.StopLoading();
+      this.alertService.locked = false;
+    })) as Observable<HttpEvent<any>>;
   }
 }

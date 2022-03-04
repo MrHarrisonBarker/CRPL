@@ -4,7 +4,7 @@ import {UserPaths} from "../api.conts";
 import {BehaviorSubject, from, Observable, of, throwError} from "rxjs";
 import {AuthenticateResult} from "../_Models/Account/AuthenticateResult";
 import {AuthenticateSignatureInputModel} from "../_Models/Account/AuthenticateSignatureInputModel";
-import {finalize, map, switchMap, tap} from "rxjs/operators";
+import {catchError, map, switchMap, tap} from "rxjs/operators";
 import jwtDecode, {JwtPayload} from "jwt-decode";
 import {UserAccountViewModel} from "../_Models/Account/UserAccountViewModel";
 import {Router} from "@angular/router";
@@ -167,7 +167,12 @@ export class AuthService
     {
       console.log("got user account from auth", account);
       this.UserAccount.next(account);
-    })).pipe(finalize(() => this.IsAuthenticated.next(true)));
+      this.IsAuthenticated.next(true);
+    })).pipe(catchError(err => {
+      console.log(err);
+      this.Logout();
+      return of(null as any);
+    }));
   }
 
   public Logout (): void
