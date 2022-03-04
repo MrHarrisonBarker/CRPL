@@ -61,6 +61,6 @@
       <input type="checkbox" clrCheckbox name="ula" required value="ula" formControlName="AcceptedUla"/> <label>accept ula</label>
     </clr-checkbox-wrapper>
 
-    <button class="btn btn-primary" [disabled]="RegistrationForm.invalid" (click)="Submit()">Submit</button>
+    <button class="btn btn-primary" [disabled]="RegistrationForm.invalid || Locked" (click)="Submit()">Submit</button>
   </form>
 </div>

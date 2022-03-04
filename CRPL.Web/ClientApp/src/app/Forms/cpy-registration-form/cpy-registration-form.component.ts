@@ -8,8 +8,8 @@ import {CopyrightRegistrationInputModel} from "../../_Models/Applications/Copyri
 import {ValidatorsService} from "../../_Services/validators.service";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
-import {debounceTime, distinctUntilChanged, map, switchMap, takeUntil, tap} from "rxjs/operators";
-import {Observable, of, Subject} from "rxjs";
+import {debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil, tap} from "rxjs/operators";
+import {Observable, Subject} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
 import {Router} from '@angular/router';
 
@@ -28,27 +28,28 @@ interface ProtectionsMeta
 export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 {
   private unsubscribe = new Subject<void>();
+  public Locked: boolean = false;
 
   @Input() ExistingApplication!: ApplicationViewModel | CopyrightRegistrationViewModel;
 
   public RegistrationForm: FormGroup;
 
   public Protections: ProtectionsMeta[] = [
-    {Name: "Authorship",ReadableName: "Authorship", Description: "The eternal right to original authorship."},
-    {Name: "CommercialAdaptation",ReadableName: "Commercial adaptation", Description: ""},
-    {Name: "NonCommercialAdaptation",ReadableName: "Non-Commercial adaptation", Description: ""},
-    {Name: "ReviewOrCrit",ReadableName: "Review or critique", Description: ""},
-    {Name: "CommercialPerformance",ReadableName: "Commercial performance", Description: ""},
-    {Name: "NonCommercialPerformance",ReadableName: "Non-Commercial performance", Description: ""},
-    {Name: "CommercialReproduction",ReadableName: "Commercial reproduction", Description: ""},
-    {Name: "NonCommercialReproduction",ReadableName: "Non-Commercial reproduction", Description: ""},
-    {Name: "CommercialDistribution",ReadableName: "Commercial distribution", Description: ""},
-    {Name: "NonCommercialDistribution",ReadableName: "Non-Commercial distribution", Description: ""}
+    {Name: "Authorship", ReadableName: "Authorship", Description: "The eternal right to original authorship."},
+    {Name: "CommercialAdaptation", ReadableName: "Commercial adaptation", Description: ""},
+    {Name: "NonCommercialAdaptation", ReadableName: "Non-Commercial adaptation", Description: ""},
+    {Name: "ReviewOrCrit", ReadableName: "Review or critique", Description: ""},
+    {Name: "CommercialPerformance", ReadableName: "Commercial performance", Description: ""},
+    {Name: "NonCommercialPerformance", ReadableName: "Non-Commercial performance", Description: ""},
+    {Name: "CommercialReproduction", ReadableName: "Commercial reproduction", Description: ""},
+    {Name: "NonCommercialReproduction", ReadableName: "Non-Commercial reproduction", Description: ""},
+    {Name: "CommercialDistribution", ReadableName: "Commercial distribution", Description: ""},
+    {Name: "NonCommercialDistribution", ReadableName: "Non-Commercial distribution", Description: ""}
   ];
 
   public StandardPreset: string[] = [
     "Authorship", "CommercialAdaptation", "NonCommercialAdaptation", "ReviewOrCrit",
-    "CommercialPerformance","NonCommercialPerformance","CommercialReproduction", "NonCommercialReproduction", "CommercialDistribution", "NonCommercialDistribution"];
+    "CommercialPerformance", "NonCommercialPerformance", "CommercialReproduction", "NonCommercialReproduction", "CommercialDistribution", "NonCommercialDistribution"];
   public WorkTypes: string[] = Object.values(WorkType).filter(value => typeof value != 'number') as string[];
 
   constructor (
@@ -191,7 +192,8 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
       Protections: this.RegistrationForm.value.Protections
     }
 
-    return this.formsService.UpdateCopyrightRegistration(inputModel).pipe(tap(crp => {
+    return this.formsService.UpdateCopyrightRegistration(inputModel).pipe(tap(crp =>
+    {
       this.ExistingApplication = crp;
       console.log("updated reg application", crp, this.ExistingApplication);
     }));
@@ -234,23 +236,28 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
   public Submit (): void
   {
-
+    this.Locked = true;
     this.unsubscribe.next();
-    this.save().subscribe(x =>
-    {
-        this.formsService.SubmitCopyrightRegistration(this.ExistingApplication.Id).subscribe(x =>
+    this.save()
+        .pipe(finalize(() => this.Locked = false))
+        .subscribe(x =>
         {
+          this.formsService.SubmitCopyrightRegistration(this.ExistingApplication.Id)
+              .pipe(finalize(() => this.Locked = false))
+              .subscribe(x =>
+              {
 
-          if (this.router.url.includes('/dashboard')) this.host.nativeElement.remove();
-          else this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]);
-        }, error =>
-        {
+                if (this.router.url.includes('/dashboard'))
+                {
+                  this.host.nativeElement.remove();
+                }
+                else
+                {
+                  this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]);
+                }
 
-          this.alertService.Alert({Type: 'danger', Message: error.error});
-        });
-    }, error => {
+              }, error => this.alertService.Alert({Type: 'danger', Message: error.error}));
 
-      this.alertService.Alert({Type: 'danger', Message: error.error});
-    })
+        }, error => this.alertService.Alert({Type: 'danger', Message: error.error}))
   }
 }
