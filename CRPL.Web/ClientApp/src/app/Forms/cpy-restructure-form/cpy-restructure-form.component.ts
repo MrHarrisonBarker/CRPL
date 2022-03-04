@@ -7,7 +7,7 @@ import {AlertService} from "../../_Services/alert.service";
 import {Router} from "@angular/router";
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {OwnershipRestructureInputModel} from "../../_Models/Applications/OwnershipRestructureInputModel";
-import {debounceTime, distinctUntilChanged, switchMap, takeUntil, tap} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil, tap} from "rxjs/operators";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
 import {Observable, Subject} from "rxjs";
 import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
@@ -27,6 +27,7 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
   public NoWork: boolean = false;
 
   private unsubscribe = new Subject<void>();
+  public Locked: boolean = false;
 
   constructor (
     private formBuilder: FormBuilder,
@@ -185,10 +186,23 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
 
   public Submit (): void
   {
-
+    this.Locked = true;
     // stops change detection and auto save
     this.unsubscribe.next();
-    if (this.ExistingApplication?.Id) this.formsService.SubmitOwnershipRestructure(this.ExistingApplication.Id)
-                                          .subscribe(x => this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]));
+    this.save()
+        .pipe(finalize(() => this.Locked = false))
+        .subscribe(x =>
+        {
+          if (this.ExistingApplication?.Id)
+          {
+            this.formsService.SubmitOwnershipRestructure(this.ExistingApplication.Id)
+                .pipe(finalize(() => this.Locked = false))
+                .subscribe(x => this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]),
+                  error => this.alertService.Alert({
+                    Type: 'danger',
+                    Message: 'There was an error submitting a ownership restructure!'
+                  }));
+          }
+        }, err => this.alertService.Alert({Type: 'danger', Message: err.error}));
   }
 }
