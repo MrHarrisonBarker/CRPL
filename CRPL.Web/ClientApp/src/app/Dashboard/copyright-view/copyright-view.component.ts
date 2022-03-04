@@ -4,9 +4,10 @@ import {ApplicationType} from "../../_Models/Applications/ApplicationViewModel";
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
 import {CopyrightService} from "../../_Services/copyright.service";
-import {DownloadFile, syntaxHighlight} from "../../utils";
+import {syntaxHighlight} from "../../utils";
 import {AlertService} from "../../_Services/alert.service";
 import {WorksService} from "../../_Services/works.service";
+import {finalize} from "rxjs/operators";
 
 @Component({
   selector: 'copyright-view [Copyright]',
@@ -20,6 +21,7 @@ export class CopyrightViewComponent implements OnInit
   public RestructureOpen: boolean = false;
 
   private readonly BaseUrl;
+  public Locked: boolean = false;
 
   constructor (
     private copyrightService: CopyrightService,
@@ -86,9 +88,12 @@ export class CopyrightViewComponent implements OnInit
 
   public Sync (): void
   {
-    this.copyrightService.Sync(this.Copyright.Id).subscribe(x => this.alertService.Alert({
+    this.Locked = true;
+    this.copyrightService.Sync(this.Copyright.Id)
+        .pipe(finalize(() => this.Locked = false))
+        .subscribe(x => this.alertService.Alert({
       Type: "info",
       Message: "The work has been synced with the blockchain"
-    }));
+    }), err => this.alertService.Alert({Type: 'danger', Message: 'There was an error syncing with the blockchain!'}));
   }
 }
