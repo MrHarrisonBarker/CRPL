@@ -7,7 +7,7 @@ import {AlertService} from "../../_Services/alert.service";
 import {Router} from "@angular/router";
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {DisputeViewModel, ExpectedRecourse} from "../../_Models/Applications/DisputeViewModel";
-import {debounceTime, distinctUntilChanged, switchMap, takeUntil, tap} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil, tap} from "rxjs/operators";
 import {Observable, Subject} from "rxjs";
 import {DisputeInputModel, DisputeType} from "../../_Models/Applications/DisputeInputModel";
 import {ExternalService} from "../../_Services/external.service";
@@ -28,6 +28,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy
   public DisputeTypes: string[] = Object.values(DisputeType).filter(value => typeof value != 'number') as string[];
   public ExpectedRecourseTypes: string[] = Object.values(ExpectedRecourse).filter(value => typeof value != 'number') as string[];
   public Accepted!: FormControl;
+  public Locked: boolean = false;
 
   constructor (
     private formBuilder: FormBuilder,
@@ -154,8 +155,13 @@ export class DisputeFormComponent implements OnInit, OnDestroy
 
   public Submit (): void
   {
+    this.Locked = true;
     this.unsubscribe.next();
-    if (this.ExistingApplication?.Id) this.formsService.SubmitDispute(this.ExistingApplication.Id)
-                                          .subscribe(x => this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]));
+    if (this.ExistingApplication?.Id)
+    {
+      this.formsService.SubmitDispute(this.ExistingApplication.Id)
+          .pipe(finalize(() => this.Locked = false))
+          .subscribe(x => this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]));
+    }
   }
 }
