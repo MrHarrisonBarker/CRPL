@@ -11,7 +11,7 @@
                   <input id="copyrightsNav" type="checkbox"/> <label for="copyrightsNav">Copyrights</label>
                   <ul class="nav-list">
                     <li *ngFor="let right of RegisteredCopyrights | async">
-                      <a class="nav-link" [class.active]="right == Selected" (click)="Select(right, false)">
+                      <a class="nav-link" [class.active]="right == Selected" (click)="SelectWork(right)">
                         <span *ngIf="right.Status == 4" style="margin-right:0.2rem">{{right.Meta?.Title}}</span><span class="badge badge-danger" *ngIf="NumberOfOpenDisputes(right) > 0">{{NumberOfOpenDisputes(right)}}</span>
                         <span *ngIf="right.Status == 6"><span style="margin-right:0.2rem">{{right.Title}}</span><copyright-status [status]="6"></copyright-status></span>
                       </a>
@@ -21,7 +21,7 @@
                 <section class="nav-group collapsible">
                   <input id="ApplicationsNav" type="checkbox"/> <label for="ApplicationsNav">Submitted Applications</label>
                   <ul class="nav-list">
-                    <li *ngFor="let application of SubmittedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)">
+                    <li *ngFor="let application of SubmittedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="SelectApplication(application)">
                       <application-type [Application]="application"></application-type>
                     </a></li>
                   </ul>
@@ -29,7 +29,7 @@
                 <section class="nav-group collapsible">
                   <input id="PartialApplicationsNav" type="checkbox"/> <label for="PartialApplicationsNav">Partial Applications</label>
                   <ul class="nav-list">
-                    <li *ngFor="let application of PartialApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="Select(application, true)">
+                    <li *ngFor="let application of PartialApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="SelectApplication(application)">
                       <application-type [Application]="application"></application-type>
                     </a></li>
                   </ul>
@@ -53,13 +53,13 @@
               </section>
             </nav>
             <div class="content-area">
-              <div *ngIf="!Selected" class="centre-align">
+              <div *ngIf="!(SelectedAsync | async)" class="centre-align">
                 <img src="https://i.giphy.com/media/baPIkfAo0Iv5K/giphy.webp"/>
               </div>
-              <div *ngIf="Selected">
-                <copyright-view [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected && SelectedAsCopyright.Status == 4"></copyright-view>
-                <copyright-view-expired [Copyright]="SelectedAsCopyright" *ngIf="!IsApplication && Selected && SelectedAsCopyright.Status == 6"></copyright-view-expired>
-                <applications-view [Application]="SelectedAsApplication" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
+              <div *ngIf="SelectedAsync | async">
+                <copyright-view [Copyright]="SelectedAsyncAsCopyright | async" *ngIf="!IsApplication && (SelectedAsyncAsCopyright | async)?.Status == 4"></copyright-view>
+                <copyright-view-expired [Copyright]="SelectedAsyncAsCopyright | async" *ngIf="!IsApplication && (SelectedAsyncAsCopyright | async)?.Status == 6"></copyright-view-expired>
+                <applications-view [Application]="SelectedAsyncAsApplication | async" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
               </div>
             </div>
           </div>
@@ -103,3 +103,11 @@
 </div>
 
 {{Selected | json}}
+
+<hr/>
+
+{{SelectedAsync | async | json}}
+
+<hr/>
+
+{{SelectedAsyncAsApplication | async | json}}

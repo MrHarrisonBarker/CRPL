@@ -1,4 +1,5 @@
-<div>
+{{Application | json}}
+<div *ngIf="Application">
   <div class="flex-between" *ngIf="Cancelable">
     <div></div>
     <button class="btn btn-danger btn-sm" style="margin-right: 0" (click)="Cancel()" *ngIf="Application.Status < 2" [disabled]="Locked">

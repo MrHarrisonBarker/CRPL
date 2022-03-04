@@ -20,6 +20,7 @@ export class DashboardComponent implements OnInit, OnDestroy
 {
   public Loaded: boolean = false;
   public Selected!: ApplicationViewModel | RegisteredWorkViewModel;
+  public SelectedAsync!: Observable<ApplicationViewModel | RegisteredWorkViewModel>;
   public IsApplication: boolean = false;
 
   public CompletedApplications!: Observable<ApplicationViewModel[]>;
@@ -89,9 +90,42 @@ export class DashboardComponent implements OnInit, OnDestroy
     return (this.Selected as ApplicationViewModel);
   }
 
+  get SelectedAsyncAsApplication (): Observable<ApplicationViewModel>
+  {
+    return this.SelectedAsync as Observable<ApplicationViewModel>;
+  }
+
+  get SelectedAsyncAsCopyright (): Observable<RegisteredWorkViewModel>
+  {
+    return this.SelectedAsync as Observable<RegisteredWorkViewModel>;
+  }
+
+  public SelectWork(selected: RegisteredWorkViewModel): void
+  {
+    this.SelectedAsync = this.warehouse.__MyWorks.pipe(map(x => {
+      console.log("[dashboard] searching for selected", x)
+      let found = x.find(x => x.Id == selected.Id);
+      console.log("[dashboard] found", found);
+      return found;
+    })) as Observable<RegisteredWorkViewModel>;
+    this.IsApplication = false;
+  }
+
+  public SelectApplication(selected: ApplicationViewModel): void
+  {
+    console.log("[dashboard] selected application", selected);
+    this.SelectedAsync = this.warehouse.__MyApplications.pipe(map(x => {
+      console.log("[dashboard] searching for selected", x)
+      let found = x.find(x => x.Id == selected.Id);
+      console.log("[dashboard] found", found);
+      return found;
+    })) as Observable<ApplicationViewModel>;
+    this.IsApplication = true;
+  }
+
   public Select (selected: ApplicationViewModel | RegisteredWorkViewModel, isApplication: boolean): void
   {
-    console.log("selected", selected);
+    console.log("[dashboard] selected", selected);
     this.Selected = selected;
     this.IsApplication = isApplication;
   }

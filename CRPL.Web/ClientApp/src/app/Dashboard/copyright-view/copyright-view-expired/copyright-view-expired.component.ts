@@ -11,7 +11,7 @@ import {AlertService} from "../../../_Services/alert.service";
 export class CopyrightViewExpiredComponent implements OnInit
 {
 
-  @Input() Copyright!: RegisteredWorkViewModel;
+  @Input() Copyright!: RegisteredWorkViewModel | null;
 
   constructor (private copyrightService: CopyrightService, private alertService: AlertService)
   {
@@ -23,9 +23,12 @@ export class CopyrightViewExpiredComponent implements OnInit
 
   public Sync (): void
   {
-    this.copyrightService.Sync(this.Copyright.Id).subscribe(x => this.alertService.Alert({
-      Type: "info",
-      Message: "The work has been synced with the blockchain"
-    }));
+    if (this.Copyright)
+    {
+      this.copyrightService.Sync(this.Copyright.Id).subscribe(x => this.alertService.Alert({
+        Type: "info",
+        Message: "The work has been synced with the blockchain"
+      }));
+    }
   }
 }

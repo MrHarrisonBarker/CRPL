@@ -24,7 +24,8 @@
   </clr-alert>
 </div>
 
-<div id="copyright-card" *ngIf="Copyright">
+<div *ngIf="Copyright">
+<div id="copyright-card">
   <div class="card">
     <div class="card-block">
       <div class="card-title flex-between">
@@ -114,5 +115,5 @@
     <button type="button" class="btn btn-outline" (click)="RestructureOpen = false; CancelRestructure()">Cancel</button>
   </div>
 </clr-modal>
-
+</div>
 <!--{{Copyright | json}}-->

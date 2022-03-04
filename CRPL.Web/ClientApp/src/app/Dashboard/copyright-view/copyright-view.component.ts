@@ -16,7 +16,7 @@ import {finalize} from "rxjs/operators";
 })
 export class CopyrightViewComponent implements OnInit
 {
-  @Input() Copyright!: RegisteredWorkViewModel;
+  @Input() Copyright!: RegisteredWorkViewModel | null;
   @Input() ShowActions: boolean = true;
   public RestructureOpen: boolean = false;
 
@@ -38,7 +38,7 @@ export class CopyrightViewComponent implements OnInit
 
   get IsRestructureAllowed (): boolean
   {
-    if (this.Copyright.AssociatedApplication == null) return false;
+    if (this.Copyright?.AssociatedApplication == null) return false;
 
     let openApplications = this.Copyright.AssociatedApplication.filter(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Incomplete);
     let submittedApplications = this.Copyright.AssociatedApplication.find(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Submitted);
@@ -48,7 +48,7 @@ export class CopyrightViewComponent implements OnInit
 
   get ExistingRestructure (): OwnershipRestructureViewModel
   {
-    if (this.Copyright.AssociatedApplication)
+    if (this.Copyright?.AssociatedApplication)
     {
       return this.Copyright.AssociatedApplication.find(x => x.ApplicationType == ApplicationType.OwnershipRestructure && x.Status == ApplicationStatus.Incomplete) as OwnershipRestructureViewModel;
     }
@@ -62,7 +62,7 @@ export class CopyrightViewComponent implements OnInit
 
   public BindRestructure (): void
   {
-    if (this.Copyright.RightId) this.copyrightService.BindProposalWork({
+    if (this.Copyright?.RightId) this.copyrightService.BindProposalWork({
       WorkId: this.Copyright.Id,
       Accepted: true
     }).subscribe();
@@ -70,7 +70,7 @@ export class CopyrightViewComponent implements OnInit
 
   public RejectRestructure (): void
   {
-    if (this.Copyright.RightId) this.copyrightService.BindProposalWork({
+    if (this.Copyright?.RightId) this.copyrightService.BindProposalWork({
       WorkId: this.Copyright.Id,
       Accepted: false
     }).subscribe();
@@ -78,22 +78,28 @@ export class CopyrightViewComponent implements OnInit
 
   get Meta ()
   {
-    return syntaxHighlight(JSON.stringify(this.Copyright.Meta, undefined, 4));
+    return syntaxHighlight(JSON.stringify(this.Copyright?.Meta, undefined, 4));
   }
 
   get ProxyLink (): string
   {
-    return this.BaseUrl + 'proxy/cpy/' + this.Copyright.Id;
+    return this.BaseUrl + 'proxy/cpy/' + this.Copyright?.Id;
   }
 
   public Sync (): void
   {
     this.Locked = true;
-    this.copyrightService.Sync(this.Copyright.Id)
-        .pipe(finalize(() => this.Locked = false))
-        .subscribe(x => this.alertService.Alert({
-      Type: "info",
-      Message: "The work has been synced with the blockchain"
-    }), err => this.alertService.Alert({Type: 'danger', Message: 'There was an error syncing with the blockchain!'}));
+    if (this.Copyright)
+    {
+      this.copyrightService.Sync(this.Copyright?.Id)
+          .pipe(finalize(() => this.Locked = false))
+          .subscribe(x => this.alertService.Alert({
+            Type: "info",
+            Message: "The work has been synced with the blockchain"
+          }), err => this.alertService.Alert({
+            Type: 'danger',
+            Message: 'There was an error syncing with the blockchain!'
+          }));
+    }
   }
 }

@@ -17,7 +17,7 @@ import {finalize} from "rxjs/operators";
 })
 export class ApplicationsViewComponent implements OnInit
 {
-  @Input() Application!: ApplicationViewModel;
+  @Input() Application!: ApplicationViewModel | null;
   @Input() ShowForms: boolean = false;
   @Input() Cancelable: boolean = true;
   public Locked: boolean = false;
@@ -55,23 +55,25 @@ export class ApplicationsViewComponent implements OnInit
 
   get ExistingWork (): RegisteredWorkViewModel
   {
-    return <RegisteredWorkViewModel>this.warehouse.MyWorks.find(x => x.Id == this.Application.AssociatedWork?.Id);
+    return <RegisteredWorkViewModel>this.warehouse.MyWorks.find(x => x.Id == this.Application?.AssociatedWork?.Id);
   }
 
   public Cancel (): void
   {
     this.Locked = true;
-    this.formsService.Cancel(this.Application.Id)
-        .pipe(finalize(() => this.Locked = false))
-        .subscribe(x =>
-        {
-          this.alertService.Alert({Type: 'success', Message: 'Canceled application'});
-          this.Application = null as any;
-          this.alertService.TriggerChange.emit();
-        }, error => this.alertService.Alert({
-          Type: 'danger',
-          Message: 'There was a problem when canceling this application'
-        }));
-
+    if (this.Application)
+    {
+      this.formsService.Cancel(this.Application?.Id)
+          .pipe(finalize(() => this.Locked = false))
+          .subscribe(x =>
+          {
+            this.alertService.Alert({Type: 'success', Message: 'Canceled application'});
+            this.Application = null as any;
+            this.alertService.TriggerChange.emit();
+          }, error => this.alertService.Alert({
+            Type: 'danger',
+            Message: 'There was a problem when canceling this application'
+          }));
+    }
   }
 }
