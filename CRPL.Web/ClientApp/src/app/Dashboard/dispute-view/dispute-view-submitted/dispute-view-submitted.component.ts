@@ -6,6 +6,7 @@ import {BehaviorSubject} from "rxjs";
 import {FormsService} from "../../../_Services/forms.service";
 import Web3 from "web3";
 import {AlertService} from "../../../_Services/alert.service";
+import {finalize} from "rxjs/operators";
 
 @Component({
   selector: 'dispute-view-submitted [Application]',
@@ -16,7 +17,7 @@ export class DisputeViewSubmittedComponent implements OnInit
 {
   @Input() Application!: DisputeViewModel;
   public Owner: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  ProcessingTransaction: boolean = false;
+  public Locked: boolean = false;
 
   constructor (public warehouse: WarehouseService, private formsService: FormsService, private alertService: AlertService)
   {
@@ -41,17 +42,20 @@ export class DisputeViewSubmittedComponent implements OnInit
     return DisputeType[this.Application.DisputeType];
   }
 
-  public Refuse () : void
+  public Refuse (): void
   {
+    this.Locked = true;
     this.formsService.ResolveDispute({
       Accept: false,
       DisputeId: this.Application.Id,
       Message: "refused dispute recourse"
-    }).subscribe(x =>
-    {
-      this.Application.Status = x.Status;
-      this.Application.ResolveResult.ResolvedStatus = x.ResolveResult.ResolvedStatus;
-    });
+    })
+        .pipe(finalize(() => this.Locked = false))
+        .subscribe(x =>
+        {
+          this.Application.Status = x.Status;
+          this.Application.ResolveResult.ResolvedStatus = x.ResolveResult.ResolvedStatus;
+        });
   }
 
   public Accept (): void
@@ -60,17 +64,20 @@ export class DisputeViewSubmittedComponent implements OnInit
       Accept: true,
       DisputeId: this.Application.Id,
       Message: "accepted dispute recourse"
-    }).subscribe(x => {
-      this.Application.Status = x.Status;
-      this.Application.ResolveResult.ResolvedStatus = x.ResolveResult.ResolvedStatus;
-    });
+    })
+        .pipe(finalize(() => this.Locked = false))
+        .subscribe(x =>
+        {
+          this.Application.Status = x.Status;
+          this.Application.ResolveResult.ResolvedStatus = x.ResolveResult.ResolvedStatus;
+        });
   }
 
   private Ethereum = (window as any).ethereum;
 
   public StartPayment (): void
   {
-    this.ProcessingTransaction = true;
+    this.Locked = true;
     let web3 = new Web3(Web3.givenProvider);
 
     this.Ethereum.request({
@@ -80,12 +87,16 @@ export class DisputeViewSubmittedComponent implements OnInit
         from: this.Ethereum.selectedAddress,
         value: web3.utils.toWei(this.Application.ExpectedRecourseData, "ether")
       }]
-    }).then((transaction: string) => {
-      this.formsService.RecordPayment(this.Application.Id, transaction).subscribe(x => {
-        console.log(x);
-        this.alertService.Alert({Type:'success', Message: 'Recorded payment'});
-        this.ProcessingTransaction = false;
-      })
+    }).then((transaction: string) =>
+    {
+      this.formsService.RecordPayment(this.Application.Id, transaction)
+          .pipe(finalize(() => this.Locked = false))
+          .subscribe(x =>
+          {
+            console.log(x);
+            this.alertService.Alert({Type: 'success', Message: 'Recorded payment'});
+            this.Locked = false;
+          })
     });
   }
 }
