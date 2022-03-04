@@ -82,4 +82,19 @@ public class ResonanceService : IResonanceService
         
         Logger.LogInformation("{Connection} is now listening to application {Id}", connectionId, applicationId);
     }
+
+    public void RemoveConnection(string connectionId)
+    {
+        if (WorkToConnection.Values.Any(x => x.Contains(connectionId)))
+        {
+            var instances = WorkToConnection.Where(x => x.Value.Contains(connectionId)).ToList();
+            instances.ForEach(x => WorkToConnection[x.Key].Remove(connectionId));
+        }
+
+        if (ApplicationToConnection.Values.Any(x => x.Contains(connectionId)))
+        {
+            var instances = ApplicationToConnection.Where(x => x.Value.Contains(connectionId)).ToList();
+            instances.ForEach(x => ApplicationToConnection[x.Key].Remove(connectionId));
+        }
+    }
 }

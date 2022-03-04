@@ -12,4 +12,6 @@ public interface IResonanceService
 
     public void ListenToWork(Guid workId, string connectionId);
     public void ListenToApplication(Guid applicationId, string connectionId);
+
+    public void RemoveConnection(string connectionId);
 }

@@ -43,6 +43,7 @@ public class WorksHub : Hub<IWorksHub>
     public override Task OnDisconnectedAsync(Exception? exception)
     {
         Logger.LogInformation("A client has disconnected {connection}", Context.ConnectionId);
+        ResonanceService.RemoveConnection(Context.ConnectionId);
         return base.OnDisconnectedAsync(exception);
     }
 }
