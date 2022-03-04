@@ -5,9 +5,15 @@ const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_H
 
 const PROXY_CONFIG = [
   {
-    context: ["/user", "/q", "/works", "/forms", "/copyright", "/proxy"],
+    context: ["/user", "/q", "/works", "/forms", "/copyright", "/proxy", "/hubs"],
     target: target,
     secure: false
+  },
+  {
+    context: '/hubs',
+    secure: false,
+    target: target,
+    ws: true
   }
 ]
 

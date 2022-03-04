@@ -2,6 +2,7 @@ using System.Text;
 using CRPL.Data;
 using CRPL.Web;
 using CRPL.Web.Core;
+using CRPL.Web.Hubs;
 using CRPL.Web.StartUp;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -57,6 +58,8 @@ builder.Services.AddAuthentication(x =>
         };
     });
 
+builder.Services.AddSignalR();
+
 builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
     {
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -94,6 +97,9 @@ app.UseSwagger();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
+
+app.MapHub<ApplicationsHub>("/hubs/applications");
+app.MapHub<WorksHub>("/hubs/works");
 
 app.MapFallbackToFile("index.html");
 

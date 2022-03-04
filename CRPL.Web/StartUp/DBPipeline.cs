@@ -8,6 +8,7 @@ using CRPL.Data.ContractDeployment;
 using CRPL.Data.Seed;
 using CRPL.Data.StructuredOwnership;
 using CRPL.Data.Works;
+using CRPL.Web.Core;
 using CRPL.Web.Services.Background;
 using CRPL.Web.Services.Background.SlientExpiry;
 using CRPL.Web.Services.Background.Usage;
@@ -123,6 +124,7 @@ public class UseWakeServices
         app.Services.GetService<IEventQueue>();
         app.Services.GetService<IVerificationQueue>();
         app.Services.GetService<IUsageQueue>();
+        app.Services.GetService<IResonanceService>();
     }
 }
 
@@ -146,6 +148,7 @@ public class DbPipelineBuilder
         services.AddSingleton<IVerificationQueue, VerificationQueue>();
         services.AddSingleton<IExpiryQueue, ExpiryQueue>();
         services.AddSingleton<IUsageQueue, UsageQueue>();
+        services.AddSingleton<IResonanceService, ResonanceService>();
 
         services.Configure<FormOptions>(o =>
         {
