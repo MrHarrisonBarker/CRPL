@@ -45,6 +45,17 @@
           <p class="card-text"><b>registered:</b> {{Copyright?.Registered | date:'medium'}}</p>
         </div>
 
+        <div style="display: flex; flex-direction: column">
+          <div class="flex-between">
+            <p class="card-text" style="margin-right: 0.5rem"><b>last proxy use:</b> {{Copyright.LastProxyUse | date:'medium'}}</p>
+            <p class="card-text"><b>usage:</b> {{Copyright?.TimesProxyUsed}}</p>
+          </div>
+          <div class="flex-between">
+            <p class="card-text" style="margin-right: 0.5rem"><b>last ping:</b> {{Copyright.LastPing | date:'medium'}}</p>
+            <p class="card-text"><b>usage:</b> {{Copyright?. TimesPinged}}</p>
+          </div>
+        </div>
+
         <clr-alert clrAlertType="info" [clrAlertClosable]="false" *ngIf="ShowActions">
           <clr-alert-item>
           <span class="alert-text">

@@ -47,4 +47,10 @@ export interface RegisteredWorkViewModel
   Meta?: CopyrightMeta,
   VerificationResult?: VerificationResult;
   Title?: string;
+
+  TimesProxyUsed: number;
+  LastProxyUse?: Date;
+
+  TimesPinged: number;
+  LastPing?: Date;
 }
