@@ -7,7 +7,7 @@ import {UserService} from "../../_Services/user.service";
 import {AccountInputModel} from "../../_Models/Account/AccountInputModel";
 import {AuthService} from "../../_Services/auth.service";
 import {Router} from "@angular/router";
-import {debounceTime, distinctUntilChanged, switchMap, takeUntil} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil} from "rxjs/operators";
 import {ValidatorsService} from "../../_Services/validators.service";
 import {AlertService} from "../../_Services/alert.service";
 import {Observable, Subject} from "rxjs";
@@ -29,6 +29,7 @@ export class InfoWizardComponent implements OnInit
 
   public FirstPageErrMessage: string = "";
   private unsubscribe = new Subject<void>();
+  public Locked: boolean = false;
 
   constructor (
     private userService: UserService,
@@ -142,8 +143,9 @@ export class InfoWizardComponent implements OnInit
 
   public Finished (): void
   {
+    this.Locked = true;
     this.unsubscribe.next();
-    this.save().subscribe();
+    this.save().pipe(finalize(() => this.Locked = false)).subscribe();
     this.router.navigate(['/dashboard']);
   }
 

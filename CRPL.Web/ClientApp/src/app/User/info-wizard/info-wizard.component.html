@@ -1,10 +1,10 @@
 <clr-wizard #wizard [clrWizardOpen]="open" (clrWizardOpenChange)="Closed()" (clrWizardOnFinish)="Finished()" [clrWizardPreventDefaultNext]="false">
   <clr-wizard-title>Account Info</clr-wizard-title>
 
-  <clr-wizard-button [type]="'cancel'">Cancel</clr-wizard-button>
-  <clr-wizard-button [type]="'previous'">Back</clr-wizard-button>
-  <clr-wizard-button [type]="'next'">Next</clr-wizard-button>
-  <clr-wizard-button [type]="'finish'" (click)="WizardFinished()">Done</clr-wizard-button>
+  <clr-wizard-button [type]="'cancel'" [clrWizardButtonDisabled]="Locked">Cancel</clr-wizard-button>
+  <clr-wizard-button [type]="'previous'" [clrWizardButtonDisabled]="Locked">Back</clr-wizard-button>
+  <clr-wizard-button [type]="'next'" [clrWizardButtonDisabled]="Locked">Next</clr-wizard-button>
+  <clr-wizard-button [type]="'finish'" (click)="WizardFinished()" [clrWizardButtonDisabled]="Locked">Done</clr-wizard-button>
 
   <clr-wizard-page #pageOne [clrWizardPageNextDisabled]="!FirstPageForm.valid">
     <ng-template clrPageTitle>Basic Information</ng-template>
