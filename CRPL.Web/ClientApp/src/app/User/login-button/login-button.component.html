@@ -6,13 +6,13 @@
   <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
     <label class="dropdown-header" aria-hidden="true">Account</label>
     <div aria-label="Account Preferences" clrDropdownItem (click)="NavigateToSettings()">Settings</div>
-    <div aria-label="Logout" clrDropdownItem (click)="Logout()">Logout</div>
+    <div aria-label="Logout" clrDropdownItem (click)="Logout()" [disabled]="Locked">Logout</div>
     <div class="dropdown-divider" role="separator" aria-hidden="true"></div>
     <label aria-label="Dashboard" clrDropdownItem [routerLink]="['/dashboard']">Dashboard</label>
   </clr-dropdown-menu>
 </clr-dropdown>
 
-<button class="btn btn-primary" (click)="Login()" [disabled]="!HasMetaMask" *ngIf="!authService.IsAuthenticated.getValue()">
+<button class="btn btn-primary" (click)="Login()" [disabled]="!HasMetaMask || Locked" *ngIf="!authService.IsAuthenticated.getValue()">
   <div>
     <span *ngIf="!HasMetaMask">Install MetaMask To Login</span> <span *ngIf="HasMetaMask">Login with MetaMask</span> <img src="assets/meta-mask.svg" alt="MetaMask">
   </div>

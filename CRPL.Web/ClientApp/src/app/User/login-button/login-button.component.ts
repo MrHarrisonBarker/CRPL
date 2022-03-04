@@ -13,6 +13,7 @@ import {angleIcon, ClarityIcons, userIcon} from "@cds/core/icon";
 export class LoginButtonComponent implements OnInit
 {
   public HasMetaMask: boolean = false;
+  public Locked: boolean = false;
 
   constructor (
     public authService: AuthService,
@@ -36,22 +37,32 @@ export class LoginButtonComponent implements OnInit
       return;
     }
 
+    this.Locked = true;
+
     this.authService.LoginWithMetaMask().subscribe(res =>
-    {
-      if (res.Account)
       {
-        this.alertService.Alert({Message: "Successfully logged in!", Type: "success"});
-        if (this.authService.UserAccount.getValue().Status == AccountStatus.Created || this.authService.UserAccount.getValue().Status == AccountStatus.Incomplete){
-          this.router.navigate(['/u/info']);
+        if (res.Account)
+        {
+          this.alertService.Alert({Message: "Successfully logged in!", Type: "success"});
+          if (this.authService.UserAccount.getValue().Status == AccountStatus.Created || this.authService.UserAccount.getValue().Status == AccountStatus.Incomplete)
+          {
+            this.router.navigate(['/u/info']);
+          }
         }
-      }
-      if (!res.Account) this.alertService.Alert({Message: res.Log, Type: "danger"});
-    }, error => this.alertService.Alert({Message: error.error, Type: "danger"}), () => this.alertService.StopLoading());
+        if (!res.Account) this.alertService.Alert({Message: res.Log, Type: "danger"});
+      }, error => this.alertService.Alert({Message: error.error, Type: "danger"})
+      , () =>
+      {
+        this.alertService.StopLoading();
+        this.Locked = false;
+      });
   }
 
   public Logout (): void
   {
+    this.Locked = true;
     this.authService.Logout();
+    this.Locked = false;
   }
 
   public NavigateToSettings (): void
