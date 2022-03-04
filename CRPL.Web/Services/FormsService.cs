@@ -5,6 +5,7 @@ using CRPL.Data.Applications;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
+using CRPL.Web.Core;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -19,19 +20,22 @@ public class FormsService : IFormsService
     private readonly IMapper Mapper;
     private readonly IOptions<AppSettings> Options;
     private readonly IServiceProvider ServiceProvider;
+    private readonly IResonanceService ResonanceService;
 
     public FormsService(
         ILogger<FormsService> logger,
         ApplicationContext context,
         IMapper mapper,
         IOptions<AppSettings> options,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IResonanceService resonanceService)
     {
         Logger = logger;
         Context = context;
         Mapper = mapper;
         Options = options;
         ServiceProvider = serviceProvider;
+        ResonanceService = resonanceService;
     }
 
     public async Task<ApplicationViewModel> GetApplication(Guid id)
@@ -99,6 +103,8 @@ public class FormsService : IFormsService
         application.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();
+
+        await ResonanceService.PushApplicationUpdates(application);
 
         return (T)application.Map(Mapper);
     }

@@ -17,6 +17,9 @@ export class ResonanceService
   private ListenedWorks: string[] = [];
   private ListenedApplications: string[] = [];
 
+  private ApplicationsToListen: string[] = [];
+  private WorksToListen: string[] = [];
+
   constructor (@Inject('BASE_URL') baseUrl: string, private warehouseService: WarehouseService)
   {
     this.BaseUrl = baseUrl;
@@ -34,7 +37,7 @@ export class ResonanceService
 
     this.warehouseService.__MyWorks.subscribe(works =>
     {
-      console.log("The works in the warehouse have been updated");
+      console.log("[resonance-service] The works in the warehouse have been updated");
       for (let work of works)
       {
         if (!this.ListenedWorks.includes(work.Id)) this.ListenToWork(work.Id);
@@ -43,10 +46,15 @@ export class ResonanceService
 
     this.warehouseService.__MyApplications.subscribe(applications =>
     {
-      console.log("The applications in the warehouse have been updated");
+      console.log("[resonance-service] The applications in the warehouse have been updated", applications, this.ListenedApplications);
       for (let application of applications)
       {
-        if (!this.ListenedApplications.includes(application.Id)) this.ListenToApplication(application.Id);
+        console.log("[resonance-service] checking if application is listened", application);
+        if (!this.ListenedApplications.includes(application.Id))
+        {
+          console.log("[resonance-service] the application is not being listened too");
+          this.ListenToApplication(application.Id);
+        }
       }
     });
   }
@@ -57,7 +65,13 @@ export class ResonanceService
 
     this.ApplicationsConnection.start().then(() =>
     {
-      console.log("Connected to APPLICATIONS websocket");
+      console.log("[resonance-service] Connected to APPLICATIONS websocket");
+
+      for (let application of this.ApplicationsToListen)
+      {
+        this.ListenToApplication(application);
+      }
+      this.ApplicationsToListen = [];
 
       this.ApplicationsConnection.on("PushApplication", (data: ApplicationViewModel) => this.warehouseService.UpdateApplication(data));
 
@@ -68,7 +82,13 @@ export class ResonanceService
 
     this.WorksConnection.start().then(() =>
     {
-      console.log("Connected to WORKS websocket");
+      console.log("[resonance-service] Connected to WORKS websocket");
+
+      for (let work of this.WorksToListen)
+      {
+        this.ListenToWork(work);
+      }
+      this.WorksToListen = [];
 
       this.ApplicationsConnection.on("PushWork", (data: RegisteredWorkViewModel) => this.warehouseService.UpdateWork(data));
 
@@ -80,19 +100,39 @@ export class ResonanceService
 
   public ListenToApplication (id: string)
   {
-    console.log("Listening to " + id);
+    console.log("[resonance-service] Trying to listen for application " + id);
+
+    if (this.ApplicationsConnection.state != HubConnectionState.Connected) {
+      console.log("[resonance-service] The hub is still connecting will listen later to " + id);
+      this.ApplicationsToListen.push(id);
+    }
+
     if (this.ApplicationsConnection.state == HubConnectionState.Connected)
     {
-      this.ApplicationsConnection.invoke("ListenToApplication", id).then(value => console.log(`the client is now listening to the application ${id}`));
+      this.ApplicationsConnection.invoke("ListenToApplication", id).then(value =>
+      {
+        console.log(`[resonance-service] the client is now listening to the application ${id}`);
+        this.ListenedApplications.push(id);
+      });
     }
   }
 
   public ListenToWork (id: string)
   {
-    console.log("Listening to " + id);
+    console.log("[resonance-service] Trying to listen for work " + id);
+
+    if (this.WorksConnection.state != HubConnectionState.Connected) {
+      console.log("[resonance-service] The hub is still connecting will listen later to " + id);
+      this.WorksToListen.push(id);
+    }
+
     if (this.WorksConnection.state == HubConnectionState.Connected)
     {
-      this.WorksConnection.invoke("ListenToWork", id).then(value => console.log(`the client is now listening to the work ${id}`));
+      this.WorksConnection.invoke("ListenToWork", id).then(value =>
+      {
+        console.log(`[resonance-service] the client is now listening to the work ${id}`);
+        this.ListenedWorks.push(id);
+      });
     }
   }
 }

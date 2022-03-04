@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApplicationViewModel} from "../_Models/Applications/ApplicationViewModel";
 import {RegisteredWorkViewModel} from "../_Models/Works/RegisteredWork";
-import {Subject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
 
 @Injectable({
@@ -21,7 +21,7 @@ export class WarehouseService
     this.__MyWorks.next(value);
   }
 
-  set MyApplications (value: ApplicationViewModel[])
+  public SetMyApplications (value: ApplicationViewModel[])
   {
     this.__MyApplications.next(value);
   }
@@ -33,7 +33,7 @@ export class WarehouseService
 
   public UpdateWork (value: RegisteredWorkViewModel)
   {
-
+    console.log("[warehouse] updating work", value.Id);
   }
 
   public UpdateDispute (value: DisputeViewModel)
@@ -52,6 +52,7 @@ export class WarehouseService
 
   public UpdateApplication (value: ApplicationViewModel)
   {
+    console.log("[warehouse] updating application", value.Id);
     let index = this._MyApplications.findIndex(x => x.Id == value.Id);
     if (index == -1)
     {
@@ -73,9 +74,11 @@ export class WarehouseService
   public _MyWorks: RegisteredWorkViewModel[] = [];
   public _MyDisputed: DisputeViewModel[] = [];
 
-  public __MyApplications: Subject<ApplicationViewModel[]> = new Subject<ApplicationViewModel[]>();
-  public __MyWorks: Subject<RegisteredWorkViewModel[]> = new Subject<RegisteredWorkViewModel[]>();
+  public __MyApplications: BehaviorSubject<ApplicationViewModel[]> = new BehaviorSubject<ApplicationViewModel[]>(this._MyApplications);
+  public __MyWorks: BehaviorSubject<RegisteredWorkViewModel[]> = new BehaviorSubject<RegisteredWorkViewModel[]>(this._MyWorks);
   public __MyDisputed: Subject<DisputeViewModel[]> = new Subject<DisputeViewModel[]>();
+
+  // public MyApplications: Observable<ApplicationViewModel[]> = this.__MyApplications.asObservable().pipe(startWith(this._MyApplications));
 
   constructor ()
   {

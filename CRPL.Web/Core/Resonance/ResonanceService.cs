@@ -27,6 +27,7 @@ public class ResonanceService : IResonanceService
 
     public Task PushWorkUpdates(Guid id)
     {
+        Logger.LogInformation("Pushing work updates");
         throw new NotImplementedException();
     }
 
@@ -42,6 +43,8 @@ public class ResonanceService : IResonanceService
 
     public async Task PushApplicationUpdates(Application application)
     {
+        Logger.LogInformation("Pushing application updates");
+        
         using var scope = ServiceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<IHubContext<ApplicationsHub, IApplicationsHub>>();
 

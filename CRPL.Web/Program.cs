@@ -58,7 +58,11 @@ builder.Services.AddAuthentication(x =>
         };
     });
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR().AddJsonProtocol(options =>
+{
+    options.PayloadSerializerOptions.PropertyNameCaseInsensitive = true;
+    options.PayloadSerializerOptions.PropertyNamingPolicy = null;
+});;
 
 builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
     {
