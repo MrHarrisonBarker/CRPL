@@ -4,6 +4,7 @@ import {ClrTimelineLayout, ClrTimelineStepState} from "@clr/angular";
 import {CopyrightService} from "../../../_Services/copyright.service";
 import {AlertService} from "../../../_Services/alert.service";
 import {RegisteredWorkStatus} from "../../../_Models/Works/RegisteredWork";
+import {finalize} from "rxjs/operators";
 
 @Component({
   selector: 'cpy-registration-view-submitted [Application]',
@@ -18,6 +19,7 @@ export class SubmittedViewComponent implements OnInit
   public timelineNot: ClrTimelineStepState = ClrTimelineStepState.NOT_STARTED;
   public vertical: ClrTimelineLayout = ClrTimelineLayout.VERTICAL;
   public timelineCurrent: ClrTimelineStepState = ClrTimelineStepState.CURRENT;
+  public Locked: boolean = false;
 
   constructor (private copyrightService: CopyrightService, private alertService: AlertService)
   {
@@ -29,10 +31,13 @@ export class SubmittedViewComponent implements OnInit
 
   public Complete (): void
   {
-    this.copyrightService.Complete(this.Application.Id).subscribe(x =>
-    {
-      this.alertService.Alert({Type: "info", Message: "Register transaction sent to the blockchain"});
-      if (this.Application.AssociatedWork) this.Application.AssociatedWork.Status = RegisteredWorkStatus.SentToChain;
-    });
+    this.Locked = true;
+    this.copyrightService.Complete(this.Application.Id)
+        .pipe(finalize(() => this.Locked = false))
+        .subscribe(x =>
+        {
+          this.alertService.Alert({Type: "info", Message: "Register transaction sent to the blockchain"});
+          if (this.Application.AssociatedWork) this.Application.AssociatedWork.Status = RegisteredWorkStatus.SentToChain;
+        }, error => this.alertService.Alert({Type: 'danger', Message: 'There was an error sending transaction'}));
   }
 }

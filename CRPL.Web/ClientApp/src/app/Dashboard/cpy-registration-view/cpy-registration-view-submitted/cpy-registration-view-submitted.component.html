@@ -28,7 +28,7 @@
     <span class="alert-text">
       <div class="flex-between">
         <span>The work uploaded has been verified and is ready to be sent to the blockchain</span>
-        <button style="margin:0" class="btn btn-sm btn-primary-outline" (click)="Complete()">Send to the chain</button>
+        <button style="margin:0" class="btn btn-sm btn-primary-outline" (click)="Complete()" [disabled]="Locked">Send to the chain</button>
       </div>
     </span>
   </clr-alert-item>
