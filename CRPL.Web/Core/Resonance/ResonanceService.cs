@@ -13,8 +13,8 @@ public class ResonanceService : IResonanceService
     private readonly IMapper Mapper;
     private readonly IServiceProvider ServiceProvider;
 
-    private Dictionary<Guid, List<string>> WorkToConnection;
-    private Dictionary<Guid, List<string>> ApplicationToConnection;
+    private readonly Dictionary<Guid, List<string>> WorkToConnection;
+    private readonly Dictionary<Guid, List<string>> ApplicationToConnection;
 
     public ResonanceService(ILogger<ResonanceService> logger, IMapper mapper, IServiceProvider serviceProvider)
     {
@@ -55,15 +55,24 @@ public class ResonanceService : IResonanceService
 
     public void ListenToWork(Guid workId, string connectionId)
     {
+        if (!WorkToConnection.ContainsKey(workId))
+        {
+            Logger.LogInformation("Work {Id} was not in the listen table", workId);
+            WorkToConnection.Add(workId, new List<string> { connectionId });
+        }
+        else
+        {
+            WorkToConnection[workId].Add(connectionId);   
+        }
+
         Logger.LogInformation("{Connection} is now listening to work {Id}", connectionId, workId);
-        WorkToConnection[workId].Add(connectionId);
     }
 
     public void ListenToApplication(Guid applicationId, string connectionId)
     {
         if (!ApplicationToConnection.ContainsKey(applicationId))
         {
-            Logger.LogInformation("Application was not in the listen table");
+            Logger.LogInformation("Application {Id} was not in the listen table", applicationId);
             ApplicationToConnection.Add(applicationId, new List<string> { connectionId });
         }
         else
