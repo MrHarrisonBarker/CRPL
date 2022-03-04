@@ -27,6 +27,7 @@
     "@clr/angular": "^12.0.11",
     "@clr/icons": "^12.0.11",
     "@clr/ui": "^12.0.11",
+    "@microsoft/signalr": "^6.0.2",
     "@types/country-telephone-data": "^0.6.1",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "angular2-prettyjson": "^3.0.1",

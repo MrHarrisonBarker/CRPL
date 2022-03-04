@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {ResonanceService} from "./_Services/resonance.service";
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,8 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'app';
+  constructor (private resonanceService: ResonanceService)
+  {
+    resonanceService.ConnectSockets();
+  }
 }
