@@ -3,6 +3,7 @@ import {OwnershipRestructureViewModel} from "../../../_Models/Applications/Owner
 import {CopyrightService} from "../../../_Services/copyright.service";
 import {AlertService} from "../../../_Services/alert.service";
 import {FormsService} from "../../../_Services/forms.service";
+import {finalize} from "rxjs/operators";
 
 @Component({
   selector: 'cpy-restructure-view-submitted [Application]',
@@ -11,8 +12,8 @@ import {FormsService} from "../../../_Services/forms.service";
 })
 export class CpyRestructureViewSubmittedComponent implements OnInit
 {
-
   @Input() Application!: OwnershipRestructureViewModel;
+  public Locked: boolean = false;
 
   constructor (
     private copyrightService: CopyrightService,
@@ -35,20 +36,13 @@ export class CpyRestructureViewSubmittedComponent implements OnInit
     this.send(false);
   }
 
-  private send(accepted: boolean) : void
+  private send (accepted: boolean): void
   {
-
-    this.copyrightService.BindProposal({
-      ApplicationId: this.Application.Id,
-      Accepted: accepted
-    }).subscribe(x =>
-    {
-      this.alertService.Alert({Type: 'success', Message: 'Sent transaction'})
-
-    }, error =>
-    {
-      this.alertService.Alert({Type: 'danger', Message: error.error});
-
-    });
+    this.Locked = true;
+    this.copyrightService.BindProposal({ApplicationId: this.Application.Id, Accepted: accepted})
+        .pipe(finalize(() => this.Locked = false))
+        .subscribe(x => this.alertService.Alert({Type: 'success', Message: 'Sent transaction'}),
+          error => this.alertService.Alert({Type: 'danger', Message: error.error})
+        );
   }
 }

@@ -13,8 +13,8 @@
 <div class="flex-between" *ngIf="Application.BindStatus == 1">
   <div></div>
   <div>
-    <button class="btn btn-sm" (click)="Reject()">Reject proposal</button>
-    <button class="btn btn-sm" (click)="Bind()">Bind proposal</button>
+    <button class="btn btn-sm" (click)="Reject()" [disabled]="Locked">Reject proposal</button>
+    <button class="btn btn-sm" (click)="Bind()" [disabled]="Locked">Bind proposal</button>
   </div>
 </div>
 
