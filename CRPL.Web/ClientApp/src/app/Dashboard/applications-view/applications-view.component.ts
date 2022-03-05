@@ -1,56 +1,43 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
-import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
-import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
 import {WarehouseService} from "../../_Services/warehouse.service";
 import {AlertService} from "../../_Services/alert.service";
 import {FormsService} from "../../_Services/forms.service";
 import {ClarityIcons, trashIcon} from "@cds/core/icon";
-import {DisputeViewModel} from "../../_Models/Applications/DisputeViewModel";
 import {finalize} from "rxjs/operators";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
-  selector: 'applications-view [Application] [ShowForms]',
+  selector: 'applications-view [ApplicationAsync] [ShowForms]',
   templateUrl: './applications-view.component.html',
   styleUrls: ['./applications-view.component.css']
 })
-export class ApplicationsViewComponent implements OnInit
+export class ApplicationsViewComponent implements OnInit, OnDestroy, OnChanges
 {
-  @Input() Application!: ApplicationViewModel | null;
+  @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
+  public Application!: ApplicationViewModel | null;
+  private ApplicationSubscription!: Subscription;
+
   @Input() ShowForms: boolean = false;
   @Input() Cancelable: boolean = true;
   public Locked: boolean = false;
 
   constructor (private warehouse: WarehouseService, private alertService: AlertService, private formsService: FormsService)
   {
+    console.log("[applications-view] CONSTRUCT");
+    // this.ApplicationAsync = this.warehouse.__MyApplications.pipe(map(x => x.find(a => a.Id == this.ApplicationId) as ApplicationViewModel));
     ClarityIcons.addIcons(trashIcon);
+  }
+
+  private subscribeToApplication()
+  {
+    this.ApplicationSubscription = this.ApplicationAsync.subscribe(x => this.Application = x);
   }
 
   ngOnInit (): void
   {
-    console.log("Application", this.Application);
-  }
-
-  public PropertyInSelected (prop: string): boolean
-  {
-    if (this.Application) return prop in this.Application;
-    return false;
-  }
-
-  get ApplicationAsCopyrightRegistration (): CopyrightRegistrationViewModel
-  {
-    return (this.Application as CopyrightRegistrationViewModel);
-  }
-
-  get ApplicationAsOwnershipRestructure (): OwnershipRestructureViewModel
-  {
-    return (this.Application as OwnershipRestructureViewModel);
-  }
-
-  get ApplicationAsDispute (): DisputeViewModel
-  {
-    return (this.Application as DisputeViewModel);
+    this.subscribeToApplication();
   }
 
   get ExistingWork (): RegisteredWorkViewModel
@@ -74,6 +61,21 @@ export class ApplicationsViewComponent implements OnInit
             Type: 'danger',
             Message: 'There was a problem when canceling this application'
           }));
+    }
+  }
+
+  public ngOnDestroy (): void
+  {
+    this.ApplicationSubscription.unsubscribe();
+  }
+
+  public ngOnChanges (changes: SimpleChanges): void
+  {
+    if (this.ApplicationSubscription)
+    {
+      console.log("has sub");
+      this.ApplicationSubscription.unsubscribe();
+
     }
   }
 }

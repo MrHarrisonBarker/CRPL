@@ -1,22 +1,49 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {OwnershipRestructureViewModel} from "../../../_Models/Applications/OwnershipRestructureViewModel";
+import {Observable, Subscription} from "rxjs";
+import {ApplicationViewModel} from "../../../_Models/Applications/ApplicationViewModel";
 
 @Component({
-  selector: 'cpy-restructure-view-failed [Application]',
+  selector: 'cpy-restructure-view-failed [ApplicationAsync]',
   templateUrl: './cpy-restructure-view-failed.component.html',
   styleUrls: ['./cpy-restructure-view-failed.component.css']
 })
-export class CpyRestructureViewFailedComponent implements OnInit
+export class CpyRestructureViewFailedComponent implements OnInit, OnChanges, OnDestroy
 {
 
-  @Input() Application!: OwnershipRestructureViewModel
+  @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
+  public Application!: OwnershipRestructureViewModel;
+  private ApplicationSubscription!: Subscription;
 
   constructor ()
   {
   }
 
+  private subscribeToApplication()
+  {
+    this.ApplicationSubscription = this.ApplicationAsync.subscribe(application => {
+      console.log("[cpy-registration-view] got registration application", application);
+      this.Application = application as OwnershipRestructureViewModel;
+    });
+  }
+
   ngOnInit (): void
   {
+    this.subscribeToApplication();
+  }
+
+  ngOnChanges (changes: SimpleChanges): void
+  {
+    if (this.ApplicationSubscription)
+    {
+      this.ApplicationSubscription.unsubscribe();
+      this.subscribeToApplication();
+    }
+  }
+
+  ngOnDestroy (): void
+  {
+    if (this.ApplicationSubscription) this.ApplicationSubscription.unsubscribe();
   }
 
 }

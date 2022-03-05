@@ -1,17 +1,22 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {WorkType} from "../../_Models/WorkType";
 import {ClrTimelineStepState} from "@clr/angular";
 import {syntaxHighlight} from "../../utils";
+import {Observable, Subscription} from "rxjs";
+import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 
 @Component({
-  selector: 'cpy-registration-view [Application]',
+  selector: 'cpy-registration-view [ApplicationAsync]',
   templateUrl: './cpy-registration-view.component.html',
   styleUrls: ['./cpy-registration-view.component.css']
 })
-export class CpyRegistrationViewComponent implements OnInit
+export class CpyRegistrationViewComponent implements OnInit, OnChanges, OnDestroy
 {
-  @Input() Application!: CopyrightRegistrationViewModel;
+  @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
+  public Application!: CopyrightRegistrationViewModel;
+  private ApplicationSubscription!: Subscription;
+
   public timelineSuccess: ClrTimelineStepState = ClrTimelineStepState.SUCCESS;
   public timelineProcessing: ClrTimelineStepState = ClrTimelineStepState.PROCESSING;
   public timelineNot: ClrTimelineStepState = ClrTimelineStepState.NOT_STARTED;
@@ -21,8 +26,17 @@ export class CpyRegistrationViewComponent implements OnInit
   {
   }
 
+  private subscribeToApplication()
+  {
+    this.ApplicationSubscription = this.ApplicationAsync.subscribe(application => {
+      console.log("[cpy-registration-view] got registration application", application);
+      this.Application = application as CopyrightRegistrationViewModel;
+    });
+  }
+
   ngOnInit (): void
   {
+    this.subscribeToApplication();
   }
 
   get Meta()
@@ -46,6 +60,20 @@ export class CpyRegistrationViewComponent implements OnInit
   get WorkStatus()
   {
     return this.Application.AssociatedWork?.Status;
+  }
+
+  ngOnChanges (changes: SimpleChanges): void
+  {
+    if (this.ApplicationSubscription)
+    {
+      this.ApplicationSubscription.unsubscribe();
+      this.subscribeToApplication();
+    }
+  }
+
+  ngOnDestroy (): void
+  {
+    if (this.ApplicationSubscription) this.ApplicationSubscription.unsubscribe();
   }
 }
 

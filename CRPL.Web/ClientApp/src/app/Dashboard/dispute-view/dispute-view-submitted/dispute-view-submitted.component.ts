@@ -1,21 +1,25 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {DisputeViewModel} from "../../../_Models/Applications/DisputeViewModel";
 import {DisputeType} from "../../../_Models/Applications/DisputeInputModel";
 import {WarehouseService} from "../../../_Services/warehouse.service";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Observable, Subscription} from "rxjs";
 import {FormsService} from "../../../_Services/forms.service";
 import Web3 from "web3";
 import {AlertService} from "../../../_Services/alert.service";
 import {finalize} from "rxjs/operators";
+import {ApplicationViewModel} from "../../../_Models/Applications/ApplicationViewModel";
 
 @Component({
-  selector: 'dispute-view-submitted [Application]',
+  selector: 'dispute-view-submitted [ApplicationAsync]',
   templateUrl: './dispute-view-submitted.component.html',
   styleUrls: ['./dispute-view-submitted.component.css']
 })
-export class DisputeViewSubmittedComponent implements OnInit
+export class DisputeViewSubmittedComponent implements OnInit, OnChanges, OnDestroy
 {
-  @Input() Application!: DisputeViewModel;
+  @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
+  public Application!: DisputeViewModel;
+  private ApplicationSubscription!: Subscription;
+
   public Owner: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public Locked: boolean = false;
 
@@ -23,8 +27,15 @@ export class DisputeViewSubmittedComponent implements OnInit
   {
   }
 
+  private subscribeToApplication()
+  {
+    this.ApplicationSubscription = this.ApplicationAsync.subscribe(application => this.Application = application as DisputeViewModel);
+  }
+
   ngOnInit (): void
   {
+    this.subscribeToApplication();
+
     if (!this.warehouse.__MyWorks) this.Owner.next(false);
     if (!this.Application.AssociatedWork) this.Owner.next(false);
 
@@ -35,6 +46,20 @@ export class DisputeViewSubmittedComponent implements OnInit
     //   console.log("works loaded", x);
     //   return x.findIndex(w => w.Id == this.Application.AssociatedWork?.Id) != -1
     // }));
+  }
+
+  ngOnChanges (changes: SimpleChanges): void
+  {
+    if (this.ApplicationSubscription)
+    {
+      this.ApplicationSubscription.unsubscribe();
+      this.subscribeToApplication();
+    }
+  }
+
+  ngOnDestroy (): void
+  {
+    if (this.ApplicationSubscription) this.ApplicationSubscription.unsubscribe();
   }
 
   get DisputeType ()

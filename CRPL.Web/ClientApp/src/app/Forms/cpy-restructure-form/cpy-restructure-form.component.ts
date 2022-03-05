@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {FormsService} from "../../_Services/forms.service";
@@ -9,16 +9,20 @@ import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {OwnershipRestructureInputModel} from "../../_Models/Applications/OwnershipRestructureInputModel";
 import {debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil, tap} from "rxjs/operators";
 import {OwnershipRestructureViewModel} from "../../_Models/Applications/OwnershipRestructureViewModel";
-import {Observable, Subject} from "rxjs";
+import {Observable, Subject, Subscription} from "rxjs";
 import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
+import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 
 @Component({
   selector: 'cpy-restructure-form [RegisteredWork]',
   templateUrl: './cpy-restructure-form.component.html',
   styleUrls: ['./cpy-restructure-form.component.css']
 })
-export class CpyRestructureFormComponent implements OnInit, OnDestroy
+export class CpyRestructureFormComponent implements OnInit, OnDestroy, OnChanges
 {
+  @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
+  private ApplicationSubscription!: Subscription;
+
   @Input() RegisteredWork!: RegisteredWorkViewModel;
   @Input() ExistingApplication!: OwnershipRestructureViewModel;
 
@@ -54,6 +58,17 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
       })
     });
     this.Accepted = this.formBuilder.control(false, [Validators.required]);
+  }
+
+  private subscribeToApplication() : void
+  {
+    this.ApplicationSubscription = this.ApplicationAsync.subscribe(application =>
+    {
+      this.unsubscribe.next();
+      this.ExistingApplication = application as OwnershipRestructureViewModel;
+      this.populate();
+      this.detectChanges();
+    });
   }
 
   async ngOnInit (): Promise<any>
@@ -122,11 +137,6 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
       }
       ;
     }, error => console.error(error))
-  }
-
-  public ngOnDestroy (): void
-  {
-    this.unsubscribe.next()
   }
 
   get ProposedStructure (): FormGroup
@@ -204,5 +214,20 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy
                   }));
           }
         }, err => this.alertService.Alert({Type: 'danger', Message: err.error}));
+  }
+
+  public ngOnDestroy (): void
+  {
+    this.unsubscribe.next();
+    if (this.ApplicationSubscription) this.ApplicationSubscription.unsubscribe();
+  }
+
+  public ngOnChanges (changes: SimpleChanges): void
+  {
+    if (this.ApplicationSubscription)
+    {
+      this.ApplicationSubscription.unsubscribe();
+      this.subscribeToApplication();
+    }
   }
 }

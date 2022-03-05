@@ -1,4 +1,4 @@
-import {Component, Inject, Input, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {ApplicationType} from "../../_Models/Applications/ApplicationViewModel";
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
@@ -8,15 +8,19 @@ import {syntaxHighlight} from "../../utils";
 import {AlertService} from "../../_Services/alert.service";
 import {WorksService} from "../../_Services/works.service";
 import {finalize} from "rxjs/operators";
+import {Observable, Subscription} from "rxjs";
 
 @Component({
-  selector: 'copyright-view [Copyright]',
+  selector: 'copyright-view [CopyrightAsync]',
   templateUrl: './copyright-view.component.html',
   styleUrls: ['./copyright-view.component.css']
 })
-export class CopyrightViewComponent implements OnInit
+export class CopyrightViewComponent implements OnInit, OnChanges, OnDestroy
 {
-  @Input() Copyright!: RegisteredWorkViewModel | null;
+  @Input() CopyrightAsync!: Observable<RegisteredWorkViewModel>;
+  public Copyright!: RegisteredWorkViewModel;
+  private CopyrightSubscription!: Subscription;
+
   @Input() ShowActions: boolean = true;
   public RestructureOpen: boolean = false;
 
@@ -32,8 +36,18 @@ export class CopyrightViewComponent implements OnInit
     this.BaseUrl = baseUrl;
   }
 
+  private subscribeToCopyright()
+  {
+    this.CopyrightSubscription = this.CopyrightAsync.subscribe(copyright => this.Copyright = copyright as RegisteredWorkViewModel);
+  }
+
   ngOnInit (): void
   {
+    if (this.CopyrightAsync) this.CopyrightSubscription = this.CopyrightAsync.subscribe(copyright =>
+    {
+      console.log("[copyright-view] got application", copyright);
+      this.Copyright = copyright;
+    });
   }
 
   get IsRestructureAllowed (): boolean
@@ -101,5 +115,19 @@ export class CopyrightViewComponent implements OnInit
             Message: 'There was an error syncing with the blockchain!'
           }));
     }
+  }
+
+  ngOnChanges (changes: SimpleChanges): void
+  {
+    if (this.CopyrightSubscription)
+    {
+      this.CopyrightSubscription.unsubscribe();
+      this.subscribeToCopyright();
+    }
+  }
+
+  ngOnDestroy (): void
+  {
+    if (this.CopyrightSubscription) this.CopyrightSubscription.unsubscribe();
   }
 }

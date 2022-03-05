@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {FormsService} from "../../_Services/forms.service";
@@ -8,17 +8,20 @@ import {Router} from "@angular/router";
 import {RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {DisputeViewModel, ExpectedRecourse} from "../../_Models/Applications/DisputeViewModel";
 import {debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil, tap} from "rxjs/operators";
-import {Observable, Subject} from "rxjs";
+import {Observable, Subject, Subscription} from "rxjs";
 import {DisputeInputModel, DisputeType} from "../../_Models/Applications/DisputeInputModel";
 import {ExternalService} from "../../_Services/external.service";
+import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 
 @Component({
   selector: 'dispute-form',
   templateUrl: './dispute-form.component.html',
   styleUrls: ['./dispute-form.component.css']
 })
-export class DisputeFormComponent implements OnInit, OnDestroy
+export class DisputeFormComponent implements OnInit, OnDestroy, OnChanges
 {
+  @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
+  private ApplicationSubscription!: Subscription;
   @Input() RegisteredWork!: RegisteredWorkViewModel;
   @Input() ExistingApplication!: DisputeViewModel;
 
@@ -56,8 +59,20 @@ export class DisputeFormComponent implements OnInit, OnDestroy
     return this.DisputeForm.value.ExpectedRecourse;
   }
 
+  private subscribeToApplication() : void
+  {
+    this.ApplicationSubscription = this.ApplicationAsync.subscribe(application =>
+    {
+      this.unsubscribe.next();
+      this.ExistingApplication = application as DisputeViewModel;
+      this.populate();
+      this.detectChanges();
+    });
+  }
+
   async ngOnInit (): Promise<any>
   {
+    this.subscribeToApplication();
 
     if (!this.authService.IsAuthenticated.getValue()) throw new Error("Not authenticated");
 
@@ -107,13 +122,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy
       {
         this.alertService.Alert({Message: "Saved changes", Type: "success"});
       }
-      ;
     }, error => console.error(error))
-  }
-
-  public ngOnDestroy (): void
-  {
-    this.unsubscribe.next()
   }
 
   private save(): Observable<DisputeViewModel>
@@ -162,6 +171,21 @@ export class DisputeFormComponent implements OnInit, OnDestroy
       this.formsService.SubmitDispute(this.ExistingApplication.Id)
           .pipe(finalize(() => this.Locked = false))
           .subscribe(x => this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]));
+    }
+  }
+
+  public ngOnDestroy (): void
+  {
+    this.unsubscribe.next();
+    if (this.ApplicationSubscription) this.ApplicationSubscription.unsubscribe();
+  }
+
+  public ngOnChanges (changes: SimpleChanges): void
+  {
+    if (this.ApplicationSubscription)
+    {
+      this.ApplicationSubscription.unsubscribe();
+      this.subscribeToApplication();
     }
   }
 }

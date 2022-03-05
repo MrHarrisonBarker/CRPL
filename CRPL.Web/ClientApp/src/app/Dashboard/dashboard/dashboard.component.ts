@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FormsService} from "../../_Services/forms.service";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 import {CopyrightService} from "../../_Services/copyright.service";
@@ -10,6 +10,7 @@ import {WarehouseService} from "../../_Services/warehouse.service";
 import {ActivatedRoute} from "@angular/router";
 import {map} from "rxjs/operators";
 import {DisputeViewModel} from "../../_Models/Applications/DisputeViewModel";
+import {ApplicationsViewComponent} from "../applications-view/applications-view.component";
 
 @Component({
   selector: 'app-dashboard',
@@ -19,9 +20,15 @@ import {DisputeViewModel} from "../../_Models/Applications/DisputeViewModel";
 export class DashboardComponent implements OnInit, OnDestroy
 {
   public Loaded: boolean = false;
+  // public Selected: BehaviorSubject<ApplicationViewModel | RegisteredWorkViewModel> = new BehaviorSubject<ApplicationViewModel | RegisteredWorkViewModel>(null as any);
   public Selected!: ApplicationViewModel | RegisteredWorkViewModel;
-  public SelectedAsync!: Observable<ApplicationViewModel | RegisteredWorkViewModel>;
+
+  public SelectedApplication: Observable<ApplicationViewModel> = new Observable<ApplicationViewModel>();
+  public SelectedCopyright: Observable<RegisteredWorkViewModel> = new Observable<RegisteredWorkViewModel>();
+
   public IsApplication: boolean = false;
+
+  @ViewChild(ApplicationsViewComponent, {static: false}) childRef!: ApplicationsViewComponent;
 
   public CompletedApplications!: Observable<ApplicationViewModel[]>;
   public SubmittedApplications!: Observable<ApplicationViewModel[]>;
@@ -69,8 +76,9 @@ export class DashboardComponent implements OnInit, OnDestroy
     // ROUTE APPLICATION
     if (this.route.snapshot.paramMap.has("applicationId"))
     {
-      await this.warehouse.__MyApplications.pipe(map(w => w.find(x => x.Id == this.route.snapshot.paramMap.get("applicationId")))).subscribe(x => this.Selected = x as ApplicationViewModel);
-      this.IsApplication = true;
+      this.SelectWork({Id: this.route.snapshot.paramMap.get("applicationId")} as RegisteredWorkViewModel);
+      // await this.warehouse.__MyApplications.pipe(map(w => w.find(x => x.Id == this.route.snapshot.paramMap.get("applicationId")))).subscribe(x => this.Selected = x as ApplicationViewModel);
+      // this.IsApplication = true;
     }
 
     console.log(this.route.snapshot.paramMap.keys);
@@ -80,54 +88,18 @@ export class DashboardComponent implements OnInit, OnDestroy
   {
   }
 
-  get SelectedAsCopyright (): RegisteredWorkViewModel
+  public SelectWork (selected: RegisteredWorkViewModel): void
   {
-    return (this.Selected as RegisteredWorkViewModel);
-  }
-
-  get SelectedAsApplication (): ApplicationViewModel
-  {
-    return (this.Selected as ApplicationViewModel);
-  }
-
-  get SelectedAsyncAsApplication (): Observable<ApplicationViewModel>
-  {
-    return this.SelectedAsync as Observable<ApplicationViewModel>;
-  }
-
-  get SelectedAsyncAsCopyright (): Observable<RegisteredWorkViewModel>
-  {
-    return this.SelectedAsync as Observable<RegisteredWorkViewModel>;
-  }
-
-  public SelectWork(selected: RegisteredWorkViewModel): void
-  {
-    this.SelectedAsync = this.warehouse.__MyWorks.pipe(map(x => {
-      console.log("[dashboard] searching for selected", x)
-      let found = x.find(x => x.Id == selected.Id);
-      console.log("[dashboard] found", found);
-      return found;
-    })) as Observable<RegisteredWorkViewModel>;
+    console.log("[dashboard] selected work", selected);
+    this.SelectedCopyright = this.warehouse.__MyWorks.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<RegisteredWorkViewModel>;
     this.IsApplication = false;
   }
 
-  public SelectApplication(selected: ApplicationViewModel): void
+  public SelectApplication (selected: ApplicationViewModel): void
   {
     console.log("[dashboard] selected application", selected);
-    this.SelectedAsync = this.warehouse.__MyApplications.pipe(map(x => {
-      console.log("[dashboard] searching for selected", x)
-      let found = x.find(x => x.Id == selected.Id);
-      console.log("[dashboard] found", found);
-      return found;
-    })) as Observable<ApplicationViewModel>;
+    this.SelectedApplication = this.warehouse.__MyApplications.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<ApplicationViewModel>;
     this.IsApplication = true;
-  }
-
-  public Select (selected: ApplicationViewModel | RegisteredWorkViewModel, isApplication: boolean): void
-  {
-    console.log("[dashboard] selected", selected);
-    this.Selected = selected;
-    this.IsApplication = isApplication;
   }
 
   public NumberOfOpenDisputes (right: RegisteredWorkViewModel): number
@@ -139,5 +111,7 @@ export class DashboardComponent implements OnInit, OnDestroy
   public ResetSelected ()
   {
     this.Selected = null as any;
+    this.SelectedApplication = new Observable<ApplicationViewModel>();
+    this.SelectedCopyright = new Observable<RegisteredWorkViewModel>();
   }
 }

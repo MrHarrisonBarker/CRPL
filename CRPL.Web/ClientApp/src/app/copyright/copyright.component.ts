@@ -6,10 +6,7 @@ import {ClarityIcons, undoIcon} from "@cds/core/icon";
 import {Location} from "@angular/common";
 import {AuthService} from "../_Services/auth.service";
 import {AlertService} from "../_Services/alert.service";
-import {OwnershipRestructureViewModel} from "../_Models/Applications/OwnershipRestructureViewModel";
-import {ApplicationType} from "../_Models/Applications/ApplicationViewModel";
-import {ApplicationStatus} from "../_Models/Applications/ApplicationStatus";
-import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-copyright',
@@ -18,7 +15,9 @@ import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
 })
 export class CopyrightComponent implements OnInit
 {
+  public CopyrightAsync!: Observable<RegisteredWorkViewModel>;
   public Copyright!: RegisteredWorkViewModel;
+
   public Loaded: boolean = false;
   public DisputeOpen: boolean = false;
 
@@ -37,7 +36,9 @@ export class CopyrightComponent implements OnInit
   {
 
     let workId = this.route.snapshot.paramMap.get('id');
-    if (workId) await this.copyrightService.Get(workId).subscribe(x =>
+    if (workId) this.CopyrightAsync = this.copyrightService.Get(workId);
+
+    this.CopyrightAsync.subscribe(x =>
     {
       this.Copyright = x;
       this.Loaded = true;

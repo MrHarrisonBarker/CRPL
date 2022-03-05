@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {OwnershipStake} from "../../_Models/StructuredOwnership/OwnershipStake";
@@ -9,7 +9,7 @@ import {ValidatorsService} from "../../_Services/validators.service";
 import {CopyrightRegistrationViewModel} from "../../_Models/Applications/CopyrightRegistrationViewModel";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 import {debounceTime, distinctUntilChanged, finalize, switchMap, takeUntil, tap} from "rxjs/operators";
-import {Observable, Subject} from "rxjs";
+import {Observable, Subject, Subscription} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
 import {Router} from '@angular/router';
 
@@ -25,11 +25,13 @@ interface ProtectionsMeta
   templateUrl: './cpy-registration-form.component.html',
   styleUrls: ['./cpy-registration-form.component.css']
 })
-export class CpyRegistrationFormComponent implements OnInit, OnDestroy
+export class CpyRegistrationFormComponent implements OnInit, OnDestroy, OnChanges
 {
   private unsubscribe = new Subject<void>();
   public Locked: boolean = false;
 
+  @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
+  private ApplicationSubscription!: Subscription;
   @Input() ExistingApplication!: ApplicationViewModel | CopyrightRegistrationViewModel;
 
   public RegistrationForm: FormGroup;
@@ -101,24 +103,37 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
     return this.RegistrationForm.controls.WorkHash as FormControl;
   }
 
+  private subscribeToApplication() : void
+  {
+    this.ApplicationSubscription = this.ApplicationAsync.subscribe(application =>
+    {
+      this.unsubscribe.next();
+      this.ExistingApplication = application;
+      this.populateForm();
+      this.detectChanges();
+    });
+  }
+
   public ngOnInit (): void
   {
+    this.subscribeToApplication();
+
     // IF NO APPLICATION THEN USE DEFAULT
     if (this.ExistingApplication)
     {
       console.log("application is existing", this.ExistingApplication);
       this.populateForm();
+      this.selectRights(this.StandardPreset);
+      this.detectChanges();
     } else
     {
       (this.OwnershipStructure.controls.Stakes as FormArray).patchValue([{
         Owner: this.authService.UserAccount.getValue().WalletPublicAddress,
         Share: 100
-      }])
+      }]);
+      this.selectRights(this.StandardPreset);
+      this.detectChanges();
     }
-
-    this.selectRights(this.StandardPreset);
-
-    this.detectChanges();
   }
 
   private detectChanges (): void
@@ -140,7 +155,8 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
   public ngOnDestroy (): void
   {
-    this.unsubscribe.next()
+    this.unsubscribe.next();
+    if (this.ApplicationSubscription) this.ApplicationSubscription.unsubscribe();
   }
 
   private selectRights (protections: string[]): void
@@ -201,6 +217,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
 
   private populateForm (): void
   {
+    this.unsubscribe.next();
     let model = this.ExistingApplication = this.ExistingApplication as CopyrightRegistrationViewModel;
     this.RegistrationForm.patchValue({
       Title: model.Title,
@@ -223,6 +240,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
       (this.OwnershipStructure.controls.Stakes as FormArray).push(this.generateStake(stake))
     }
 
+    // this.detectChanges();
     console.log('populated form', this.RegistrationForm.value);
   }
 
@@ -259,5 +277,14 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy
               }, error => this.alertService.Alert({Type: 'danger', Message: error.error}));
 
         }, error => this.alertService.Alert({Type: 'danger', Message: error.error}))
+  }
+
+  public ngOnChanges (changes: SimpleChanges): void
+  {
+    if (this.ApplicationSubscription)
+    {
+      this.ApplicationSubscription.unsubscribe();
+      this.subscribeToApplication();
+    }
   }
 }
