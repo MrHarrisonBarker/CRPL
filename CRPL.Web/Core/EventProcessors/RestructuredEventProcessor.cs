@@ -47,6 +47,7 @@ public static class RestructuredEventProcessor
         
         var resonanceService = scope.ServiceProvider.GetRequiredService<IResonanceService>();
         await resonanceService.PushWorkUpdates(work);
+        await resonanceService.PushApplicationUpdates(work.AssociatedApplication.First(x => x.ApplicationType == ApplicationType.OwnershipRestructure));
     }
 
     private static async Task SetApplicationStatus(RegisteredWork work, ApplicationContext context)

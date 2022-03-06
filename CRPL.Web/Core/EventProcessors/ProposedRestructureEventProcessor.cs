@@ -24,6 +24,8 @@ public static class ProposedRestructureEventProcessor
             .Include(x => x.AssociatedWork)
             .Include(x => x.AssociatedUsers)
             .Include(x => x.Origin)
+            .Where(x => x.Status == ApplicationStatus.Submitted && x.BindStatus == BindStatus.NoProposal)
+            .OrderByDescending(x => x.Created)
             .FirstOrDefaultAsync(x => x.AssociatedWork.RightId == proposedRestructure.Event.RightId.ToString());
 
         if (application == null) throw new ApplicationNotFoundException();

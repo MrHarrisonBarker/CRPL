@@ -41,7 +41,10 @@ public class FormsService : IFormsService
     public async Task<ApplicationViewModel> GetApplication(Guid id)
     {
         Logger.LogInformation("Getting application '{Id}'", id);
-        var application = await Context.Applications.Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount).FirstOrDefaultAsync(x => x.Id == id);
+        var application = await Context.Applications
+            .Include(x => x.AssociatedWork)
+            .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
+            .FirstOrDefaultAsync(x => x.Id == id);
         if (application == null) throw new ApplicationNotFoundException(id);
         return application.Map(Mapper);
     }

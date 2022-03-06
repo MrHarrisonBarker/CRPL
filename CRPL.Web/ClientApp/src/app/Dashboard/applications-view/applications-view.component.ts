@@ -42,7 +42,7 @@ export class ApplicationsViewComponent implements OnInit, OnDestroy, OnChanges
 
   get ExistingWork (): RegisteredWorkViewModel
   {
-    return <RegisteredWorkViewModel>this.warehouse.MyWorks.find(x => x.Id == this.Application?.AssociatedWork?.Id);
+    return <RegisteredWorkViewModel>this.warehouse._MyWorks.find(x => x.Id == this.Application?.AssociatedWork?.Id);
   }
 
   public Cancel (): void

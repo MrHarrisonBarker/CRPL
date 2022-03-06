@@ -8,7 +8,7 @@ namespace CRPL.Web.Hubs;
 public interface IResonanceHub
 {
     public Task PushApplication(ApplicationViewModel applicationViewModel);
-    public Task PushWork(RegisteredWorkViewModel workViewModel);
+    public Task PushWork(RegisteredWorkWithAppsViewModel workViewModel);
     public Task ListenToApplication(Guid applicationId);
     public Task ListenToWork(Guid workId);
     public Task RegisterUser(Guid userId);
@@ -53,7 +53,7 @@ public class ResonanceHub : Hub<IResonanceHub>
         return Task.CompletedTask;
     }
 
-    public Task PushWork(RegisteredWorkViewModel workViewModel)
+    public Task PushWork(RegisteredWorkWithAppsViewModel workViewModel)
     {
         Logger.LogInformation("pushing work {Id} to {Connection}", workViewModel.Id, Context.ConnectionId);
         throw new NotImplementedException();

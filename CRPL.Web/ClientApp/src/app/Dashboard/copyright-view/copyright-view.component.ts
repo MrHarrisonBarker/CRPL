@@ -92,7 +92,7 @@ export class CopyrightViewComponent implements OnInit, OnChanges, OnDestroy
 
   get Meta ()
   {
-    return syntaxHighlight(JSON.stringify(this.Copyright?.Meta, undefined, 4));
+    return this.Copyright?.Meta ? syntaxHighlight(JSON.stringify(this.Copyright?.Meta, undefined, 4)) : "NOT FOUND!";
   }
 
   get ProxyLink (): string
@@ -129,5 +129,10 @@ export class CopyrightViewComponent implements OnInit, OnChanges, OnDestroy
   ngOnDestroy (): void
   {
     if (this.CopyrightSubscription) this.CopyrightSubscription.unsubscribe();
+  }
+
+  SetModel (open: boolean) : void
+  {
+    this.RestructureOpen = open;
   }
 }

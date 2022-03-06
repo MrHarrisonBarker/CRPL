@@ -42,7 +42,6 @@ export class FormsService
   {
     return this.http.delete<HttpResponse<any>>(this.BaseUrl + FormsPaths.Cancel + "/" + encodeURI(id)).pipe(tap(res =>
     {
-      console.log("CANCEL APPLICATION before", this.warehouse.MyApplications);
       this.warehouse.RemoveApplication(id);
     }));
   }
@@ -56,7 +55,7 @@ export class FormsService
   public GetMyApplications (): Observable<ApplicationViewModel[]>
   {
     return this.http.get<ApplicationViewModel[]>(this.BaseUrl + FormsPaths.GetMy + "/" + this.authService.UserAccount.getValue().Id)
-               .pipe(tap(applications => this.warehouse.MyApplications = applications));
+               .pipe(tap(applications => this.warehouse.SetMyApplications(applications)));
   }
 
   public GetApplication (id: string): Observable<ApplicationViewModel>
@@ -105,7 +104,7 @@ export class FormsService
     return this.http.delete(this.BaseUrl + FormsPaths.DeleteUser + "/" + this.authService.UserAccount.getValue().Id);
   }
 
-  public WalletTransfer(address: string) : Observable<any>
+  public WalletTransfer (address: string): Observable<any>
   {
     return this.http.patch(this.BaseUrl + FormsPaths.TransferWallet + "/" + this.authService.UserAccount.getValue().Id + "/to/" + address, null);
   }

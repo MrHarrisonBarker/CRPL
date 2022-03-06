@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../_Services/auth.service";
 import {FormsService} from "../../_Services/forms.service";
@@ -20,6 +20,8 @@ import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewMo
 })
 export class CpyRestructureFormComponent implements OnInit, OnDestroy, OnChanges
 {
+  @Output() Open: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
   private ApplicationSubscription!: Subscription;
 
@@ -207,7 +209,11 @@ export class CpyRestructureFormComponent implements OnInit, OnDestroy, OnChanges
           {
             this.formsService.SubmitOwnershipRestructure(this.ExistingApplication.Id)
                 .pipe(finalize(() => this.Locked = false))
-                .subscribe(x => this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]),
+                .subscribe(x =>
+                  {
+                    this.Open.emit(false);
+                    this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}])
+                  },
                   error => this.alertService.Alert({
                     Type: 'danger',
                     Message: 'There was an error submitting a ownership restructure!'
