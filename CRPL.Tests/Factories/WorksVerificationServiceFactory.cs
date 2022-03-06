@@ -3,6 +3,7 @@ using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.Works;
+using CRPL.Web.Core;
 using CRPL.Web.Services;
 using Ipfs;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,8 @@ public class WorksVerificationServiceFactory
     public readonly WorksVerificationService WorksVerificationService;
     public readonly Mock<IIpfsConnection> IpfsConnectionMock = new();
     public readonly Mock<ICachedWorkRepository> CachedWorkRepositoryMock = new();
-    
+    public readonly Mock<IResonanceService> ResonanceServiceMock = new();
+
     public WorksVerificationServiceFactory(ApplicationContext context)
     {
         var appSettings = Options.Create(new AppSettings());
@@ -34,6 +36,6 @@ public class WorksVerificationServiceFactory
             FileName = "Filename"
         });
         
-        WorksVerificationService = new WorksVerificationService(new Logger<WorksVerificationService>(new LoggerFactory()), context, appSettings, CachedWorkRepositoryMock.Object, IpfsConnectionMock.Object);
+        WorksVerificationService = new WorksVerificationService(new Logger<WorksVerificationService>(new LoggerFactory()), context, appSettings, CachedWorkRepositoryMock.Object, IpfsConnectionMock.Object, ResonanceServiceMock.Object);
     }
 }

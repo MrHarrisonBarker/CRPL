@@ -13,7 +13,7 @@ namespace CRPL.Tests.Factories;
 
 public class ServiceProviderWithContextFactory
 {
-    public readonly Mock<IServiceProvider> ServiceProviderMock;
+    public readonly Mock<IServiceProvider> ServiceProviderMock = new();
 
     public readonly Mock<IUserService> UserServiceMock = new();
     public readonly Mock<ICopyrightService> CopyrightServiceMock = new();
@@ -29,8 +29,6 @@ public class ServiceProviderWithContextFactory
 
     public ServiceProviderWithContextFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
     {
-        ServiceProviderMock = new Mock<IServiceProvider>();
-        
         ServiceProviderMock.Setup(x => x.GetService(typeof(ApplicationContext))).Returns(context);
         
         ServiceProviderMock.Setup(x => x.GetService(typeof(IUserService))).Returns(UserServiceMock.Object);
