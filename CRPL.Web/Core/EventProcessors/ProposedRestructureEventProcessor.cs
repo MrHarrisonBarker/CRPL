@@ -22,6 +22,7 @@ public static class ProposedRestructureEventProcessor
         
         var application = await context.OwnershipRestructureApplications
             .Include(x => x.AssociatedWork)
+            .Include(x => x.AssociatedUsers)
             .Include(x => x.Origin)
             .FirstOrDefaultAsync(x => x.AssociatedWork.RightId == proposedRestructure.Event.RightId.ToString());
 

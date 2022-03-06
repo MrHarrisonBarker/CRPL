@@ -4,6 +4,7 @@ import * as signalR from '@microsoft/signalr';
 import {HubConnection, HubConnectionState, LogLevel} from '@microsoft/signalr';
 import {ApplicationViewModel} from "../_Models/Applications/ApplicationViewModel";
 import {RegisteredWorkViewModel} from "../_Models/Works/RegisteredWork";
+import {AuthService} from "./auth.service";
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +12,7 @@ import {RegisteredWorkViewModel} from "../_Models/Works/RegisteredWork";
 export class ResonanceService
 {
   private readonly BaseUrl: string;
-  private ApplicationsConnection!: HubConnection;
-  private WorksConnection!: HubConnection;
+  private ResonanceConnection!: HubConnection;
 
   private ListenedWorks: string[] = [];
   private ListenedApplications: string[] = [];
@@ -20,18 +20,12 @@ export class ResonanceService
   private ApplicationsToListen: string[] = [];
   private WorksToListen: string[] = [];
 
-  constructor (@Inject('BASE_URL') baseUrl: string, private warehouseService: WarehouseService)
+  constructor (@Inject('BASE_URL') baseUrl: string, private warehouseService: WarehouseService, private authService: AuthService)
   {
     this.BaseUrl = baseUrl;
-    this.ApplicationsConnection = new signalR.HubConnectionBuilder()
+    this.ResonanceConnection = new signalR.HubConnectionBuilder()
       .configureLogging(LogLevel.Information)
-      .withUrl(this.BaseUrl + 'hubs/applications')
-      .withAutomaticReconnect()
-      .build();
-
-    this.WorksConnection = new signalR.HubConnectionBuilder()
-      .configureLogging(LogLevel.Information)
-      .withUrl(this.BaseUrl + 'hubs/works')
+      .withUrl(this.BaseUrl + 'hubs/resonance')
       .withAutomaticReconnect()
       .build();
 
@@ -63,9 +57,12 @@ export class ResonanceService
   {
     console.log('Connecting to sockets');
 
-    this.ApplicationsConnection.start().then(() =>
+    this.ResonanceConnection.start().then(() =>
     {
-      console.log("[resonance-service] Connected to APPLICATIONS websocket");
+      console.log("[resonance-service] Connected to RESONANCE websocket");
+      this.authService.IsAuthenticated.subscribe(authed => {
+        if (authed) this.ResonanceConnection.invoke("RegisterUser", this.authService.UserAccount.getValue().Id).then(r => console.log(r));
+      })
 
       for (let application of this.ApplicationsToListen)
       {
@@ -73,24 +70,14 @@ export class ResonanceService
       }
       this.ApplicationsToListen = [];
 
-      this.ApplicationsConnection.on("PushApplication", (data: ApplicationViewModel) => this.warehouseService.UpdateApplication(data));
-
-    }).catch(function (err)
-    {
-      return console.error(err.toString());
-    });
-
-    this.WorksConnection.start().then(() =>
-    {
-      console.log("[resonance-service] Connected to WORKS websocket");
-
       for (let work of this.WorksToListen)
       {
         this.ListenToWork(work);
       }
       this.WorksToListen = [];
 
-      this.ApplicationsConnection.on("PushWork", (data: RegisteredWorkViewModel) => this.warehouseService.UpdateWork(data));
+      this.ResonanceConnection.on("PushApplication", (data: ApplicationViewModel) => this.warehouseService.UpdateApplication(data));
+      this.ResonanceConnection.on("PushWork", (data: RegisteredWorkViewModel) => this.warehouseService.UpdateWork(data));
 
     }).catch(function (err)
     {
@@ -102,14 +89,14 @@ export class ResonanceService
   {
     console.log("[resonance-service] Trying to listen for application " + id);
 
-    if (this.ApplicationsConnection.state != HubConnectionState.Connected) {
+    if (this.ResonanceConnection.state != HubConnectionState.Connected) {
       console.log("[resonance-service] The hub is still connecting will listen later to " + id);
       this.ApplicationsToListen.push(id);
     }
 
-    if (this.ApplicationsConnection.state == HubConnectionState.Connected)
+    if (this.ResonanceConnection.state == HubConnectionState.Connected)
     {
-      this.ApplicationsConnection.invoke("ListenToApplication", id).then(value =>
+      this.ResonanceConnection.invoke("ListenToApplication", id).then(value =>
       {
         console.log(`[resonance-service] the client is now listening to the application ${id}`);
         this.ListenedApplications.push(id);
@@ -121,14 +108,14 @@ export class ResonanceService
   {
     console.log("[resonance-service] Trying to listen for work " + id);
 
-    if (this.WorksConnection.state != HubConnectionState.Connected) {
+    if (this.ResonanceConnection.state != HubConnectionState.Connected) {
       console.log("[resonance-service] The hub is still connecting will listen later to " + id);
       this.WorksToListen.push(id);
     }
 
-    if (this.WorksConnection.state == HubConnectionState.Connected)
+    if (this.ResonanceConnection.state == HubConnectionState.Connected)
     {
-      this.WorksConnection.invoke("ListenToWork", id).then(value =>
+      this.ResonanceConnection.invoke("ListenToWork", id).then(value =>
       {
         console.log(`[resonance-service] the client is now listening to the work ${id}`);
         this.ListenedWorks.push(id);

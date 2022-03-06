@@ -102,8 +102,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
-app.MapHub<ApplicationsHub>("/hubs/applications");
-app.MapHub<WorksHub>("/hubs/works");
+app.MapHub<ResonanceHub>("/hubs/resonance");
 
 app.MapFallbackToFile("index.html");
 

@@ -15,6 +15,7 @@ public class ResonanceService : IResonanceService
 
     private readonly Dictionary<Guid, List<string>> WorkToConnection;
     private readonly Dictionary<Guid, List<string>> ApplicationToConnection;
+    private readonly Dictionary<Guid, List<string>> UserToConnection;
 
     public ResonanceService(ILogger<ResonanceService> logger, IMapper mapper, IServiceProvider serviceProvider)
     {
@@ -23,6 +24,7 @@ public class ResonanceService : IResonanceService
         ServiceProvider = serviceProvider;
         WorkToConnection = new Dictionary<Guid, List<string>>();
         ApplicationToConnection = new Dictionary<Guid, List<string>>();
+        UserToConnection = new Dictionary<Guid, List<string>>();
     }
 
     public Task PushWorkUpdates(Guid id)
@@ -36,14 +38,30 @@ public class ResonanceService : IResonanceService
         Logger.LogInformation("Pushing work updates");
         
         using var scope = ServiceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<IHubContext<WorksHub, IWorksHub>>();
+        var context = scope.ServiceProvider.GetRequiredService<IHubContext<ResonanceHub, IResonanceHub>>();
 
         if (!WorkToConnection.ContainsKey(work.Id))
         {
             Logger.LogInformation("Work was not in the listen table");
             WorkToConnection.Add(work.Id, new List<string>());
         } 
+        
+        makeUserListenToWork(work.UserWorks);
+        
         await context.Clients.Clients(WorkToConnection[work.Id]).PushWork(Mapper.Map<RegisteredWorkViewModel>(work));
+    }
+
+    private void makeUserListenToWork(List<UserWork>? userWorks)
+    {
+        if (userWorks != null) foreach (var userWork in userWorks.Where(userWork  => UserToConnection.ContainsKey(userWork.UserId)))
+        {
+            // go though all the users connections and listening to work
+            UserToConnection[userWork.UserId].ForEach(connection =>
+            {
+                // if the connection is not already listening to this work
+                if (!WorkToConnection[userWork.WorkId].Contains(connection)) ListenToWork(userWork.WorkId, connection);
+            });
+        }
     }
 
     public Task PushApplicationUpdates(Guid id)
@@ -56,14 +74,30 @@ public class ResonanceService : IResonanceService
         Logger.LogInformation("Pushing application updates");
         
         using var scope = ServiceProvider.CreateScope();
-        var context = scope.ServiceProvider.GetRequiredService<IHubContext<ApplicationsHub, IApplicationsHub>>();
+        var context = scope.ServiceProvider.GetRequiredService<IHubContext<ResonanceHub, IResonanceHub>>();
 
         if (!ApplicationToConnection.ContainsKey(application.Id))
         {
             Logger.LogInformation("Application was not in the listen table");
             ApplicationToConnection.Add(application.Id, new List<string>());
-        } 
+        }
+
+        makeUserListenToApplication(application.AssociatedUsers);
+        
         await context.Clients.Clients(ApplicationToConnection[application.Id]).PushApplication(Mapper.Map<ApplicationViewModel>(application));
+    }
+
+    private void makeUserListenToApplication(List<UserApplication>? userApplications)
+    {
+        if (userApplications != null) foreach (var userApplication in userApplications.Where(userApplication => UserToConnection.ContainsKey(userApplication.UserId)))
+        {
+            // go though all the users connections and listening to application
+            UserToConnection[userApplication.UserId].ForEach(connection =>
+            {
+                // if the connection is not already listening to this application
+                if (!ApplicationToConnection[userApplication.ApplicationId].Contains(connection)) ListenToApplication(userApplication.ApplicationId, connection);
+            });
+        }
     }
 
     public void ListenToWork(Guid workId, string connectionId)
@@ -96,6 +130,21 @@ public class ResonanceService : IResonanceService
         Logger.LogInformation("{Connection} is now listening to application {Id}", connectionId, applicationId);
     }
 
+    public void RegisterUser(Guid userId, string connectionId)
+    {
+        if (!UserToConnection.ContainsKey(userId))
+        {
+            Logger.LogInformation("User {Id} was not in the registered table", userId);
+            UserToConnection.Add(userId, new List<string> { connectionId });
+        }
+        else
+        {
+            UserToConnection[userId].Add(connectionId);   
+        }
+
+        Logger.LogInformation("{Connection} is now register to {Id}", connectionId, userId);
+    }
+
     public void RemoveConnection(string connectionId)
     {
         if (WorkToConnection.Values.Any(x => x.Contains(connectionId)))
@@ -108,6 +157,12 @@ public class ResonanceService : IResonanceService
         {
             var instances = ApplicationToConnection.Where(x => x.Value.Contains(connectionId)).ToList();
             instances.ForEach(x => ApplicationToConnection[x.Key].Remove(connectionId));
+        }
+        
+        if (UserToConnection.Values.Any(x => x.Contains(connectionId)))
+        {
+            var instances = UserToConnection.Where(x => x.Value.Contains(connectionId)).ToList();
+            instances.ForEach(x => UserToConnection[x.Key].Remove(connectionId));
         }
     }
 }

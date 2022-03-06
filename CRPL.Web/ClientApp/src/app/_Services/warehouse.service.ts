@@ -34,6 +34,16 @@ export class WarehouseService
   public UpdateWork (value: RegisteredWorkViewModel)
   {
     console.log("[warehouse] updating work", value.Id);
+    let index = this._MyWorks.findIndex(x => x.Id == value.Id);
+    if (index == -1)
+    {
+      this._MyWorks.push(value);
+      this.__MyWorks.next(this._MyWorks);
+    } else
+    {
+      this._MyWorks[index] = value;
+      this.__MyWorks.next(this._MyWorks);
+    }
   }
 
   public UpdateDispute (value: DisputeViewModel)

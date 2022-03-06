@@ -103,7 +103,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy, OnChange
     return this.RegistrationForm.controls.WorkHash as FormControl;
   }
 
-  private subscribeToApplication() : void
+  private subscribeToApplication (): void
   {
     this.ApplicationSubscription = this.ApplicationAsync.subscribe(application =>
     {
@@ -116,23 +116,27 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy, OnChange
 
   public ngOnInit (): void
   {
-    this.subscribeToApplication();
-
-    // IF NO APPLICATION THEN USE DEFAULT
-    if (this.ExistingApplication)
+    if (this.ApplicationAsync)
     {
-      console.log("application is existing", this.ExistingApplication);
-      this.populateForm();
-      this.selectRights(this.StandardPreset);
-      this.detectChanges();
+      this.subscribeToApplication();
     } else
     {
-      (this.OwnershipStructure.controls.Stakes as FormArray).patchValue([{
-        Owner: this.authService.UserAccount.getValue().WalletPublicAddress,
-        Share: 100
-      }]);
-      this.selectRights(this.StandardPreset);
-      this.detectChanges();
+      // IF NO APPLICATION THEN USE DEFAULT
+      if (this.ExistingApplication)
+      {
+        console.log("application is existing", this.ExistingApplication);
+        this.populateForm();
+        this.selectRights(this.StandardPreset);
+        this.detectChanges();
+      } else
+      {
+        (this.OwnershipStructure.controls.Stakes as FormArray).patchValue([{
+          Owner: this.authService.UserAccount.getValue().WalletPublicAddress,
+          Share: 100
+        }]);
+        this.selectRights(this.StandardPreset);
+        this.detectChanges();
+      }
     }
   }
 
@@ -268,8 +272,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy, OnChange
                 if (this.router.url.includes('/dashboard'))
                 {
                   this.host.nativeElement.remove();
-                }
-                else
+                } else
                 {
                   this.router.navigate(['/dashboard', {applicationId: this.ExistingApplication.Id}]);
                 }

@@ -20,6 +20,7 @@ public static class RegisteredEventProcessor
 
         var registeredWork = await context.RegisteredWorks
             .Include(x => x.AssociatedApplication)
+            .Include(x => x.UserWorks)
             .FirstOrDefaultAsync(x => x.RegisteredTransactionId == registeredEvent.Log.TransactionHash);
         if (registeredWork == null) throw new WorkNotFoundException(registeredEvent.Log.TransactionHash);
 
