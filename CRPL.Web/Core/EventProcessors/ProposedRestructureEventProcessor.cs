@@ -3,6 +3,7 @@ using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Proposal;
+using CRPL.Web.Core;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -41,5 +42,8 @@ public static class ProposedRestructureEventProcessor
         application.BindStatus = BindStatus.AwaitingVotes;
 
         await context.SaveChangesAsync();
+        
+        var resonanceService = scope.ServiceProvider.GetRequiredService<IResonanceService>();
+        await resonanceService.PushApplicationUpdates(application);
     }
 }

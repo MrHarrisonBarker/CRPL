@@ -31,9 +31,19 @@ public class ResonanceService : IResonanceService
         throw new NotImplementedException();
     }
 
-    public Task PushWorkUpdates(RegisteredWork work)
+    public async Task PushWorkUpdates(RegisteredWork work)
     {
-        throw new NotImplementedException();
+        Logger.LogInformation("Pushing work updates");
+        
+        using var scope = ServiceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<IHubContext<WorksHub, IWorksHub>>();
+
+        if (!WorkToConnection.ContainsKey(work.Id))
+        {
+            Logger.LogInformation("Work was not in the listen table");
+            WorkToConnection.Add(work.Id, new List<string>());
+        } 
+        await context.Clients.Clients(WorkToConnection[work.Id]).PushWork(Mapper.Map<RegisteredWorkViewModel>(work));
     }
 
     public Task PushApplicationUpdates(Guid id)

@@ -1,6 +1,7 @@
 using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Web.Core;
 using CRPL.Web.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Nethereum.Contracts;
@@ -27,5 +28,8 @@ public static class FailedProposalEventProcessor
         application.Status = ApplicationStatus.Failed;
 
         await context.SaveChangesAsync();
+
+        var resonanceService = scope.ServiceProvider.GetRequiredService<IResonanceService>();
+        await resonanceService.PushApplicationUpdates(application);
     }
 }

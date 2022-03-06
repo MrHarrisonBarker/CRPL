@@ -97,8 +97,9 @@ public class FormsService : IFormsService
             if (application == null) throw new Exception("Could not determine the application type!");
 
             Context.Applications.Add(application);
-        } else Context.Applications.Update(application);
-        
+        }
+        else Context.Applications.Update(application);
+
         application = await application.UpdateApplication(inputModel, ServiceProvider);
         application.Modified = DateTime.Now;
 
@@ -126,6 +127,8 @@ public class FormsService : IFormsService
         submittedApplication.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();
+
+        await ResonanceService.PushApplicationUpdates(submittedApplication);
 
         return (O)submittedApplication.Map(Mapper);
     }

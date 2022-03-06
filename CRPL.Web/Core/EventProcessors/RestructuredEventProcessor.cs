@@ -2,8 +2,8 @@ using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Contracts.Structs;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Web.Core;
 using CRPL.Web.Exceptions;
-using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Nethereum.Contracts;
 
@@ -44,6 +44,9 @@ public static class RestructuredEventProcessor
         await SetApplicationStatus(work, context);
 
         await context.SaveChangesAsync();
+        
+        var resonanceService = scope.ServiceProvider.GetRequiredService<IResonanceService>();
+        await resonanceService.PushWorkUpdates(work);
     }
 
     private static async Task SetApplicationStatus(RegisteredWork work, ApplicationContext context)

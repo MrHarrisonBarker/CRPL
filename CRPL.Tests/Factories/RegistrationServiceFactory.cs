@@ -5,6 +5,7 @@ using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
+using CRPL.Web.Core;
 using CRPL.Web.Services;
 using CRPL.Web.Services.Background.VerificationPipeline;
 using Microsoft.Extensions.Logging;
@@ -15,9 +16,10 @@ namespace CRPL.Tests.Factories;
 public class RegistrationServiceFactory
 {
     public RegistrationService RegistrationService;
-    public Mock<IVerificationQueue> VerificationQueueMock = new();
-    public Mock<IBlockchainConnection> BlockchainConnectionMock = new();
-    public Mock<IContractRepository> ContractRepositoryMock = new();
+    public readonly Mock<IVerificationQueue> VerificationQueueMock = new();
+    public readonly Mock<IBlockchainConnection> BlockchainConnectionMock = new();
+    public readonly Mock<IContractRepository> ContractRepositoryMock = new();
+    public readonly Mock<IResonanceService> ResonanceServiceMock = new();
 
     public RegistrationServiceFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
     {
@@ -34,6 +36,6 @@ public class RegistrationServiceFactory
         });
 
         RegistrationService = new RegistrationService(new Mock<ILogger<UserService>>().Object, context, mapper, BlockchainConnectionMock.Object, ContractRepositoryMock.Object,
-            VerificationQueueMock.Object);
+            VerificationQueueMock.Object, ResonanceServiceMock.Object);
     }
 }

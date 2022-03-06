@@ -1,8 +1,9 @@
-using System.Net;
+using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
+using CRPL.Web.Core;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +16,14 @@ public class FormsController : ControllerBase
     private readonly ILogger<FormsController> Logger;
     private readonly IFormsService FormsService;
     private readonly IDisputeService DisputeService;
+    private readonly IResonanceService ResonanceService;
 
-    public FormsController(ILogger<FormsController> logger, IFormsService formsService, IDisputeService disputeService)
+    public FormsController(ILogger<FormsController> logger, IFormsService formsService, IDisputeService disputeService, IResonanceService resonanceService)
     {
         Logger = logger;
         FormsService = formsService;
         DisputeService = disputeService;
+        ResonanceService = resonanceService;
     }
 
     [HttpGet("{id}")]
@@ -215,5 +218,30 @@ public class FormsController : ControllerBase
             Logger.LogError(e, "Exception thrown when transferring {Id}'s wallet to {Address}", id, address);
             throw;
         }
+    }
+    
+    [HttpGet("test/{val}")]
+    public async Task<RegisteredWorkViewModel> Get([FromRoute] string val)
+    {
+        if (val == "Fail")
+        {
+            throw new Exception("This is an exception");
+        }
+
+        if (val == "Success")
+        {
+            await ResonanceService.PushApplicationUpdates(new OwnershipRestructureApplication()
+            {
+                Id = new Guid("08d9fd9b-b19f-4768-8ae8-3c3c1f205cbb"),
+                CurrentStructure = "CURRENTSTRUCT!50;",
+                Created = DateTime.Now
+            });
+            return new RegisteredWorkViewModel()
+            {
+                Id = Guid.NewGuid()
+            };
+        }
+
+        return null;
     }
 }

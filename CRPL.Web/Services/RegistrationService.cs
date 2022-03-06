@@ -8,6 +8,7 @@ using CRPL.Data.Applications;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
+using CRPL.Web.Core;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Background.VerificationPipeline;
 using CRPL.Web.Services.Interfaces;
@@ -23,6 +24,7 @@ public class RegistrationService : IRegistrationService
     private readonly IBlockchainConnection BlockchainConnection;
     private readonly IContractRepository ContractRepository;
     private readonly IVerificationQueue VerificationQueue;
+    private readonly IResonanceService ResonanceService;
 
     public RegistrationService(
         ILogger<UserService> logger,
@@ -30,7 +32,8 @@ public class RegistrationService : IRegistrationService
         IMapper mapper,
         IBlockchainConnection blockchainConnection,
         IContractRepository contractRepository,
-        IVerificationQueue verificationQueue)
+        IVerificationQueue verificationQueue,
+        IResonanceService resonanceService)
     {
         Logger = logger;
         Context = context;
@@ -38,6 +41,7 @@ public class RegistrationService : IRegistrationService
         BlockchainConnection = blockchainConnection;
         ContractRepository = contractRepository;
         VerificationQueue = verificationQueue;
+        ResonanceService = resonanceService;
     }
 
     public async Task<RegisteredWork> StartRegistration(CopyrightRegistrationApplication application)
@@ -62,6 +66,8 @@ public class RegistrationService : IRegistrationService
 
         await Context.RegisteredWorks.AddAsync(registeredWork);
         await Context.SaveChangesAsync();
+        
+        await ResonanceService.PushWorkUpdates(registeredWork);
         
         VerificationQueue.QueueWork(registeredWork.Id);
 
@@ -108,6 +114,9 @@ public class RegistrationService : IRegistrationService
             Logger.LogInformation("sent register transaction at {Id}", transactionId);
 
             await Context.SaveChangesAsync();
+
+            await ResonanceService.PushApplicationUpdates(application);
+            await ResonanceService.PushWorkUpdates(application.AssociatedWork);
 
             return application.AssociatedWork;
         }

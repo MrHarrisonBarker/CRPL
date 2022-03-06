@@ -8,10 +8,10 @@ using CRPL.Data.Applications.ViewModels;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Data.StructuredOwnership;
+using CRPL.Web.Core;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Nethereum.Hex.HexTypes;
 
 namespace CRPL.Web.Services;
 
@@ -22,6 +22,7 @@ public class DisputeService : IDisputeService
     private readonly IBlockchainConnection BlockchainConnection;
     private readonly IContractRepository ContractRepository;
     private readonly IFormsService FormsService;
+    private readonly IResonanceService ResonanceService;
     private readonly ILogger<DisputeService> Logger;
 
     public DisputeService(
@@ -30,13 +31,15 @@ public class DisputeService : IDisputeService
         IMapper mapper,
         IBlockchainConnection blockchainConnection,
         IContractRepository contractRepository,
-        IFormsService formsService)
+        IFormsService formsService,
+        IResonanceService resonanceService)
     {
         Context = context;
         Mapper = mapper;
         BlockchainConnection = blockchainConnection;
         ContractRepository = contractRepository;
         FormsService = formsService;
+        ResonanceService = resonanceService;
         Logger = logger;
     }
 
@@ -59,6 +62,8 @@ public class DisputeService : IDisputeService
 
         if (dispute.ExpectedRecourse == ExpectedRecourse.ChangeOfOwnership) await RestructureAndResolve(disputeId);
 
+        await ResonanceService.PushApplicationUpdates(dispute);
+
         return Mapper.Map<DisputeViewModel>(dispute);
     }
 
@@ -79,6 +84,8 @@ public class DisputeService : IDisputeService
         dispute.Status = ApplicationStatus.Complete;
 
         await Context.SaveChangesAsync();
+        
+        await ResonanceService.PushApplicationUpdates(dispute);
 
         return Mapper.Map<DisputeViewModel>(dispute);
     }
@@ -102,6 +109,8 @@ public class DisputeService : IDisputeService
         dispute.ResolveResult.Transaction = transaction;
         dispute.ResolveResult.ResolvedStatus = ResolveStatus.Resolved;
         dispute.Status = ApplicationStatus.Complete;
+        
+        await ResonanceService.PushApplicationUpdates(dispute);
 
         await Context.SaveChangesAsync();
     }
@@ -142,6 +151,8 @@ public class DisputeService : IDisputeService
             RestructureReason = RestructureReason.Dispute,
             Origin = dispute
         });
+        
+        await ResonanceService.PushApplicationUpdates(dispute);
 
         return await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(form.Id);
     }

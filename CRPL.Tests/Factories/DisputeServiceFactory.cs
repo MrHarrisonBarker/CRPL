@@ -5,6 +5,7 @@ using CRPL.Data.Account;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
+using CRPL.Web.Core;
 using CRPL.Web.Services;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -15,9 +16,10 @@ namespace CRPL.Tests.Factories;
 public class DisputeServiceFactory
 {
     public readonly DisputeService DisputeService;
-    public readonly  Mock<IFormsService> FormsServiceMock = new();
-    public readonly  Mock<IBlockchainConnection> BlockchainConnectionMock = new();
-    public readonly  Mock<IContractRepository> ContractRepositoryMock = new();
+    public readonly Mock<IFormsService> FormsServiceMock = new();
+    public readonly Mock<IBlockchainConnection> BlockchainConnectionMock = new();
+    public readonly Mock<IContractRepository> ContractRepositoryMock = new();
+    public readonly Mock<IResonanceService> ResonanceServiceMock = new();
 
     public DisputeServiceFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
     {
@@ -33,6 +35,6 @@ public class DisputeServiceFactory
             Address = "TEST CONTRACT"
         });
 
-        DisputeService = new DisputeService(new Logger<DisputeService>(new LoggerFactory()), context, mapper, BlockchainConnectionMock.Object, ContractRepositoryMock.Object, FormsServiceMock.Object);
+        DisputeService = new DisputeService(new Logger<DisputeService>(new LoggerFactory()), context, mapper, BlockchainConnectionMock.Object, ContractRepositoryMock.Object, FormsServiceMock.Object, ResonanceServiceMock.Object);
     }
 }

@@ -1,6 +1,7 @@
 using CRPL.Contracts.Copyright.ContractDefinition;
 using CRPL.Data.Account;
 using CRPL.Data.Applications;
+using CRPL.Web.Core;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -35,5 +36,8 @@ public static class RegisteredEventProcessor
         await worksVerificationService.Sign(registeredWork);
         
         await context.SaveChangesAsync();
+        
+        var resonanceService = scope.ServiceProvider.GetRequiredService<IResonanceService>();
+        await resonanceService.PushWorkUpdates(registeredWork);
     }
 }

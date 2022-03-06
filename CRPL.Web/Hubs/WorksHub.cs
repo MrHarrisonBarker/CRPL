@@ -7,7 +7,7 @@ namespace CRPL.Web.Hubs;
 public interface IWorksHub
 {
     public Task ListenToWork(Guid workId);
-    public Task PushWork(string connectionId, RegisteredWorkViewModel workViewModel);
+    public Task PushWork(RegisteredWorkViewModel workViewModel);
 }
 
 public class WorksHub : Hub<IWorksHub>
@@ -28,7 +28,7 @@ public class WorksHub : Hub<IWorksHub>
         return Task.CompletedTask;
     }
 
-    public Task PushWork(string connectionId, RegisteredWorkViewModel workViewModel)
+    public Task PushWork(RegisteredWorkViewModel workViewModel)
     {
         Logger.LogInformation("pushing work {Id} to {Connection}", workViewModel.Id, Context.ConnectionId);
         throw new NotImplementedException();

@@ -5,10 +5,10 @@ using CRPL.Data.Applications;
 using CRPL.Data.BlockchainUtils;
 using CRPL.Data.Workds;
 using CRPL.Data.Works;
+using CRPL.Web.Core;
 using CRPL.Web.Exceptions;
 using CRPL.Web.Services.Interfaces;
 using CRPL.Web.WorkSigners;
-using Ipfs.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -20,6 +20,7 @@ public class WorksVerificationService : IWorksVerificationService
     private readonly ApplicationContext Context;
     private readonly ICachedWorkRepository CachedWorkRepository;
     private readonly IIpfsConnection IpfsConnection;
+    private readonly IResonanceService ResonanceService;
     private readonly AppSettings AppSettings;
 
     public WorksVerificationService(
@@ -27,12 +28,14 @@ public class WorksVerificationService : IWorksVerificationService
         ApplicationContext context,
         IOptions<AppSettings> appSettings,
         ICachedWorkRepository cachedWorkRepository,
-        IIpfsConnection ipfsConnection)
+        IIpfsConnection ipfsConnection,
+        IResonanceService resonanceService)
     {
         Logger = logger;
         Context = context;
         CachedWorkRepository = cachedWorkRepository;
         IpfsConnection = ipfsConnection;
+        ResonanceService = resonanceService;
         AppSettings = appSettings.Value;
     }
 
@@ -71,6 +74,9 @@ public class WorksVerificationService : IWorksVerificationService
             Collision = collision?.Id,
             IsAuthentic = collision == null
         };
+
+        await ResonanceService.PushWorkUpdates(work);
+        await ResonanceService.PushApplicationUpdates(application);
 
         await Context.SaveChangesAsync();
     }
