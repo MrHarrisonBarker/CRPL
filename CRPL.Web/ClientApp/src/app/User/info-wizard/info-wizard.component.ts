@@ -13,6 +13,7 @@ import {AlertService} from "../../_Services/alert.service";
 import {Observable, Subject} from "rxjs";
 import {UserAccountStatusModel} from "../../_Models/Account/UserAccountStatusModel";
 import {isInputValid} from "../../utils";
+import {Location} from "@angular/common";
 
 @Component({
   selector: 'info-wizard',
@@ -39,7 +40,8 @@ export class InfoWizardComponent implements OnInit
     private router: Router,
     private validators: ValidatorsService,
     private alertService: AlertService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private location: Location
   )
   {
     this.UserInfoForm = this.formBuilder.group({
@@ -190,6 +192,7 @@ export class InfoWizardComponent implements OnInit
   public Closed (): void
   {
     this.open = false;
+    this.location.back();
   }
 
   public Finished (): void
@@ -198,5 +201,11 @@ export class InfoWizardComponent implements OnInit
     this.unsubscribe.next();
     this.save().pipe(finalize(() => this.Locked = false)).subscribe();
     this.router.navigate(['/dashboard']);
+  }
+
+  public InvalidAndUntouched (control: string, firstPage: boolean): boolean
+  {
+    if (firstPage) return this.FirstPageForm.controls[control].invalid && this.FirstPageForm.controls[control].touched;
+    return this.SecondPageForm.controls[control].invalid && this.SecondPageForm.controls[control].touched;
   }
 }

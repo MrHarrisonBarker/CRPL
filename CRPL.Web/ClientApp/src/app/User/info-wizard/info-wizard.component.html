@@ -11,26 +11,49 @@
     <ng-template clrPageNavTitle>Basic Info</ng-template>
 
     <form clrForm clrLayout="horizontal" [formGroup]="FirstPageForm">
-      <clr-input-container>
-        <label>First name</label> <input clrInput name="firstName" required formControlName="FirstName"/>
-        <clr-control-error>This field cannot be empty!</clr-control-error>
-      </clr-input-container>
 
-      <clr-input-container>
-        <label>Last name</label> <input clrInput name="lastName" required formControlName="LastName"/>
-        <clr-control-error>This field cannot be empty!</clr-control-error>
-      </clr-input-container>
+      <div class="input-container">
+        <div class="input-label">First name<sup>*</sup></div>
+        <div class="input-control">
+          <input type="text" name="firstName" formControlName="FirstName" placeholder="John"/>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('FirstName', true)">
+            <clr-alert-item>This field is required!</clr-alert-item>
+          </clr-alert>
+        </div>
+      </div>
 
-      <clr-date-container>
-        <label>Date of birth</label> <input type="date" clrDate name="DOB" formControlName="DOB"/>
-      </clr-date-container>
+      <div class="input-container">
+        <div class="input-label">Last name<sup>*</sup></div>
+        <div class="input-control">
+          <input type="text" name="lastName" formControlName="LastName" placeholder="Smith"/>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('LastName', true)">
+            <clr-alert-item>This field is required!</clr-alert-item>
+          </clr-alert>
+        </div>
+      </div>
 
-      <clr-datalist-container>
-        <label>Registered Jurisdiction</label> <input clrDatalistInput formControlName="RegisteredJurisdiction" placeholder="GBR" name="registeredJurisdiction"/>
-        <datalist>
-          <option *ngFor="let country of countries" [value]="country.alpha3">{{country.country}}</option>
-        </datalist>
-      </clr-datalist-container>
+      <div class="input-container">
+        <div class="input-label">Date of birth<sup>*</sup></div>
+        <div class="input-control">
+          <input type="date" name="DOB" formControlName="DOB"/>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('DOB', true)">
+            <clr-alert-item>This field is required!</clr-alert-item>
+          </clr-alert>
+        </div>
+      </div>
+
+      <div class="input-container">
+        <div class="input-label">Registered jurisdiction<sup>*</sup></div>
+        <div class="input-control">
+          <input type="text" list="RegisteredJurisdiction" formControlName="RegisteredJurisdiction">
+          <datalist id="RegisteredJurisdiction">
+            <option *ngFor="let country of countries" [value]="country.alpha3">{{country.country}}</option>
+          </datalist>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('DOB', true)">
+            <clr-alert-item>This field is required!</clr-alert-item>
+          </clr-alert>
+        </div>
+      </div>
 
       <clr-alert clrAlertType="danger" *ngIf="FirstPageErrMessage != ''">
         <clr-alert-item>
@@ -46,22 +69,44 @@
 
     <form clrForm clrLayout="horizontal" [formGroup]="SecondPageForm">
 
-      <clr-datalist-container>
-        <label>Dial code</label> <input clrDatalistInput formControlName="DialCode" placeholder="44" name="dialCode"/>
-        <datalist>
-          <option *ngFor="let code of dialCode" [value]="code.dialCode">{{code.name}}</option>
-        </datalist>
-      </clr-datalist-container>
+      <div class="input-container">
+        <div class="input-label">Dial code</div>
+        <div class="input-control">
+          <input type="text" list="DialCode" formControlName="DialCode">
+          <datalist id="DialCode">
+            <option *ngFor="let code of dialCode" [value]="code.dialCode">{{code.name}}</option>
+          </datalist>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('DialCode', false)">
+            <clr-alert-item>This field is required!</clr-alert-item>
+          </clr-alert>
+        </div>
+      </div>
 
-      <clr-input-container>
-        <label>Phone</label> <input clrInput name="phoneNumber" formControlName="PhoneNumber"/>
-        <clr-control-error *ngIf="SecondPageForm.controls.PhoneNumber.hasError('phoneExists')">This phone number is already in use</clr-control-error>
-      </clr-input-container>
+      <div class="input-container">
+        <div class="input-label">Phone</div>
+        <div class="input-control">
+          <input type="text" name="phone" formControlName="Phone"/>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('PhoneNumber', false)">
+            <clr-alert-item>This field is required!</clr-alert-item>
+          </clr-alert>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="SecondPageForm.controls.PhoneNumber.hasError('phoneExists')">
+            <clr-alert-item>This phone number is already in use!</clr-alert-item>
+          </clr-alert>
+        </div>
+      </div>
 
-      <clr-input-container>
-        <label>E-mail</label> <input clrInput type="email" name="email" formControlName="Email"/>
-        <clr-control-error *ngIf="SecondPageForm.controls.Email.hasError('emailExists')">This email is already in use</clr-control-error>
-      </clr-input-container>
+      <div class="input-container">
+        <div class="input-label">E-mail</div>
+        <div class="input-control">
+          <input type="text" name="email" formControlName="Email"/>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('Email', false)">
+            <clr-alert-item>This field is required!</clr-alert-item>
+          </clr-alert>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="SecondPageForm.controls.Email.hasError('emailExists')">
+            <clr-alert-item>This email is already in use!</clr-alert-item>
+          </clr-alert>
+        </div>
+      </div>
 
       <clr-alert clrAlertType="danger" *ngIf="HasNoContact">
         <clr-alert-item>

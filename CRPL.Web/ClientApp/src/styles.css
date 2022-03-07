@@ -87,12 +87,16 @@ pre span {
   margin-bottom: 0.5rem;
 }
 
-.input-container > label {
+.input-container > .input-label {
   color: rgb(69, 69, 69);
   font-weight: bold;
   flex: 0;
   margin-top: 0.2rem;
   white-space: nowrap;
+}
+
+div[class=input-label] {
+  margin-right: 0.5rem;
 }
 
 .input-control > input, select {
@@ -152,5 +156,5 @@ pre span {
 }
 
 .no-margin {
-  margin: 0!important;
+  margin: 0 !important;
 }
