@@ -53,12 +53,12 @@
 
     <div class="card-text" id="recourse">
       <div *ngIf="Application.ExpectedRecourse == 0">
-        <h5 class="card-text">The expected recourse is to transfer ownership to {{Application.AssociatedUsers[0].FirstName}} {{Application.AssociatedUsers[0].LastName}}</h5>
-        <p class="text-muted"><em>{{Application.AssociatedUsers[0].Id}}</em></p>
+        <h5 class="card-text">The expected recourse is to transfer ownership to {{Application.AssociatedUsers[0]?.FirstName}} {{Application.AssociatedUsers[0]?.LastName}}</h5>
+        <p class="text-muted"><em>{{Application.AssociatedUsers[0]?.Id}}</em></p>
         <p>contact the disputer here: {{Application.ContactAddress}}</p>
       </div>
       <div *ngIf="Application.ExpectedRecourse == 1">
-        <h5 class="card-text">The expected recourse is to pay {{Application.ExpectedRecourseData}}eth to <a [href]="Application.AssociatedUsers[0].WalletAddressUri" target="_blank">{{Application.AssociatedUsers[0].WalletPublicAddress}}</a></h5>
+        <h5 class="card-text">The expected recourse is to pay {{Application.ExpectedRecourseData}}eth to <a [href]="Application.AssociatedUsers[0]?.WalletAddressUri" target="_blank">{{Application.AssociatedUsers[0]?.WalletPublicAddress}}</a></h5>
         <p>contact the disputer here: {{Application.ContactAddress}}</p>
       </div>
     </div>

@@ -11,14 +11,14 @@
                   <input id="copyrightsNav" type="checkbox"/> <label for="copyrightsNav">Copyrights</label>
                   <ul class="nav-list">
                     <li *ngFor="let right of RegisteredCopyrights | async">
-                      <a class="nav-link" [class.active]="right == Selected" (click)="SelectWork(right)"> <span *ngIf="right.Status == 4" style="margin-right:0.2rem">{{right.Meta?.Title}}</span><span class="badge badge-danger" *ngIf="NumberOfOpenDisputes(right) > 0">{{NumberOfOpenDisputes(right)}}</span> <span *ngIf="right.Status == 6"><span style="margin-right:0.2rem">{{right.Title}}</span><copyright-status [status]="6"></copyright-status></span> </a>
+                      <a class="nav-link" [class.active]="right == (Selected | async)" (click)="SelectWork(right)"> <span *ngIf="right.Status == 4" style="margin-right:0.2rem">{{right.Meta?.Title}}</span><span class="badge badge-danger" *ngIf="NumberOfOpenDisputes(right) > 0">{{NumberOfOpenDisputes(right)}}</span> <span *ngIf="right.Status == 6"><span style="margin-right:0.2rem">{{right.Title}}</span><copyright-status [status]="6"></copyright-status></span> </a>
                     </li>
                   </ul>
                 </section>
                 <section class="nav-group collapsible">
                   <input id="ApplicationsNav" type="checkbox"/> <label for="ApplicationsNav">Submitted Applications</label>
                   <ul class="nav-list">
-                    <li *ngFor="let application of SubmittedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="SelectApplication(application)">
+                    <li *ngFor="let application of SubmittedApplications | async"><a class="nav-link" [class.active]="application == (Selected | async)" (click)="SelectApplication(application)">
                       <application-type [Application]="application"></application-type>
                     </a></li>
                   </ul>
@@ -26,7 +26,7 @@
                 <section class="nav-group collapsible">
                   <input id="PartialApplicationsNav" type="checkbox"/> <label for="PartialApplicationsNav">Partial Applications</label>
                   <ul class="nav-list">
-                    <li *ngFor="let application of PartialApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="SelectApplication(application)">
+                    <li *ngFor="let application of PartialApplications | async"><a class="nav-link" [class.active]="application == (Selected | async)" (click)="SelectApplication(application)">
                       <application-type [Application]="application"></application-type>
                     </a></li>
                   </ul>
@@ -34,7 +34,7 @@
                 <section class="nav-group collapsible">
                   <input id="CompletedApplicationsNav" type="checkbox"/> <label for="CompletedApplicationsNav">Completed Applications</label>
                   <ul class="nav-list">
-                    <li *ngFor="let application of CompletedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="SelectApplication(application)">
+                    <li *ngFor="let application of CompletedApplications | async"><a class="nav-link" [class.active]="application == (Selected | async)" (click)="SelectApplication(application)">
                       <application-type [Application]="application"></application-type>
                     </a></li>
                   </ul>
@@ -42,7 +42,7 @@
                 <section class="nav-group collapsible">
                   <input id="FailedApplicationsNav" type="checkbox"/> <label for="FailedApplicationsNav">Failed Applications</label>
                   <ul class="nav-list">
-                    <li *ngFor="let application of FailedApplications | async"><a class="nav-link" [class.active]="application == Selected" (click)="SelectApplication(application)">
+                    <li *ngFor="let application of FailedApplications | async"><a class="nav-link" [class.active]="application == (Selected | async)" (click)="SelectApplication(application)">
                       <application-type [Application]="application"></application-type>
                     </a></li>
                   </ul>
@@ -51,10 +51,11 @@
             </nav>
             <div class="content-area">
               <div *ngIf="Loaded; else loading">
-                <div *ngIf="(SelectedApplication | async) || (SelectedCopyright | async) as selected; else nothing">
-                  <copyright-view [CopyrightAsync]="SelectedCopyright" *ngIf="!IsApplication && selected.Status == 4 && selected"></copyright-view>
-                  <copyright-view-expired [CopyrightAsync]="SelectedCopyright" *ngIf="!IsApplication && selected.Status == 6 && selected"></copyright-view-expired>
-                  <applications-view [ApplicationAsync]="SelectedApplication" [ShowForms]="true" *ngIf="IsApplication && selected"></applications-view>
+                <div *ngIf="Selected | async as selected; else nothing">
+<!--                  {{selected | json}}-->
+                  <copyright-view [CopyrightAsync]="SelectedCopyright" *ngIf="selected.Status == 4"></copyright-view>
+                  <copyright-view-expired [CopyrightAsync]="SelectedCopyright" *ngIf="selected.Status == 6"></copyright-view-expired>
+                  <applications-view [ApplicationAsync]="SelectedApplication" [ShowForms]="true"></applications-view>
                 </div>
               </div>
             </div>
@@ -70,7 +71,7 @@
                 <section class="nav-group">
                   <input id="OpenDisputes" type="checkbox"/> <label for="OpenDisputes">Open disputes</label>
                   <ul class="nav-list">
-                    <li *ngFor="let dispute of OpenDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="SelectDispute(dispute)">
+                    <li *ngFor="let dispute of OpenDisputes | async"><a class="nav-link" [class.active]="dispute == (Selected | async)" (click)="SelectDispute(dispute)">
                       <dispute-type [type]="dispute.DisputeType"></dispute-type>
                       -> "{{dispute.AssociatedWork?.Title}}"</a></li>
                   </ul>
@@ -79,7 +80,7 @@
                   <input id="ClosedDisputes" type="checkbox"/> <label for="ClosedDisputes">Closed disputes</label>
                   <ul class="nav-list">
                     <li *ngFor="let dispute of ClosedDisputes | async">
-                      <a class="nav-link" [class.active]="dispute == Selected" (click)="SelectDispute(dispute)">
+                      <a class="nav-link" [class.active]="dispute == (Selected | async)" (click)="SelectDispute(dispute)">
                         <dispute-type [type]="dispute.DisputeType"></dispute-type>
                         -> "{{dispute.AssociatedWork?.Title}}" </a>
                     </li>
@@ -89,7 +90,7 @@
             </nav>
             <div class="content-area">
               <div *ngIf="Loaded; else loading">
-                <div *ngIf="SelectedDispute | async as selected; else nothing">
+                <div *ngIf="Selected | async as selected; else nothing">
                   <applications-view [ApplicationAsync]="SelectedDispute" [ShowForms]="true" [Cancelable]="false" *ngIf="selected"></applications-view>
                 </div>
               </div>

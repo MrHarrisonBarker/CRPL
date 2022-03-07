@@ -48,6 +48,7 @@ export class WarehouseService
 
   public UpdateDispute (value: DisputeViewModel)
   {
+    console.log("[warehouse] updating dispute", value.Id);
     let index = this._MyDisputed.findIndex(x => x.Id == value.Id);
     if (index == -1)
     {

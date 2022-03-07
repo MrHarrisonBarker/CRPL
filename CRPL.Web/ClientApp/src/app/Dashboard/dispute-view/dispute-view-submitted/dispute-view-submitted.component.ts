@@ -1,5 +1,5 @@
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {DisputeViewModel} from "../../../_Models/Applications/DisputeViewModel";
+import {DisputeViewModel, ResolvedStatus} from "../../../_Models/Applications/DisputeViewModel";
 import {DisputeType} from "../../../_Models/Applications/DisputeInputModel";
 import {WarehouseService} from "../../../_Services/warehouse.service";
 import {BehaviorSubject, Observable, Subscription} from "rxjs";
@@ -85,6 +85,7 @@ export class DisputeViewSubmittedComponent implements OnInit, OnChanges, OnDestr
 
   public Accept (): void
   {
+    console.log('accepting dispute')
     this.formsService.ResolveDispute({
       Accept: true,
       DisputeId: this.Application.Id,
@@ -105,23 +106,25 @@ export class DisputeViewSubmittedComponent implements OnInit, OnChanges, OnDestr
     this.Locked = true;
     let web3 = new Web3(Web3.givenProvider);
 
-    this.Ethereum.request({
+    (this.Ethereum.request({
       method: 'eth_sendTransaction',
       params: [{
         to: this.Application.AssociatedUsers[0].WalletPublicAddress,
         from: this.Ethereum.selectedAddress,
         value: web3.utils.toWei(this.Application.ExpectedRecourseData, "ether")
       }]
-    }).then((transaction: string) =>
+    }) as Promise<any>).then((transaction: string) =>
     {
       this.formsService.RecordPayment(this.Application.Id, transaction)
           .pipe(finalize(() => this.Locked = false))
           .subscribe(x =>
           {
-            console.log(x);
             this.alertService.Alert({Type: 'success', Message: 'Recorded payment'});
             this.Locked = false;
+            this.Application.ResolveResult.ResolvedStatus = ResolvedStatus.Processing;
           })
-    });
+    }).catch((err: any) => {
+      console.log('[dispute-view-submitted] got error', err);
+    }).finally(() => this.Locked = false);
   }
 }

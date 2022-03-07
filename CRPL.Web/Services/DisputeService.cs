@@ -47,7 +47,9 @@ public class DisputeService : IDisputeService
     {
         Logger.LogInformation("Accepting recourse for dispute {Id}", disputeId);
 
-        var dispute = await Context.DisputeApplications.FirstOrDefaultAsync(x => x.Id == disputeId);
+        var dispute = await Context.DisputeApplications
+            .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
+            .Include(x => x.AssociatedWork).FirstOrDefaultAsync(x => x.Id == disputeId);
         if (dispute == null) throw new DisputeNotFoundException(disputeId);
 
         if (dispute.Status != ApplicationStatus.Submitted) throw new Exception("Dispute not submitted");

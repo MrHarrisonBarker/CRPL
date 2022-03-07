@@ -48,7 +48,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy, OnChanges
       Spotted: [Date.now(), Validators.required],
       Infractions: [1, [Validators.required, Validators.min(1)]],
       ExpectedRecourse: [this.ExpectedRecourseTypes[0], Validators.required],
-      ExpectedRecourseData: [0.1],
+      ExpectedRecourseData: [''],
       ContactAddress: ['', Validators.required],
       LinkToInfraction: ['', Validators.required]
     });
@@ -155,7 +155,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy, OnChanges
       Reason: this.ExistingApplication.Reason,
       Spotted: this.ExistingApplication.Spotted,
       Infractions: this.ExistingApplication.Infractions,
-      ExpectedRecourse: this.ExistingApplication.ExpectedRecourse,
+      ExpectedRecourse: ExpectedRecourse[this.ExistingApplication.ExpectedRecourse],
       ExpectedRecourseData: this.ExistingApplication.ExpectedRecourseData,
       ContactAddress: this.ExistingApplication.ContactAddress,
       LinkToInfraction: this.ExistingApplication.LinkToInfraction

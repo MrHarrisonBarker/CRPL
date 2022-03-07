@@ -1,16 +1,15 @@
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
 import {FormsService} from "../../_Services/forms.service";
 import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewModel";
 import {CopyrightService} from "../../_Services/copyright.service";
 import {RegisteredWorkStatus, RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
-import {forkJoin, Observable} from "rxjs";
+import {forkJoin, Observable, Subject} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
 import {WarehouseService} from "../../_Services/warehouse.service";
 import {ActivatedRoute} from "@angular/router";
 import {map, tap} from "rxjs/operators";
 import {DisputeViewModel} from "../../_Models/Applications/DisputeViewModel";
-import {ApplicationsViewComponent} from "../applications-view/applications-view.component";
 import {DisputeType} from "../../_Models/Applications/DisputeInputModel";
 
 @Component({
@@ -25,11 +24,9 @@ export class DashboardComponent implements OnInit, OnDestroy
   public SelectedApplication: Observable<ApplicationViewModel> = new Observable<ApplicationViewModel>();
   public SelectedCopyright: Observable<RegisteredWorkViewModel> = new Observable<RegisteredWorkViewModel>();
   public SelectedDispute: Observable<DisputeViewModel> = new Observable<DisputeViewModel>();
-  public Selected!: RegisteredWorkViewModel | ApplicationViewModel;
+  public Selected: Subject<RegisteredWorkViewModel | ApplicationViewModel> = new Subject<RegisteredWorkViewModel | ApplicationViewModel>();
 
   public IsApplication: boolean = false;
-
-  @ViewChild(ApplicationsViewComponent, {static: false}) childRef!: ApplicationsViewComponent;
 
   public CompletedApplications!: Observable<ApplicationViewModel[]>;
   public SubmittedApplications!: Observable<ApplicationViewModel[]>;
@@ -46,7 +43,8 @@ export class DashboardComponent implements OnInit, OnDestroy
     private copyrightService: CopyrightService,
     private alertService: AlertService,
     public warehouse: WarehouseService,
-    private route: ActivatedRoute)
+    private route: ActivatedRoute,
+    private changeDetectorRef: ChangeDetectorRef)
   {
     this.CompletedApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Complete)));
     this.SubmittedApplications = this.warehouse.__MyApplications.pipe(map(x => x.filter(a => a.Status == ApplicationStatus.Submitted)));
@@ -89,8 +87,11 @@ export class DashboardComponent implements OnInit, OnDestroy
   public SelectWork (selected: RegisteredWorkViewModel): void
   {
     console.log("[dashboard] selected work", selected);
-    this.SelectedCopyright = (this.warehouse.__MyWorks.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<RegisteredWorkViewModel>).pipe(tap(x => this.Selected = x));
-    this.IsApplication = false;
+    this.SelectedCopyright = (this.warehouse.__MyWorks.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<RegisteredWorkViewModel>).pipe(tap(x =>
+    {
+      console.log("Selecting a found work");
+    }));
+    this.Selected.next(selected);
     this.SelectedApplication = new Observable<ApplicationViewModel>();
     this.SelectedDispute = new Observable<DisputeViewModel>();
   }
@@ -98,8 +99,11 @@ export class DashboardComponent implements OnInit, OnDestroy
   public SelectApplication (selected: ApplicationViewModel): void
   {
     console.log("[dashboard] selected application", selected);
-    this.SelectedApplication = (this.warehouse.__MyApplications.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<ApplicationViewModel>).pipe(tap(x => this.Selected = x));;
-    this.IsApplication = true;
+    this.SelectedApplication = (this.warehouse.__MyApplications.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<ApplicationViewModel>).pipe(tap(x =>
+    {
+      console.log("Selecting a found application");
+    }));
+    this.Selected.next(selected);
     this.SelectedCopyright = new Observable<RegisteredWorkViewModel>();
     this.SelectedDispute = new Observable<DisputeViewModel>();
   }
@@ -107,7 +111,8 @@ export class DashboardComponent implements OnInit, OnDestroy
   public SelectDispute (selected: DisputeViewModel): void
   {
     console.log("[dashboard] selected dispute", selected);
-    this.SelectedDispute = (this.warehouse.__MyDisputed.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<DisputeViewModel>).pipe(tap(x => this.Selected = x));
+    this.SelectedDispute = (this.warehouse.__MyDisputed.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<DisputeViewModel>)
+    this.Selected.next(selected);
     this.SelectedCopyright = new Observable<RegisteredWorkViewModel>();
     this.SelectedApplication = new Observable<ApplicationViewModel>();
   }
@@ -120,7 +125,7 @@ export class DashboardComponent implements OnInit, OnDestroy
 
   public ResetSelected ()
   {
-    this.Selected = null as any;
+    this.Selected.next(null as any);
     this.SelectedApplication = new Observable<ApplicationViewModel>();
     this.SelectedCopyright = new Observable<RegisteredWorkViewModel>();
     this.SelectedDispute = new Observable<DisputeViewModel>();

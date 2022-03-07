@@ -70,7 +70,7 @@
     <div class="input-container" *ngIf="ExpectedRecourse == ExpectedRecourseTypes[1]">
       <label class="input-label">Charge (eth)</label>
       <div class="input-control">
-        <input type="number" name="infractions" formControlName="Infractions" autocomplete="false"/>
+        <input type="number" name="expectedRecourseData" formControlName="ExpectedRecourseData" autocomplete="false"/>
         <div>${{externalService.CurrentPrice.getValue() * DisputeForm.value['ExpectedRecourseData']}} (this exchange rate may change)</div>
       </div>
     </div>
