@@ -138,7 +138,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy, OnChanges
       Infractions: this.DisputeForm.value.Infractions,
       LinkToInfraction: this.DisputeForm.value.LinkToInfraction,
       Reason: this.DisputeForm.value.Reason,
-      Spotted: this.DisputeForm.value.Spotted
+      Spotted: new Date(this.DisputeForm.value.Spotted)
     };
 
     return this.formsService.UpdateDispute(inputModel).pipe(tap(crp =>

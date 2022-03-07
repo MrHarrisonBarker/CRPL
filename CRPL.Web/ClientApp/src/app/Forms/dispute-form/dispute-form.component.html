@@ -75,14 +75,6 @@
       </div>
     </div>
 
-    <clr-input-container *ngIf="ExpectedRecourse == ExpectedRecourseTypes[1]">
-      <label class="clr-control-label">Charge (eth)</label> <input autocomplete="false" type="number" clrInput name="ExpectedRecourseData" required formControlName="ExpectedRecourseData"/>
-      <clr-control-error>This field cannot be empty!</clr-control-error>
-      <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="DisputeForm.controls['ExpectedRecourseData'].hasError('required')">
-        <clr-alert-item>This field is required!</clr-alert-item>
-      </clr-alert>
-    </clr-input-container>
-
     <clr-checkbox-wrapper>
       <input type="checkbox" clrCheckbox name="ula" required value="ula" [formControl]="Accepted"/> <label>accept ula</label>
     </clr-checkbox-wrapper>
