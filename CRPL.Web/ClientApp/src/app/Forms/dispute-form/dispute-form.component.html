@@ -1,49 +1,86 @@
 <div id="form-wrapper">
   <form clrForm clrLayout="compact" [formGroup]="DisputeForm" clrLabelSize="4" autocomplete="off">
 
-    <h3>Dispute application</h3>
-    <hr/>
+    <div class="input-container">
+      <label class="input-label">Reason<sup>*</sup></label>
+      <div class="input-control">
+        <textarea name="reason" formControlName="Reason" placeholder="you don't own this" rows="10"></textarea>
+        <div>This is a space for you to add any extra legal documentation to your copyright</div>
+        <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="DisputeForm.controls['Reason'].hasError('required')">
+          <clr-alert-item>This field is required!</clr-alert-item>
+        </clr-alert>
+      </div>
+    </div>
 
-    <clr-select-container>
-      <label>Type of dispute</label> <select clrSelect name="options" formControlName="DisputeType">
-      <option [value]="type" *ngFor="let type of DisputeTypes">{{type}}</option>
-    </select>
-    </clr-select-container>
+    <div class="input-container">
+      <label class="input-label">Contact address<sup>*</sup></label>
+      <div class="input-control">
+        <input type="text" name="contactAddress" formControlName="ContactAddress" placeholder="test@user.co.uk"/>
+        <div>Prefered form of contact</div>
+      </div>
+    </div>
 
-    <clr-textarea-container>
-      <label>Reason</label> <textarea clrTextarea formControlName="Reason" name="Reason" required></textarea>
-      <clr-control-error>This field cannot be empty!</clr-control-error>
-    </clr-textarea-container>
+    <div class="input-container">
+      <label class="input-label">Type of dispute<sup>*</sup></label>
+      <div class="input-control">
+        <select name="disputeType" formControlName="DisputeType">
+          <option [value]="type" *ngFor="let type of DisputeTypes">{{type}}</option>
+        </select>
+        <div>Select the type of dispute you want to file</div>
+      </div>
+    </div>
 
-    <clr-date-container>
-      <label>Date of discovery</label> <input type="date" clrDate name="Spotted" formControlName="Spotted"/>
-    </clr-date-container>
+    <div class="input-container">
+      <label class="input-label">Date of discovery<sup>*</sup></label>
+      <div class="input-control">
+        <input type="date" name="spotted" formControlName="Spotted"/>
+        <div>The date you first spotted this infraction</div>
+        <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="DisputeForm.controls['Spotted'].hasError('required')">
+          <clr-alert-item>This field is required!</clr-alert-item>
+        </clr-alert>
+      </div>
+    </div>
 
-    <clr-input-container>
-      <label class="clr-control-label">Number of infractions</label> <input clrInput type="number" name="Infractions" required formControlName="Infractions"/>
-      <clr-control-error>This field cannot be empty!</clr-control-error>
-    </clr-input-container>
+    <div class="input-container">
+      <label class="input-label">Number of infractions</label>
+      <div class="input-control">
+        <input type="number" name="infractions" formControlName="Infractions"/>
+        <div>Number of infractions as a best estimate</div>
+      </div>
+    </div>
 
-    <clr-input-container>
-      <label class="clr-control-label">Contact address</label> <input clrInput name="ContactAddress" required formControlName="ContactAddress"/>
-      <clr-control-error>This field cannot be empty!</clr-control-error>
-    </clr-input-container>
+    <div class="input-container">
+      <label class="input-label">Link to infraction<sup>*</sup></label>
+      <div class="input-control">
+        <input type="text" name="linkToInfraction" formControlName="LinkToInfraction" placeholder="www.harrisonbarker.co.uk"/>
+        <div>A link to the infraction</div>
+      </div>
+    </div>
 
-    <clr-input-container>
-      <label class="clr-control-label">Link to infraction</label> <input clrInput name="LinkToInfraction" required formControlName="LinkToInfraction"/>
-      <clr-control-error>This field cannot be empty!</clr-control-error>
-    </clr-input-container>
+    <div class="input-container">
+      <label class="input-label">Expected recourse<sup>*</sup></label>
+      <div class="input-control">
+        <select name="expectedRecourse" formControlName="ExpectedRecourse">
+          <option [value]="type" *ngFor="let type of ExpectedRecourseTypes">{{type}}</option>
+        </select>
+        <div>The expected recourse or action to be taken for this dispute to be resolved</div>
+      </div>
+    </div>
 
-    <clr-select-container>
-      <label>Expected recourse</label> <select clrSelect required name="ExpectedRecourse" formControlName="ExpectedRecourse">
-      <option [value]="type" *ngFor="let type of ExpectedRecourseTypes">{{type}}</option>
-    </select>
-    </clr-select-container>
+    <div class="input-container" *ngIf="ExpectedRecourse == ExpectedRecourseTypes[1]">
+      <label class="input-label">Charge (eth)</label>
+      <div class="input-control">
+        <input type="number" name="infractions" formControlName="Infractions" autocomplete="false"/>
+        <div>${{externalService.CurrentPrice.getValue() * DisputeForm.value['ExpectedRecourseData']}} (this exchange rate may change)</div>
+      </div>
+    </div>
 
     <clr-input-container *ngIf="ExpectedRecourse == ExpectedRecourseTypes[1]">
       <label class="clr-control-label">Charge (eth)</label> <input autocomplete="false" type="number" clrInput name="ExpectedRecourseData" required formControlName="ExpectedRecourseData"/>
       <clr-control-error>This field cannot be empty!</clr-control-error>
-      <clr-control-helper>${{externalService.CurrentPrice.getValue() * DisputeForm.value['ExpectedRecourseData']}} (this exchange rate may change)</clr-control-helper>
+      <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="DisputeForm.controls['ExpectedRecourseData'].hasError('required')">
+        <clr-alert-item>This field is required!</clr-alert-item>
+      </clr-alert>
     </clr-input-container>
 
     <clr-checkbox-wrapper>

@@ -44,8 +44,8 @@ export class DisputeFormComponent implements OnInit, OnDestroy, OnChanges
   {
     this.DisputeForm = this.formBuilder.group({
       DisputeType: [this.DisputeTypes[0], Validators.required],
-      Reason: ['', Validators.required],
-      Spotted: ['' , Validators.required],
+      Reason: [' ', Validators.required],
+      Spotted: [Date.now(), Validators.required],
       Infractions: [1, [Validators.required, Validators.min(1)]],
       ExpectedRecourse: [this.ExpectedRecourseTypes[0], Validators.required],
       ExpectedRecourseData: [0.1],
@@ -61,7 +61,7 @@ export class DisputeFormComponent implements OnInit, OnDestroy, OnChanges
 
   private subscribeToApplication() : void
   {
-    this.ApplicationSubscription = this.ApplicationAsync.subscribe(application =>
+    if(this.ApplicationAsync) this.ApplicationSubscription = this.ApplicationAsync.subscribe(application =>
     {
       this.unsubscribe.next();
       this.ExistingApplication = application as DisputeViewModel;
