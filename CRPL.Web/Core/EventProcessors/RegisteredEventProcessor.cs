@@ -40,5 +40,6 @@ public static class RegisteredEventProcessor
         
         var resonanceService = scope.ServiceProvider.GetRequiredService<IResonanceService>();
         await resonanceService.PushWorkUpdates(registeredWork);
+        await resonanceService.PushApplicationUpdates(registeredWork.AssociatedApplication.First(x => x.ApplicationType == ApplicationType.CopyrightRegistration));
     }
 }

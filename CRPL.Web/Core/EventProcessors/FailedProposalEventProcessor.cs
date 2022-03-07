@@ -17,7 +17,8 @@ public static class FailedProposalEventProcessor
         using var scope = serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
         
-        var application = await context.OwnershipRestructureApplications.Include(x => x.AssociatedWork)
+        var application = await context.OwnershipRestructureApplications
+            .Include(x => x.AssociatedWork)
             .FirstOrDefaultAsync(x => x.AssociatedWork.RightId == failedProposal.Event.RightId.ToString());
 
         if (application == null) throw new ApplicationNotFoundException();

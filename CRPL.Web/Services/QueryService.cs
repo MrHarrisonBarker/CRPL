@@ -136,9 +136,11 @@ public class QueryService : IQueryService
 
     private async Task<RegisteredWorkWithAppsViewModel> injectFromChain(RegisteredWorkWithAppsViewModel registeredWork)
     {
+        if (registeredWork.RightId == null) return registeredWork;
+        
         Logger.LogInformation("Injecting blockchain data into registered work {Id}", registeredWork.Id);
         var rightId = BigInteger.Parse(registeredWork.RightId);
-        
+
         try
         {
             var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
@@ -167,7 +169,8 @@ public class QueryService : IQueryService
                 {
                     Logger.LogInformation("got EXPIRED, setting work to expired");
                     ExpiryQueue.QueueExpire(registeredWork.Id);
-                } else Logger.LogInformation("got EXPIRED but that was expected");
+                }
+                else Logger.LogInformation("got EXPIRED but that was expected");
             }
             else throw;
         }

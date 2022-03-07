@@ -75,10 +75,10 @@ public class WorksVerificationService : IWorksVerificationService
             IsAuthentic = collision == null
         };
 
+        await Context.SaveChangesAsync();
+        
         await ResonanceService.PushWorkUpdates(work);
         await ResonanceService.PushApplicationUpdates(application);
-
-        await Context.SaveChangesAsync();
     }
 
     public async Task<byte[]> Upload(IFormFile file)
