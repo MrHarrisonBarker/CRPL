@@ -91,6 +91,8 @@ export class DashboardComponent implements OnInit, OnDestroy
     console.log("[dashboard] selected work", selected);
     this.SelectedCopyright = (this.warehouse.__MyWorks.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<RegisteredWorkViewModel>).pipe(tap(x => this.Selected = x));
     this.IsApplication = false;
+    this.SelectedApplication = new Observable<ApplicationViewModel>();
+    this.SelectedDispute = new Observable<DisputeViewModel>();
   }
 
   public SelectApplication (selected: ApplicationViewModel): void
@@ -98,12 +100,16 @@ export class DashboardComponent implements OnInit, OnDestroy
     console.log("[dashboard] selected application", selected);
     this.SelectedApplication = (this.warehouse.__MyApplications.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<ApplicationViewModel>).pipe(tap(x => this.Selected = x));;
     this.IsApplication = true;
+    this.SelectedCopyright = new Observable<RegisteredWorkViewModel>();
+    this.SelectedDispute = new Observable<DisputeViewModel>();
   }
 
   public SelectDispute (selected: DisputeViewModel): void
   {
     console.log("[dashboard] selected dispute", selected);
     this.SelectedDispute = (this.warehouse.__MyDisputed.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<DisputeViewModel>).pipe(tap(x => this.Selected = x));
+    this.SelectedCopyright = new Observable<RegisteredWorkViewModel>();
+    this.SelectedApplication = new Observable<ApplicationViewModel>();
   }
 
   public NumberOfOpenDisputes (right: RegisteredWorkViewModel): number
