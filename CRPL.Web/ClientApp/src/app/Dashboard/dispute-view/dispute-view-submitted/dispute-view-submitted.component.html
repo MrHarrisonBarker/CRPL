@@ -1,8 +1,8 @@
 <div *ngIf="Owner | async">
   <h4>Resolve dispute</h4>
   <div>
-    <button class="btn btn-primary btn-sm" (click)="Accept()" [disabled]="Application.ResolveResult.ResolvedStatus > 0 || Locked">accept recourse</button>
-    <button class="btn btn-danger btn-sm" (click)="Refuse()" [disabled]="Application.ResolveResult.ResolvedStatus > 0 || Locked">refuse recourse</button>
+    <button class="btn btn-primary-outline btn-sm" (click)="Accept()" [disabled]="Application.ResolveResult.ResolvedStatus > 0 || Locked">accept recourse</button>
+    <button class="btn btn-danger-outline btn-sm" (click)="Refuse()" [disabled]="Application.ResolveResult.ResolvedStatus > 0 || Locked">refuse recourse</button>
   </div>
   <div id="OnChainActions" *ngIf="Application.ResolveResult.ResolvedStatus == 1">
     <button class="btn btn-sm" [disabled]="Locked" (click)="StartPayment()">Send compensation</button>

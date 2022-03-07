@@ -70,21 +70,21 @@
                 <section class="nav-group">
                   <input id="OpenDisputes" type="checkbox"/> <label for="OpenDisputes">Open disputes</label>
                   <ul class="nav-list">
-                    <li *ngFor="let dispute of OpenDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="SelectApplication(dispute)">{{dispute.AssociatedWork?.Title}}</a></li>
+                    <li *ngFor="let dispute of OpenDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="SelectDispute(dispute)"><dispute-type [type]="dispute.DisputeType"></dispute-type> -> "{{dispute.AssociatedWork?.Title}}"</a></li>
                   </ul>
                 </section>
                 <section class="nav-group">
                   <input id="ClosedDisputes" type="checkbox"/> <label for="ClosedDisputes">Closed disputes</label>
                   <ul class="nav-list">
-                    <li *ngFor="let dispute of ClosedDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="SelectApplication(dispute)">{{dispute.AssociatedWork?.Title}}</a></li>
+                    <li *ngFor="let dispute of ClosedDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="SelectDispute(dispute)"><dispute-type [type]="dispute.DisputeType"></dispute-type> -> "{{dispute.AssociatedWork?.Title}}"</a></li>
                   </ul>
                 </section>
               </section>
             </nav>
             <div class="content-area">
               <div *ngIf="Loaded; else loading">
-                <div *ngIf="SelectedApplication | async as selected; else nothing">
-                  <applications-view [ApplicationAsync]="SelectedApplication" [ShowForms]="true" [Cancelable]="false" *ngIf="IsApplication"></applications-view>
+                <div *ngIf="SelectedDispute | async as selected; else nothing">
+                  <applications-view [ApplicationAsync]="SelectedDispute" [ShowForms]="true" [Cancelable]="false" *ngIf="selected"></applications-view>
                 </div>
               </div>
             </div>

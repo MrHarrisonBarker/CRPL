@@ -4,13 +4,14 @@ import {ApplicationViewModel} from "../../_Models/Applications/ApplicationViewMo
 import {CopyrightService} from "../../_Services/copyright.service";
 import {RegisteredWorkStatus, RegisteredWorkViewModel} from "../../_Models/Works/RegisteredWork";
 import {ApplicationStatus} from "../../_Models/Applications/ApplicationStatus";
-import {forkJoin, Observable, of} from "rxjs";
+import {forkJoin, Observable} from "rxjs";
 import {AlertService} from "../../_Services/alert.service";
 import {WarehouseService} from "../../_Services/warehouse.service";
 import {ActivatedRoute} from "@angular/router";
 import {map, tap} from "rxjs/operators";
 import {DisputeViewModel} from "../../_Models/Applications/DisputeViewModel";
 import {ApplicationsViewComponent} from "../applications-view/applications-view.component";
+import {DisputeType} from "../../_Models/Applications/DisputeInputModel";
 
 @Component({
   selector: 'app-dashboard',
@@ -23,6 +24,7 @@ export class DashboardComponent implements OnInit, OnDestroy
 
   public SelectedApplication: Observable<ApplicationViewModel> = new Observable<ApplicationViewModel>();
   public SelectedCopyright: Observable<RegisteredWorkViewModel> = new Observable<RegisteredWorkViewModel>();
+  public SelectedDispute: Observable<DisputeViewModel> = new Observable<DisputeViewModel>();
   public Selected!: RegisteredWorkViewModel | ApplicationViewModel;
 
   public IsApplication: boolean = false;
@@ -98,6 +100,12 @@ export class DashboardComponent implements OnInit, OnDestroy
     this.IsApplication = true;
   }
 
+  public SelectDispute (selected: DisputeViewModel): void
+  {
+    console.log("[dashboard] selected dispute", selected);
+    this.SelectedDispute = (this.warehouse.__MyDisputed.pipe(map(x => x.find(x => x.Id == selected.Id))) as Observable<DisputeViewModel>).pipe(tap(x => this.Selected = x));
+  }
+
   public NumberOfOpenDisputes (right: RegisteredWorkViewModel): number
   {
     if (right.AssociatedApplication) return right.AssociatedApplication?.filter(x => x.ApplicationType == 2 && x.Status != ApplicationStatus.Complete).length;
@@ -107,7 +115,13 @@ export class DashboardComponent implements OnInit, OnDestroy
   public ResetSelected ()
   {
     this.Selected = null as any;
-    this.SelectedApplication = of(null as any);
-    this.SelectedCopyright = of(null as any);
+    this.SelectedApplication = new Observable<ApplicationViewModel>();
+    this.SelectedCopyright = new Observable<RegisteredWorkViewModel>();
+    this.SelectedDispute = new Observable<DisputeViewModel>();
+  }
+
+  DisputeName (type: number): string
+  {
+    return DisputeType[type];
   }
 }

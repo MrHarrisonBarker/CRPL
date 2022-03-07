@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApplicationViewModel} from "../_Models/Applications/ApplicationViewModel";
 import {RegisteredWorkViewModel} from "../_Models/Works/RegisteredWork";
-import {BehaviorSubject, Subject} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {DisputeViewModel} from "../_Models/Applications/DisputeViewModel";
 
 @Injectable({
@@ -86,7 +86,7 @@ export class WarehouseService
 
   public __MyApplications: BehaviorSubject<ApplicationViewModel[]> = new BehaviorSubject<ApplicationViewModel[]>(this._MyApplications);
   public __MyWorks: BehaviorSubject<RegisteredWorkViewModel[]> = new BehaviorSubject<RegisteredWorkViewModel[]>(this._MyWorks);
-  public __MyDisputed: Subject<DisputeViewModel[]> = new Subject<DisputeViewModel[]>();
+  public __MyDisputed: BehaviorSubject<DisputeViewModel[]> = new BehaviorSubject<DisputeViewModel[]>(this._MyDisputed);
 
   // public MyApplications: Observable<ApplicationViewModel[]> = this.__MyApplications.asObservable().pipe(startWith(this._MyApplications));
 
