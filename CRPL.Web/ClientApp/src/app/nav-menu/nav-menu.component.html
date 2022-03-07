@@ -2,13 +2,13 @@
   <img src="assets/crpl.png" alt="CRPL">
   <header class="header-7">
     <div class="header-nav">
-      <a class="nav-link nav-text" [routerLinkActive]="['/']" [routerLink]="['/']">Index</a>
-      <a class="nav-link nav-text" [routerLinkActive]="['/search']" [routerLink]="['/search']">Search</a>
-      <a class="nav-link nav-text" [routerLinkActive]="['/']" [routerLink]="['/']">About</a>
+      <a class="nav-link nav-text" [class.active]="RouteActive('/')" [routerLinkActive]="['/']" [routerLink]="['/']">Index</a>
+      <a class="nav-link nav-text" [class.active]="RouteActive('/search')" [routerLink]="['/search']">Search</a>
+      <a class="nav-link nav-text" [class.active]="RouteActive('/about')" [routerLink]="['/']">About</a>
 
     </div>
     <div class="header-actions clr-align-items-center">
-      <a class="nav-link nav-text" [routerLink]="['/register']">Register</a>
+      <a class="nav-link nav-text" [class.active]="RouteActive('/register')" [routerLink]="['/register']">Register</a>
       <login-button></login-button>
     </div>
   </header>

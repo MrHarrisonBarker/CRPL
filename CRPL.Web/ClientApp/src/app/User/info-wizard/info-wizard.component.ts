@@ -68,8 +68,6 @@ export class InfoWizardComponent implements OnInit
     let phone = this.getControl('PhoneNumber');
     let dial = this.getControl('DialCode')
 
-    console.log('validating the contact info', email, phone, dial, this.SecondPageForm);
-
     if (!isInputValid(email) && !isInputValid(phone) && !isInputValid(dial))
     {
       this.HasNoContact = true;
@@ -79,11 +77,9 @@ export class InfoWizardComponent implements OnInit
     // if the email is invalid
     if (!isInputValid(email))
     {
-      console.log('the email is invalid');
       // if email is invalid the phone must be valid
       if (!isInputValid(phone) || !isInputValid(dial))
       {
-        console.log('the phone is invalid')
         this.HasNoContact = true;
         return;
       }
@@ -92,7 +88,6 @@ export class InfoWizardComponent implements OnInit
     // if the phone is invalid
     if (!isInputValid(phone) || !isInputValid(dial))
     {
-      console.log('the phone is invalid');
       // if the phone is invalid the email must be valid
       if (!isInputValid(email))
       {

@@ -7,7 +7,6 @@ export function isEmptyInputValue (value: any): boolean
 
 export function isInputValid (control: AbstractControl)
 {
-  console.log(control);
   return control.valid && !isEmptyInputValue(control.value)
 }
 
