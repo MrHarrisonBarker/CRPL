@@ -17,7 +17,7 @@ public class IsUniquePhone
         using var dbFactory = new TestDbApplicationContextFactory();
         var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-        (await userServiceFactory.UserService.IsUniquePhoneNumber("+4400000000000")).Should().BeTrue();
+        (await userServiceFactory.UserService.IsUniquePhoneNumber(Guid.Empty, "+4400000000000")).Should().BeTrue();
     }
 
     [Test]
@@ -34,6 +34,6 @@ public class IsUniquePhone
         });
         var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-        (await userServiceFactory.UserService.IsUniquePhoneNumber("07852276048")).Should().BeFalse();
+        (await userServiceFactory.UserService.IsUniquePhoneNumber(Guid.Empty, "07852276048")).Should().BeFalse();
     }
 }

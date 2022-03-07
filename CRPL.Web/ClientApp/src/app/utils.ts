@@ -1,6 +1,14 @@
+import {AbstractControl} from "@angular/forms";
+
 export function isEmptyInputValue (value: any): boolean
 {
   return value == null || value.length === 0;
+}
+
+export function isInputValid (control: AbstractControl)
+{
+  console.log(control);
+  return control.valid && !isEmptyInputValue(control.value)
 }
 
 export function DownloadFile (fileName: string, data: Blob)

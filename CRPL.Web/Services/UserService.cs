@@ -49,16 +49,16 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<bool> IsUniquePhoneNumber(string phoneNumber)
+    public async Task<bool> IsUniquePhoneNumber(Guid id, string phoneNumber)
     {
         Logger.LogInformation("Checking is phone number '{Phone}' exists", phoneNumber);
-        return !(await Context.UserAccounts.AnyAsync(x => x.PhoneNumber == phoneNumber));
+        return !(await Context.UserAccounts.Where(x => x.Id != id).AnyAsync(x => x.PhoneNumber == phoneNumber));
     }
 
-    public async Task<bool> IsUniqueEmail(string email)
+    public async Task<bool> IsUniqueEmail(Guid id, string email)
     {
         Logger.LogInformation("Checking is email '{Email}' exists", email);
-        return !(await Context.UserAccounts.AnyAsync(x => x.Email == email));
+        return !(await Context.UserAccounts.Where(x => x.Id != id).AnyAsync(x => x.Email == email));
     }
 
     public bool AreUsersReal(List<string> userAddresses)

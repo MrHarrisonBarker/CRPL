@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AbstractControl, AsyncValidatorFn, FormArray, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
+import {AbstractControl, AsyncValidatorFn, FormArray, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {Observable, of} from "rxjs";
 import {UserService} from "./user.service";
 import {map} from "rxjs/operators";
@@ -39,19 +39,6 @@ export class ValidatorsService
         return res ? null : {emailExists: true}
       }));
     }
-  }
-
-  public hasOneContactInfo (): ValidatorFn
-  {
-    return (control: AbstractControl): { [key: string]: any } | null =>
-    {
-      if (control.parent)
-      {
-        console.log("checking if one")
-        return isEmptyInputValue(control.value) && isEmptyInputValue(control.parent.value.PhoneNumber) ? {hasNoContact: true} : null;
-      }
-      return null;
-    };
   }
 
   public ShareStructureValidator (): ValidatorFn

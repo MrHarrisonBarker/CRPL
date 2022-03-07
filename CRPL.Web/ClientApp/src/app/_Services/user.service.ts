@@ -1,13 +1,12 @@
 import {Inject, Injectable} from '@angular/core';
-import {Observable, of, throwError} from "rxjs";
+import {Observable, throwError} from "rxjs";
 import {UserAccountStatusModel} from "../_Models/Account/UserAccountStatusModel";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {UserPaths} from "../api.conts";
 import {AuthService} from "./auth.service";
 import {AccountInputModel} from "../_Models/Account/AccountInputModel";
-import {catchError, tap} from "rxjs/operators";
+import {tap} from "rxjs/operators";
 import {AlertService} from "./alert.service";
-import {UserAccountMinimalViewModel} from "../_Models/Account/UserAccountMinimalViewModel";
 
 @Injectable({
   providedIn: 'root'
@@ -41,12 +40,12 @@ export class UserService
 
   public IsPhoneUnique (phone: string): Observable<boolean>
   {
-    return this.http.get<boolean>(this.BaseUrl + UserPaths.PhoneExists, {params: new HttpParams().set('phone', phone)});
+    return this.http.get<boolean>(this.BaseUrl + UserPaths.PhoneExists + '/' + phone, {params: new HttpParams().set('user', this.authService.UserAccount.getValue().Id)});
   }
 
   public IsEmailUnique (email: string): Observable<boolean>
   {
-    return this.http.get<boolean>(this.BaseUrl + UserPaths.EmailExists, {params: new HttpParams().set('email', email)});
+    return this.http.get<boolean>(this.BaseUrl + UserPaths.EmailExists + '/' + email, {params: new HttpParams().set('user', this.authService.UserAccount.getValue().Id)});
   }
 
   public IsReal(address: string) : Observable<boolean>

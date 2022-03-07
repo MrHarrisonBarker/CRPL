@@ -17,7 +17,7 @@ public class IsUniqueEmail
         using var dbFactory = new TestDbApplicationContextFactory();
         var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-        (await userServiceFactory.UserService.IsUniqueEmail("unique@test.co.uk")).Should().BeTrue();
+        (await userServiceFactory.UserService.IsUniqueEmail(Guid.Empty, "unique@test.co.uk")).Should().BeTrue();
     }
 
     [Test]
@@ -34,6 +34,6 @@ public class IsUniqueEmail
         });
         var userServiceFactory = new UserServiceFactory(dbFactory.Context);
 
-        (await userServiceFactory.UserService.IsUniqueEmail("mail@harrisonbarker.co.uk")).Should().BeFalse();
+        (await userServiceFactory.UserService.IsUniqueEmail(Guid.Empty, "mail@harrisonbarker.co.uk")).Should().BeFalse();
     }
 }

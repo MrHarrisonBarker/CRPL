@@ -12,6 +12,7 @@ import {ValidatorsService} from "../../_Services/validators.service";
 import {AlertService} from "../../_Services/alert.service";
 import {Observable, Subject} from "rxjs";
 import {UserAccountStatusModel} from "../../_Models/Account/UserAccountStatusModel";
+import {isInputValid} from "../../utils";
 
 @Component({
   selector: 'info-wizard',
@@ -30,6 +31,7 @@ export class InfoWizardComponent implements OnInit
   public FirstPageErrMessage: string = "";
   private unsubscribe = new Subject<void>();
   public Locked: boolean = false;
+  public HasNoContact: boolean = false;
 
   constructor (
     private userService: UserService,
@@ -48,19 +50,67 @@ export class InfoWizardComponent implements OnInit
         DOB: ['', [Validators.required]]
       }),
       SecondPage: this.formBuilder.group({
-        Email: ['', [this.validators.hasOneContactInfo(), Validators.email], [this.validators.emailValidate()]],
-        DialCode: ['44'],
+        Email: ['', [Validators.email], [this.validators.emailValidate()]],
+        DialCode: ['44',],
         PhoneNumber: ['', [Validators.pattern("^((\\\\+91-?)|0)?[0-9]{10}$")], [this.validators.phoneValidate()]]
       })
     });
   }
 
-  get FirstPageForm(): FormGroup
+  public getControl (name: string)
+  {
+    return this.SecondPageForm.controls[name];
+  }
+
+  public ValidateContactInfo ()
+  {
+    let email = this.getControl('Email');
+    let phone = this.getControl('PhoneNumber');
+    let dial = this.getControl('DialCode')
+
+    console.log('validating the contact info', email, phone, dial, this.SecondPageForm);
+
+    if (!isInputValid(email) && !isInputValid(phone) && !isInputValid(dial))
+    {
+      this.HasNoContact = true;
+      return;
+    }
+
+    // if the email is invalid
+    if (!isInputValid(email))
+    {
+      console.log('the email is invalid');
+      // if email is invalid the phone must be valid
+      if (!isInputValid(phone) || !isInputValid(dial))
+      {
+        console.log('the phone is invalid')
+        this.HasNoContact = true;
+        return;
+      }
+    }
+
+    // if the phone is invalid
+    if (!isInputValid(phone) || !isInputValid(dial))
+    {
+      console.log('the phone is invalid');
+      // if the phone is invalid the email must be valid
+      if (!isInputValid(email))
+      {
+        this.HasNoContact = true;
+        return;
+      }
+    }
+
+    this.HasNoContact = false;
+  }
+
+
+  get FirstPageForm (): FormGroup
   {
     return this.UserInfoForm.controls.FirstPage as FormGroup;
   }
 
-  get SecondPageForm(): FormGroup
+  get SecondPageForm (): FormGroup
   {
     return this.UserInfoForm.controls.SecondPage as FormGroup;
   }
@@ -70,6 +120,12 @@ export class InfoWizardComponent implements OnInit
     if (!this.authService.IsAuthenticated.getValue()) throw new Error("The user is not authenticated!");
 
     this.PopulateForms();
+
+    this.SecondPageForm.valueChanges.subscribe(x => this.SecondPageForm.markAllAsTouched());
+    this.SecondPageForm.statusChanges.subscribe(x => this.ValidateContactInfo());
+
+    this.ValidateContactInfo();
+
     this.detectChanges();
   }
 
@@ -147,10 +203,5 @@ export class InfoWizardComponent implements OnInit
     this.unsubscribe.next();
     this.save().pipe(finalize(() => this.Locked = false)).subscribe();
     this.router.navigate(['/dashboard']);
-  }
-
-  public WizardFinished (): void
-  {
-    console.log("the wizard has been finished", this.UserInfoForm.value);
   }
 }

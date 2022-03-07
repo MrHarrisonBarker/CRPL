@@ -14,11 +14,11 @@ public class ResonanceServiceFactory
 {
     public readonly ResonanceService ResonanceService;
     public readonly Mock<IServiceProvider> ServiceProviderMock = new();
-    public readonly Mock<IHubContext<ApplicationsHub, IApplicationsHub>> HubContextMock = new();
+    public readonly Mock<IHubContext<ResonanceHub, IResonanceHub>> HubContextMock = new();
 
     public ResonanceServiceFactory()
     {
-        ServiceProviderMock.Setup(x => x.GetService(typeof(IHubContext<ApplicationsHub, IApplicationsHub>))).Returns(HubContextMock.Object);
+        ServiceProviderMock.Setup(x => x.GetService(typeof(IHubContext<ResonanceHub, IResonanceHub>))).Returns(HubContextMock.Object);
 
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);

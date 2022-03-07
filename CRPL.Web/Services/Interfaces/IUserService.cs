@@ -10,8 +10,8 @@ public interface IUserService
     // +-------- Gets --------+
     // +----------------------+
     public Task<UserAccountStatusModel> GetAccount(Guid id);
-    public Task<bool> IsUniquePhoneNumber(string phoneNumber);
-    public Task<bool> IsUniqueEmail(string email);
+    public Task<bool> IsUniquePhoneNumber(Guid id, string phoneNumber);
+    public Task<bool> IsUniqueEmail(Guid id, string email);
     public bool AreUsersReal(List<string> userAddresses);
     public Task<List<UserAccountMinimalViewModel>> SearchUsers(string address);
 

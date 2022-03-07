@@ -106,12 +106,12 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpGet("unique/phone")]
-    public async Task<bool> IsUniquePhoneNumber(string phone)
+    [HttpGet("unique/phone/{phone}")]
+    public async Task<bool> IsUniquePhoneNumber(Guid user, [FromRoute]string phone)
     {
         try
         {
-            return await UserService.IsUniquePhoneNumber(phone);
+            return await UserService.IsUniquePhoneNumber(user, phone);
         }
         catch (Exception e)
         {
@@ -120,12 +120,12 @@ public class UserController : ControllerBase
         }
     }
 
-    [HttpGet("unique/email")]
-    public async Task<bool> IsUniqueEmail(string email)
+    [HttpGet("unique/email/{email}")]
+    public async Task<bool> IsUniqueEmail(Guid user, [FromRoute]string email)
     {
         try
         {
-            return await UserService.IsUniqueEmail(email);
+            return await UserService.IsUniqueEmail(user, email);
         }
         catch (Exception e)
         {

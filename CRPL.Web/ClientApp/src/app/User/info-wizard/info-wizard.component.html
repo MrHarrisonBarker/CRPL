@@ -4,7 +4,7 @@
   <clr-wizard-button [type]="'cancel'" [clrWizardButtonDisabled]="Locked">Cancel</clr-wizard-button>
   <clr-wizard-button [type]="'previous'" [clrWizardButtonDisabled]="Locked">Back</clr-wizard-button>
   <clr-wizard-button [type]="'next'" [clrWizardButtonDisabled]="Locked">Next</clr-wizard-button>
-  <clr-wizard-button [type]="'finish'" (click)="WizardFinished()" [clrWizardButtonDisabled]="Locked">Done</clr-wizard-button>
+  <clr-wizard-button [type]="'finish'" [clrWizardButtonDisabled]="Locked || FirstPageForm.invalid || SecondPageForm.invalid || HasNoContact">Done</clr-wizard-button>
 
   <clr-wizard-page #pageOne [clrWizardPageNextDisabled]="!FirstPageForm.valid">
     <ng-template clrPageTitle>Basic Information</ng-template>
@@ -63,7 +63,7 @@
         <clr-control-error *ngIf="SecondPageForm.controls.Email.hasError('emailExists')">This email is already in use</clr-control-error>
       </clr-input-container>
 
-      <clr-alert clrAlertType="danger" *ngIf="SecondPageForm.controls.Email.hasError('hasNoContact')">
+      <clr-alert clrAlertType="danger" *ngIf="HasNoContact">
         <clr-alert-item>
           <span class="alert-text">You must have one way of contacting</span>
         </clr-alert-item>
