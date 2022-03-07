@@ -10,3 +10,35 @@ p {
   /*align-content: center;*/
   /*justify-content: space-between;*/
 }
+
+#form-wrapper {
+}
+
+.form-margin {
+  margin: 0 10vw;
+}
+
+#protection-lists {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+
+.protections {
+  border-right: solid #b1b1b1 1px;
+  margin-right: 1rem;
+}
+
+.protections > div:first-of-type {
+  font-size: medium;
+}
+
+.protection {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  white-space: pre;
+  align-items: center;
+}

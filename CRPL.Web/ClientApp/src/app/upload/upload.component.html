@@ -1,4 +1,4 @@
-<div>
+<div style="margin-bottom: 0.5rem">
   <div>
     <input clrInput type="file" name="upload" (change)="onFileChange($event)" #fileInput/>
 
@@ -13,19 +13,19 @@
       <progress [value]="CurrentProgress" max="100"></progress>
     </div>
 
-    <clr-alert clrAlertType="danger" *ngIf="Form.invalid">
+    <clr-alert clrAlertType="danger" *ngIf="Form.invalid" [clrAlertClosable]="false">
       <clr-alert-item>
         <span class="alert-text">You need to upload the final version of your work to be signed and mastered</span>
       </clr-alert-item>
     </clr-alert>
 
-    <clr-alert clrAlertType="success" *ngIf="Form.valid">
+    <clr-alert clrAlertType="success" *ngIf="Form.valid" [clrAlertClosable]="false">
       <clr-alert-item>
         <span class="alert-text">A work has been uploaded for this application</span>
       </clr-alert-item>
     </clr-alert>
 
-    <clr-alert clrAlertType="danger" *ngIf="UploadError">
+    <clr-alert clrAlertType="danger" *ngIf="UploadError" [clrAlertClosable]="false">
       <clr-alert-item>
         <span class="alert-text">{{UploadError}}</span>
       </clr-alert-item>

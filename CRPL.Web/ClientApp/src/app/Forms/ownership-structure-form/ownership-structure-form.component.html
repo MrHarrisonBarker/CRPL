@@ -1,8 +1,15 @@
-<form [formGroup]="Form">
+<form [formGroup]="Form" style="margin-bottom: 0.2rem">
 
-  <clr-input-container>
-    <label class="clr-control-label">Total shares</label> <input clrInput name="totalShares" type="=number" formControlName="TotalShares"/>
-  </clr-input-container>
+  <div class="input-container">
+    <label class="input-label">Total shares<sup>*</sup></label>
+    <div class="input-control">
+      <input type="number" name="totalShares" formControlName="TotalShares" placeholder="0x0"/>
+      <div>Total number of shares (doesn't have any effect on voting rights)</div>
+      <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="Form.controls['TotalShares'].hasError('required')">
+        <clr-alert-item>This field is required!</clr-alert-item>
+      </clr-alert>
+    </div>
+  </div>
 
   <p class="p3 text-muted"><em><b>(You need to use all shares for a valid ownership structure)</b></em></p>
 
@@ -25,11 +32,3 @@
   </clr-alert>
 
 </form>
-
-<!--{{Form.value | json}}-->
-
-<!--errors-->
-
-<!--{{Form.errors | json}}-->
-
-<!--{{StakeArray.errors | json}}-->

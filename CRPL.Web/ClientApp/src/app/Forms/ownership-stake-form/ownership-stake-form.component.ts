@@ -47,4 +47,9 @@ export class OwnershipStakeFormComponent implements OnInit
   {
     return ((this.Form.parent as FormArray).parent as FormGroup).value.TotalShares;
   }
+
+  InvalidAndUntouched (control: string) : boolean
+  {
+    return true;
+  }
 }

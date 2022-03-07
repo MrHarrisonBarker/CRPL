@@ -1,26 +1,30 @@
 <div id="form-wrapper">
   <form clrForm clrLayout="compact" [formGroup]="Form" clrLabelSize="4">
-    <clr-input-container>
-      <label class="clr-control-label">Sharholders address (wallet public address)</label>
-      <input clrInput placeholder="Wallet address" name="owner" formControlName="Owner" autocomplete="off" required/>
-      <clr-control-error *ngIf="Form.controls['Owner'].hasError('required')">This field cannot be empty!</clr-control-error>
-      <clr-control-error *ngIf="Form.controls['Owner'].hasError('NotRealShareholder')">The address has to be registered with us!</clr-control-error>
-    </clr-input-container>
+    <div class="input-container">
+      <label class="input-label">Sharholder address<sup>*</sup></label>
+      <div class="input-control">
+        <input type="text" name="owner" formControlName="Owner" placeholder="0x0"/>
+        <div>Public Ethereum addresses are acceptable&nbsp;<sup>*saved to the blockchain</sup></div>
+        <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="Form.controls['Owner'].hasError('required')">
+          <clr-alert-item>This field is required!</clr-alert-item>
+        </clr-alert>
+        <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="Form.controls['Owner'].hasError('NotRealShareholder')">
+          <clr-alert-item>This field is required!</clr-alert-item>
+        </clr-alert>
+      </div>
+    </div>
 
-<!--    {{Form.controls['Owner'].errors | json}}-->
+    <div class="input-container">
+      <label class="input-label">Number of shares<sup>*</sup></label>
+      <div class="input-control">
+        <input type="range" min="1" [max]="MaximumShares" step="1" name="share" formControlName="Share"/>
+        <div>{{Form.value['Share']}} share(s)&nbsp;<sup>*saved to the blockchain</sup></div>
+      </div>
+    </div>
 
-    <clr-range-container>
-      <label class="clr-control-label">Number of shares</label>
-      <input type="range" min="1" [max]="MaximumShares" clrRange name="share" formControlName="Share"/>
-      <clr-control-helper>{{Form.value['Share']}} share(s)</clr-control-helper>
-    </clr-range-container>
-
-<!--    {{Form.controls['Share'].errors | json}}-->
   </form>
 
   <button [disabled]="isDefault" (click)="Remove()" class="btn btn-danger">-</button>
   <button (click)="Lock()" class="btn" [disabled]="Form.disabled">Lock</button>
   <button (click)="UnLock()" class="btn" [disabled]="Form.enabled">Un-Lock</button>
 </div>
-
-{{Form.errors | json}}

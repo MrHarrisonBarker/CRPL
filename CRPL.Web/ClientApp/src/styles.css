@@ -81,3 +81,72 @@ pre span {
   flex-wrap: wrap;
   margin: 0 1rem;
 }
+
+.input-container {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.input-container > label {
+  color: rgb(69, 69, 69);
+  font-weight: bold;
+  flex: 0;
+  margin-top: 0.2rem;
+  white-space: nowrap;
+}
+
+.input-control > input, select {
+  padding: 0.2rem 0.5rem;
+  display: inline-block;
+  border: 1.5px solid #b1b1b1;
+  flex: 1;
+  border-radius: 4px;
+}
+
+.input-control > input[type=range] {
+  margin-top: 0.6rem;
+}
+
+.input-control > textarea {
+  padding: 0.2rem 0.5rem;
+  display: inline-block;
+  border: 1.5px solid #b1b1b1;
+  flex: 1;
+  border-radius: 4px;
+}
+
+.input-control > input::placeholder {
+  color: #b1b1b1;
+  font-style: italic;
+}
+
+.input-control > textarea::placeholder {
+  color: #b1b1b1;
+  font-style: italic;
+}
+
+.input-control > .input-error {
+}
+
+.input-control > div:first-of-type {
+  padding: 0.1rem 0.2rem;
+  font-style: italic;
+}
+
+.input-container > .input-control {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.form-section {
+  border-bottom: solid #b1b1b1 1px;
+  margin-bottom: 0.2rem;
+}
+
+.form-section > .section-title {
+  font-size: large;
+  padding: 0 0.2rem 0.2rem 0.2rem;
+  border-bottom: solid #b1b1b1 1px;
+  margin-bottom: 0.4rem;
+}

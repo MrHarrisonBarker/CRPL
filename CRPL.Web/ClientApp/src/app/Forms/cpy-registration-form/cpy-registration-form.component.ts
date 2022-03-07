@@ -28,24 +28,25 @@ interface ProtectionsMeta
 export class CpyRegistrationFormComponent implements OnInit, OnDestroy, OnChanges
 {
   private unsubscribe = new Subject<void>();
-  public Locked: boolean = false;
+  public Locked: boolean = true;
 
   @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
   private ApplicationSubscription!: Subscription;
   @Input() ExistingApplication!: ApplicationViewModel | CopyrightRegistrationViewModel;
+  @Input() Margin: boolean = true;
 
   public RegistrationForm: FormGroup;
 
   public Protections: ProtectionsMeta[] = [
     {Name: "Authorship", ReadableName: "Authorship", Description: "The eternal right to original authorship."},
-    {Name: "CommercialAdaptation", ReadableName: "Commercial adaptation", Description: ""},
-    {Name: "NonCommercialAdaptation", ReadableName: "Non-Commercial adaptation", Description: ""},
     {Name: "ReviewOrCrit", ReadableName: "Review or critique", Description: ""},
+    {Name: "CommercialAdaptation", ReadableName: "Commercial adaptation", Description: ""},
     {Name: "CommercialPerformance", ReadableName: "Commercial performance", Description: ""},
-    {Name: "NonCommercialPerformance", ReadableName: "Non-Commercial performance", Description: ""},
     {Name: "CommercialReproduction", ReadableName: "Commercial reproduction", Description: ""},
-    {Name: "NonCommercialReproduction", ReadableName: "Non-Commercial reproduction", Description: ""},
     {Name: "CommercialDistribution", ReadableName: "Commercial distribution", Description: ""},
+    {Name: "NonCommercialAdaptation", ReadableName: "Non-Commercial adaptation", Description: ""},
+    {Name: "NonCommercialPerformance", ReadableName: "Non-Commercial performance", Description: ""},
+    {Name: "NonCommercialReproduction", ReadableName: "Non-Commercial reproduction", Description: ""},
     {Name: "NonCommercialDistribution", ReadableName: "Non-Commercial distribution", Description: ""}
   ];
 
@@ -290,5 +291,10 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy, OnChange
       this.ApplicationSubscription.unsubscribe();
       this.subscribeToApplication();
     }
+  }
+
+  public InvalidAndUntouched (control: string): boolean
+  {
+    return this.RegistrationForm.controls[control].invalid && this.RegistrationForm.controls[control].touched;
   }
 }

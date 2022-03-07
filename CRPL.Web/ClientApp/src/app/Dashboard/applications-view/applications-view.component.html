@@ -11,7 +11,7 @@
   </div>
 
   <span *ngIf="application.ApplicationType == 0">
-    <cpy-registration-form [ApplicationAsync]="ApplicationAsync" *ngIf="ShowForms && application.Status == 0"></cpy-registration-form>
+    <cpy-registration-form [ApplicationAsync]="ApplicationAsync" *ngIf="ShowForms && application.Status == 0" [Margin]="false"></cpy-registration-form>
     <cpy-registration-view-submitted [ApplicationAsync]="ApplicationAsync" *ngIf="application.Status == 1"></cpy-registration-view-submitted>
     <cpy-registration-view [ApplicationAsync]="ApplicationAsync" *ngIf="!ShowForms || application.Status == 2"></cpy-registration-view>
     <cpy-registration-view-failed [ApplicationAsync]="ApplicationAsync" *ngIf="application.Status == 3"></cpy-registration-view-failed>

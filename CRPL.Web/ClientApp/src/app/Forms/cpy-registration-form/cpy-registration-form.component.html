@@ -1,61 +1,132 @@
-<div id="form-wrapper">
+<div id="form-wrapper" [class.form-margin]="Margin">
   <form clrForm clrLayout="compact" [formGroup]="RegistrationForm" clrLabelSize="4">
 
     <h3>Registration application</h3>
     <hr/>
 
-    <clr-input-container>
-      <label class="clr-control-label">Title</label> <input clrInput name="title" required formControlName="Title"/>
-      <clr-control-error>This field cannot be empty!</clr-control-error>
-    </clr-input-container>
+    <div class="form-section">
+      <div class="section-title">General information</div>
+      <div class="input-container">
+        <label class="input-label">Title<sup>*</sup></label>
+        <div class="input-control">
+          <input type="text" name="title" formControlName="Title" placeholder="Hello world"/>
+          <div>This is a searchable title for the copyright, it doesn't have to be unique only descriptive and relevant&nbsp;<sup>*saved to the blockchain</sup></div>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('Title')">
+            <clr-alert-item>This field is required!</clr-alert-item>
+          </clr-alert>
+        </div>
+      </div>
 
-    <clr-input-container>
-      <label class="clr-control-label">Uri to work</label> <input clrInput name="uri" formControlName="WorkUri"/>
-    </clr-input-container>
-
-    <clr-range-container [clrRangeHasProgress]="true">
-      <label>Length of protection</label> <input type="range" min="1" max="100" clrRange name="expires" formControlName="Expires"/>
-      <clr-control-helper>Protection for this work will last {{RegistrationForm.value.Expires}} year(s)</clr-control-helper>
-    </clr-range-container>
-
-    <clr-textarea-container>
-      <label>Legal notes</label> <textarea clrTextarea formControlName="Legal" name="legal" required></textarea>
-      <clr-control-error>This field cannot be empty!</clr-control-error>
-    </clr-textarea-container>
-
-    <clr-select-container>
-      <label>Protection preset</label> <select clrSelect name="options" #preset (change)="ChangeCopyrightType(preset.value)">
-      <option value="Standard">Standard</option>
-      <option value="Nothing">Nothing</option>
-    </select>
-    </clr-select-container>
-
-    <div id="right-matrix" formGroupName="Protections">
-      <clr-checkbox-wrapper style="height: 100%" *ngFor="let protection of Protections">
-        <input type="checkbox" clrCheckbox name="ula" required [value]="protection.Name" [formControlName]="protection.Name"/> <label>{{protection.ReadableName}}
-        <clr-signpost>
-          <clr-signpost-content>
-            <p>{{protection.Description}}</p>
-          </clr-signpost-content>
-        </clr-signpost>
-      </label>
-      </clr-checkbox-wrapper>
+      <div class="input-container">
+        <label class="input-label">Uri to work</label>
+        <div class="input-control">
+          <input type="url" name="uri" formControlName="WorkUri" placeholder="www.harrisonbarker.co.uk"/>
+          <div>This is a link to your work&nbsp;<sup>*saved to the blockchain</sup></div>
+        </div>
+      </div>
     </div>
 
-    <clr-select-container>
-      <label>Type of work</label> <select clrSelect name="options" formControlName="WorkType" (ngModelChange)="ChangeWorkType()">
-      <option [value]="type" *ngFor="let type of WorkTypes">{{type}}</option>
-    </select>
-    </clr-select-container>
+    <div class="form-section">
+      <div class="section-title">Legal information</div>
 
-    <file-upload [Form]="WorkHash"></file-upload>
+      <div class="input-container">
+        <label class="input-label">Length of protection<sup>*</sup></label>
+        <div class="input-control">
+          <input type="range" min="1" max="100" step="1" name="expires" formControlName="Expires"/>
+          <div>Protection for this work will last {{RegistrationForm.value['Expires']}} year(s)&nbsp;<sup>*saved to the blockchain</sup></div>
+        </div>
+      </div>
 
-    <h3>Ownership structure</h3>
-    <hr>
+      <div class="input-container">
+        <label class="input-label">Legal notes<sup>*</sup></label>
+        <div class="input-control">
+          <textarea name="legal" formControlName="Legal" placeholder="Legal notes" rows="10"></textarea>
+          <div>This is a space for you to add any extra legal documentation to your copyright&nbsp;<sup>*saved to the blockchain</sup></div>
+          <clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('Legal')">
+            <clr-alert-item>This field is required!</clr-alert-item>
+          </clr-alert>
+        </div>
+      </div>
 
-    <ownership-structure-form [Form]="OwnershipStructure"></ownership-structure-form>
+      <div style="font-weight: bold;margin-bottom: 0.5rem">Legal protections</div>
 
-<!--    {{RegistrationForm.value | json}}-->
+      <div class="input-container">
+        <label class="input-label">Protections preset</label>
+        <div class="input-control">
+          <select id="preset" name="options" #preset (change)="ChangeCopyrightType(preset.value)">
+            <option value="Standard">Standard</option>
+            <option value="Nothing">Nothing</option>
+          </select>
+          <div>You can select a preset as a starting point</div>
+        </div>
+      </div>
+
+      <div id="protection-lists">
+        <div class="protections" formGroupName="Protections">
+          <div>General</div>
+          <div class="protection" *ngFor="let protection of Protections.slice(0,2)">
+            <input [id]="protection.Name" type="checkbox" [formControlName]="protection.Name"/> <label [for]="protection.Name">
+            {{protection.ReadableName}}
+            <clr-signpost>
+              <clr-signpost-content>
+                <p>{{protection.Description}}</p>
+              </clr-signpost-content>
+            </clr-signpost>
+          </label>
+          </div>
+        </div>
+
+        <div class="protections" formGroupName="Protections">
+          <div>Commercial</div>
+          <div class="protection" *ngFor="let protection of Protections.slice(2,6)">
+            <input [id]="protection.Name" type="checkbox" [formControlName]="protection.Name"/> <label [for]="protection.Name">
+            {{protection.ReadableName}}
+            <clr-signpost>
+              <clr-signpost-content>
+                <p>{{protection.Description}}</p>
+              </clr-signpost-content>
+            </clr-signpost>
+          </label>
+          </div>
+        </div>
+
+        <div class="protections" formGroupName="Protections">
+          <div>Non-commercial</div>
+          <div class="protection" *ngFor="let protection of Protections.slice(6)">
+            <input [id]="protection.Name" type="checkbox" [formControlName]="protection.Name"/> <label [for]="protection.Name">
+            {{protection.ReadableName}}
+            <clr-signpost>
+              <clr-signpost-content>
+                <p>{{protection.Description}}</p>
+              </clr-signpost-content>
+            </clr-signpost>
+          </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="section-title">Work</div>
+
+      <div class="input-container">
+        <label class="input-label">Type of work<sup>*</sup></label>
+        <div class="input-control">
+          <select name="typeOfWork" formControlName="WorkType" (change)="ChangeWorkType()">
+            <option [value]="type" *ngFor="let type of WorkTypes">{{type}}</option>
+          </select>
+          <div>Select the type of work your protecting&nbsp;<sup>*saved to the blockchain</sup></div>
+        </div>
+      </div>
+
+      <file-upload [Form]="WorkHash"></file-upload>
+    </div>
+
+
+    <div class="form-section">
+      <div class="section-title">Ownership structure</div>
+      <ownership-structure-form [Form]="OwnershipStructure"></ownership-structure-form>
+    </div>
 
     <clr-checkbox-wrapper>
       <input type="checkbox" clrCheckbox name="ula" required value="ula" formControlName="AcceptedUla"/> <label>accept ula</label>
