@@ -264,6 +264,7 @@ export class CpyRegistrationFormComponent implements OnInit, OnDestroy, OnChange
         .pipe(finalize(() => this.Locked = false))
         .subscribe(x =>
         {
+          this.Locked = true;
           this.formsService.SubmitCopyrightRegistration(this.ExistingApplication.Id)
               .pipe(finalize(() => this.Locked = false))
               .subscribe(x =>

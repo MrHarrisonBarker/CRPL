@@ -4,18 +4,31 @@
   </clr-alert-item>
 </clr-alert>
 
+
 <clr-alert clrAlertType="success" [clrAlertClosable]="false" *ngIf="Application.BindStatus == 2">
   <clr-alert-item>
     <span class="alert-text">This ownership restrucure was successfully bound</span>
   </clr-alert-item>
 </clr-alert>
 
-<div class="flex-between" *ngIf="Application.BindStatus == 1">
-  <div></div>
-  <div>
-    <button class="btn btn-sm" (click)="Reject()" [disabled]="Locked">Reject proposal</button>
-    <button class="btn btn-sm" (click)="Bind()" [disabled]="Locked">Bind proposal</button>
-  </div>
+<div *ngIf="Application.BindStatus == 1">
+  <clr-alert clrAlertType="info" [clrAlertClosable]="false">
+    <clr-alert-item>
+      <div class="flex-between" style="width: 100%">
+        <div>This will send a rejection of this proposal to the blockchain!</div>
+        <button class="btn btn-sm btn-danger-outline" style="margin:0" (click)="Reject()" [clrLoading]="RejectLoadingState" [disabled]="Locked" >Reject proposal</button>
+      </div>
+    </clr-alert-item>
+  </clr-alert>
+
+  <clr-alert clrAlertType="info" [clrAlertClosable]="false">
+    <clr-alert-item>
+      <div class="flex-between" style="width: 100%">
+        <div>This will send a accepted vote for this proposal to the blockchain! (unanimous vote of current shareholders needed)</div>
+        <button class="btn btn-sm btn-success-outline" style="margin:0;width: fit-content" (click)="Bind()" [clrLoading]="BindLoadingState" [disabled]="Locked">Bind proposal</button>
+      </div>
+    </clr-alert-item>
+  </clr-alert>
 </div>
 
 <cpy-restructure-view [ApplicationAsync]="ApplicationAsync"></cpy-restructure-view>

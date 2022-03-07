@@ -4,5 +4,6 @@
   </clr-alert-item>
 </clr-alert>
 
-<div id="spinner-canvas" *ngIf="loadingSub"></div>
-<clr-spinner [clrInline]="true" [clrInverse]="true" *ngIf="loadingSub"></clr-spinner>
+<div id="spinner-canvas" *ngIf="loadingSub">
+  <span style="margin-right: 0.2rem">Loading</span><clr-spinner [clrInline]="true" [clrInverse]="false"></clr-spinner>
+</div>

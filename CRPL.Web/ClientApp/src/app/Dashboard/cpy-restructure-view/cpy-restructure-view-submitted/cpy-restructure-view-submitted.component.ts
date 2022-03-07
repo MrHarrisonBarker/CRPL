@@ -6,6 +6,7 @@ import {FormsService} from "../../../_Services/forms.service";
 import {finalize} from "rxjs/operators";
 import {Observable, Subscription} from "rxjs";
 import {ApplicationViewModel} from "../../../_Models/Applications/ApplicationViewModel";
+import {ClrLoadingState} from "@clr/angular";
 
 @Component({
   selector: 'cpy-restructure-view-submitted [ApplicationAsync]',
@@ -19,6 +20,8 @@ export class CpyRestructureViewSubmittedComponent implements OnInit, OnChanges, 
   private ApplicationSubscription!: Subscription;
 
   public Locked: boolean = false;
+  BindLoadingState: ClrLoadingState = ClrLoadingState.DEFAULT;
+  RejectLoadingState: ClrLoadingState = ClrLoadingState.DEFAULT;
 
   constructor (
     private copyrightService: CopyrightService,
@@ -27,9 +30,10 @@ export class CpyRestructureViewSubmittedComponent implements OnInit, OnChanges, 
   {
   }
 
-  private subscribeToApplication()
+  private subscribeToApplication ()
   {
-    this.ApplicationSubscription = this.ApplicationAsync.subscribe(application => {
+    this.ApplicationSubscription = this.ApplicationAsync.subscribe(application =>
+    {
       console.log("[cpy-registration-view] got registration application", application);
       this.Application = application as OwnershipRestructureViewModel;
     });
@@ -67,10 +71,23 @@ export class CpyRestructureViewSubmittedComponent implements OnInit, OnChanges, 
   private send (accepted: boolean): void
   {
     this.Locked = true;
+    if (accepted) this.BindLoadingState = ClrLoadingState.LOADING;
+    else this.RejectLoadingState = ClrLoadingState.LOADING;
+
     this.copyrightService.BindProposal({ApplicationId: this.Application.Id, Accepted: accepted})
         .pipe(finalize(() => this.Locked = false))
-        .subscribe(x => this.alertService.Alert({Type: 'success', Message: 'Sent transaction'}),
-          error => this.alertService.Alert({Type: 'danger', Message: error.error})
+        .subscribe(x =>
+          {
+            this.alertService.Alert({Type: 'success', Message: 'Sent transaction'});
+            if (accepted) this.BindLoadingState = ClrLoadingState.SUCCESS;
+            else this.RejectLoadingState = ClrLoadingState.SUCCESS;
+          },
+          error =>
+          {
+            this.alertService.Alert({Type: 'danger', Message: error.error});
+            if (accepted) this.BindLoadingState = ClrLoadingState.ERROR;
+            else this.RejectLoadingState = ClrLoadingState.ERROR;
+          }
         );
   }
 }

@@ -50,17 +50,13 @@
               </section>
             </nav>
             <div class="content-area">
-              <!--              <div *ngIf="Selected | async; else noWork">-->
-              <div *ngIf="SelectedCopyright | async as selectedCopyright">
-                <copyright-view [CopyrightAsync]="SelectedCopyright" *ngIf="!IsApplication && selectedCopyright.Status == 4"></copyright-view>
-                <copyright-view-expired [CopyrightAsync]="SelectedCopyright" *ngIf="!IsApplication && selectedCopyright.Status == 6"></copyright-view-expired>
+              <div *ngIf="Loaded; else loading">
+                <div *ngIf="(SelectedApplication | async) || (SelectedCopyright | async) as selected; else nothing">
+                  <copyright-view [CopyrightAsync]="SelectedCopyright" *ngIf="!IsApplication && selected.Status == 4 && selected"></copyright-view>
+                  <copyright-view-expired [CopyrightAsync]="SelectedCopyright" *ngIf="!IsApplication && selected.Status == 6 && selected"></copyright-view-expired>
+                  <applications-view [ApplicationAsync]="SelectedApplication" [ShowForms]="true" *ngIf="IsApplication && selected"></applications-view>
+                </div>
               </div>
-              <applications-view [ApplicationAsync]="SelectedApplication" [ShowForms]="true" *ngIf="IsApplication"></applications-view>
-              <!--              </div>-->
-
-              <ng-template #noWork class="centre-align">
-                <img src="https://i.giphy.com/media/baPIkfAo0Iv5K/giphy.webp"/>
-              </ng-template>
             </div>
           </div>
         </clr-tab-content>
@@ -68,46 +64,41 @@
       <clr-tab>
         <button clrTabLink (click)="ResetSelected()">Disputes</button>
         <clr-tab-content>
-          <!--          <div class="content-container">-->
-          <!--            <nav class="sidenav">-->
-          <!--              <section class="sidenav-content">-->
-          <!--                <section class="nav-group">-->
-          <!--                  <input id="OpenDisputes" type="checkbox" />-->
-          <!--                  <label for="OpenDisputes">Open disputes</label>-->
-          <!--                  <ul class="nav-list">-->
-          <!--                    <li *ngFor="let dispute of OpenDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="Select(dispute, true)">{{dispute.AssociatedWork?.Title}}</a></li>-->
-          <!--                  </ul>-->
-          <!--                </section>-->
-          <!--                <section class="nav-group">-->
-          <!--                  <input id="ClosedDisputes" type="checkbox" />-->
-          <!--                  <label for="ClosedDisputes">Closed disputes</label>-->
-          <!--                  <ul class="nav-list">-->
-          <!--                    <li *ngFor="let dispute of ClosedDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="Select(dispute, true)">{{dispute.AssociatedWork?.Title}}</a></li>-->
-          <!--                  </ul>-->
-          <!--                </section>-->
-          <!--              </section>-->
-          <!--            </nav>-->
-          <!--            <div class="content-area">-->
-          <!--              <div *ngIf="!Selected" class="centre-align">-->
-          <!--                <img src="https://i.giphy.com/media/baPIkfAo0Iv5K/giphy.webp"/>-->
-          <!--              </div>-->
-          <!--              <div *ngIf="Selected">-->
-          <!--&lt;!&ndash;                <applications-view [Application]="SelectedAsApplication" [ShowForms]="true" [Cancelable]="false" *ngIf="IsApplication"></applications-view>&ndash;&gt;-->
-          <!--              </div>-->
-          <!--            </div>-->
-          <!--          </div>-->
+          <div class="content-container">
+            <nav class="sidenav">
+              <section class="sidenav-content">
+                <section class="nav-group">
+                  <input id="OpenDisputes" type="checkbox"/> <label for="OpenDisputes">Open disputes</label>
+                  <ul class="nav-list">
+                    <li *ngFor="let dispute of OpenDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="SelectApplication(dispute)">{{dispute.AssociatedWork?.Title}}</a></li>
+                  </ul>
+                </section>
+                <section class="nav-group">
+                  <input id="ClosedDisputes" type="checkbox"/> <label for="ClosedDisputes">Closed disputes</label>
+                  <ul class="nav-list">
+                    <li *ngFor="let dispute of ClosedDisputes | async"><a class="nav-link" [class.active]="dispute == Selected" (click)="SelectApplication(dispute)">{{dispute.AssociatedWork?.Title}}</a></li>
+                  </ul>
+                </section>
+              </section>
+            </nav>
+            <div class="content-area">
+              <div *ngIf="Loaded; else loading">
+                <div *ngIf="SelectedApplication | async as selected; else nothing">
+                  <applications-view [ApplicationAsync]="SelectedApplication" [ShowForms]="true" [Cancelable]="false" *ngIf="IsApplication"></applications-view>
+                </div>
+              </div>
+            </div>
+          </div>
         </clr-tab-content>
       </clr-tab>
     </clr-tabs>
   </section>
 </div>
 
-<!--{{Selected | async | json}}-->
+<ng-template #nothing class="centre-align">
+  <img src="https://i.giphy.com/media/baPIkfAo0Iv5K/giphy.webp"/>
+</ng-template>
 
-<hr/>
-
-{{SelectedApplication | async | json}}
-
-<hr/>
-
-{{SelectedCopyright | async | json}}
+<ng-template #loading>
+  <clr-spinner></clr-spinner>
+</ng-template>

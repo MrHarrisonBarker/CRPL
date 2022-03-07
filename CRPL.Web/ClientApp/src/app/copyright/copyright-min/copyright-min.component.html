@@ -12,8 +12,8 @@
 
       <div><em class="text-muted">transaction:</em>&nbsp;&nbsp;<a target="_blank" [href]="Copyright.RegisteredTransactionUri">{{Copyright.RegisteredTransactionId | slice:0:32}}</a></div>
 
-      <div style="display: flex">
-        <p class="card-text" style="margin-right: 0.5rem"><b>created:</b> {{Copyright.Created | date:'medium'}}</p>
+      <div style="display: flex; flex-direction: column">
+        <p class="card-text" style="margin-right: 0.5rem; margin-bottom: 0;"><b>created:</b> {{Copyright.Created | date:'medium'}}</p>
         <p class="card-text"><b>registered:</b> {{Copyright?.Registered | date:'medium'}}</p>
       </div>
     </div>

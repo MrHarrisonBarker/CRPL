@@ -2,17 +2,21 @@
   <clr-tab>
     <button clrTabLink>Copyrights</button>
     <clr-tab-content *clrIfActive>
-      <div class="card-list">
-        <copyright-min [Copyright]="copyright" *ngFor="let copyright of RecentCopyrights"></copyright-min>
+      <div class="card-list" *ngIf="RecentCopyrights | async as copyrights; else loading">
+        <copyright-min [Copyright]="copyright" *ngFor="let copyright of copyrights"></copyright-min>
       </div>
     </clr-tab-content>
   </clr-tab>
   <clr-tab>
     <button clrTabLink>Disputes</button>
     <clr-tab-content *clrIfActive>
-      <div class="card-list">
-        <dispute-min [Dispute]="dispute" *ngFor="let dispute of OpenDisputes"></dispute-min>
+      <div class="card-list" *ngIf="OpenDisputes | async as openDisputes; else loading">
+        <dispute-min [Dispute]="dispute" *ngFor="let dispute of openDisputes"></dispute-min>
       </div>
     </clr-tab-content>
   </clr-tab>
 </clr-tabs>
+
+<ng-template #loading>
+  <clr-spinner style="margin: 1rem;"></clr-spinner>
+</ng-template>
