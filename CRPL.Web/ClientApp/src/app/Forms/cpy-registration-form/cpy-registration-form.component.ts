@@ -28,7 +28,7 @@ interface ProtectionsMeta
 export class CpyRegistrationFormComponent implements OnInit, OnDestroy, OnChanges
 {
   private unsubscribe = new Subject<void>();
-  public Locked: boolean = true;
+  public Locked: boolean = false;
 
   @Input() ApplicationAsync!: Observable<ApplicationViewModel>;
   private ApplicationSubscription!: Subscription;

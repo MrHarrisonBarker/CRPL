@@ -150,3 +150,7 @@ pre span {
   border-bottom: solid #b1b1b1 1px;
   margin-bottom: 0.4rem;
 }
+
+.no-margin {
+  margin: 0!important;
+}
