@@ -51,7 +51,7 @@ export class CopyrightService
 
   public Get (workId: string): Observable<RegisteredWorkViewModel>
   {
-    return this.http.get<RegisteredWorkViewModel>(this.BaseUrl + QueryPaths.BasePath + "/" + encodeURI(workId));
+    return this.http.get<RegisteredWorkViewModel>(this.BaseUrl + QueryPaths.BasePath + "/" + encodeURI(workId)).pipe(tap(work => this.warehouse.MyWorks = [work]));
   }
 
   public Sync (workId: string): Observable<any>

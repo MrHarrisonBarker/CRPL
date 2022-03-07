@@ -7,6 +7,8 @@ import {Location} from "@angular/common";
 import {AuthService} from "../_Services/auth.service";
 import {AlertService} from "../_Services/alert.service";
 import {Observable} from "rxjs";
+import {WarehouseService} from "../_Services/warehouse.service";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-copyright',
@@ -18,8 +20,10 @@ export class CopyrightComponent implements OnInit
   public CopyrightAsync!: Observable<RegisteredWorkViewModel>;
   public Copyright!: RegisteredWorkViewModel;
 
-  public Loaded: boolean = false;
+  public NoWork: boolean = false;
   public DisputeOpen: boolean = false;
+  public Locked: boolean = false;
+  public Error!: string;
 
   constructor (
     private route: ActivatedRoute,
@@ -27,22 +31,25 @@ export class CopyrightComponent implements OnInit
     private location: Location,
     private authService: AuthService,
     private router: Router,
-    private alertService: AlertService)
+    private alertService: AlertService,
+    private warehouse: WarehouseService)
   {
     ClarityIcons.addIcons(undoIcon);
   }
 
   async ngOnInit (): Promise<any>
   {
-
     let workId = this.route.snapshot.paramMap.get('id');
-    if (workId) this.CopyrightAsync = this.copyrightService.Get(workId);
+    if (workId)
+    {
+      this.copyrightService.Get(workId).subscribe();
+      this.CopyrightAsync = this.warehouse.__MyWorks.pipe(map(x => x.find(w => w.Id == workId))) as Observable<RegisteredWorkViewModel>
+    } else this.NoWork = true;
 
     this.CopyrightAsync.subscribe(x =>
     {
       this.Copyright = x;
-      this.Loaded = true;
-    }, error => this.Loaded = true, () => this.Loaded = true);
+    }, error => this.Error = error.error);
   }
 
   public IsOwner (): boolean

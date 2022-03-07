@@ -1,31 +1,47 @@
-<div *ngIf="!Copyright && Loaded" id="not-found">
-  <div>
-    <img src="https://i.giphy.com/media/l2JJKs3I69qfaQleE/giphy.webp"/>
-    <clr-alert [clrAlertClosable]="false" clrAlertType="danger">
-      <clr-alert-item><span class="alert-text">Copyright not found!</span></clr-alert-item>
-    </clr-alert>
-  </div>
-</div>
+<div *ngIf="!NoWork; else notFound">
+  <div *ngIf="!Error; else error">
+    <div id="copyright-card" *ngIf="Copyright; else loading">
+      <div class="flex-between">
+        <button type="button" class="btn btn-icon btn-link btn-sm" aria-label="back" (click)="Back()">
+          <cds-icon shape="undo"></cds-icon>
+        </button>
+        <div>
+          <button type="button" class="btn btn-primary btn-sm" [disabled]="!IsOwner() || Locked" (click)="NavigateToDashboard()">managment</button>
+          <button type="button" class="btn btn-danger btn-sm" [disabled]="IsOwner() || Locked" (click)="DisputeOpen = true">dispute</button>
+        </div>
+      </div>
+      <copyright-view [CopyrightAsync]="CopyrightAsync" [ShowActions]="false"></copyright-view>
 
-<div id="copyright-card" *ngIf="Copyright && Loaded">
-  <div class="flex-between">
-    <button type="button" class="btn btn-icon btn-link btn-sm" aria-label="back" (click)="Back()">
-      <cds-icon shape="undo"></cds-icon>
-    </button>
-    <div>
-      <button type="button" class="btn btn-primary btn-sm" [disabled]="!IsOwner()" (click)="NavigateToDashboard()">managment</button>
-      <button type="button" class="btn btn-danger btn-sm" [disabled]="IsOwner()" (click)="DisputeOpen = true">dispute</button>
+      <clr-modal [(clrModalOpen)]="DisputeOpen" clrModalSize="xl">
+        <h3 class="modal-title">Dispute this copyright</h3>
+        <div class="modal-body">
+          <dispute-form *ngIf="DisputeOpen" [RegisteredWork]="Copyright"></dispute-form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" (click)="DisputeOpen = false; CancelDispute()">Cancel</button>
+        </div>
+      </clr-modal>
     </div>
   </div>
-  <copyright-view [CopyrightAsync]="CopyrightAsync" [ShowActions]="false"></copyright-view>
 </div>
 
-<clr-modal [(clrModalOpen)]="DisputeOpen" clrModalSize="xl">
-  <h3 class="modal-title">Dispute this copyright</h3>
-  <div class="modal-body">
-    <dispute-form *ngIf="DisputeOpen" [RegisteredWork]="Copyright"></dispute-form>
+<ng-template #error>
+  <clr-alert>
+    <clr-alert-item>There was a problem getting the copyright, "{{Error}}"</clr-alert-item>
+  </clr-alert>
+</ng-template>
+
+<ng-template #loading>
+  <clr-spinner style="margin: 1rem;"></clr-spinner>
+</ng-template>
+
+<ng-template #notFound>
+  <div id="not-found">
+    <div>
+      <img src="https://i.giphy.com/media/l2JJKs3I69qfaQleE/giphy.webp"/>
+      <clr-alert [clrAlertClosable]="false" clrAlertType="danger">
+        <clr-alert-item><span class="alert-text">Copyright not found!</span></clr-alert-item>
+      </clr-alert>
+    </div>
   </div>
-  <div class="modal-footer">
-    <button type="button" class="btn btn-outline" (click)="DisputeOpen = false; CancelDispute()">Cancel</button>
-  </div>
-</clr-modal>
+</ng-template>
