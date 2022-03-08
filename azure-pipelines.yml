@@ -96,3 +96,23 @@ stages:
             inputs:
               codeCoverageTool: 'Cobertura'
               summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
+
+          - task: AzureAppServiceManage@0
+            inputs:
+              azureSubscription: 'Pay-As-You-Go(9089fb88-0825-4040-b4e2-8281ff2d7726)'
+              Action: 'Stop Azure App Service'
+              WebAppName: 'CRPL'
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Pay-As-You-Go(9089fb88-0825-4040-b4e2-8281ff2d7726)'
+              appType: 'webAppLinux'
+              WebAppName: 'CRPL'
+              packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+
+          - task: AzureAppServiceManage@0
+            inputs:
+              azureSubscription: 'Pay-As-You-Go(9089fb88-0825-4040-b4e2-8281ff2d7726)'
+              Action: 'Start Azure App Service'
+              WebAppName: 'CRPL'
