@@ -4,6 +4,8 @@ import {AlertService} from "../../_Services/alert.service";
 import {AccountStatus} from "../../_Models/Account/UserAccountViewModel";
 import {Router} from "@angular/router";
 import {angleIcon, ClarityIcons, userIcon} from "@cds/core/icon";
+import {finalize} from "rxjs/operators";
+import {ClrLoadingState} from "@clr/angular";
 
 @Component({
   selector: 'login-button',
@@ -14,6 +16,7 @@ export class LoginButtonComponent implements OnInit
 {
   public HasMetaMask: boolean = false;
   public Locked: boolean = false;
+  public LoginStatus: ClrLoadingState = ClrLoadingState.DEFAULT;
 
   constructor (
     public authService: AuthService,
@@ -38,24 +41,31 @@ export class LoginButtonComponent implements OnInit
     }
 
     this.Locked = true;
+    this.LoginStatus = ClrLoadingState.LOADING;
 
-    this.authService.LoginWithMetaMask().subscribe(res =>
-      {
-        if (res.Account)
-        {
-          this.alertService.Alert({Message: "Successfully logged in!", Type: "success"});
-          if (this.authService.UserAccount.getValue().Status == AccountStatus.Created || this.authService.UserAccount.getValue().Status == AccountStatus.Incomplete)
-          {
-            this.router.navigate(['/u/info']);
-          }
-        }
-        if (!res.Account) this.alertService.Alert({Message: res.Log, Type: "danger"});
-      }, error => this.alertService.Alert({Message: error.error, Type: "danger"})
-      , () =>
+    this.authService.LoginWithMetaMask().pipe(finalize(() =>
       {
         this.alertService.StopLoading();
         this.Locked = false;
-      });
+        this.LoginStatus = ClrLoadingState.DEFAULT;
+      }
+    )).subscribe(res =>
+    {
+      if (res.Account)
+      {
+        this.LoginStatus = ClrLoadingState.SUCCESS;
+        this.alertService.Alert({Message: "Successfully logged in!", Type: "success"});
+        if (this.authService.UserAccount.getValue().Status == AccountStatus.Created || this.authService.UserAccount.getValue().Status == AccountStatus.Incomplete)
+        {
+          this.router.navigate(['/u/info']);
+        }
+      }
+      if (!res.Account) this.alertService.Alert({Message: res.Log, Type: "danger"});
+    }, error => {
+      if (error.error) this.alertService.Alert({Message: error.error, Type: "danger"});
+      if (error.message) this.alertService.Alert({Message: error.message, Type: "danger"});
+      this.LoginStatus = ClrLoadingState.ERROR;
+    });
   }
 
   public Logout (): void

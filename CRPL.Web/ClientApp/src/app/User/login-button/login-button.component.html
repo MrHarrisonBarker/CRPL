@@ -12,7 +12,7 @@
   </clr-dropdown-menu>
 </clr-dropdown>
 
-<button class="btn btn-primary" (click)="Login()" [disabled]="!HasMetaMask || Locked" *ngIf="!authService.IsAuthenticated.getValue()">
+<button class="btn btn-primary" (click)="Login()" [clrLoading]="LoginStatus" [disabled]="!HasMetaMask || Locked" *ngIf="!authService.IsAuthenticated.getValue()">
   <div>
     <span *ngIf="!HasMetaMask">Install MetaMask To Login</span> <span *ngIf="HasMetaMask">Login with MetaMask</span> <img src="assets/meta-mask.svg" alt="MetaMask">
   </div>
