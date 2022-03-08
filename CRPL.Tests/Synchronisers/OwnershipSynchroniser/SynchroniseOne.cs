@@ -8,6 +8,8 @@ using CRPL.Tests.Factories.Synchronisers;
 using CRPL.Tests.Mocks;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
+using Nethereum.ABI.FunctionEncoding;
 using NUnit.Framework;
 
 namespace CRPL.Tests.Synchronisers.OwnershipSynchroniser;
@@ -106,5 +108,28 @@ public class SynchroniseOne
 
         work.UserWorks.Count.Should().Be(1);
         work.UserWorks.First().UserAccount.Wallet.PublicAddress.Should().BeEquivalentTo("0xaea270413700371a8a28ab8b5ece05201bdf49de");
+    }
+
+    [Test]
+    public async Task Should_Throw_If_No_Work()
+    {
+        using var dbFactory = new TestDbApplicationContextFactory();
+        var ownershipSynchroniserFactory = new OwnershipSynchroniserFactory(dbFactory.Context);
+
+        FluentActions.Invoking(async () => await ownershipSynchroniserFactory.OwnershipSynchroniser.SynchroniseOne(Guid.Empty));
+    }
+
+    [Test]
+    public async Task Should_Catch_Expired_Work()
+    {
+        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works, userAccounts: Users);
+        var mappings = MockWebUtils.DefaultMappings;
+        mappings["eth_call"] = new SmartContractRevertException("EXPIRED", "");
+        
+        var ownershipSynchroniserFactory = new OwnershipSynchroniserFactory(dbFactory.Context, mappings);
+
+        await ownershipSynchroniserFactory.OwnershipSynchroniser.SynchroniseOne(Works.First().Id);
+        
+        ownershipSynchroniserFactory.ExpiryQueueMock.Verify(x => x.QueueExpire(Works.First().Id), Times.Once);
     }
 }

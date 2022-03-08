@@ -1,8 +1,10 @@
 using System;
 using AutoMapper;
 using CRPL.Data;
+using CRPL.Data.Account;
 using CRPL.Web.Core;
 using CRPL.Web.Hubs;
+using CRPL.Web.Services.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,10 +17,13 @@ public class ResonanceServiceFactory
     public readonly ResonanceService ResonanceService;
     public readonly Mock<IServiceProvider> ServiceProviderMock = new();
     public readonly Mock<IHubContext<ResonanceHub, IResonanceHub>> HubContextMock = new();
+    public readonly Mock<IQueryService> QueryServiceMock = new();
 
-    public ResonanceServiceFactory()
+    public ResonanceServiceFactory(ApplicationContext applicationContext = null)
     {
         ServiceProviderMock.Setup(x => x.GetService(typeof(IHubContext<ResonanceHub, IResonanceHub>))).Returns(HubContextMock.Object);
+        ServiceProviderMock.Setup(x => x.GetService(typeof(ApplicationContext))).Returns(applicationContext);
+        ServiceProviderMock.Setup(x => x.GetService(typeof(IQueryService))).Returns(QueryServiceMock.Object);
 
         var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
         var mapper = new Mapper(configuration);

@@ -5,6 +5,7 @@ using CRPL.Data.BlockchainUtils;
 using CRPL.Data.ContractDeployment;
 using CRPL.Tests.Mocks;
 using CRPL.Web.Core;
+using CRPL.Web.Services.Background.SlientExpiry;
 using CRPL.Web.Services.Background.Usage;
 using CRPL.Web.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,7 @@ public class ServiceProviderWithContextFactory
     public readonly Mock<IAccountManagementService> AccountManagementServiceMock = new();
     public readonly Mock<IUsageQueue> UsageQueueMock = new();
     public readonly Mock<IResonanceService> ResonanceServiceMock = new();
+    public readonly Mock<IExpiryQueue> ExpiryQueueMock = new();
 
     public readonly Mock<IBlockchainConnection> BlockchainConnectionMock = new();
     public readonly Mock<IContractRepository> ContractRepositoryMock = new();
@@ -42,6 +44,7 @@ public class ServiceProviderWithContextFactory
         ServiceProviderMock.Setup(x => x.GetService(typeof(IAccountManagementService))).Returns(AccountManagementServiceMock.Object);
         ServiceProviderMock.Setup(x => x.GetService(typeof(IUsageQueue))).Returns(UsageQueueMock.Object);
         ServiceProviderMock.Setup(x => x.GetService(typeof(IResonanceService))).Returns(ResonanceServiceMock.Object);
+        ServiceProviderMock.Setup(x => x.GetService(typeof(IExpiryQueue))).Returns(ExpiryQueueMock.Object);
         
         var web3Mock = new MockWeb3(mappings);
         

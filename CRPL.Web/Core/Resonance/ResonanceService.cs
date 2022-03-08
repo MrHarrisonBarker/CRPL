@@ -14,9 +14,9 @@ public class ResonanceService : IResonanceService
     private readonly IMapper Mapper;
     private readonly IServiceProvider ServiceProvider;
 
-    private readonly Dictionary<Guid, List<string>> WorkToConnection;
-    private readonly Dictionary<Guid, List<string>> ApplicationToConnection;
-    private readonly Dictionary<Guid, List<string>> UserToConnection;
+    public readonly Dictionary<Guid, List<string>> WorkToConnection;
+    public readonly Dictionary<Guid, List<string>> ApplicationToConnection;
+    public readonly Dictionary<Guid, List<string>> UserToConnection;
 
     public ResonanceService(ILogger<ResonanceService> logger, IMapper mapper, IServiceProvider serviceProvider)
     {
