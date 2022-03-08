@@ -98,12 +98,30 @@ describe('UserService', () =>
       let mockPhone = "PHONE NUMBER";
       let mockResponse = true;
 
+      setProp<BehaviorSubject<UserAccountViewModel>>(authMock, 'UserAccount', new BehaviorSubject<UserAccountViewModel>({
+        DateOfBirth: {
+          Day: 0,
+          Year: 0,
+          Month: 0
+        },
+        DialCode: "",
+        Email: "",
+        FirstName: "",
+        LastName: "",
+        PhoneNumber: "",
+        RegisteredJurisdiction: "",
+        Status: AccountStatus.Incomplete,
+        WalletAddressUri: "",
+        WalletPublicAddress: "",
+        Id: "USERID"
+      }));
+
       userService.IsPhoneUnique(mockPhone).subscribe(answer =>
       {
         expect(answer).toBeTruthy();
       });
 
-      let request = httpMock.expectOne("user/unique/phone?phone=" + encodeURI(mockPhone));
+      let request = httpMock.expectOne("user/unique/phone/" + encodeURI(mockPhone) + "?user=USERID");
 
       expect(request.request.responseType).toEqual('json');
       expect(request.cancelled).toBeFalsy();
@@ -118,12 +136,30 @@ describe('UserService', () =>
       let mockEmail = "EMAIL";
       let mockResponse = true;
 
+      setProp<BehaviorSubject<UserAccountViewModel>>(authMock, 'UserAccount', new BehaviorSubject<UserAccountViewModel>({
+        DateOfBirth: {
+          Day: 0,
+          Year: 0,
+          Month: 0
+        },
+        DialCode: "",
+        Email: "",
+        FirstName: "",
+        LastName: "",
+        PhoneNumber: "",
+        RegisteredJurisdiction: "",
+        Status: AccountStatus.Incomplete,
+        WalletAddressUri: "",
+        WalletPublicAddress: "",
+        Id: "USERID"
+      }));
+
       userService.IsEmailUnique(mockEmail).subscribe(answer =>
       {
         expect(answer).toBeTruthy();
       });
 
-      let request = httpMock.expectOne("user/unique/email?email=" + encodeURI(mockEmail));
+      let request = httpMock.expectOne("user/unique/email/" + encodeURI(mockEmail) + "?user=USERID");
 
       expect(request.request.responseType).toEqual('json');
       expect(request.cancelled).toBeFalsy();

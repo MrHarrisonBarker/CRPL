@@ -3,7 +3,7 @@ import {TestBed} from '@angular/core/testing';
 import {ValidatorsService} from './validators.service';
 import {UserService} from "./user.service";
 import {isObservable, of} from "rxjs";
-import {AbstractControl, FormControl, FormGroup} from "@angular/forms";
+import {AbstractControl, FormControl} from "@angular/forms";
 
 describe('ValidatorsService', () =>
 {
@@ -72,30 +72,5 @@ describe('ValidatorsService', () =>
     if (isObservable(sub))  {
       sub.subscribe(x => expect(x).toEqual(null))
     }
-  });
-
-  it('should add error if non existent', () =>
-  {
-    let mockFormGroup: FormGroup = new FormGroup({
-      Email: new FormControl(''),
-      PhoneNumber: new FormControl('')
-    })
-
-    expect(service.hasOneContactInfo()(mockFormGroup.controls.Email)).toEqual({hasNoContact: true});
-  });
-
-  it('should add null if existent', () =>
-  {
-    let mockFormGroup: FormGroup = new FormGroup({
-      Email: new FormControl('EMAIL'),
-      PhoneNumber: new FormControl('')
-    })
-
-    expect(service.hasOneContactInfo()(mockFormGroup.controls.Email)).toEqual(null);
-  });
-
-  it('should return add null if no parent', () =>
-  {
-    expect(service.hasOneContactInfo()(new FormControl())).toEqual(null);
   });
 });

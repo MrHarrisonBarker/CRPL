@@ -40,12 +40,12 @@ export class UserService
 
   public IsPhoneUnique (phone: string): Observable<boolean>
   {
-    return this.http.get<boolean>(this.BaseUrl + UserPaths.PhoneExists + '/' + phone, {params: new HttpParams().set('user', this.authService.UserAccount.getValue().Id)});
+    return this.http.get<boolean>(this.BaseUrl + UserPaths.PhoneExists + '/' + encodeURI(phone), {params: new HttpParams().set('user', this.authService.UserAccount.getValue().Id)});
   }
 
   public IsEmailUnique (email: string): Observable<boolean>
   {
-    return this.http.get<boolean>(this.BaseUrl + UserPaths.EmailExists + '/' + email, {params: new HttpParams().set('user', this.authService.UserAccount.getValue().Id)});
+    return this.http.get<boolean>(this.BaseUrl + UserPaths.EmailExists + '/' + encodeURI(email), {params: new HttpParams().set('user', this.authService.UserAccount.getValue().Id)});
   }
 
   public IsReal(address: string) : Observable<boolean>
