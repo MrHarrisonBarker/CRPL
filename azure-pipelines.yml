@@ -106,9 +106,9 @@ stages:
               zipAfterPublish: True
 
           - task: PublishBuildArtifacts@1
-              inputs:
-                pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-                artifactName: 'CRPL'
+            inputs:
+              pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              artifactName: 'CRPL'
 
           - task: AzureAppServiceManage@0
             inputs:
