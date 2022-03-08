@@ -14,6 +14,14 @@ using Serilog.Sinks.SystemConsole.Themes;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (!builder.Environment.IsDevelopment())
+{
+    builder.Host.ConfigureAppConfiguration(configurationBuilder =>
+    {
+        configurationBuilder.AddAzureAppConfiguration(Environment.GetEnvironmentVariable("configConnectionString"));
+    });
+}
+
 var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 var appSettings = appSettingsSection.Get<AppSettings>();
