@@ -117,7 +117,7 @@ stages:
               azureSubscription: 'Pay-As-You-Go(9089fb88-0825-4040-b4e2-8281ff2d7726)'
               appType: 'webAppLinux'
               WebAppName: 'CRPL'
-              packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+              packageForLinux: '$(System.DefaultWorkingDirectory)/dotnet/**/*.zip'
 
           - task: AzureAppServiceManage@0
             inputs:
