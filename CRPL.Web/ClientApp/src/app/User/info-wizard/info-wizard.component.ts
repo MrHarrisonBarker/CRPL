@@ -199,8 +199,9 @@ export class InfoWizardComponent implements OnInit
   {
     this.Locked = true;
     this.unsubscribe.next();
-    this.save().pipe(finalize(() => this.Locked = false)).subscribe();
-    this.router.navigate(['/dashboard']);
+    this.save().pipe(finalize(() => this.Locked = false)).subscribe(() => {
+      this.router.navigate(['/dashboard']);
+    });
   }
 
   public InvalidAndUntouched (control: string, firstPage: boolean): boolean

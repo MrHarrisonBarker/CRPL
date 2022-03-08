@@ -26,16 +26,20 @@ export class CompleteUserAndAuthGuard implements CanActivate
     return this.authService.IsAuthenticated.pipe(switchMap(isAuthenticated =>
     {
 
-      if (isAuthenticated)
+      if (isAuthenticated && this.authService.UserAccount.getValue())
       {
-        return of(true);
+        console.log("[CompleteUserAndAuthGuard] user exists, checking status");
+        if (this.authService.UserAccount.getValue().Status == AccountStatus.Complete) return of(true);
+
+        this.alertService.Alert({Message: "You have not completed the signup process yet, complete to gain access", Type: "information"});
+        this.router.navigate(['/u/info']).then(r => null);
       }
 
       let token = this.authService.getToken();
 
       if (!token)
       {
-        console.log("no token found so navigating away");
+        console.log("[CompleteUserAndAuthGuard] no token found so navigating away");
         this.alertService.Alert({Message: "Session expired log back in", Type: "danger"});
         this.router.navigate(['/']).then(r => null);
         return of(false);
@@ -43,7 +47,7 @@ export class CompleteUserAndAuthGuard implements CanActivate
 
       return this.authService.Authenticate(token).pipe(map(authenticatedUser =>
       {
-        console.log("got user now checking status", authenticatedUser);
+        console.log("[CompleteUserAndAuthGuard] got user now checking status", authenticatedUser);
         if (authenticatedUser == null)
         {
           this.router.navigate(['/']).then(r => null);
@@ -51,7 +55,7 @@ export class CompleteUserAndAuthGuard implements CanActivate
         }
         if (authenticatedUser.Status == AccountStatus.Complete) return true;
 
-        console.log("the user has not complete their profile navigating to wizard");
+        console.log("[CompleteUserAndAuthGuard] the user has not complete their profile navigating to wizard");
 
         this.alertService.Alert({Message: "You have not completed the signup process yet, complete to gain access", Type: "information"});
         this.router.navigate(['/u/info']).then(r => null);

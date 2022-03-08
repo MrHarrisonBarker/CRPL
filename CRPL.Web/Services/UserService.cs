@@ -106,7 +106,7 @@ public class UserService : IUserService
         }
 
         if (user.Status == UserAccount.AccountStatus.Created) user.Status = UserAccount.AccountStatus.Incomplete;
-        if (isComplete(user)) user.Status = UserAccount.AccountStatus.Complete;
+        user.Status = isComplete(user) ? UserAccount.AccountStatus.Complete : UserAccount.AccountStatus.Incomplete;
 
         await Context.SaveChangesAsync();
 
@@ -140,18 +140,22 @@ public class UserService : IUserService
     private bool isComplete(UserAccount userAccount)
     {
         Logger.LogInformation("Checking if a user has completed sign up, {Id}", userAccount.Id);
-        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "Wallet", "UserWorks", "AuthenticationToken", "Applications" };
-        var hasContact = 0;
+        var ignoredProperties = new List<string> { "Email", "PhoneNumber", "DialCode", "Wallet", "UserWorks", "AuthenticationToken", "Applications" };
         // checks each property is not null
-        // user only needs one form of contact: email or phone
         foreach (var property in typeof(UserAccount).GetProperties())
         {
             var val = property.GetValue(userAccount);
             if (val == null && !ignoredProperties.Contains(property.Name)) return false;
-            if ((property.Name == "Email" || property.Name == "PhoneNumber") && val != null) hasContact++;
+            if (val?.GetType() == typeof(string))
+            {
+                if (string.IsNullOrEmpty((string?)val) || string.IsNullOrWhiteSpace((string?)val)) return false;
+            }
         }
 
-        return hasContact != 0;
+        if (userAccount.Email != null) return true;
+        if (userAccount.PhoneNumber != null && userAccount.DialCode != null) return true;
+
+        return false;
     }
 
     public void AssignToApplication(string address, Guid applicationId)
@@ -167,7 +171,7 @@ public class UserService : IUserService
 
         Context.SaveChanges();
     }
-    
+
     public void AssignToApplication(Guid id, Guid applicationId)
     {
         Logger.LogInformation("Assigning {Id} to application {Id}", id, applicationId);

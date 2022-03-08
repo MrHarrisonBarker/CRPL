@@ -61,7 +61,7 @@ export class ResonanceService
     {
       console.log("[resonance-service] Connected to RESONANCE websocket");
       this.authService.IsAuthenticated.subscribe(authed => {
-        if (authed) this.ResonanceConnection.invoke("RegisterUser", this.authService.UserAccount.getValue().Id).then(r => console.log(r));
+        if (authed) this.ResonanceConnection.invoke("RegisterUser", this.authService.UserAccount.getValue().Id).then(r => null);
       })
 
       for (let application of this.ApplicationsToListen)
