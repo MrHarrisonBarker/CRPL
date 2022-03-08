@@ -105,6 +105,11 @@ stages:
               arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/dotnet'
               zipAfterPublish: True
 
+          - task: PublishBuildArtifacts@1
+              inputs:
+                pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+                artifactName: 'CRPL'
+
           - task: AzureAppServiceManage@0
             inputs:
               azureSubscription: 'Pay-As-You-Go(9089fb88-0825-4040-b4e2-8281ff2d7726)'
