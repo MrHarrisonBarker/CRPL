@@ -71,7 +71,7 @@ stages:
             condition: succeededOrFailed()
             displayName: "npm install"
             inputs:
-              command: install
+              command: 'ci'
               workingDir: 'CRPL.Web/ClientApp'
 
           - task: Npm@1

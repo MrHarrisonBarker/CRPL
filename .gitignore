@@ -1,5 +1,5 @@
 **/TESTS**.xml
-**/package-lock.json
+#**/package-lock.json
 **/.texpadtmp
 
 appsettings.json
