@@ -257,9 +257,60 @@ significant time was spent trying different paths.
 
 #### Conclusion
 
-This sprint was very successful di~~~~spute a lot of work to be done in only a week, it gave the user the ability to file
+This sprint was very successful dispute a lot of work to be done in only a week, it gave the user the ability to file
 and resolve disputes, delete account and transfer assets to wallet. The system now recognises expired copyrights and
 keeps in sync with the blockchain.
+
+### Sprint 4 (1st March – 8th March)
+
+![burndown-4](./Sprint%20Reviews/burndown-4.png)
+
+#### Focus
+
+- Bug fixes
+- Work CDN & Usage (Extra feature)
+- Websocket
+- Continuous deployment
+
+#### What was achieved
+
+All tasks an functionality assigned to this was implemented in the time period.
+
+This sprint was focused first on two extra features I wanted to get implemented first was a decentralised blockchain
+based content delivery network, after researching a number of solutions one stood out as the best option
+being [IPFS](https://ipfs.io/) (InterPlanetary File System) which is a peer to peer hypermedia protocol to retrieve
+files saved across multiple nodes/peers in chunks. So I installed Ipfs and started up my own node needed to interact and
+most importantly add files to the network, using
+the [Ipfs.Http.Client](https://github.com/richardschneider/net-ipfs-http-client) library it was then easy to add the
+digitally signed to this network returning a [CID](https://docs.ipfs.io/concepts/content-addressing/) which is a unique
+identifier (essentially a hash of the file) used to retrieve the file from the Ipfs network. This identifier is saved on
+the work.
+
+Once saved to the network a link to the work is created but I wanted a way for creators to measure the number of times
+their work has been used, I decided on creating a reverse proxy which takes a request for a work records the use and
+then passes the ipfs request onto the client.
+
+The second extra feature implemented was websocket integration which allows for realtime updates to the client which in
+a blockchain based application sending transactions that can possibly take any amount of time to complete greatly
+improves the usability of the application. This was implemented using register and push methods, when a user loads an
+application the client will send a listen command to the backend, whenever an application or work is updated those
+updates will pushed out to listeners.
+
+#### What was not achieved
+
+Although all bugs registered in this sprint were fixed a level of polish was and has not been obtained, everything
+technically works but the software is still not "user proof"
+
+#### What went wrong
+
+Work on implementing the websocket radically changed a large portion of the frontend dataflow to accommodate the now
+realtime asynchronous data that can now change on the fly at anytime and therefore has to change and adapt. This caused
+more problems than expected and therefore implementing this feature took considerably more time and change.
+
+#### Conclusion
+
+This sprint was very successful implementing extra quality of life features, the project now feels like a more complete
+and holistic product ready to be used.
 
 ## Licence
 
