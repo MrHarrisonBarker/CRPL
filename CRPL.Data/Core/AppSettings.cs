@@ -9,6 +9,7 @@ public class AppSettings
     public string SeqKey { get; set; }
     public string IpfsHost { get; set; } 
     public List<Chain> Chains { get; set; }
+    public string EtherscanHost { get; set; }
 }
 
 public class SystemAccount

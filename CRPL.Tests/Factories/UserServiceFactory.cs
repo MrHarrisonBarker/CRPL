@@ -13,13 +13,13 @@ public class UserServiceFactory
 
     public UserServiceFactory(ApplicationContext context)
     {
-        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
-        var mapper = new Mapper(configuration);
-
         var appSettings = Options.Create(new AppSettings()
         {
             EncryptionKey = "Bj3PtC818hVHkNH3nzI0HN8wJXY0oHdo"
         });
+        
+        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping(appSettings.Value)));
+        var mapper = new Mapper(configuration);
 
         UserService = new UserService(new Logger<UserService>(new LoggerFactory()), context, mapper, appSettings);
     }

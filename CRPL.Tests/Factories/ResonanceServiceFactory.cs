@@ -25,7 +25,7 @@ public class ResonanceServiceFactory
         ServiceProviderMock.Setup(x => x.GetService(typeof(ApplicationContext))).Returns(applicationContext);
         ServiceProviderMock.Setup(x => x.GetService(typeof(IQueryService))).Returns(QueryServiceMock.Object);
 
-        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
+        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping(new AppSettings())));
         var mapper = new Mapper(configuration);
 
         var serviceScope = new Mock<IServiceScope>();

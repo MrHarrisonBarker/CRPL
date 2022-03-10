@@ -39,7 +39,10 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 
 // Add services to the container.
 
-builder.Services.AddAutoMapper(expression => expression.AddProfile(typeof(AutoMapping)));
+builder.Services.AddAutoMapper(expression =>
+{
+    expression.AddProfile(new AutoMapping(appSettings));
+});
 
 builder.Services.AddChainConnections();
 

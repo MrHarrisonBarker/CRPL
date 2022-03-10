@@ -10,7 +10,7 @@ public class Mappings
     [Test]
     public void Map_Should_HaveValidConfig()
     {
-        var config = new MapperConfiguration(cfg => cfg.AddProfile<AutoMapping>());
+        var config = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping(new AppSettings())));
         config.AssertConfigurationIsValid();
     }
 }

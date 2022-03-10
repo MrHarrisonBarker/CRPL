@@ -21,7 +21,7 @@ public class AccountManagementServiceFactory
 
     public AccountManagementServiceFactory(ApplicationContext context, Dictionary<string, object>? mappings = null)
     {
-        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping()));
+        var configuration = new MapperConfiguration(cfg => cfg.AddProfile(new AutoMapping(new AppSettings())));
         var mapper = new Mapper(configuration);
         
         var web3Mock = new MockWeb3(mappings);
