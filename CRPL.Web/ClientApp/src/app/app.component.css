@@ -30,3 +30,11 @@ body {
   flex-direction: column;
   display: flex;
 }
+
+#build-number {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  align-content: center;
+}

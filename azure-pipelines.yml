@@ -97,6 +97,11 @@ stages:
               codeCoverageTool: 'Cobertura'
               summaryFileLocation: '$(Agent.TempDirectory)/**/coverage.cobertura.xml'
 
+          - task: replacetokens@5
+            inputs:
+              targetFiles: '**/environment.prod.ts'
+              encoding: 'auto'
+
           - task: DotNetCoreCLI@2
             inputs:
               command: publish
