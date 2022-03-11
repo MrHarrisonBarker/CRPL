@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   etherScanKey: "ZKIHM2D1USRCWMQUN7FKW6HKFUA6H718A2",
-  buildNumber: '1.0'
+  buildNumber: 'DEV ENVIRONMENT'
 };
 
 /*

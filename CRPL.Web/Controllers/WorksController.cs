@@ -1,6 +1,7 @@
 using CRPL.Data.Account.Works;
 using CRPL.Web.Services.Background.Usage;
 using CRPL.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRPL.Web.Controllers;
@@ -20,6 +21,7 @@ public class WorksController : ControllerBase
         UsageQueue = usageQueue;
     }
 
+    [Authorize]
     [HttpPost, DisableRequestSizeLimit]
     public async Task<byte[]> Upload()
     {
@@ -37,6 +39,7 @@ public class WorksController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpPatch("ping/{id}")]
     public async Task<IActionResult> Ping(Guid id)
     {

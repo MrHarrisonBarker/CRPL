@@ -2,6 +2,7 @@ using CRPL.Data.Account;
 using CRPL.Data.Proposal;
 using CRPL.Web.Core.ChainSync.Synchronisers;
 using CRPL.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRPL.Web.Controllers;
@@ -23,6 +24,7 @@ public class CopyrightController : ControllerBase
         OwnershipSynchroniser = synchronisers.First();
     }
     
+    [Authorize]
     [HttpPatch("complete/{id}")]
     public async Task<RegisteredWork> CompleteRegistration([FromRoute]Guid id)
     {
@@ -37,6 +39,7 @@ public class CopyrightController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("bind")]
     public async Task<ActionResult> BindProposal(BindProposalInput proposalInput)
     {
@@ -52,6 +55,7 @@ public class CopyrightController : ControllerBase
         }
     }
     
+    [Authorize]
     [HttpPost("bind/work")]
     public async Task<ActionResult> BindProposal(BindProposalWorkInput proposalInput)
     {

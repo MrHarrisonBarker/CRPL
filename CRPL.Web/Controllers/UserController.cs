@@ -2,6 +2,7 @@ using CRPL.Data.Account.InputModels;
 using CRPL.Data.Account.StatusModels;
 using CRPL.Data.Account.ViewModels;
 using CRPL.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -20,6 +21,7 @@ public class UserController : ControllerBase
         UserService = userService;
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<UserAccountStatusModel> UpdateAccount(Guid accountId, AccountInputModel accountInputModel)
     {
@@ -34,6 +36,7 @@ public class UserController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet]
     // TODO: ownership needs to verified
     public async Task<UserAccountStatusModel> GetAccount(Guid id)
@@ -49,6 +52,7 @@ public class UserController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpPost("nonce")]
     public async Task<ActionResult<string>> FetchNonce(string walletAddress)
     {
@@ -62,7 +66,8 @@ public class UserController : ControllerBase
             throw;
         }
     }
-
+    
+    [AllowAnonymous]
     [HttpPost("sig")]
     public async Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel)
     {
@@ -77,6 +82,7 @@ public class UserController : ControllerBase
         }
     }
 
+    [AllowAnonymous]
     [HttpGet("auth")]
     public async Task<UserAccountViewModel> Authenticate(string token)
     {

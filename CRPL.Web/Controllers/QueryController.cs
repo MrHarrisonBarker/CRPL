@@ -2,6 +2,7 @@ using CRPL.Data;
 using CRPL.Data.Account;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRPL.Web.Controllers;
@@ -33,6 +34,7 @@ public class QueryController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("my/{id}")]
     public async Task<List<RegisteredWorkWithAppsViewModel>> GetMy(Guid id)
     {
@@ -47,6 +49,7 @@ public class QueryController : ControllerBase
         }
     }
     
+    [Authorize]
     [HttpGet("my/{id}/disputed")]
     public async Task<List<DisputeViewModel>> GetMyDisputedWork(Guid id)
     {

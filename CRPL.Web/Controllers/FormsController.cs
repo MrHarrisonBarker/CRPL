@@ -1,10 +1,10 @@
-using CRPL.Data.Account;
 using CRPL.Data.Applications;
 using CRPL.Data.Applications.DataModels;
 using CRPL.Data.Applications.InputModels;
 using CRPL.Data.Applications.ViewModels;
 using CRPL.Web.Core;
 using CRPL.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CRPL.Web.Controllers;
@@ -40,6 +40,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpGet("users/{id}")]
     public async Task<List<ApplicationViewModel>> GetMy(Guid id)
     {
@@ -54,6 +55,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("copyright/registration")]
     public async Task<CopyrightRegistrationViewModel> UpdateCopyrightRegistration(CopyrightRegistrationInputModel inputModel)
     {
@@ -68,6 +70,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("copyright/ownership")]
     public async Task<OwnershipRestructureViewModel> UpdateOwnershipStructure(OwnershipRestructureInputModel inputModel)
     {
@@ -82,6 +85,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("copyright/dispute")]
     public async Task<DisputeViewModel> UpdateDispute(DisputeInputModel inputModel)
     {
@@ -96,6 +100,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> Cancel(Guid id)
     {
@@ -111,6 +116,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("copyright/submit/registration/{id}")]
     public async Task<CopyrightRegistrationViewModel> SubmitCopyrightRegistration(Guid id)
     {
@@ -125,6 +131,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("copyright/submit/ownership/{id}")]
     public async Task<OwnershipRestructureViewModel> SubmitOwnershipRestructure(Guid id)
     {
@@ -139,6 +146,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("copyright/submit/dispute/{id}")]
     public async Task<DisputeViewModel> SubmitDispute(Guid id)
     {
@@ -153,6 +161,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("copyright/resolve/dispute")]
     public async Task<DisputeViewModel> ResolveDispute([FromBody] ResolveDisputeInputModel inputModel)
     {
@@ -167,6 +176,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost("copyright/record/payment/dispute/{id}")]
     public async Task RecordPayment(Guid id, string transaction)
     {
@@ -181,6 +191,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpDelete("user/{id}")]
     public async Task<DeleteAccountViewModel> DeleteUser(Guid id)
     {
@@ -200,6 +211,7 @@ public class FormsController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPatch("wallet/{id}/to/{address}")]
     public async Task<WalletTransferViewModel> WalletTransfer(Guid id, string address)
     {
@@ -218,30 +230,5 @@ public class FormsController : ControllerBase
             Logger.LogError(e, "Exception thrown when transferring {Id}'s wallet to {Address}", id, address);
             throw;
         }
-    }
-    
-    [HttpGet("test/{val}")]
-    public async Task<RegisteredWorkViewModel> Get([FromRoute] string val)
-    {
-        if (val == "Fail")
-        {
-            throw new Exception("This is an exception");
-        }
-
-        if (val == "Success")
-        {
-            await ResonanceService.PushApplicationUpdates(new OwnershipRestructureApplication()
-            {
-                Id = new Guid("08d9fd9b-b19f-4768-8ae8-3c3c1f205cbb"),
-                CurrentStructure = "CURRENTSTRUCT!50;",
-                Created = DateTime.Now
-            });
-            return new RegisteredWorkViewModel()
-            {
-                Id = Guid.NewGuid()
-            };
-        }
-
-        return null;
     }
 }

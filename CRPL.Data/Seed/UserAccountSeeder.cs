@@ -13,11 +13,11 @@ public class UserAccountSeeder
     
     public void Seed()
     {
-        List<UserAccount> userAccounts = new List<UserAccount>()
+        List<UserAccount> userAccounts = new List<UserAccount>
         {
             new()
             {
-                Id = new Guid("D67B16A9-2E44-4A14-9169-0AE8FED2203C"),
+                Id = Guid.NewGuid(),
                 Email = null,
                 Status = UserAccount.AccountStatus.Complete,
                 FirstName = "Harrison",
@@ -33,9 +33,51 @@ public class UserAccountSeeder
                 DialCode = "+44",
                 Wallet = new UserWallet
                 {
-                    PublicAddress = "0x3aaf677ea4e72eebb92d2d5c3a92307ee789e24c"
+                    PublicAddress = "0x3Aaf677eA4e72eEbB92d2D5c3A92307EE789E24c"
                 }
-            }
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Email = "Roy.Batty@test.co.uk",
+                Status = UserAccount.AccountStatus.Complete,
+                FirstName = "Roy",
+                LastName = "Batty",
+                PhoneNumber = null,
+                DialCode = null,
+                RegisteredJurisdiction = "GBR",
+                DateOfBirth = new UserAccount.DOB
+                {
+                    Day = 1,
+                    Month = 1,
+                    Year = 2000
+                },
+                Wallet = new UserWallet
+                {
+                    PublicAddress = "0xaEa270413700371A8A28Ab8B5eCe05201bdf49de"
+                }
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Email = "Rick.Deckard@test.co.uk",
+                Status = UserAccount.AccountStatus.Complete,
+                FirstName = "Rick",
+                LastName = "Deckard",
+                PhoneNumber = null,
+                DialCode = null,
+                RegisteredJurisdiction = "GBR",
+                DateOfBirth = new UserAccount.DOB
+                {
+                    Day = 1,
+                    Month = 1,
+                    Year = 2000
+                },
+                Wallet = new UserWallet
+                {
+                    PublicAddress = "0x270C23E93A85e79aEE96eb061e3DadCBC58CAdB0"
+                }
+            },
         };
 
         Context.UserAccounts.AddRange(userAccounts);
