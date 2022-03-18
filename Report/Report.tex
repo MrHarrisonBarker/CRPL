@@ -1,0 +1,192 @@
+\documentclass[12pt]{article}
+
+\usepackage[a4paper, margin=1in]{geometry}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+\title{CRPL: Interim Report}
+\author{Harrison Beau Barker}
+
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+\usepackage{xcolor}
+
+\usepackage{tabularx}
+\newcolumntype{b}{X}
+\newcolumntype{s}{>{\hsize=.5\hsize}X}
+
+\newcommand{\keyword}[1]{\textbf{\textit{#1}}}
+\newcommand{\q}[2]{\begin{quote} #1 \cite{#2} \end{quote}}
+
+\setlength{\parskip}{1em}
+%\setlength{\parindent}{0em}
+\begin{document}
+
+\begin{titlepage}
+	\centering
+	\includegraphics[width=0.4\textwidth]{crpl}\par
+	\vspace{1cm}
+	{\huge\bfseries CRPL: Report\par}
+	\vspace{2cm}
+	{\Large\itshape Harrison Beau Barker\par}
+	\vfill
+	{\url{https://github.com/MrHarrisonBarker/crpl}\par}
+	\vspace{1cm}
+	{\large Hbark002, 33575210\par}
+\end{titlepage}
+
+\abstract{TODO}
+
+\tableofcontents{}
+
+\section{Keywords}
+
+\section{Introduction}
+% TODO The problem. Take inspiration from the presentation
+% TODO what is needed of a solution to fix this problem?
+
+\section{Research}
+\subsection{Blockchain}
+% TODO Technical knowledge needed to implement
+% TODO How it works?
+% TODO Why use it?
+
+\subsection{Existing solutions}
+
+\subsubsection{Copyright law}
+% TODO The state of the current copyright system
+\subsubsection{Online rights management}
+% TODO How do creators manage protection of their work
+
+\subsection{Development theory}
+% TODO Explanation of agile development methodology
+% TODO TDD and Scrum
+
+\subsection{Aims of the solution}
+% TODO The over arcing aims of the solution, aka what should the system fix
+
+\section{Design}
+
+\subsection{Technical Requirements}
+% TODO a more comprehensive and detailed list of requirements
+
+\begin{description}
+	\item[Copyright smart contract] Immutable code on a public ledger “blockchain“ for the purpose of establishing ownership or the copyright to a piece of work.
+	\item[Multi-party distribution] The ability to establish a complex ownership structure which includes multiple individuals/groups.
+	\item[Ownership transfer] The ability to change the ownership of a copyright from one complex structure to another with consent of all current owner(s).
+	\item[Work verification] Verification of a work to establish its originality with a reasonable accuracy for the platform.
+	\item[Dispute filing] Allow any user to dispute a copyright with sufficient evidence and provide an option for resolving these disputes by the owner(s).
+	\item[Digital signing] Digital signing a work for authentic verification based on our records.
+	\item[\color{orange}{Decentralised Work CDN & proxy}] Providing an access point for stored work within the chain.
+	\item[\color{orange}{Web-socket updates}] Real-time updates for the front-end UI to provide a better end-user experience.
+\end{description}
+
+\subsection{Smart contract}
+% TODO Ownership structure
+% TODO Permission based protections
+% TODO Inspiration from nft contract (starting point) https://eips.ethereum.org/EIPS/eip-721
+% TODO Shareholder consensus mechanism
+
+\subsection{Back-end}
+% TODO Service and dependancy injection based architecture
+% TODO Background service pattern
+% TODO event processing patterns
+% TODO state diagrams (how the flow of applications)
+
+\subsection{Database}
+% TODO what is duplicated between the chain and the database
+% TODO what is only on the database and not on the chain
+% TODO Express the need for synchronisation
+
+\subsection{Front-end}
+% TODO Visual design philosophy
+% TODO How the use will login?
+% TODO form design and working
+
+\subsection{Development process}
+% TODO how the development was laid out and planned
+% TODO sprint structure
+
+\section{Implementation}
+
+\subsection{Smart contract}
+% TODO Authorisation of message sender
+% TODO Registration of copyright
+% TODO Restructure proposal and vote
+% TODO saved metadata
+
+\subsection{Back-end}
+% TODO Service -> Controller
+% TODO digital signing
+% TODO ContractRepository
+
+\subsubsection{Queries}
+% TODO structured query
+% TODO chain injection
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/chain-inject}
+
+\subsubsection{Registration process}
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/cpy-registration-status-graph}
+
+\subsubsection{Dispute handling}
+% TODO dispute handling
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/dispute-workflow}
+
+\subsubsection{Applications framework}
+
+\subsubsection{API overview}
+% TODO API diagrams and structure
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/Forms-Api}
+
+\subsubsection{Blockchain event listeners}
+% TODO Blockchain event listeners
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/Event-Listening}
+
+
+
+\subsubsection{Background services}
+% TODO verification pipeline
+% TODO Expiry
+
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/patterns/background-processing-pattern}
+
+\subsubsection{Account management}
+
+\subsection{Database}
+% TODO ChainSync™
+
+\subsection{Front-end}
+
+\section{Discussion}
+\subsection{Limitation}
+% TODO limits of the scope (having to reign in the scope of the project at all points)
+% TODO limits of the implementation (gas/price aka no money involved at the moment, transfer and delete wallet, de-sync)
+
+\subsection{Blockchain technology}
+% TODO Are these NFTs?
+% TODO How long will the blockchain?
+% TODO Social consensus/ conflict with governments
+
+\section{Evaluation}
+\subsection{Process}
+% TODO evaluating my development
+% TODO was development agile?
+
+\subsection{Product}
+% TODO Has all the functional specifications been met
+% TODO Has all the non-functional specs been met
+% TODO Does the product fit the target users needs
+% TODO Does the product fulfil
+
+\section{Future development}
+
+\section{Conclusion}
+
+
+\bibliographystyle{plain}
+\bibliography{sources.bib}
+
+\end{document}
