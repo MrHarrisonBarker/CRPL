@@ -35,7 +35,7 @@ public class UsageProxyMiddleware
             if (work == null) throw new WorkNotFoundException(Guid.Parse(id));
             if (work.Cid == null) throw new Exception("Cid doesn't exist!");
             
-            var target = new UriBuilder("https://ipfs.io/ipfs/" + work.Cid).Uri;
+            var target = new UriBuilder("http://ipfs.harrisonbarker.co.uk/ipfs/" + work.Cid).Uri;
             
             // making request to proxied uri using ipfs gateway
             using var client = new HttpClient();

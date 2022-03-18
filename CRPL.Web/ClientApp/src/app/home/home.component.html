@@ -3,7 +3,7 @@
     <button clrTabLink>Copyrights</button>
     <clr-tab-content *clrIfActive>
       <div class="card-list" *ngIf="RecentCopyrights | async as copyrights; else loading">
-        <copyright-min [Copyright]="copyright" *ngFor="let copyright of copyrights"></copyright-min>
+        <copyright-min [Copyright]="copyright" *ngFor="let copyright of copyrights" style="margin-right: 1rem"></copyright-min>
       </div>
     </clr-tab-content>
   </clr-tab>

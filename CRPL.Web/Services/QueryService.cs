@@ -38,11 +38,6 @@ public class QueryService : IQueryService
         BlockchainConnection = blockchainConnection;
         ContractRepository = contractRepository;
         ExpiryQueue = expiryQueue;
-        Logger = logger;
-        Context = context;
-        Mapper = mapper;
-        BlockchainConnection = blockchainConnection;
-        ContractRepository = contractRepository;
     }
 
     public async Task<RegisteredWorkWithAppsViewModel> GetWork(Guid id)
