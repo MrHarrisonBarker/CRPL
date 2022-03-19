@@ -46,6 +46,24 @@
 
 \section{Introduction}
 % TODO The problem. Take inspiration from the presentation
+
+The aim of this project is to represent a version of \keyword{copyright} for protection of intellectual property on a \keyword{blockchain} backed by a public ledger of transactions. My initial impetus for this project was a book I read in 2018 called \textit{"Blockchain Revolution: How the Technology Behind Bitcoin Is Changing Money, Business, and the World"}\cite{blockchain_revolution}, before this point I knew little of the applications for blockchain technologies attributing them only to a new form of digital currency allowing peer to peer transactions of wealth.
+
+However, this book introduced the concept of \keyword{smart contracts} and the possibilities now small immutable programs could be saved and run on a blockchain. The most relevant change smart contracts brought was progressive state into an infamously immutable technology, by leveraging an unmodifiable chain of transactions state became not just a current record (like most traditional systems) but a historical account of all previous states with a clear a definable list of transformations precisely timestamped.
+
+This new knowledge of \keyword{blockchains} came to fruition when it came to selecting my final project but to what problem should I help to provide a solution to leveraging this technology. A combination of recent interest in the crypto-sphere mainly coming from NFTs, continued displays of a \keyword{copyright} system not fit for purpose\cite{DMCA-abuse} and the book I had read 3 years earlier proposing that \keyword{blockchain} and \keyword{smart contracts} were an extremely viable solution to problems intersecting law and social structures.
+
+\subsection{Unfit for purpose}
+
+% general complexity
+% complexity from different countries laws
+% digital world is global so should copyright
+% computerised and open
+
+Focusing on the problem at hand being the current copyright system is not fit for its purpose. 
+
+\subsection{What a solution needs}
+
 % TODO what is needed of a solution to fix this problem?
 
 \section{Research}
@@ -113,10 +131,29 @@
 \section{Implementation}
 
 \subsection{Smart contract}
-% TODO Authorisation of message sender
-% TODO Registration of copyright
-% TODO Restructure proposal and vote
 % TODO saved metadata
+
+\subsubsection{Interface overview}
+% TODO events
+% TODO ownership
+% TODO copyright
+
+\subsubsection{Registration}
+% TODO Registration of copyright
+% TODO how each copyright is saved (maximum size?)
+% TODO approve the message sender
+% TODO record all shareholders
+
+\subsubsection{Ownership restructure}
+% TODO Restructure proposal
+% TODO Binding vote
+% TODO Restructure event
+% TODO failed restructure
+
+\subsubsection{Modifiers}
+% TODO isShareholder or approved
+% TODO valid addresses
+% TODO expired
 
 \subsection{Back-end}
 % TODO Service -> Controller
@@ -132,10 +169,13 @@
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/cpy-registration-status-graph}
 
 \subsubsection{Dispute handling}
-% TODO dispute handling
+% TODO filing disputes
+% TODO resolving disputes: payment, change of ownership
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/dispute-workflow}
 
 \subsubsection{Applications framework}
+% TODO Data model structure (application, view model, input model)
+% TODO unified status and processing flow (update -> submit = complete)
 
 \subsubsection{API overview}
 % TODO API diagrams and structure
@@ -146,7 +186,6 @@
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/Event-Listening}
 
 
-
 \subsubsection{Background services}
 % TODO verification pipeline
 % TODO Expiry
@@ -154,6 +193,7 @@
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/patterns/background-processing-pattern}
 
 \subsubsection{Account management}
+% TODO issues with transfer and delete account
 
 \subsection{Database}
 % TODO ChainSync™
@@ -182,6 +222,12 @@
 % TODO Does the product fulfil
 
 \section{Future development}
+
+\begin{description}
+	\item[Royalty payments]
+	\item[External verification]
+	\item[Analytics]
+\end{description}
 
 \section{Conclusion}
 
