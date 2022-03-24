@@ -9,9 +9,10 @@
 \title{CRPL: Interim Report}
 \author{Harrison Beau Barker}
 
-\usepackage{graphicx}
+\usepackage{graphicx,float}
 \graphicspath{ {images/} }
 
+%\usepackage{minted}
 \usepackage{xcolor}
 
 \usepackage{tabularx}
@@ -22,7 +23,7 @@
 \newcommand{\q}[2]{\begin{quote} #1 \cite{#2} \end{quote}}
 
 \setlength{\parskip}{1em}
-%\setlength{\parindent}{0em}
+%\setlength{\parindent}{1em}
 \begin{document}
 
 \begin{titlepage}
@@ -49,7 +50,7 @@
 	\item[Blockchain]
 	\item[Ethereum]
 	\item[Smart Contract]
-	\item[Open-source] 
+	\item[EVM] 
 \end{description}
 
 \section{Introduction}
@@ -75,7 +76,7 @@ I've defined what I believe as to be four requirements of a solution to this pro
 % TODO not sure about this section
 \begin{description}
 	\item[Global] Both the system needed to be globally accessible, available and consistent across all jurisdictions to minimise complexity and maximise protection for an interconnected world. I've implemented this by using the \keyword{Ethereum} network which is made up of thousands of nodes across the world.
-	\item[Open] Openness is essential to instil trust in a completely independent and alternative solution compared with government institutions that have implied trust and guaranty. I've implemented this by writing and using \keyword{open-source} code including \keyword{Ethereum} which is \keyword{open-source} and backed by a public ledger.
+	\item[Open] Openness is essential to instil trust in a completely independent and alternative solution compared with government institutions that have implied trust and guaranty. I've implemented this by writing and using open-source code including \keyword{Ethereum} which is open-source and backed by a public ledger.
 	\item[Robust] The current written laws and contracts maybe complex but are strongly defined with a commonly accepted interpretation, this will have to be true in this solution. I've implemented this by using an immutable \keyword{smart contract} for copyright representation and logic.
 	\item[Simple] This is the most important requirement as the proposed problem is centred around current \keyword{copyright} complexity so any solution will need to be accessible to every possible user. I've implemented this by using clearly defined selectable \keyword{copyright} protections when registering a work.
 \end{description}
@@ -112,15 +113,71 @@ I've defined what I believe as to be four requirements of a solution to this pro
 	\item[Work verification] Verification of a work to establish its originality with a reasonable accuracy for the platform.
 	\item[Dispute filing] Allow any user to dispute a copyright with sufficient evidence and provide an option for resolving these disputes by the owner(s).
 	\item[Digital signing] Digital signing a work for authentic verification based on our records.
-	\item[\color{orange}{Decentralised Work CDN & proxy}] Providing an access point for stored work within the chain.
-	\item[\color{orange}{Web-socket updates}] Real-time updates for the front-end UI to provide a better end-user experience.
+%	\item[\color{orange}{Decentralised Work CDN & proxy}] Providing an access point for stored work within the chain.
+%	\item[\color{orange}{Web-socket updates}] Real-time updates for the front-end UI to provide a better end-user experience.
 \end{description}
 
 \subsection{Smart contract}
-% TODO Ownership structure
 % TODO Permission based protections
-% TODO Inspiration from nft contract (starting point) https://eips.ethereum.org/EIPS/eip-721
-% TODO Shareholder consensus mechanism
+
+\subsubsection{Inspiration}
+
+To design a smart contract without prior experience I decided look at what others had done before and because I knew my new contract was going to at least exhibit similar functionality and basic principles as \textbf{NFTs} I started with the EIP for non-fungible tokens \href{https://eips.ethereum.org/EIPS/eip-721}{EIP-721}. 
+
+\begin{quote}
+"Ethereum Improvement Proposals (EIPs) describe standards for the Ethereum platform, including core protocol specifications, client APIs, and contract standards."\cite{eip}
+\end{quote}
+
+This document describes a standard interface for all external methods and events an \textbf{NFT} contract should implement, most of these make sense straight away methods like: balanceOf, ownerOf, transferFrom and the Transfer event. Then there's a few methods to do with "approval" which is \keyword{Ethereum} language for access control, essentially what addresses are allowed to transact and make changes.
+
+An interface spec is useful for understanding how the contract is supposed to interact with the outside world but nothing about how the contract works internally. So I went and found an implementation of this interface \href{https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol}{here} written by \href{https://github.com/OpenZeppelin}{OpenZeppelin} to gain an understanding of how these contracts operate.
+
+\begin{verbatim}
+	// Mapping from token ID to owner address
+	mapping(uint256 => address) private _owners;
+
+	// Mapping owner address to token count
+	mapping(address => uint256) private _balances;
+
+	// Mapping from token ID to approved address
+	mapping(uint256 => address) private _tokenApprovals;
+
+	// Mapping from owner to operator approvals
+	mapping(address => mapping(address => bool)) private _operatorApprovals;
+\end{verbatim}
+
+This snippet is taken from the OpenZeppelin \href{https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol}{ERC721.sol} contract and is essentially how an \textbf{NFT} "works". a series of mappings that are saved in "storage" which is an area of the \keyword{EVM} that every smart contract has access to for storing state variables that need to persistent. These mappings are hashmaps from one type to another, first is the \_owners mapping which points to an owners address based on the hash of a given id (unit256). All the transactional methods are simply modifying these mappings, when you register a new token your wallet address is saved in the map entry for the next id.
+
+\subsubsection{Ownership structure}
+
+This core pattern/architecture was used as the foundation of my new contract, however there is one major requirement of my system not supported by the basic EIP-721 standard which is the ability of multiple address/people to have ownership of a token. This wasn't going to work for representing copyright as works can quite often involve multiple people collaborating the book I mentioned in the beginning of this report\cite{blockchain_revolution} has two authors, a system not representing the work and effort of all involved is just not acceptable.
+
+\begin{figure}[H]
+\caption{Structured Ownership essential mappings}
+\centering
+\includegraphics[width=0.5\textwidth,height=0.5\textheight,keepaspectratio]{images/operational/mappings.png}
+\label{fig:float}
+\end{figure}
+
+To solve this problem I've redesigned how ownership is defined with the smart contract, instead of mapping the token id to one address the contract will now map to an \textbf{OwnershipStructure} which then points to a list of owner addresses along with a number of shares that specific address holds in the token.
+
+This design obviously borrows a lot from limited companies share structure allowing for a complex ownership of multiple individuals or groups with implied variance in ownership (although the number of shares an address owns makes no immediate difference in the current implementation of this contract as this was outside of the desired complexity scope).
+
+\subsubsection{Shareholder consensus}
+
+Allowing multiple wallets to have ownership over a token now introduces a new problem for my contract design, when a change is made everyone has to agree to that change I can't just check if you're an owner anymore, giving the ability to change the copyright to everyone with a stake without consulting with all other owners is a point of exploitation.
+
+\begin{figure}[H]
+\caption{Structured Ownership proposal mappings}
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/prop-mappings.png}
+\end{figure}
+
+This is the solution I've designed for the shareholder consensus problem, now instead of making a direct change to the copyright (in this case an ownership restructure) a user proposes a change to the copyright which is then voted on by all the owners until a unanimous vote tally is reached then the change can be made.
+
+\subsubsection{Permissions/Metadata}
+
+% TODO is this section needed?
 
 \subsection{Back-end}
 % TODO Service and dependancy injection based architecture
@@ -137,6 +194,9 @@ I've defined what I believe as to be four requirements of a solution to this pro
 % TODO Visual design philosophy
 % TODO How the use will login?
 % TODO form design and working
+
+\subsection{Architecture}
+% TODO an overview of the system architecture design
 
 \subsection{Development process}
 % TODO how the development was laid out and planned
@@ -218,6 +278,7 @@ I've defined what I believe as to be four requirements of a solution to this pro
 \subsection{Limitation}
 % TODO limits of the scope (having to reign in the scope of the project at all points)
 % TODO limits of the implementation (gas/price aka no money involved at the moment, transfer and delete wallet, de-sync)
+% TODO no way of licences for the use of a work
 
 \subsection{Blockchain technology}
 % TODO Are these NFTs?
