@@ -13,6 +13,8 @@
 %\renewcommand{\sectionmark}[1]{\markboth{}{{\thesection~#1}}
 %\renewcommand{\subsectionmark}[1]{}% Remove \subsection from header
 
+\input{solidity-highlighting.tex}
+
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
 \title{CRPL: Interim Report}
@@ -29,6 +31,8 @@
 
 \newcommand{\keyword}[1]{\textbf{\textit{#1}}}
 \newcommand{\q}[2]{\begin{quote} #1 \cite{#2} \end{quote}}
+\newcommand{\nft}[0]{\href{https://eips.ethereum.org/EIPS/eip-721}{EIP-721} }
+\newcommand{\br}[0]{\linebreak\linebreak}
 
 \setlength{\parskip}{1em}
 %\setlength{\parindent}{1em}
@@ -140,7 +144,10 @@ This document describes a standard interface for all external methods and events
 
 An interface spec is useful for understanding how the contract is supposed to interact with the outside world but nothing about how the contract works internally. So I went and found an implementation of this interface \href{https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol}{here} written by \href{https://github.com/OpenZeppelin}{OpenZeppelin} to gain an understanding of how these contracts operate.
 
-\begin{verbatim}
+\begin{figure}[H]
+\caption{Structured Ownership essential mappings}
+\centering
+\begin{lstlisting}[language=Solidity]
 	// Mapping from token ID to owner address
 	mapping(uint256 => address) private _owners;
 
@@ -152,7 +159,8 @@ An interface spec is useful for understanding how the contract is supposed to in
 
 	// Mapping from owner to operator approvals
 	mapping(address => mapping(address => bool)) private _operatorApprovals;
-\end{verbatim}
+\end{lstlisting}
+\end{figure}
 
 This snippet is taken from the OpenZeppelin \href{https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol}{ERC721.sol} contract and is essentially how an \textbf{NFT} "works". a series of mappings that are saved in "storage" which is an area of the \keyword{EVM} that every smart contract has access to for storing state variables that need to persistent. These mappings are hashmaps from one type to another, first is the \_owners mapping which points to an owners address based on the hash of a given id (unit256). All the transactional methods are simply modifying these mappings, when you register a new token your wallet address is saved in the map entry for the next id.
 
@@ -235,7 +243,7 @@ All this means that my system has to be able to send a transaction then wait an 
 
 \begin{figure}[H]
 \caption{\href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/IStructuredOwnership.sol}{IStructuredOwnership} events}
-\begin{verbatim}
+\begin{lstlisting}[language=Solidity]
 /// @dev Emits when a new copyright is registered
 event Registered(uint256 indexed rightId, OwnershipStake[] to);
 
@@ -247,7 +255,7 @@ event ProposedRestructure(uint256 indexed rightId, RestructureProposal proposal)
 
 /// @dev Emits when a restructure vote fails
 event FailedProposal(uint256 indexed rightId);
-\end{verbatim}
+\end{lstlisting}
 \end{figure}
 
 When an event is found it gets added to a processing queue then a processing service dequeues each event and processes based on the type of event (this uses the background service pattern discussed in the previous section).
@@ -348,26 +356,253 @@ Sprint & Start            & End              & Length  \\ \hline
 % TODO saved metadata
 
 \subsubsection{Interface overview}
-% TODO events
-% TODO ownership
-% TODO copyright
+
+% TODO this is a bit weak
+
+The contract interface is split into two, \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/IStructuredOwnership.sol}{IStructuredOwnership.sol} which handles multi-ownership transactions and events and \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/ICopyright.sol}{ICopyright.sol} which handles all \keyword{copyright} transactions and events (similar to the \href{https://eips.ethereum.org/EIPS/eip-721}{EIP-721} interface).
+
+\begin{figure}[H]
+\caption{ICopyright events}
+\begin{lstlisting}[language=Solidity]
+/// @dev Emits when a new address is approved to a copyright
+event Approved(uint256 indexed rightId, address indexed approved);
+
+/// @dev Emits when a new manager has been approved
+event ApprovedManager(address indexed owner, address indexed manager, bool hasApproval);
+\end{lstlisting}
+\end{figure}
+
+\begin{figure}[H]
+\caption{IStructuredOwnership events}
+\centering
+\begin{lstlisting}[language=Solidity]
+/// @dev Emits when a new copyright is registered
+event Registered(uint256 indexed rightId, OwnershipStake[] to);
+
+/// @dev Emits when a copyright has been restructured and bound
+event Restructured(uint256 indexed rightId, RestructureProposal proposal);
+
+/// @dev Emits when a restructure is proposed
+event ProposedRestructure(uint256 indexed rightId, RestructureProposal proposal);
+
+/// @dev Emits when a restructure vote fails
+event FailedProposal(uint256 indexed rightId);
+\end{lstlisting}
+\end{figure}
+
+If we first look at all the events defined most are simply explained and straight forward, \textit{Approved} and \textit{ApproveManager} are taken from the \nft standard (ApproveManager == ApprovalForAll) then for IStructuredOwnership I've introduced four new events enabling modifiable multi address ownership with consensus.
+
+
+\begin{figure}[H]
+\caption{IStructuredOwnership functions}
+\centering
+\begin{lstlisting}[language=Solidity]
+/// @notice The current ownership structure of a copyright
+/// @param rightId The copyright id
+function OwnershipOf(uint256 rightId) external view returns (OwnershipStake[] memory);
+
+/// @notice Proposes a restructure of the ownership share of a copyright contract, this change must be bound by all share holders
+/// @param rightId The copyright id
+/// @param restructured The new ownership shares
+/// @param notes Any notes written concerning restructure for public record
+function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external payable;
+
+/// @notice The current restructure proposal for a copyright
+/// @param rightId The copyright id
+/// @return A restructure proposal
+function Proposal(uint256 rightId) external view returns (RestructureProposal memory);
+    
+function CurrentVotes(uint256 rightId) external view returns (ProposalVote[] memory);
+
+/// @notice Binds a shareholders vote to a restructure
+/// @param rightId The copyright id
+/// @param accepted If the shareholder accepts the restructure
+function BindRestructure(uint256 rightId, bool accepted) external payable;
+\end{lstlisting}
+\end{figure}
+
+Then the four new and one modified functions to enable this functionality, \textit{ProposeRestructure} to propose a change of ownership and \textit{BindRestructure} to vote and come to consensus between the shareholders. \textit{OwnershipOf} is modified from \textit{ownerOf} from \nft which returns an address but now has to return a complex ownership structure.
 
 \subsubsection{Registration}
-% TODO Registration of copyright
 % TODO how each copyright is saved (maximum size?)
-% TODO approve the message sender
-% TODO record all shareholders
+
+Registration of a \keyword{copyright} as discussed in the \textit{Smart contract design} section uses the basic principles of existing contract implementations most importantly the \nft contract, which registers new tokens by assigning a wallet address as the result of a token's id in a mapping (hash table) stored on the contract. This is simple and secure as the resulting hash of a token id will always point to the same entry in the mapping and therefore address.
+
+\begin{figure}[H]
+\caption{Essential copyright mappings from \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/CopyrightBase.sol}{CopyrightBase.sol}}
+\centering
+\begin{lstlisting}[language=Solidity]
+// rightId -> ownership structures
+mapping (uint256 => OwnershipStructure) internal _shareholders;
+    
+// rightId -> metadata
+mapping(uint256 => Meta) internal _metadata;
+\end{lstlisting}
+\end{figure}
+
+I've taken this design and modified it for my needs by mapping to a complex ownership structure instead of one address (enabling multi-ownership), I've then added a new mapping to save metadata (work hash, expiry date, legal protections) for each \keyword{copyright}. These technically could be merged into one mapping along with the four others, mapping from id to a larger more complex struct encompassing all data needed. However I wanted to keep the size of my data structures small with their own defined purpose, this also reduces transaction costs because only the data relevant is being processed.
+
+\begin{figure}[H]
+\caption{Register function from \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/CopyrightBase.sol}{CopyrightBase.sol}}
+\centering
+\begin{lstlisting}[language=Solidity]
+function Register(OwnershipStake[] memory to, Meta memory meta) public validShareholders(to) {
+	
+	uint256 rightId = _copyCount.next();
+
+	// registering copyright across all shareholders
+	for (uint256 i = 0; i < to.length; i++) {
+
+		require(to[i].share > 0, INVALID_SHARE);
+
+		_recordRight(to[i].owner);
+		_shareholders[rightId].stakes.push(to[i]);
+	}
+        
+	_metadata[rightId] = meta;
+	_shareholders[rightId].exists = true;
+        
+	_approvedAddress[_copyCount.getCurrent()] = msg.sender;
+
+	emit Registered(rightId, to);
+	emit Approved(rightId, msg.sender);
+}	
+\end{lstlisting}
+\end{figure}
+
+As you can see from the above registration is straightforward: generate the next id, iterate over all shareholders inputted, add each shareholder to the mapping checking each has some shares, add metadata to mapping, approve the sender for this \keyword{copyright} and emit a registered and approved event to let my system know whats happened.
+
+Lastly I want to focus on line 8, \textit{require} is apart of \textbf{Solidity}'s error handling. The \keyword{EVM} runs all functions transactionally in the programming sense meaning all changes to the persistent data structure are processed and saved after the function has completed successfully. This is extremely useful and greatly simplifies error handling because if we encounter an error no underlying changes to the data have taken place and the transaction simply fails. 
+
+\textit{Require} therefore simply checks an expression is true and if not an error is thrown with a stated reason the transaction is canceled and no changes to any stored data structure are made. These are used throughout my \keyword{smart contract} to validate input data, I talk more about these in the \textit{Modifiers} section below. This \textit{require} on line 8 is checking all shareholders have more than zero shares otherwise throw and error with the reason "INVALID\_SHARE".
+
+The events emitted from this function are "listened" to and processed in the back-end more information in the \textit{Blockchain event listeners} section below.
 
 \subsubsection{Ownership restructure}
-% TODO Restructure proposal
-% TODO Binding vote
-% TODO Restructure event
-% TODO failed restructure
+
+As discussed in the design of my \keyword{smart contract} I had to build a shareholder consensus function for making changes to the \keyword{copyright}, therefore changing the ownership structure is split into two functions/steps, first you propose a new structure then each shareholder must vote or \textit{"bind"} the new structure, when all the shareholders have agreed to the new structure mappings are updated to reflect the new ownership.
+
+\begin{figure}[H]
+\caption{ProposeRestructure function from \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/CopyrightBase.sol}{CopyrightBase.sol}}
+\centering
+\begin{lstlisting}[language=Solidity]
+function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external override validId(rightId) isExpired(rightId) validShareholders(restructured) isShareholderOrApproved(rightId, msg.sender) payable {
+        
+        for (uint256 i = 0; i < restructured.length; i++) {
+
+            require(restructured[i].share > 0, INVALID_SHARE);
+
+            _newHolders[rightId].stakes.push(restructured[i]);
+            _newHolders[rightId].exists = true;
+        }   
+
+        emit ProposedRestructure(rightId, _getProposedRestructure(rightId));
+    }	
+\end{lstlisting}
+\end{figure}
+
+Above is the first step of restructuring the proposal, this is a small function that simply iterates through all the new shareholders and added their address and shares to a new mapping called \textit{\_newHolders} which is the same as the \textit{\_shareholders} mapping and is there to hold proposed ownership structures before they're "bound". An event is emitted which tells the back-end that the proposal has been saved to the chain and to start accepting votes from owners.
+
+\begin{figure}[H]
+\caption{BindRestructure function from \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/CopyrightBase.sol}{CopyrightBase.sol}}
+\centering
+\begin{lstlisting}[language=Solidity]
+function BindRestructure(uint256 rightId, bool accepted) external override validId(rightId) isExpired(rightId) isShareholderOrApproved(rightId, msg.sender) payable 
+{
+	_checkHasVoted(rightId, msg.sender);
+     
+	// record vote
+	_proposalVotes[rightId].push(ProposalVote(msg.sender, accepted));
+	_numOfPropVotes[rightId] ++;
+
+	for (uint256 i = 0; i < _proposalVotes[rightId].length; i ++) 
+	{
+		if (!_proposalVotes[rightId][i].accepted) 
+		{
+			_resetProposal(rightId);
+			emit FailedProposal(rightId);
+
+			return;
+		}
+	}
+
+	// if the proposal has enough votes, **** 100% SHAREHOLDER CONSENSUS ****
+	if (_numOfPropVotes[rightId] == _numberOfShareholder(rightId)) {
+            
+		// proposal has been accepted and is now binding
+
+		OwnershipStake[] memory oldOwnership = OwnershipOf(rightId);
+            
+		// reset has to happen before new shareholders are registered to remove data concerning old shareholders
+		_resetProposal(rightId);
+
+		_shareholders[rightId] = _newHolders[rightId];
+
+		delete(_newHolders[rightId]);
+
+		emit Restructured(rightId, RestructureProposal({oldStructure: oldOwnership, newStructure: OwnershipOf(rightId)}));
+	}
+}	
+\end{lstlisting}
+\end{figure}
+
+Now looking at the more complex \textit{BindRestructure} function: first the address is checked if they've voted already, the vote is then recorded in a new mapping \textit{\_proposalVotes}, all votes are checked, if any of the votes are false then the whole proposal is rejected, checks if all the shareholders have voted, if all the votes are in set \textit{\_shareholders} to the proposed structure from \textit{\_newHolders} and emit an event.
+\br
+This is a point of possible future development or discussion, for a proposal to be \textit{"bound"} a unanimous vote is needed however this system could take advantage of the distribution of shares with only a majority of shares needed to make a change.
+
+I decided to keep the voting unanimous over concerns of complexity (extension of development time was predicted) and a possible moral issues as to the possibilities of exploitation using this. An issue of exploitation is inherent to both implementations however a unanimous vote gives equal power of exploitation to every party whereas using shares would give more power to high staked parties.
+ 
 
 \subsubsection{Modifiers}
-% TODO isShareholder or approved
-% TODO valid addresses
-% TODO expired
+
+Modifiers are pieces of code run at either end of a function call usually used to verify function parameters, I'm using them exclusively at the start of function calls to test addresses, ids and expiry. The design of a modifier usually consists of an assertion plus any processing needed on the data. 
+
+\begin{figure}[H]
+\caption{isShareholderOrApproved modifier from \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/CopyrightBase.sol}{CopyrightBase.sol}}
+\centering
+\begin{lstlisting}[language=Solidity]
+modifier isShareholderOrApproved(uint256 rightId, address addr) 
+{
+	uint256 c = 0;
+	for (uint256 i = 0; i < _shareholders[rightId].stakes.length; i++) 
+	{
+		if (_shareholders[rightId].stakes[i].owner == addr) c ++;
+	}
+	require(c == 1 || _approvedAddress[rightId] == addr, NOT_SHAREHOLDER);
+	_;
+}
+\end{lstlisting}
+\end{figure}
+
+This modifier is essential to authenticating a message sender is allowed to make changes to a specific \keyword{copyright} by checking it exists in ether \textit{\_shareholders} or \textit{\_approvedAddress} mappings.
+
+\begin{figure}[H]
+\caption{validAddress modifier from \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/CopyrightBase.sol}{CopyrightBase.sol}}
+\centering
+\begin{lstlisting}[language=Solidity]
+modifier validAddress(address addr)
+{
+	require(addr != address(0), INVALID_ADDR);
+	_;
+}
+\end{lstlisting}
+\end{figure}
+
+\keyword{Ethereum} has a reserved address called the \textit{zero-address} which is only used for \keyword{smart contract} creation transactions, this means it's good practice to check all the addresses the contract handles are not the \textit{zero-address}. 
+
+\begin{figure}[H]
+\caption{isExpired modifier from \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/CopyrightBase.sol}{CopyrightBase.sol}}
+\centering
+\begin{lstlisting}[language=Solidity]
+modifier isExpired(uint256 rightId)
+{
+	require(_metadata[rightId].expires > block.timestamp, EXPIRED);
+	_;
+}
+\end{lstlisting}
+\end{figure}
+
+\keyword{Copyright} expiry is handled with a modifier instead of an explicit state change as it's not feasible to have a timed process that runs when the expiry time is hit because of the time scale \keyword{copyright} works in. Therefore every time a transaction interacts with a \keyword{copyright} the expiry time is checked against the current block timestamp throwing an error code if expired.
 
 \subsection{Back-end}
 % TODO Service -> Controller
@@ -431,6 +666,8 @@ Sprint & Start            & End              & Length  \\ \hline
 % TODO Has all the non-functional specs been met
 % TODO Does the product fit the target users needs
 % TODO Does the product fulfil
+
+% TODO TESTING TESTING TESTING
 
 \section{Future development}
 

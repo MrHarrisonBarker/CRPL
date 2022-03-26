@@ -5,7 +5,7 @@ import "./Structs/OwnershipStake.sol";
 import "./Structs/RestructureProposal.sol";
 import "./Structs/ProposalVote.sol";
 
-/// @title Defintion of a multi party shareholder style ownership structure, with consensus voting
+/// @title Definition of a multi party shareholder style ownership structure, with consensus voting
 interface IStructuredOwnership {
     
     /// @dev Emits when a new copyright is registered
@@ -21,19 +21,16 @@ interface IStructuredOwnership {
     event FailedProposal(uint256 indexed rightId);
 
     /// @notice The current ownership structure of a copyright
-    /// @dev
     /// @param rightId The copyright id
     function OwnershipOf(uint256 rightId) external view returns (OwnershipStake[] memory);
 
     /// @notice Proposes a restructure of the ownership share of a copyright contract, this change must be bound by all share holders
-    /// @dev 
     /// @param rightId The copyright id
-    /// @param restructured The new owernship shares
+    /// @param restructured The new ownership shares
     //  @param notes Any notes written concerning restructure for public record
     function ProposeRestructure(uint256 rightId, OwnershipStake[] memory restructured) external payable;
 
     /// @notice The current restructure proposal for a copyright
-    /// @dev
     /// @param rightId The copyright id
     /// @return A restructure proposal
     function Proposal(uint256 rightId) external view returns (RestructureProposal memory);
@@ -41,7 +38,6 @@ interface IStructuredOwnership {
     function CurrentVotes(uint256 rightId) external view returns (ProposalVote[] memory);
 
     /// @notice Binds a shareholders vote to a restructure
-    /// @dev Must authorize shareholder
     /// @param rightId The copyright id
     /// @param accepted If the shareholder accepts the restructure
     function BindRestructure(uint256 rightId, bool accepted) external payable;

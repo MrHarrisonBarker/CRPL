@@ -8,17 +8,11 @@ import "./IStructuredOwnership.sol";
 /// @title Basic structure for interfacing with a copyright contract
 interface ICopyright is IStructuredOwnership {
 
-    /// @dev Emits when a copyright dispute has been registered
-    event Disputed(uint256 indexed rightId, address indexed by, bytes reason);
-
     /// @dev Emits when a new address is approved to a copyright
     event Approved(uint256 indexed rightId, address indexed approved);
 
     /// @dev Emits when a new manager has been approved
     event ApprovedManager(address indexed owner, address indexed manager, bool hasApproval);
-
-    /// @dev Emits after any modification
-    event Modify(uint256 indexed rightId, bytes modification);
 
     // @notice gets all the rights held by address
     /// @param owner portfolios owner address
