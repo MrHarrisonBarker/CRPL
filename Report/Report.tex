@@ -14,6 +14,7 @@
 %\renewcommand{\subsectionmark}[1]{}% Remove \subsection from header
 
 \input{solidity-highlighting.tex}
+\input{csharp-highlighting.tex}
 
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 
@@ -609,36 +610,261 @@ modifier isExpired(uint256 rightId)
 % TODO digital signing
 % TODO ContractRepository
 
-\subsubsection{Queries}
-% TODO structured query
-% TODO chain injection
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/chain-inject}
+The back-end comprises of an \textbf{ASP.NET} API and static file server, the API is comprised of controllers that depend on services which hold business logic.
+
+\begin{figure}[H]
+\caption{HTTP request generic data flow}
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/patterns/service-controller}
+\end{figure}
+
+\subsubsection{API overview}
+% TODO API diagrams and structure
+\begin{figure}[H]
+\caption{Forms controller endpoints}
+\centering
+\includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/operational/Forms-Api}
+\end{figure}
+
+looking at the most complex and largest controller, I tried to keep the controller as \textit{RESTful} as possible with all endpoints describing the resource being accessed in conjunction with appropriate HTTP methods that describe the action performed on a resource.
+
+\subsubsection{Applications framework}
+
+The applications framework was built exploiting object oriented programming techniques mainly inheritance and polymorphism. An application has three classes each an implementation of each abstract base class, this means applications can be handled together generically and individually based on the child class.
+
+\begin{figure}[H]
+\caption{Application base class \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/Applications/DataModels/Application.cs}{derived from}}
+\centering
+\includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/operational/application-base}
+\end{figure}
+
+This is the base \textit{Application} class and used by \textbf{EF Core} to generate database migrations creating and modifying tables. Therefore this class establishes all relationships, in this case a many to many with users and one to many with a registered work.
+
+\begin{figure}[H]
+\caption{Application view model class \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/Applications/ViewModels/ApplicationViewModel.cs}{derived from}}
+\centering
+\includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/operational/application-view}
+\end{figure}
+
+The application view model is used when retrieving and displaying data, a lot of the time you don't want to send everything from the base model to the client or some processing/mapping maybe wanted. For applications the relationship between users is mapped from a junction table into a list of \textit{UserAccountMinimalViewModel}s
+ 
+\begin{figure}[H]
+\caption{Application input model class \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Data/Applications/InputModels/ApplicationInputModel.cs}{derived from}}
+\centering
+\includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/operational/application-input}
+\end{figure}
+
+Lastly an input model which is used when updating an application, this usually represents a real form the user is interacting with. This data is interpreted within the update method which modifies the data model on the database.
+\br
+One huge benefit of all applications using the same base class is that state can be generalised and kept consistent between different types of applications, a completed registration application should logically be the same as a completed dispute application.
+This state can bee seen in the \textit{Applications framework} section of my design.
+
+\begin{figure}[H]
+\caption{Example application updater \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/Applications/Updaters/CopyrightRegistrationUpdater.cs}{CopyrightRegistrationUpdater}}
+\centering
+\begin{lstlisting}[language=CSharp]
+public static class CopyrightRegistrationUpdater
+{
+    private static readonly List<string> Encodables = new() { "OwnershipStakes", "Id"  };
+    
+    public static async Task<CopyrightRegistrationApplication> Update(this CopyrightRegistrationApplication application, CopyrightRegistrationInputModel inputModel, IServiceProvider serviceProvider)
+    {
+        var userService = serviceProvider.GetRequiredService<IUserService>();
+        
+        application.UpdateProperties(inputModel, Encodables);
+
+        if (inputModel.OwnershipStakes != null)
+        {
+            application.OwnershipStakes = inputModel.OwnershipStakes.Encode();
+
+            application.CheckAndAssignStakes(userService, inputModel.OwnershipStakes);
+        }
+
+        return application;
+    }
+}
+\end{lstlisting} 
+\end{figure}
+
+Each application also has an updater which is used for parsing the input model and updating the data model, this one is for the copyright registration application and is fairly simple. First it gets an instance of the user service, calls a static method I made that matches class properties between the input model and data model then updates those properties using the input model, complex object cant be saved in a db column so the ownership stakes are encoded into strings and then a relationship is updated/established between all the shareholders and the application.
+
+\begin{figure}[H]
+\caption{Example application submitter \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/Applications/Submitters/CopyrightRegistrationSubmitter.cs}{CopyrightRegistrationSubmitter}}
+\centering
+\begin{lstlisting}[language=CSharp]
+public static class CopyrightRegistrationSubmitter
+{
+    public static async Task<CopyrightRegistrationApplication> Submit(this CopyrightRegistrationApplication copyrightRegistrationApplication, IServiceProvider serviceProvider)
+    {
+        var registrationService = serviceProvider.GetRequiredService<IRegistrationService>();
+        
+        await registrationService.StartRegistration(copyrightRegistrationApplication);
+
+        copyrightRegistrationApplication.Status = ApplicationStatus.Submitted;
+        
+        return copyrightRegistrationApplication;
+    }
+}
+\end{lstlisting}
+\end{figure}
+
+In addition to an updater applications need a submitter for when all the data has been inputted and is now ready to be processed, in the case of \textit{CopyrightRegistrationSubmitter} it starts the registration process (creates work and start verifying) and sets the status of the application to submitted. The majority of submitters start some background process or will require further processing to then be completed.
 
 \subsubsection{Registration process}
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/cpy-registration-status-graph}
+
+The copyright registration process can be broken down into: fill and submit application, verification, send to chain and transaction verified.
+
+\begin{figure}[H]
+\caption{Registration state flow}
+\centering
+\includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/operational/cpy-registration-status-graph}
+\end{figure}
+
+The first step works as previously discussed, a user fills out a form/application submitting when all data has been inputted. validation of the data is handled on the client side with some server side sanity checks, this is reduce development workload and complexity however this is compromised by a user calling the API directly either maliciously or if I was to open up my API for public use.
+
+\begin{figure}[H]
+\caption{Finding collisions \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/WorksVerificationService.cs}{Line 57:58}}
+\centering
+\begin{lstlisting}[language=CSharp]
+var collision = await Context.RegisteredWorks
+           	.FirstOrDefaultAsync(x => x.Hash == work.Hash && x.Id != workId);
+\end{lstlisting}
+\end{figure}
+
+Verification is handled by background service working though a queue which checks for collisions by comparing the uploaded work hash against all known work hashes. If a collision is found the application is set to \textit{Failed} and the work is set to \textit{Rejected}.
+
+
+\begin{figure}[H]
+\caption{Register message \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/RegistrationService.cs}{Line 88:102}}
+\centering
+\begin{lstlisting}[language=CSharp]
+var register = new RegisterFunction()
+{
+	To = application.OwnershipStakes.Decode().Select(x => Mapper.Map<OwnershipStakeContract>(x)).ToList(),
+	Meta = new Meta
+	{
+		Expires = new BigInteger((DateTime.Now.AddYears(application.YearsExpire) - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds),
+		Title = application.Title,
+		Registered = new BigInteger((DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds),
+		LegalMeta = application.Legal,
+		WorkHash = Encoding.UTF8.GetString(application.WorkHash),
+		WorkUri = application.WorkUri,
+		WorkType = application.WorkType.ToString(),
+		Protections = application.Protections
+	}
+};
+\end{lstlisting}
+\end{figure}
+
+A \keyword{copyright} is then sent to the \keyword{blockchain} when a shareholder sends a complete request, this creates a register message (seen above) and sends it to the chain returning a transaction hash which is stored for later reference.
+
+\begin{figure}[H]
+\caption{Registered Event Processor \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/EventProcessors/RegisteredEventProcessor.cs}{Line 29:31}}
+\centering
+\begin{lstlisting}[language=CSharp]
+context.Update(registeredWork);
+
+registeredWork.RightId = registeredEvent.Event.RightId.ToString();
+registeredWork.Registered = DateTime.Now;
+registeredWork.Status = RegisteredWorkStatus.Registered;
+
+registeredWork.AssociatedApplication.First(x => x.ApplicationType == ApplicationType.CopyrightRegistration).Status = ApplicationStatus.Complete;	
+\end{lstlisting}
+\end{figure}
+
+Verifier and miner nodes on the network will now process this transactions, this takes an indeterminate time based on how much money you want to spend and the current capacity of the network. Once verified and processed into the chain a \textit{Registered} event will be picked up by the event processors running, the processor will match the transaction hashes setting the work to registered and its registration application to complete.
+
+\subsubsection{Queries - Chain injection}
+% TODO structured query
+
+\begin{figure}[H]
+\caption{Data injection from \keyword{blockchain} when querying registered works}
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/chain-inject}
+\end{figure}
+
+Because I rely on the \keyword{blockchain} as the store and point of truth in the system I need a way of querying a \keyword{copyright} for data to display to the user. 
+
+\begin{figure}[H]
+\caption{Metadata query from query service \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/QueryService.cs}{Line 155:156}}
+\centering
+\begin{lstlisting}[language=CSharp]
+var meta = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
+		.CopyrightMetaQueryAsync(rightId);
+...
+registeredWork.Meta = meta != null ? meta.ReturnValue1 : null;
+\end{lstlisting}
+\end{figure}
+
+This is apart of a big function called \textit{injectFromChain} found in the \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/QueryService.cs}{query service} and is called whenever a work is requested from the service, it queries the \keyword{blockchain} for data then "injects" the found data into the existing registered work data model.
 
 \subsubsection{Dispute handling}
 % TODO filing disputes
 % TODO resolving disputes: payment, change of ownership
+\begin{figure}[H]
+\caption{CAPTION}
+\centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/dispute-workflow}
-
-\subsubsection{API overview}
-% TODO API diagrams and structure
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/Forms-Api}
+\end{figure}
 
 \subsubsection{Blockchain event listeners}
 % TODO Blockchain event listeners
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/Event-Listening}
 
+To listen for events in the \keyword{blockchain} \textbf{Nethereum} has a class called \textit{BlockchainProcessor} which listens for an event and registers a callback/action that is run when that specific event is found.
 
-\subsubsection{Background services}
+\begin{figure}[H]
+\caption{Registering an event listener for \textit{Registered} event \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/Background/BlockchainEventListener.cs}{Line 32:33}}
+\centering
+\begin{lstlisting}[language=CSharp]
+BlockchainConnection.Web3().Processing.Logs
+	.CreateProcessorForContract<RegisteredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log))
+\end{lstlisting}
+\end{figure}
+
+For my system I'm using event processors that listen to a specific event type from a specific \keyword{smart contract}, see above this processor is listening for events of type \textit{RegisteredEventDTO} from the deployed contract retrieved from the \textit{ContractRepository}.
+
+All my processors push all events to the event queue to be processed by a service instead of processing in the callback, this increases scaleability and breaks the code down into smaller modular chunks.
+
+Events are pulled from the queue by the \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/Background/EventProcessingService.cs}{EventProcessingService} then processed by a \href{https://github.com/MrHarrisonBarker/CRPL/tree/main/CRPL.Web/Core/EventProcessors}{EventProcessor} which are static classes with one method \textit{ProcessEvent}, one is built for every event type listened to. 
+
+\begin{figure}[H]
+\caption{Processing events based on type \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/Background/EventProcessingService.cs}{Line 32:49}}
+\centering
+\begin{lstlisting}[language=CSharp]
+switch (nextEvent.GetType().FullName)
+{
+	case var name when name.Contains("RegisteredEvent"):
+		await ((EventLog<RegisteredEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
+		break;
+	case var name when name.Contains("ApprovedEvent"):
+		await ((EventLog<ApprovedEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
+		break;
+	case var name when name.Contains("ProposedRestructureEvent"):
+		await ((EventLog<ProposedRestructureEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
+		break;
+	case var name when name.Contains("RestructuredEvent"):
+		await ((EventLog<RestructuredEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
+		break;
+	case var name when name.Contains("FailedProposalEvent"):
+		await ((EventLog<FailedProposalEventDTO>)nextEvent).ProcessEvent(ServiceProvider, Logger);
+		break;
+}
+\end{lstlisting}
+\end{figure}
+
+\subsubsection{Verification pipeline}
 % TODO verification pipeline
-% TODO Expiry
 
-\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/patterns/background-processing-pattern}
+\begin{figure}[H]
+\caption{Verification pipeline}
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/verification-pipe}
+\end{figure}
 
 \subsubsection{Account management}
 % TODO issues with transfer and delete account
+
+% TODO Expiry
 
 \subsection{Database}
 % TODO ChainSync™
