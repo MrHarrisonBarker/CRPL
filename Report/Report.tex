@@ -33,7 +33,7 @@
 \newcommand{\keyword}[1]{\textbf{\textit{#1}}}
 \newcommand{\q}[2]{\begin{quote} #1 \cite{#2} \end{quote}}
 \newcommand{\nft}[0]{\href{https://eips.ethereum.org/EIPS/eip-721}{EIP-721} }
-\newcommand{\br}[0]{\linebreak\linebreak}
+\newcommand{\br}[0]{\\~\\}
 
 \setlength{\parskip}{1em}
 %\setlength{\parindent}{1em}
@@ -287,7 +287,7 @@ The database for this system needs to store two types of data: data stored on bo
 \begin{figure}[H]
 \caption{Database EER diagram}
 \centering
-\includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/patterns/database}
+\includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{images/patterns/database}
 \end{figure}
 
 \subsubsection{Chain parity}
@@ -722,6 +722,7 @@ The copyright registration process can be broken down into: fill and submit appl
 
 The first step works as previously discussed, a user fills out a form/application submitting when all data has been inputted. validation of the data is handled on the client side with some server side sanity checks, this is reduce development workload and complexity however this is compromised by a user calling the API directly either maliciously or if I was to open up my API for public use.
 
+% There is a section below talking about this step
 \begin{figure}[H]
 \caption{Finding collisions \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/WorksVerificationService.cs}{Line 57:58}}
 \centering
@@ -732,7 +733,6 @@ var collision = await Context.RegisteredWorks
 \end{figure}
 
 Verification is handled by background service working though a queue which checks for collisions by comparing the uploaded work hash against all known work hashes. If a collision is found the application is set to \textit{Failed} and the work is set to \textit{Rejected}.
-
 
 \begin{figure}[H]
 \caption{Register message \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/RegistrationService.cs}{Line 88:102}}
@@ -855,11 +855,33 @@ switch (nextEvent.GetType().FullName)
 \subsubsection{Verification pipeline}
 % TODO verification pipeline
 
+The verification pipeline uses by background service architecture with a \textit{VerificationQueue} and \textit{VerificationPipelineService} that dequeues and processes verification of a work. 
+
 \begin{figure}[H]
 \caption{Verification pipeline}
 \centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/verification-pipe}
 \end{figure}
+
+% bit bad
+When a work is pulled off the queue it is verified using the \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/WorksVerificationService.cs}{WorksVerificationService} method \textit{VerifyWork} which searches the database for existing works with the same hash. If no collisions are found the works status is updated to \textit{Verified}, if collision are found then the work is set to \textit{Rejected}
+
+\begin{figure}[H]
+\caption{hashing a work \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/WorksVerificationService.cs}{Line 146:151}}
+\centering
+\begin{lstlisting}[language=CSharp]
+private byte[] HashWork(byte[] work)
+{
+	using var hashAlgorithm = SHA512.Create();
+
+	return hashAlgorithm.ComputeHash(work);
+}
+\end{lstlisting}
+\end{figure}
+
+For hashing the uploaded work I stream the file into a byte array and compute the hash using \textbf{SHA-512} which has \(2^{512}\) total possible hash outputs which is \(1.34 \times 10^{154}\) almost double the number of atoms in the universe at around \(10^{82}\) so the possibility of a collision or exploitation is extremely low. 
+
+Although \textbf{MD5} is mostly commonly used for very quick file duplicity checks these checks are usually just checksums to check file integrity of downloaded files. In terms of cryptographic security \textbf{SHA-512} is far better, \textbf{MD5} has been "broken" for years so should never be used for any sensitive or secure data hashing this is while the latest \textbf{SHA} algorithms are considered secure and are used in conjunction with "salt" for passwords in many systems.
 
 \subsubsection{Account management}
 % TODO issues with transfer and delete account
@@ -867,9 +889,89 @@ switch (nextEvent.GetType().FullName)
 % TODO Expiry
 
 \subsection{Database}
-% TODO ChainSync™
+
+I've chosen to use a \textbf{MySQL} database for this project for two reasons: ease of use and \textbf{ACID}. Having previously used \textbf{MySQL} for multiple projects in the past plus the brilliant integration between \textbf{EFCore}, \textbf{LINQ} and \textbf{SQL}. \textbf{ACID} standing for \textbf{a}tomicity, \textbf{c}onsistency, \textbf{i}solation and \textbf{d}urability which ensure data integrity at the cost of speed over a \textit{NoSql} approach like \textbf{MongoDB}, it also has support for rigid relationships between entities.
+
+\br
+
+As talked about previously some data in the database has to be kept in parity with the \keyword{Blockchain} by querying the the deployed contract.
+
+\begin{figure}[H]
+\caption{ChainSync}
+\centering
+\includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/operational/chain-sync}
+\end{figure}
+
+Therefore a background service was built that synchronises all the \keyword{copyrights} currently being tracked with the \keyword{blockchain}, the service checks for changes on startup and then every 24 hours after startup.
+
+\begin{figure}[H]
+\caption{24 hour sync timer \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/ChainSync/ChainSyncService.cs}{Line 25:30}}
+\centering
+\begin{lstlisting}[language=CSharp]
+CronTimer = new Timer(
+	Sync,
+	null,
+	TimeSpan.Zero,
+	TimeSpan.FromHours(24)
+);
+\end{lstlisting}
+\end{figure}
+
+There's only one synchroniser implemented in the system for ownership structures, it queries the \keyword{blockchain} using \textit{OwnershipOf} which is a method on the contract that returns an ownership structure for a specific \keyword{copyright}. It then checks against what is saved in the database, if changes are found relationships need to be removed and updated.
+
+\begin{figure}[H]
+\caption{ownership similarity \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/ChainSync/Synchronisers/OwnershipSynchroniser.cs}{Line 71, 77:86}}
+\centering
+\begin{lstlisting}[language=CSharp]
+if (ownerships.Count != work.UserWorks.Count || !work.UserWorks.All(x => ownerships.Contains(x.UserAccount.Wallet.PublicAddress.ToLower())))
+...
+work.UserWorks.Clear();
+ownerships.ForEach(async owner =>
+{
+	var user = await Context.UserAccounts.FirstOrDefaultAsync(x => x.Wallet.PublicAddress.ToLower() == owner.ToLower());
+	if (user == null) throw new UserNotFoundException(owner);
+	work.UserWorks.Add(new UserWork()
+	{
+		UserAccount = user
+	});
+});
+\end{lstlisting}
+\end{figure}
 
 \subsection{Front-end}
+
+A fancy UI was not a high priority of this project as the core back-end and \keyword{blockchain} interaction is expansive and complex enough in isolation, however I wanted to at least give a user the ability to interact with the system I've built hopefully in a usable and accessible way.
+
+Most user interface design thought and work was spent on the four key forms (user register, copyright register, ownership restructure and dispute) as from previous experience forms are the hardest piece (for me) of interface design by far. To make this easier I counter intuitively at first did not care about the design or usability of the components I was building only getting the data into the form and sent off to the back-end.
+
+This produced some initial designs that functionally work but were confusing for a new user and just didn't look very nice, I've found it's very easy to get hung up on user interface when building systems\footnote{I think this is down to the fact that it's the single point of contact with your users, most people will not see and or care about business logic code but how your interface looks and feels are front and centre. this would be okay in a real product development setting but for this project it's just not within the scope.} which slows down development especially in the early stages of development when the constraints and needs of the system are changing.
+
+Then after all core features had been built I then went back to my forms and re-designed all input components using a consistent set of rules, requirements and style.    
+
+\begin{figure}[H]
+\caption{Example input markup \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/ClientApp/src/app/Forms/cpy-registration-form/cpy-registration-form.component.html}{cpy-registration-form.component.html 9:18}}
+\centering
+\begin{lstlisting}[language=html]
+<div class="input-container">
+	<label class="input-label">Title<sup>*</sup></label>
+	<div class="input-control">
+	<input type="text" name="title" formControlName="Title" placeholder="Hello world"/>
+	<div>This is a searchable title for the copyright, it doesn't have to be unique only descriptive and relevant&nbsp;<sup>*saved to the blockchain</sup></div>
+		<clr-alert class="input-error" [clrAlertClosable]="false" clrAlertType="danger" *ngIf="InvalidAndUntouched('Title')">
+		 	<clr-alert-item>This field is required!</clr-alert-item>
+	 </clr-alert>
+	</div>
+</div>
+\end{lstlisting}
+\end{figure}
+
+Below is the my \href{https://github.com/MrHarrisonBarker/CRPL/tree/main/CRPL.Web/ClientApp/src/app/Forms/ownership-structure-form}{ownership-structure-form} component that's used in both \href{https://github.com/MrHarrisonBarker/CRPL/tree/main/CRPL.Web/ClientApp/src/app/Forms/cpy-registration-form}{cpy-registration-form} and \href{https://github.com/MrHarrisonBarker/CRPL/tree/main/CRPL.Web/ClientApp/src/app/Forms/cpy-restructure-form}{cpy-restructure-form}, this means all forms have to be consistent across the application so any section of a form will "fit" into any other form.
+
+\begin{figure}[H]
+\caption{\href{https://github.com/MrHarrisonBarker/CRPL/tree/main/CRPL.Web/ClientApp/src/app/Forms/ownership-structure-form}{Ownership structure form} component}
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/wireframe/ownership-structure}
+\end{figure}
 
 \section{Discussion}
 \subsection{Limitation}
