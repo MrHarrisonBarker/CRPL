@@ -23,7 +23,7 @@ public class AutoMapping : Profile
 
         CreateMap<RegisteredWork, RegisteredWorkViewModel>()
             .ForMember(model => model.RegisteredTransactionUri, x => x.MapFrom(src =>  appSettings.EtherscanHost + "/tx/" + src.RegisteredTransactionId))
-            .ForMember(model => model.CidLink, x => x.MapFrom(src => appSettings.IpfsHost + "/ipfs/" + src.Cid));
+            .ForMember(model => model.CidLink, x => x.MapFrom(src => new Uri(appSettings.IpfsHost).Host + "/ipfs/" + src.Cid));
         CreateMap<RegisteredWork, RegisteredWorkWithAppsViewModel>()
             .ForMember(model => model.AssociatedUsers, x =>
                 x.MapFrom(src => src.UserWorks.Select(u => u.UserAccount)))
@@ -36,7 +36,7 @@ public class AutoMapping : Profile
             .ForMember(src => src.Meta, x =>
                 x.Ignore())
             .ForMember(model => model.RegisteredTransactionUri, x => x.MapFrom(src => appSettings.EtherscanHost + "/tx/" + src.RegisteredTransactionId))
-            .ForMember(model => model.CidLink, x => x.MapFrom(src => appSettings.IpfsHost + "/ipfs/" + src.Cid));
+            .ForMember(model => model.CidLink, x => x.MapFrom(src => new Uri(appSettings.IpfsHost).Host + "/ipfs/" + src.Cid));
 
 
         CreateMap<Application, ApplicationViewModelWithoutAssociated>().IncludeAllDerived()
