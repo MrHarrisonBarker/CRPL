@@ -3,6 +3,7 @@
 \usepackage[a4paper, margin=1in]{geometry}
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{hyperref}
 %\usepackage{setspace}
 %\usepackage{fancyhdr}
 
@@ -77,6 +78,7 @@ However, this book introduced the concept of \keyword{smart contracts} and the p
 This new knowledge of \keyword{blockchains} came to fruition when it came to selecting my final project but to what problem should I help to provide a solution to leveraging this technology. A combination of recent interest in the crypto-sphere mainly coming from NFTs, continued displays of a \keyword{copyright} system not fit for purpose\cite{DMCA-abuse} and the book I had read 3 years earlier proposing that \keyword{blockchain} and \keyword{smart contracts} were an extremely viable solution to problems intersecting law and social structures.
 
 \subsection{Unfit for purpose}
+\label{sec:unfit}
 
 So why is the current \keyword{copyright} system not fit for purpose? I've broken it into three interlinking factors; complexity, jurisdiction dependence and lack of digital computerised systems. starting with complexity, it is often hard as a creator to know if your work is protected or if the protection is enough? This gives massive power to publishers, managers and companies who are willing to exploit this fact by blinding a creative with a large contract covered in legal jargon. Should an artist also have to be a lawyer?
 
@@ -1029,13 +1031,44 @@ Evaluating the system that has been built functionally and non-functionally and 
 
 \subsubsection{Functional specification}
 % TODO Has all the functional specifications been met
-\subsubsection{Non-Functional specification}
-% TODO Has all the non-functional specs been met
-\subsubsection{User needs}
-% TODO Does the product fit the target users needs
+
+\begin{figure}[H]
+\caption{success of each functional requirement}
+\begin{table}[H]
+\begin{tabular}{|p{0.2\textwidth}|p{0.8\textwidth}|}
+\hline
+Feature                         & Successfully implemented?                                                                                                                                                                                                                                                                                                                                                           \\ \hline
+Copyright smart contract        & A fully featured copyright contract has been built and deployed onto a test blockchain, the contract is capable of registering a copyrighted work with sufficient metadata to establish ownership and specific legal protections.                                                                                                                                                   \\ \hline
+Multi-party distribution        & Ownership of a registered work is represented as a multi-party share structure allowing many authors to have "ownership" of a single work.                                                                                                                                                                                                                                          \\ \hline
+Ownership transfer              & The ownership of a registered work can be changed via a proposal and vote system requiring the unanimous consensus of all current owners. *Voting is not majority share-based like limited companies.                                                                                                                                                                               \\ \hline
+Work verification               & Verification of works is currently simple using hash comparison, this finds complete file accurate copies and so therefore even simply adding a zero or null data to the file bypasses verification. To solve this problem more complex algorithms will be needed or the use of third-party services, this was outside the scope of this project.                                   \\ \hline
+Dispute filing                  & The system allows anyone (except the owner) to dispute a registered work for a given reason and the choice of an expected recourse (ownership change or payment). Right owners can then either reject the dispute or accept and apply the expected recourse.                                                                                                                        \\ \hline
+Digital signing                 & Once a work has been registered we inject metadata into the uploaded file for proof of registration, this is done two ways: custom singers built for supported file types and a universal signer that inserts data at the end of any file type.                                                                                                                                     \\ \hline
+Decentralised Work CDN \& proxy & All registered works are automatically saved to IPFS (InterPlanetary File System) which is a peer to peer network for storing files distributed securely in chunks over multiple nodes. A user can then access this file either through an official gateway (ipfs.io/ipfs/), running your own node to connect to the network or my public gateway (ipfs.harrisonbarker.co.uk/ipfs). \\ \hline
+Websocket updates               & All updates are done through a single WebSocket, users are subscribed to works and applications when they click on them or have ownership associated with them.  The implementation of this is crude though as it was an extra feature added minimally towards the end of the development cycle with many concerns of scaling issues.                                               \\ \hline
+
+\end{tabular}
+\end{table}
+\end{figure}
+
+\subsubsection{Is it fit for purpose}
+
+% ehh kind of okay?
+
+Have I built a system that addresses my issues with \keyword{copyright} discussed in \autoref{sec:unfit}? My stated three factors were \textit{complexity, jurisdiction dependence and lack of digital computerised systems}, does my system solve any of these?
+
+First is complexity, by removing as much legal jargon out of the process and using a customisable protections system users know exactly how their work is protected without the need for legal council or manager empowering creators. 
+
+Next is jurisdiction dependence which is an escapable fact in the real legal and governmental world that can cause issue and confusion when faced with a global internet and culture. My system on the other hand is global both because of \keywork{Ethereum} and its independence from any government.
+
+Lastly digitalisation/computerisation, of course my entire system is essentially computerisation of \keyword{copyright} law which is helps to solve my last two points but it's also built around copyrightable digital work which traditional \keyword{copyright} is lacking in. Standardised digital signing and verification is proof of this ambition.
+
+% TODO Can a user register a copyrightable work?
+% TODO Is this implementation ethical? (more ethical than traditional)
 
 \subsubsection{Testing}
 % TODO TESTING TESTING TESTING
+% TODO testing strategy
 
 \section{Future development}
 
