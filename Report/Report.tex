@@ -90,7 +90,6 @@ This idea of global \keyword{copyright} links nicely into my last factor which i
 
 I've defined what I believe as to be four requirements of a solution to this problem and how I've addressed these requirements.
 
-% TODO not sure about this section
 \begin{description}
 	\item[Global] Both the system needed to be globally accessible, available and consistent across all jurisdictions to minimise complexity and maximise protection for an interconnected world. I've implemented this by using the \keyword{Ethereum} network which is made up of thousands of nodes across the world.
 	\item[Open] Openness is essential to instil trust in a completely independent and alternative solution compared with government institutions that have implied trust and guaranty. I've implemented this by writing and using open-source code including \keyword{Ethereum} which is open-source and backed by a public ledger.
@@ -120,22 +119,28 @@ I've defined what I believe as to be four requirements of a solution to this pro
 
 \section{Design}
 
-\subsection{Technical Requirements}
-% TODO a more comprehensive and detailed list of requirements
+\subsection{Functional Requirements}
+This is a list of key required features needed for this project to be successful.
 
-\begin{description}
-	\item[Copyright smart contract] Immutable code on a public ledger “blockchain“ for the purpose of establishing ownership or the copyright to a piece of work.
-	\item[Multi-party distribution] The ability to establish a complex ownership structure which includes multiple individuals/groups.
-	\item[Ownership transfer] The ability to change the ownership of a copyright from one complex structure to another with consent of all current owner(s).
-	\item[Work verification] Verification of a work to establish its originality with a reasonable accuracy for the platform.
-	\item[Dispute filing] Allow any user to dispute a copyright with sufficient evidence and provide an option for resolving these disputes by the owner(s).
-	\item[Digital signing] Digital signing a work for authentic verification based on our records.
-	\item[\color{orange}{Decentralised Work CDN & proxy}] Providing an access point for stored work within the chain.
-	\item[\color{orange}{Web-socket updates}] Real-time updates for the front-end UI to provide a better end-user experience.
-\end{description}
+\begin{figure}[H]
+\caption{Functional requirements}
+\begin{table}[H]
+\begin{tabular}{|p{0.2\textwidth}|p{0.7\textwidth}|p{0.1\textwidth}|}
+\hline
+Feature                         & Function                                                                                                                                                        & Priority \\ \hline
+Copyright smart contract        & Immutable code on a public ledger “blockchain“ for the purpose of establishing ownership or the copyright to a piece of work.                                   & CORE     \\ \hline
+Multi-party distribution        & The ability to establish a complex ownership structure of multiple individuals/groups, all these owners will have equal ownership of the copyrighted work.      & CORE     \\ \hline
+Ownership transfer              & The ability to change the ownership of a copyright from one complex structure to another with consent of all current owner(s).                                  & CORE     \\ \hline
+Work verification               & Verification of a work to establish its originality with a reasonable accuracy for the platform, no duplicate works will be allowed to be registered.           & CORE     \\ \hline
+Dispute filing                  & Allow any user to dispute a copyright with sufficient evidence and provide an option for resolving these disputes by the owner(s).                              & CORE     \\ \hline
+Digital signing                 & Digitally sign a registered work with unique data that identifies it as original copyright registered, much like the traditional copyright registration symbol. & CORE     \\ \hline
+Decentralised Work CDN \& proxy & Store registered works on a decentralised technology providing a free and open option for creators.                                                             & EXTRA    \\ \hline
+Websocket updates               & Real-time updates for the front-end UI to provide a better end-user experience.                                                                                 & EXTRA    \\ \hline
+\end{tabular}
+\end{table}
+\end{figure}
 
 \subsection{Smart contract}
-% TODO Permission based protections
 
 \subsubsection{Inspiration}
 
@@ -196,13 +201,18 @@ Allowing multiple wallets to have ownership over a token now introduces a new pr
 
 This is the solution I've designed for the shareholder consensus problem, now instead of making a direct change to the copyright (in this case an ownership restructure) a user proposes a change to the copyright which is then voted on by all the owners until a unanimous vote tally is reached then the change can be made.
 
-\subsubsection{Permissions/Metadata}
+\subsubsection{Protections}
 
-% TODO is this section needed?
+To simplify and give users choice of the type of protection I designed a protections system similar to permission in many computer systems, the list of available protections was built from existing legal protections provided by \keyword{copyright} law \cite{rights_granted} including: Adaptation, Performance, Reproduction and Distribution. 
 
 \subsection{Back-end}
 
-% TODO some fluff, a mirrored system (blockchain, dotnet)
+\begin{figure}[H]
+\caption{Back-end abstract operation}
+\centering
+\includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{images/operational/example-backend}
+\centering
+\end{figure}
 
 \subsubsection{Dependancy injection}
 
@@ -429,7 +439,6 @@ function BindRestructure(uint256 rightId, bool accepted) external payable;
 Then the four new and one modified functions to enable this functionality, \textit{ProposeRestructure} to propose a change of ownership and \textit{BindRestructure} to vote and come to consensus between the shareholders. \textit{OwnershipOf} is modified from \textit{ownerOf} from \nft which returns an address but now has to return a complex ownership structure.
 
 \subsubsection{Registration}
-% TODO how each copyright is saved (maximum size?)
 
 Registration of a \keyword{copyright} as discussed in the \textit{Smart contract design} section uses the basic principles of existing contract implementations most importantly the \nft contract, which registers new tokens by assigning a wallet address as the result of a token's id in a mapping (hash table) stored on the contract. This is simple and secure as the resulting hash of a token id will always point to the same entry in the mapping and therefore address.
 
@@ -610,8 +619,6 @@ modifier isExpired(uint256 rightId)
 \keyword{Copyright} expiry is handled with a modifier instead of an explicit state change as it's not feasible to have a timed process that runs when the expiry time is hit because of the time scale \keyword{copyright} works in. Therefore every time a transaction interacts with a \keyword{copyright} the expiry time is checked against the current block timestamp throwing an error code if expired.
 
 \subsection{Back-end}
-% TODO Service -> Controller
-% TODO digital signing
 % TODO ContractRepository
 
 The back-end comprises of an \textbf{ASP.NET} API and static file server, the API is comprised of controllers that depend on services which hold business logic.
@@ -623,7 +630,6 @@ The back-end comprises of an \textbf{ASP.NET} API and static file server, the AP
 \end{figure}
 
 \subsubsection{API overview}
-% TODO API diagrams and structure
 \begin{figure}[H]
 \caption{Forms controller endpoints}
 \centering
@@ -779,7 +785,6 @@ registeredWork.AssociatedApplication.First(x => x.ApplicationType == Application
 Verifier and miner nodes on the network will now process this transactions, this takes an indeterminate time based on how much money you want to spend and the current capacity of the network. Once verified and processed into the chain a \textit{Registered} event will be picked up by the event processors running, the processor will match the transaction hashes setting the work to registered and its registration application to complete.
 
 \subsubsection{Queries - Chain injection}
-% TODO structured query
 
 \begin{figure}[H]
 \caption{Data injection from \keyword{blockchain} when querying registered works}
@@ -806,13 +811,12 @@ This is apart of a big function called \textit{injectFromChain} found in the \hr
 % TODO filing disputes
 % TODO resolving disputes: payment, change of ownership
 \begin{figure}[H]
-\caption{CAPTION}
+\caption{Dispute file and resolve flow diagram}
 \centering
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/dispute-workflow}
 \end{figure}
 
 \subsubsection{Blockchain event listeners}
-% TODO Blockchain event listeners
 
 To listen for events in the \keyword{blockchain} \textbf{Nethereum} has a class called \textit{BlockchainProcessor} which listens for an event and registers a callback/action that is run when that specific event is found.
 
@@ -857,7 +861,6 @@ switch (nextEvent.GetType().FullName)
 \end{figure}
 
 \subsubsection{Verification pipeline}
-% TODO verification pipeline
 
 The verification pipeline uses by background service architecture with a \textit{VerificationQueue} and \textit{VerificationPipelineService} that dequeues and processes verification of a work. 
 
@@ -889,8 +892,9 @@ Although \textbf{MD5} is mostly commonly used for very quick file duplicity chec
 
 \subsubsection{Account management}
 % TODO issues with transfer and delete account
-
 % TODO Expiry
+\subsubsection{Digital signing}
+% TODO digital signing
 
 \subsection{Database}
 
@@ -1027,10 +1031,11 @@ To asses if my process has been agile Ill being using the 4 values from the agil
 \subsection{Product}
 Evaluating the system that has been built functionally and non-functionally and from a user's point of view.
 
-% TODO questions that need to be asked?
+% TODO questions that need to be asked? make sure limitations of the system is somewhere!
 
 \subsubsection{Functional specification}
-% TODO Has all the functional specifications been met
+
+Have I built a system that satisfies my original specification?
 
 \begin{figure}[H]
 \caption{success of each functional requirement}
@@ -1063,7 +1068,6 @@ Next is jurisdiction dependence which is an escapable fact in the real legal and
 
 Lastly digitalisation/computerisation, of course my entire system is essentially computerisation of \keyword{copyright} law which is helps to solve my last two points but it's also built around copyrightable digital work which traditional \keyword{copyright} is lacking in. Standardised digital signing and verification is proof of this ambition.
 
-% TODO Can a user register a copyrightable work?
 % TODO Is this implementation ethical? (more ethical than traditional)
 
 \subsubsection{Testing}
@@ -1072,10 +1076,12 @@ Lastly digitalisation/computerisation, of course my entire system is essentially
 
 \section{Future development}
 
+Some potential future development avenues
 \begin{description}
-	\item[Royalty payments]
-	\item[External verification]
-	\item[Analytics]
+	\item[Royalty payments] Royalty payment in cryptocurrency based on the number of shares a user owns in the copyright, automatic based on usage and fairly distributed.
+	\item[Marketplace] An open market for purchasing the legal right to use a work from the rights holder directly.
+	\item[External/Advanced verification] Currently work verification/authentication is very basic and can be exploited, proving authorship is a hard but essential issue to solve.
+	\item[Analytics] provide users with data describing the use of their work.
 \end{description}
 
 \section{Conclusion}
