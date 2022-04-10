@@ -20,7 +20,10 @@
 \input{solidity-highlighting.tex}
 \input{csharp-highlighting.tex}
 
-\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks=true,
+	allcolors=blue}
 
 \title{CRPL: Interim Report}
 \author{Harrison Beau Barker}
@@ -35,9 +38,12 @@
 \newcolumntype{s}{>{\hsize=.5\hsize}X}
 
 \newcommand{\keyword}[1]{\textbf{\textit{#1}}}
-\newcommand{\q}[2]{\begin{quote} #1 \cite{#2} \end{quote}}
-\newcommand{\nft}[0]{\href{https://eips.ethereum.org/EIPS/eip-721}{EIP-721} }
+\newcommand{\q}[2]{\begin{quote}``#1''\cite{#2}\end{quote}}
+\newcommand{\inlineQ}[2]{``#1''\cite{#2}}
+\newcommand{\nft}[0]{\href{https://eips.ethereum.org/EIPS/eip-721}{EIP-721}}
 \newcommand{\br}[0]{\\~\\}
+
+\renewcommand{\thefootnote}{\roman{footnote}}
 
 \setlength{\parskip}{1em}
 %\setlength{\parindent}{1em}

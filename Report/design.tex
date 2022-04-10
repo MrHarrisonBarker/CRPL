@@ -25,39 +25,35 @@ Websocket updates               & Real-time updates for the front-end UI to prov
 
 \subsubsection{Inspiration}
 
-To design a smart contract without prior experience I decided look at what others had done before and because I knew my new contract was going to at least exhibit similar functionality and basic principles as \textbf{NFTs} I started with the EIP for non-fungible tokens \href{https://eips.ethereum.org/EIPS/eip-721}{EIP-721}. 
+To design a smart contract without prior experience I decided to look at an existing contract and because I knew my contract was going to exhibit similar functionality and principles as \textbf{NFTs} I started with the EIP\footnote{\inlineQ{Ethereum Improvement Proposals (EIPs) describe standards for the Ethereum platform, including core protocol specifications, client APIs, and contract standards.}{eip}} for non-fungible tokens \nft. 
 
-\begin{quote}
-"Ethereum Improvement Proposals (EIPs) describe standards for the Ethereum platform, including core protocol specifications, client APIs, and contract standards."\cite{eip}
-\end{quote}
+This describes a standard interface for all external methods and events \textbf{NFT} contracts need to implement, most are self-explanatory like balanceOf, ownerOf, transferFrom and the Transfer event. Then there's a methods concerning "approval" which is \keyword{Ethereum} speak for access control, essentially what addresses are allowed to transact with a token.
 
-This document describes a standard interface for all external methods and events an \textbf{NFT} contract should implement, most of these make sense straight away methods like: balanceOf, ownerOf, transferFrom and the Transfer event. Then there's a few methods to do with "approval" which is \keyword{Ethereum} language for access control, essentially what addresses are allowed to transact and make changes.
-
-An interface spec is useful for understanding how the contract is supposed to interact with the outside world but nothing about how the contract works internally. So I went and found an implementation of this interface \href{https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol}{here} written by \href{https://github.com/OpenZeppelin}{OpenZeppelin} to gain an understanding of how these contracts operate.
+Interfaces are useful for understanding how the contract interacts with the outside world but not the internal working. So I found an implementation \href{https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol}{here} written by \href{https://github.com/OpenZeppelin}{OpenZeppelin} to gain an understanding of the internal operation.
 
 \begin{figure}[H]
-\caption{Structured Ownership essential mappings}
+\caption{\href{https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol}{ERC721.sol} data mappings}
 \centering
 \begin{lstlisting}[language=Solidity]
-	// Mapping from token ID to owner address
-	mapping(uint256 => address) private _owners;
+// Mapping from token ID to owner 
+mapping(uint256 => address) private _owners;
 
-	// Mapping owner address to token count
-	mapping(address => uint256) private _balances;
+// Mapping owner address to token count
+mapping(address => uint256) private _balances;
 
-	// Mapping from token ID to approved address
-	mapping(uint256 => address) private _tokenApprovals;
+// Mapping from token ID to approved address
+mapping(uint256 => address) private _tokenApprovals;
 
-	// Mapping from owner to operator approvals
-	mapping(address => mapping(address => bool)) private _operatorApprovals;
+// Mapping from owner to operator approvals
+mapping(address => mapping(address => bool)) private _operatorApprovals;
 \end{lstlisting}
 \end{figure}
 
-This snippet is taken from the OpenZeppelin \href{https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/ERC721.sol}{ERC721.sol} contract and is essentially how an \textbf{NFT} "works". a series of mappings that are saved in "storage" which is an area of the \keyword{EVM} that every smart contract has access to for storing state variables that need to persistent. These mappings are hashmaps from one type to another, first is the \_owners mapping which points to an owners address based on the hash of a given id (unit256). All the transactional methods are simply modifying these mappings, when you register a new token your wallet address is saved in the map entry for the next id.
+This snippet is taken from the OpenZeppelin contract and is essentially how an \textbf{NFT} "works". a series of mappings that are saved in storage\footnote{storage is an area of the \keyword{EVM} that every smart contract has access to for storing state variables that need to persistent. memory and stack are also available} and are hash-maps from one type to another. \textit{\_owners} points to an address based on the input token id (uint256) all methods in the contract simply modify these mappings for example when you register a token your wallet address is saved in the map entry for the next id.
 
 \subsubsection{Ownership structure}
 
-This core pattern/architecture was used as the foundation of my new contract, however there is one major requirement of my system not supported by the basic EIP-721 standard which is the ability of multiple address/people to have ownership of a token. This wasn't going to work for representing copyright as works can quite often involve multiple people collaborating the book I mentioned in the beginning of this report\cite{blockchain_revolution} has two authors, a system not representing the work and effort of all involved is just not acceptable.
+This architecture was used as foundations for my new contract, however there is one major requirement of my system not supported by the \nft standard which is multi party ownership of a token. This alone wasn't going to represent copyright as works can quite often involve multiple people collaborating, the book I mentioned at the beginning of this report\cite{blockchain_revolution} has two authors, a system not representing the work and effort of all involved is not acceptable.
 
 \begin{figure}[H]
 \caption{Structured Ownership essential mappings}
@@ -66,13 +62,11 @@ This core pattern/architecture was used as the foundation of my new contract, ho
 \label{fig:float}
 \end{figure}
 
-To solve this problem I've redesigned how ownership is defined with the smart contract, instead of mapping the token id to one address the contract will now map to an \textbf{OwnershipStructure} which then points to a list of owner addresses along with a number of shares that specific address holds in the token.
-
-This design obviously borrows a lot from limited companies share structure allowing for a complex ownership of multiple individuals or groups with implied variance in ownership (although the number of shares an address owns makes no immediate difference in the current implementation of this contract as this was outside of the desired complexity scope).
+To solve this problem I've redesigned how ownership is defined in the contract, instead of mapping token ids to one address the contract now maps to an \textbf{OwnershipStructure} that contains a list of owners along with a number of shares that specific address holds in the token. This design clearly borrows from limited companies share structure allowing a complex ownership of multiple individuals or groups with implied variance in ownership\footnote{Although the number of shares an address owns makes no immediate difference in the current implementation of this contract as this was outside of the desired complexity scope.}.
 
 \subsubsection{Shareholder consensus}
 
-Allowing multiple wallets to have ownership over a token now introduces a new problem for my contract design, when a change is made everyone has to agree to that change I can't just check if you're an owner anymore, giving the ability to change the copyright to everyone with a stake without consulting with all other owners is a point of exploitation.
+Allowing multiple wallets to own a token now introduces a new problem for contract design, when a change is made everyone has to agree just check if you're an owner is not enough anymore, allowing everyone with a stake to make changes without consulting all other owners is a point of exploitation in need of solution.
 
 \begin{figure}[H]
 \caption{Structured Ownership proposal mappings}
@@ -80,11 +74,11 @@ Allowing multiple wallets to have ownership over a token now introduces a new pr
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/prop-mappings.png}
 \end{figure}
 
-This is the solution I've designed for the shareholder consensus problem, now instead of making a direct change to the copyright (in this case an ownership restructure) a user proposes a change to the copyright which is then voted on by all the owners until a unanimous vote tally is reached then the change can be made.
+I've designed this solution for the shareholder consensus problem, now instead of making direct changes to a copyright (above is an ownership restructure) a user proposes change to a copyright which is then voted on by all owners until a unanimous vote is reached then the change is made.
 
 \subsubsection{Protections}
 
-To simplify and give users choice of the type of protection I designed a protections system similar to permission in many computer systems, the list of available protections was built from existing legal protections provided by \keyword{copyright} law \cite{rights_granted} including: Adaptation, Performance, Reproduction and Distribution. 
+To simplify and give users customisability of protection I've designed a protections system similar to permission in many computer systems, the list of available protections was built from existing legal protections provided by \keyword{copyright} law \cite{rights_granted} including: Adaptation, Performance, Reproduction and Distribution. 
 
 \subsection{Back-end}
 
@@ -97,8 +91,7 @@ To simplify and give users choice of the type of protection I designed a protect
 
 \subsubsection{Dependancy injection}
 
-% bit iffy could be better?
-Dependancy injection is a supported and heavily encouraged design pattern within \textbf{.NET} and \textbf{ASP.NET} which allows for building loosely coupled applications by separating out implementation and design and the ability to depend on a softwares design opposed to its technical implementation allows for more resilient and modular code less dependant on a specific implementation.
+Dependancy injection is a supported and encouraged design pattern within \textbf{.NET} and \textbf{ASP.NET} which allows building loosely coupled applications by separating implementation and design, depending on a softwares design opposed to its technical implementation results in more resilient and modular code.
 
 \begin{figure}[H]
 \caption{DI graph taken from \href{https://docs.microsoft.com/en-us/dotnet/architecture/modern-web-apps-azure/architectural-principles#dependency-inversion}{docs.microsoft}}
@@ -107,7 +100,7 @@ Dependancy injection is a supported and heavily encouraged design pattern within
 \centering
 \end{figure}
 
-This graph shows a generic example of inversion of control and dependancy injection, as you can see each class is depending on an interface of the desired class not the actual code implementation hence loosely coupled.
+Above is an inversion of control and dependancy injection example, as you can see each class is depending on an interface of the desired class not the actual code implementation hence loosely coupled.
 
 \begin{figure}[H]
 \caption{Example dependancy graph for the query controller and service}
@@ -115,11 +108,11 @@ This graph shows a generic example of inversion of control and dependancy inject
 \includegraphics[width=0.7\textwidth,height=0.7\textheight,keepaspectratio]{images/patterns/DI-example}
 \end{figure}
 
-This is real example of dependancy injection drawn from the query controller and service injections. It shows that the two classes don't import any other implemented classes just the interfaces describing how you can interact with an implemented version of that class. At run time each interface injected will be populated from the service collection with an implemented version of the class thats be registered on startup.
+This is real example of dependancy injection drawn from the query controller and service injections. It shows both don't depend on any implemented classes just the interfaces which describe how you can interact with an implemented version of that class. At runtime each interface injected will be populated from the service collection with a real class that was registered on startup.
 
 \subsubsection{Background services}
 
-The design of background services was built on previous work I wrote for \href{https://github.com/mrharrisonbarker/openevent}{OpenEvent} so instead of trying new software like \href{https://www.hangfire.io/}{Hangfire} which does look more feature rich and well used, however I decided for the scale of this project and the already existing pattern I had developed and knew intimately a year ago would be a better fit.
+Background services was designed based on previous work I wrote for \href{https://github.com/mrharrisonbarker/openevent}{OpenEvent} so instead of using new software like \href{https://www.hangfire.io/}{Hangfire} which is more feature rich with a strong following I decided for the scale of this project and the existing pattern I had developed and knew intimately a year ago would be a better fit.
 
 \begin{figure}[H]
 \caption{Queued background service pattern}
@@ -127,15 +120,15 @@ The design of background services was built on previous work I wrote for \href{h
 \includegraphics[width=0.5\textwidth,height=0.5\textheight,keepaspectratio]{images/patterns/background-processing-pattern}
 \end{figure}
 
-This is the basic design pattern describing how my background services work, it's essentially made up of a queue and processing service. "Work" is queued while a processing service running in its own thread dequeues work then processes accordingly. Once the work has been finished the processing service waits for the next item on the queue.
+This is the basic pattern describing how my background services work, it's essentially a queue and processing service. `Work' is queued while a processing service running in its own thread dequeues work and processes, after this work completes the processing service waits for the next item to dequeue.
 
-This pattern can be quickly implemented and tailored to a specific type of background work, it's easily scalable with the number of threads available and settable in the processing service.
+This pattern can be quickly implemented and tailored to specific background work, it's easily scalable with the number of threads configurable in the processing service.
 
 \subsubsection{Event processing}
 
-Because transactions on the blockchain can technically take any amount of time to be verified, placed into a block and then for that block to be placed onto the chain. Blocks on \keyword{Ethereum} are processed around every 13 seconds and you're not guaranteed to be placed into the next block which largely depends on the amount of \textbf{gas} you're willing to spend and the number of transactions currently being processed by the network.
+Because transactions on the \keyword{blockchain} can take any amount of time to be verified, placed into a block and for that block to be placed onto the chain. Blocks on \keyword{Ethereum} are processed around every 13 seconds but you're not guaranteed to be placed into the next block, this largely depends on the amount of \textbf{gas} you're willing to spend and the volume of current transactions.
 
-All this means that my system has to be able to send a transaction then wait an indeterminate amount of time for a response and I can't force the user to wait on that transaction until complete. Thankfully \keyword{Ethereum} has a solution for this problem called \textbf{Events}, I've specified a number of these events in my contract definition (see below) which the system then "listens" for by processing the information in each block.
+All this means that my system must be able to send a transaction then wait an indeterminate amount of time for a response meaning I can't force the user to wait on that transaction until complete. Thankfully \keyword{Ethereum} has a solution for this  called \textbf{Events}, I've specified a number of these events in my contract (see below) which the back-end "listens" for by processing the information in each block.
 
 \begin{figure}[H]
 \caption{\href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/IStructuredOwnership.sol}{IStructuredOwnership} events}
@@ -154,7 +147,7 @@ event FailedProposal(uint256 indexed rightId);
 \end{lstlisting}
 \end{figure}
 
-When an event is found it gets added to a processing queue then a processing service dequeues each event and processes based on the type of event (this uses the background service pattern discussed in the previous section).
+When an event is found it gets added to a processing queue then a processing service dequeues each event and processes based on the type of event.
 
 \begin{figure}[H]
 \caption{Blockchain event listeners and processing}
@@ -163,7 +156,6 @@ When an event is found it gets added to a processing queue then a processing ser
 \end{figure}
 
 \subsubsection{Applications framework}
-% TODO Data model structure (application, view model, input model)
 
 Handling forms and applications is awkward and full of edge cases, the code for handing these applications (eg: copyright registration) can become large and convoluted especially when your system implements many. For this system five applications are needed: copyright registration, ownership restructure, dispute, wallet transfer and delete account. I decided to design a solution for handling application flow and state as a generic process, this means all applications will follow the same state flow and interaction endpoints \textit{seen below.} 
 
@@ -173,14 +165,15 @@ Handling forms and applications is awkward and full of edge cases, the code for 
 \includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/operational/applications-status}
 \end{figure}
 
+% TODO could probably so somewhere else
 This generification and ridged design flow proved extremely useful, this was because keeping a clear view of state is essential when keeping parity between my system and the outer \keyword{blockchain}.
 
 \subsection{Database}
 
-The database for this system needs to store two types of data: data stored on both the \keyword{blockchain} and CRPL (eg: public wallet addresses, contract address, and registered works) and data stored solely on the database not mirrored with the chain (eg: applications, user account information and explicit database relationships).
+The database needs to store two types of data: data stored on both the \keyword{blockchain} and CRPL (eg: public wallet addresses, contract address, and registered works) and data stored solely on the database not mirrored with the chain (eg: applications, user account information and explicit database relationships).
 
 \begin{figure}[H]
-\caption{Database EER diagram}
+\caption{Final database EER diagram}
 \centering
 \includegraphics[width=\textwidth,height=0.7\textheight,keepaspectratio]{images/patterns/database}
 \end{figure}
@@ -188,20 +181,21 @@ The database for this system needs to store two types of data: data stored on bo
 \subsubsection{Chain parity}
 \label{sec:chain-parity}
 
-Data need to be kept in parity with the \keyword{blockchain} introduces a problem that being data on the chain can change independently of the system, a user could transact with the \keyword{copyright} \keyword{smart contract} and register a new copyright or propose a new ownership structure and even bind that new structure completely destroying any continuity between my database and what's real. This will lead to a terrible user experience but there's nothing I can do about it, the chain is open to anyone and is quite literally the whole point of this project.
+Some data needs to be kept in parity with the \keyword{blockchain} this introduces a problem because data on the chain can change independently from the system, a user could transact with the \keyword{smart contract} and register a new copyright or propose a new ownership structure and even bind that new structure destroying any continuity between the database and what's real. This will lead to a terrible user experience but I can stop it, the chain is open to anyone and is the entire point of this project.
 
-However I can react to change, again everything is open and accessible all I have to do is read the \keyword{blockchain} and update my database accordingly keeping in mind that the chain is always the one source of truth not my database.
+However I can react to change, everything is open and accessible all I have to do is read the \keyword{blockchain} and update the database accordingly keeping in mind the chain is always the source of truth not the database.
 
 \subsubsection{Independent from the chain}
 
-I've chosen to keep certain data off the \keyword{blockchain} only representing it on the CRPL database. Of course technically I could store everything on chain completely independent of any database, however this would ballon the size of my \keyword{smart contract} which are limited to 24KB complied it would also create a problem for maintainability and future development. 
-Imagine everything is represented in the smart contract including dispute handling and applications, the contract is verified onto the chain and is now running in the \keyword{EVM} what happens when I want to add a new type of application or I find out my dispute handling is un-ethical or exploitable? I can't change the smart contract its immutable if I really wanted to I could deploy a new contract and manually migrate all previous \keyword{copyrights} to this new contract, however this would be expensive, slow and arguably against the spirit of \keyword{blockchain} technology and the law as I'm effectively changing the underlying representation of a users \keyword{copyright} without their consultation or approval.
+I've chosen to keep certain data off the \keyword{blockchain} only representing in the database. It's possible to store everything on chain completely independent of any database, however this would ballon the size of my \keyword{smart contract} which are limited to 24KB complied it would also hamper maintainability and future development.
+
+Imagine everything is represented on the \keyword{smart contract} including dispute handling and applications, the contract is deployed on the chain and now running in the \keyword{EVM} what happens when I want to add a new type of application or discover my dispute handling is un-ethical or exploitable? I can't change the smart contract it's immutable, the only solution is deploy a new contract and manually migrate all previous \keyword{copyrights}, however this would be expensive, slow and arguably against the spirit of \keyword{blockchain} technology and the law as I'm effectively changing the underlying representation of a \keyword{copyright} without consultation or approval.
 
 \subsection{Front-end}
 
-Visual design of the web application was on the lowest priority a focus on pure usability and function was always the priority because of the complex undertaking that was needed to implement all functionality building effectively two backend systems (\keyword{blockchain} and web API).
+Visual design of the web application was on lowest priority so a focus on pure usability and function was the goal because of the complex undertaking needed to implement all functionality building effectively two backend systems (\keyword{blockchain} and web API).
 
-I decided to use the \href{https://clarity.design/}{Clarity} design system and libraries as they have support for Angular and has an enterprise/function first focus.
+I decided to use the \href{https://clarity.design/}{Clarity} design system and libraries as they have support for Angular with an enterprise/function first focus.
 
 \begin{figure}[H]
 \caption{Original dashboard page wireframe}
@@ -229,14 +223,15 @@ I decided to use the \href{https://clarity.design/}{Clarity} design system and l
 
 \subsection{Architecture}
 % TODO an overview of the system architecture design
+TODO?
 
 \subsection{Development process}
 
-Development was split into four sprints, two larger sprints two weeks long to start development focusing on major core features essential for any success of the project: \keyword{smart contracts}, contract interaction, registration and restructure applications and user authentication. Followed up with two one week sprints focusing on secondary features and quality of life: disputes, search, synchronisation and account config. 
+Development was split into four sprints, two larger sprints two weeks long to start development focusing on major core features essential for any success of the project: \keyword{smart contracts}, contract interaction, registration and restructure applications and user authentication. Followed up with two one week sprints focusing on secondary features and quality of life: disputes, search, synchronisation and account config.
 
 \begin{figure}[H]
 \hfil
-\begin{tabular}{|l|l|l|l|}
+\begin{tabular}{|p{0.2\textwidth}|p{0.3\textwidth}|p{0.3\textwidth}|p{0.2\textwidth}|}
 \hline
 Sprint & Start            & End              & Length  \\ \hline
 1      & 19 January 2022  & 2 February 2022  & 2 weeks \\ \hline
