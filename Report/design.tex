@@ -22,7 +22,7 @@ Websocket updates               & Real-time updates for the front-end UI to prov
 \end{figure}
 
 \subsection{Smart contract}
-
+\label{sec:smart-contract-design}
 \subsubsection{Inspiration}
 
 To design a smart contract without prior experience I decided to look at an existing contract and because I knew my contract was going to exhibit similar functionality and principles as \textbf{NFTs} I started with the EIP\footnote{\inlineQ{Ethereum Improvement Proposals (EIPs) describe standards for the Ethereum platform, including core protocol specifications, client APIs, and contract standards.}{eip}} for non-fungible tokens \nft. 
@@ -156,6 +156,7 @@ When an event is found it gets added to a processing queue then a processing ser
 \end{figure}
 
 \subsubsection{Applications framework}
+\label{sec:application-framework-design}
 
 Handling forms and applications is awkward and full of edge cases, the code for handing these applications (eg: copyright registration) can become large and convoluted especially when your system implements many. For this system five applications are needed: copyright registration, ownership restructure, dispute, wallet transfer and delete account. I decided to design a solution for handling application flow and state as a generic process, this means all applications will follow the same state flow and interaction endpoints \textit{seen below.} 
 
