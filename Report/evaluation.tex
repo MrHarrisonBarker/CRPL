@@ -66,8 +66,6 @@ Websocket updates               & All updates are done through a single WebSocke
 
 \subsubsection{Is it fit for purpose}
 
-% probably too short
-
 Have I built a system that addresses my issues with \keyword{copyright} discussed in \autoref{sec:unfit}? My stated three factors were \textit{complexity, jurisdiction dependence and lack of digital computerised systems}, does my system solve any of these?
 
 First is complexity, by removing as much legal jargon from the process and a customisable protections system users know exactly how their work is protected without the need for legal council or manager therefore empowering creators. 
@@ -80,5 +78,80 @@ Lastly digitalisation/computerisation, my entire system is essentially computeri
 % TODO Is this implementation ethical? (more ethical than traditional)
 
 \subsubsection{Testing}
-% TODO TESTING TESTING TESTING
-TODO
+
+% How was the project tested (smart contracts, backend, frontend middleware, no ui frontend tests)
+The system has been extensively unit tested at three levels: \keyword{smart contract}, back-end and front-end middleware.
+
+Because contracts run within the \keyword{EVM} a testing environment is needed in this case \href{https://hardhat.org/}{Hardhat} which allows me to deploy and run tests on a \keyword{smart contract}.
+
+\begin{figure}[H]
+\caption{\href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/test/Copyright/Register.ts}{Register.ts} unit test snippet}
+\centering
+\begin{lstlisting}[language=JavaScript]
+it('Should REVERT no shareholders', async function ()
+{
+	await expect(deployedContract.Register([], meta)).to.be.revertedWith('NO_SHAREHOLDERS');
+});
+
+it('Should REVERT when invalid shareholders', async function ()
+{
+	await expect(deployedContract.Register([{owner: ethers.constants.AddressZero, share: 1}], meta)).to.be.revertedWith('INVALID_ADDR');
+});
+\end{lstlisting}
+\end{figure}
+
+This is what the tests look like there're then run outputting statistics for each payable transaction on the contract including deployment.
+
+\begin{figure}[H]
+\caption{contract statistics from Hardhat}
+\centering
+\includegraphics[width=\textwidth,height=0.4\textheight,keepaspectratio]{images/appendix/tests/hardhat-results}
+\centering
+\end{figure}
+
+Back-end tests are written in the \textit{CRPL.Tests} project separated by domain all using \href{https://nunit.org/}{NUnit} test framework and runner.
+
+\begin{figure}[H]
+\caption{Back-end test directory structure}
+\hfill
+\subfigure{\includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/appendix/tests/test-tree-1}}
+\hfill
+\subfigure{\includegraphics[width=\textwidth,height=0.3\textheight,keepaspectratio]{images/appendix/tests/test-tree-2}}
+\hfill
+\end{figure}
+
+The front-end logic is tested using Angular's built in test framework \href{https://jasmine.github.io/}{Jasmine} found in \textit{.spec.ts} files.
+
+\begin{figure}[H]
+\caption{\href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/ClientApp/src/app/_Services/auth.service.spec.ts}{auth.service.spec.ts} nonce fetch test}
+\centering
+\begin{lstlisting}[language=JavaScript]
+it('should fetch nonce', inject(
+      [HttpTestingController, AuthService],
+      (httpMock: HttpTestingController, authService: AuthService) =>
+      {
+        let mockNonce: string = "TEST NONCE";
+        service['Address'] = 'TEST ADDRESS';
+
+        authService.fetchNonce().subscribe((nonce: string) =>
+        {
+          expect(nonce).toEqual("TEST NONCE")
+        });
+
+        let request = httpMock.expectOne("user/nonce?walletAddress=TEST%20ADDRESS");
+
+        expect(request.request.responseType).toEqual('json');
+        expect(request.cancelled).toBeFalsy();
+
+        request.flush(mockNonce);
+      }
+    )
+  );
+\end{lstlisting}
+\end{figure}
+
+\textbf{All test reuslts can be found in appendix \ref{sec:test-results}}
+
+% What is the result of the tests
+
+
