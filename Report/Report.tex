@@ -3,11 +3,18 @@
 \usepackage[a4paper, margin=1in]{geometry}
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{hyperref}
 \usepackage{subfigure}
+\usepackage{pdfpages}
+\usepackage{multirow}
+
+\usepackage[breaklinks]{hyperref}
+\hypersetup{
+	colorlinks=true,
+	allcolors=blue,
+	breaklinks=true}
+	
 %\usepackage{setspace}
 %\usepackage{fancyhdr}
-
 
 %\pagestyle{fancy}
 %\fancyhf{}
@@ -21,11 +28,6 @@
 \input{solidity-highlighting.tex}
 \input{csharp-highlighting.tex}
 \input{javascript-highlighting.tex}
-
-\usepackage{hyperref}
-\hypersetup{
-	colorlinks=true,
-	allcolors=blue}
 
 \title{CRPL: Interim Report}
 \author{Harrison Beau Barker}
@@ -108,7 +110,7 @@ The aim of this project was to successfully represent basic \keyword{copyright} 
 
 So to conclude while the technical operation of this project fulfils the stated specification it doesn't prove that a blockchain representation of \keyword{copyright} is the \textit{correct} solution but stand as compelling evidence towards assessing \keyword{blockchain} as a viable solution.
 
-%\include{appendices}
+\include{appendices}
 
 \bibliographystyle{plain}
 \bibliography{sources.bib}

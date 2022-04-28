@@ -1,11 +1,18 @@
 \usepackage{listings, xcolor}
 
+\definecolor{brilliantrose}{rgb}{1.0, 0.33, 0.64}
+\definecolor{electriclime}{rgb}{0.8, 1.0, 0.0}
+\definecolor{emerald}{rgb}{0.31, 0.78, 0.47}
+\definecolor{amethyst}{rgb}{0.6, 0.4, 0.8}
+
 \lstdefinelanguage{CSharp}
 {
+ morecomment = [l]{...},
  morecomment = [l]{//}, 
  morecomment = [l]{///},
  morecomment = [s]{/*}{*/},
  morestring=[b]", 
+ commentstyle=\color{emerald}\ttfamily,
  sensitive = true,
  morekeywords = {abstract,  event,  new,  struct,
    as,  explicit,  null,  switch,
@@ -24,7 +31,8 @@
    default,  interface,  sealed,  volatile,
    delegate,  internal,  short,  void,
    do,  is,  sizeof,  while,
-   double,  lock,  stackalloc,   
+   double,  lock,  stackalloc, var, await,  
    else,  long,  static,   
    enum,  namespace,  string}
 }
+

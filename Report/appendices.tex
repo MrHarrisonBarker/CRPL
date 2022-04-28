@@ -3,7 +3,8 @@
 \subsection{Acknowledgements}
 
 \begin{table}[H]
-\begin{tabular}{|p{0.2\textwidth}|p{0.6\textwidth}|p{0.05\textwidth}|p{0.15\textwidth}|}
+\centering
+\begin{tabular}{|p{0.15\textwidth}|p{0.6\textwidth}|p{0.05\textwidth}|p{0.15\textwidth}|}
 \hline
 Name           & Use                                                                                   &                                               & Subsystem \\ \hline
 Rider          & Primary IDE for development                                                           & \href{https://www.jetbrains.com/rider}{link}                  & DEV       \\ \hline
@@ -36,12 +37,84 @@ web3.js        & Ethereum JavaScript API library                                
 \end{tabular}
 \end{table}
 
+\subsection{Sequence diagrams}
+
+\begin{figure}[H]
+\caption{Original index page wireframe}
+\centering
+\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/CopyrightRegistration}
+\end{figure}
+
 \subsection{Design docs}
+
+\begin{figure}[H]
+\caption{Original index page wireframe}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio]{images/appendix/design/docs/index}
+\end{figure}
+
+\begin{figure}[H]
+\caption{Original dashboard page wireframe}
+\centering
+\includegraphics[width=0.8\textwidth,height=\textheight,keepaspectratio]{images/appendix/design/docs/dash}
+\end{figure}
+
+\begin{figure}[H]
+\caption{Early system architecture diagram}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio]{images/appendix/design/docs/arch}
+\end{figure}
+
+\begin{figure}[H]
+\caption{Copyright registration state flow diagram}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio]{images/appendix/design/docs/reg}
+\end{figure}
+
+\begin{figure}[H]
+\caption{Ownership restructure state flow diagram}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio]{images/appendix/design/docs/restruct}
+\end{figure}
+
+\begin{figure}[H]
+\caption{Original dispute handling flow diagram}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio]{images/appendix/design/docs/dispute}
+\end{figure}
+
+\begin{figure}[H]
+\caption{Original blockchain event listening diagram}
+\centering
+\includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio]{images/appendix/design/docs/event}
+\end{figure}
+
 \subsection{Sprint reviews}
+
+Sprint reviews can also be found on the \href{https://github.com/mrharrisonbarker/crpl#readme}{README}.
+
+\includepdf[pages=-]{./images/appendix/SprintReviews.pdf}
+
 \subsection{User guide}
 
-
+The user guide can be found at \href{https://github.com/MrHarrisonBarker/CRPL/wiki}{https://github.com/MrHarrisonBarker/CRPL/wiki}
 
 \subsection{Test results}
 \label{sec:test-results}
 
+\subsubsection{Smart contract unit test results}
+\label{sec:test-results:smart}
+
+\includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio]{images/appendix/tests/hardhat-1}
+\vfill
+\includegraphics[width=0.7\textwidth,height=\textheight,keepaspectratio]{images/appendix/tests/hardhat-2}
+
+\subsubsection{Back-end unit test results}
+\label{sec:test-results:back}
+
+\includepdf[pages=-]{./images/appendix/tests/Back-end-Unit-results.pdf}
+
+\subsubsection{Front-end unit test results}
+\label{sec:test-results:front}
+
+\includepdf[pages=-]{./images/appendix/tests/angular-test-results.pdf}
