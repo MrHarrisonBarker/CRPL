@@ -11,21 +11,127 @@ registration to be placed in everyone's hands.
 
 ### Prerequisites
 
+#### MySql
+---
+
+Install MySql server version 8+ [guide](https://dev.mysql.com/doc/mysql-installation-excerpt/5.7/en/)
+
 #### .NET6
+---
 
 Install the .NET6 SDK from Microsoft [download](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 
 #### Node.js
+---
 
 Install the latest version of Node.js [download](https://nodejs.org/en/download/)
 
+#### (Optional) Angular
+---
+
+Should'nt be necessary to run the application but if there's errors install [version 12](https://www.npmjs.com/package/@angular/cli/v/12.0.0)
+
 ## Usage
 
-### Build, run and test
+### Setup
+
+#### Config
+---
+
+First you'll need to create an **appsettings.json** file in the **CRPL.Web** directory following this template.
+
+```json
+{
+  "AppSettings" : {
+    "ConnectionString": "Server=localhost;Database=crpl;Uid=crpl;Pwd=** PASSWORD **;",
+    "EncryptionKey": "** 32 Character randomly generated string used for hashing **",
+    "SeqKey": "** OPTIONAL **",
+    "IpfsHost": "http://ipfs.harrisonbarker.co.uk",
+    "EtherscanHost": "https://etherscan.io",
+    "Chains": [
+      {
+        "Name": "LOCAL",
+        "Url": "http://localhost:8545",
+        "Id": "444444444500",
+        "SystemAccount": {
+          "AccountId": "0x12890d2cce102216644c59daE5baed380d84830c",
+          "PrivateKey": "0xb5b1870957d373ef0eeffecc6e4812c0fd08f554b37b233526acc331bf1544f7"
+        }
+      }
+    ]
+  },
+  "Logging": {
+      "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+      }
+    },
+"AllowedHosts": "*"
+}
+```
+
+* If you're using the included test chain don't change and chain settings!
+* Create a user in mysql that has enough permissions called "crpl" and paste password.
+* Generate a random string of length 32 [I used this](http://www.unit-conversion.info/texttools/random-string-generator/).
+
+#### Building the database
+---
+
+Now you need to build and migrate the database. To do this you'll need the entity framework cli tool so run.
+
+```console
+$ dotnet tool install --global dotnet-ef
+```
+
+then migrate!
+
+```console
+$ cd CRPL.Web
+$ dotnet ef database update --context=ContractContext # creates all tables for holding the deployed smart contract.
+$ dotnet ef database update --context=ApplicationContext # creates tables for all application logic.
+```
+
+#### Starting the test chain
+---
+
+Now you need a test blockchain, I'm using the geth versions of [these](https://github.com/Nethereum/TestChains). You should'nt need to install geth as the executable comes with the test chain I've provided.
+
+```console
+$ cd PIPO/TestChains
+$ cd geth-clique-mac # mac version
+$ ./startgeth.sh
+$ cd geth-clique-windows # windows version
+$ ./startgeth.bat
+```
+
+Now once the database is running, migrated and the test chain is running it's time to start the application.
+
+### Running
+---
 
 ```console
 $ dotnet restore // install dependences
 $ dotnet run // run the app
+```
+
+This will start the web server it may take a few moments to start up.
+
+Then navigate to [https://localhost:7145/](https://localhost:7145/) which should display:
+
+![](./Operational%20diagrams/spa.png)
+
+This means Angular is starting and will take a moment to start and you'll be automatically redirected to the application so be patient!
+
+### Using
+---
+
+I've made a user guide if you're stuck at any point [https://github.com/MrHarrisonBarker/Crpl/wiki/user-guide](https://github.com/MrHarrisonBarker/Crpl/wiki/user-guide)
+
+### Test
+
+```console
+$ cd CRPL.Web
 $ dotnet test // run all .net tests
 ```
 
