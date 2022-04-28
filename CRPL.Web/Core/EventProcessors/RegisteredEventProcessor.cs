@@ -27,7 +27,6 @@ public static class RegisteredEventProcessor
         context.Update(registeredWork);
 
         registeredWork.RightId = registeredEvent.Event.RightId.ToString();
-        // TODO: can I set it to the time of the transaction?
         registeredWork.Registered = DateTime.Now;
         registeredWork.Status = RegisteredWorkStatus.Registered;
 

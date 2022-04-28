@@ -102,7 +102,7 @@ public class AuthenticateSignature
         });
 
         var token = new JwtSecurityTokenHandler().ReadJwtToken(result.Token);
-        token.ValidTo.Should().BeAfter(DateTime.Now.AddDays(29).AddHours(23));
+        token.ValidTo.Should().BeAfter(DateTime.Now.AddDays(29));
     }
 
     [Test]

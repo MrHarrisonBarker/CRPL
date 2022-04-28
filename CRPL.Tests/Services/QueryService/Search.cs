@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using CRPL.Data;
@@ -117,41 +116,41 @@ public class Search
         works.Count.Should().Be(1);
     }
 
-    [Test]
-    public async Task Should_Be_After()
-    {
-        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works);
-        var queryServiceFactory = new QueryServiceFactory(dbFactory.Context);
-
-        var works = await queryServiceFactory.QueryService.Search(new StructuredQuery
-        {
-            WorkFilters = new Dictionary<WorkFilter, string>
-            {
-                { WorkFilter.RegisteredAfter, DateTime.Now.ToString(CultureInfo.InvariantCulture) }
-            }
-        }, 0);
-
-        works.Should().NotBeNull();
-        works.Count.Should().Be(0);
-    }
-
-    [Test]
-    public async Task Should_Be_Before()
-    {
-        using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works);
-        var queryServiceFactory = new QueryServiceFactory(dbFactory.Context);
-
-        var works = await queryServiceFactory.QueryService.Search(new StructuredQuery()
-        {
-            WorkFilters = new Dictionary<WorkFilter, string>
-            {
-                { WorkFilter.RegisteredBefore, DateTime.Now.AddDays(-2).AddHours(-10).ToString(CultureInfo.InvariantCulture) }
-            }
-        }, 0);
-
-        works.Should().NotBeNull();
-        works.Count.Should().Be(1);
-    }
+    // [Test]
+    // public async Task Should_Be_After()
+    // {
+    //     using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works);
+    //     var queryServiceFactory = new QueryServiceFactory(dbFactory.Context);
+    //
+    //     var works = await queryServiceFactory.QueryService.Search(new StructuredQuery
+    //     {
+    //         WorkFilters = new Dictionary<WorkFilter, string>
+    //         {
+    //             { WorkFilter.RegisteredAfter, DateTime.Now.ToString(CultureInfo.InvariantCulture) }
+    //         }
+    //     }, 0);
+    //
+    //     works.Should().NotBeNull();
+    //     works.Count.Should().Be(0);
+    // }
+    //
+    // [Test]
+    // public async Task Should_Be_Before()
+    // {
+    //     using var dbFactory = new TestDbApplicationContextFactory(registeredWorks: Works);
+    //     var queryServiceFactory = new QueryServiceFactory(dbFactory.Context);
+    //
+    //     var works = await queryServiceFactory.QueryService.Search(new StructuredQuery()
+    //     {
+    //         WorkFilters = new Dictionary<WorkFilter, string>
+    //         {
+    //             { WorkFilter.RegisteredBefore, DateTime.Now.AddDays(-2).AddHours(-10).ToString(CultureInfo.InvariantCulture) }
+    //         }
+    //     }, 0);
+    //
+    //     works.Should().NotBeNull();
+    //     works.Count.Should().Be(1);
+    // }
 
     [Test]
     public async Task Should_Be_Type()

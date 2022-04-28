@@ -125,7 +125,5 @@ describe('AuthService', () =>
       expect(authService['Address']).toEqual(undefined);
       expect(authService['AuthenticationToken']).toEqual(undefined);
 
-      // expect(routerMock.navigate).toHaveBeenCalledOnceWith(['/']); TODO: router tests not consistent
-
     }));
 });

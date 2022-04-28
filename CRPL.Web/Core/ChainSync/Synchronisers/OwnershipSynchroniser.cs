@@ -10,7 +10,6 @@ using Nethereum.ABI.FunctionEncoding;
 
 namespace CRPL.Web.Core.ChainSync.Synchronisers;
 
-// TODO: this synchroniser will check if the ownership structure on the blockchain matched what the system has and make changes if needed
 public class OwnershipSynchroniser : ISynchroniser
 {
     private readonly ILogger<OwnershipSynchroniser> Logger;
