@@ -26,7 +26,7 @@ var appSettingsSection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettingsSection);
 var appSettings = appSettingsSection.Get<AppSettings>();
 
-builder.Host.UseSerilog((context, services, configuration) => configuration
+if (!String.IsNullOrEmpty(appSettings.SeqKey)) builder.Host.UseSerilog((context, services, configuration) => configuration
         .MinimumLevel.Information()
         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
         .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)

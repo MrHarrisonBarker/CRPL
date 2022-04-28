@@ -75,12 +75,12 @@ public class DbPipelineBuilder
     public DbPipelineBuilder(IServiceCollection services, AppSettings appSettings)
     {
         services.AddDbContextPool<ContractContext>(builder =>
-            builder.UseMySql(appSettings.ConnectionString, new MySqlServerVersion(new Version(8, 0, 23)),
+            builder.UseMySql(appSettings.ConnectionString, new MySqlServerVersion(ServerVersion.AutoDetect(appSettings.ConnectionString)),
                 optionsBuilder => optionsBuilder.MigrationsAssembly("CRPL.Web"))
         );
 
         services.AddDbContextPool<ApplicationContext>(builder =>
-            builder.UseMySql(appSettings.ConnectionString, new MySqlServerVersion(new Version(8, 0, 23)),
+            builder.UseMySql(appSettings.ConnectionString, new MySqlServerVersion(ServerVersion.AutoDetect(appSettings.ConnectionString)),
                 optionsBuilder => optionsBuilder.MigrationsAssembly("CRPL.Web"))
         );
 
