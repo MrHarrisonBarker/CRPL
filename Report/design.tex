@@ -62,7 +62,7 @@ This architecture was used as foundations for my new contract, however there is 
 \label{fig:float}
 \end{figure}
 
-To solve this problem I've redesigned how ownership is defined in the contract, instead of mapping token ids to one address the contract now maps to an \textbf{OwnershipStructure} that contains a list of owners along with a number of shares that specific address holds in the token. This design clearly borrows from limited companies share structure allowing a complex ownership of multiple individuals or groups with implied variance in ownership\footnote{Although the number of shares an address owns makes no immediate difference in the current implementation of this contract as this was outside of the desired complexity scope.}.
+To solve this problem I've redesigned from the ground up how ownership is defined in the contract, instead of mapping token ids to one address the contract now maps to an \textbf{OwnershipStructure} that contains a list of owners along with a number of shares that specific address holds in the token. This design clearly borrows from a limited company share structure allowing a complex ownership of multiple individuals or groups with implied variance in ownership\footnote{Although the number of shares an address owns makes no immediate difference in the current implementation of this contract as this was outside of the desired complexity scope.}.
 
 \subsubsection{Shareholder consensus}
 
@@ -166,8 +166,7 @@ Handling forms and applications is awkward and full of edge cases, the code for 
 \includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/operational/applications-status}
 \end{figure}
 
-% TODO could probably so somewhere else
-This generification and ridged design flow proved extremely useful, this was because keeping a clear view of state is essential when keeping parity between my system and the outer \keyword{blockchain}.
+This generification and rigid design flow proved extremely useful, this was because a clear view of state is essential when maintaining parity between systems.
 
 \subsection{Database}
 
@@ -182,7 +181,7 @@ The database needs to store two types of data: data stored on both the \keyword{
 \subsubsection{Chain parity}
 \label{sec:chain-parity}
 
-Some data needs to be kept in parity with the \keyword{blockchain} this introduces a problem because data on the chain can change independently from the system, a user could transact with the \keyword{smart contract} and register a new copyright or propose a new ownership structure and even bind that new structure destroying any continuity between the database and what's real. This will lead to a terrible user experience but I can stop it, the chain is open to anyone and is the entire point of this project.
+Some data needs to be kept in parity with the \keyword{blockchain} this introduces a problem because data on the chain can change independently from the system, a user could transact with the \keyword{smart contract} and register a new copyright or propose a new ownership structure and even bind that new structure destroying any continuity between the database and what's real. This will lead to a terrible user experience but I can't stop it, the chain is open to anyone and is the entire point of this project.
 
 However I can react to change, everything is open and accessible all I have to do is read the \keyword{blockchain} and update the database accordingly keeping in mind the chain is always the source of truth not the database.
 
@@ -222,17 +221,13 @@ I decided to use the \href{https://clarity.design/}{Clarity} design system and l
 \includegraphics[width=\textwidth,height=0.5\textheight,keepaspectratio]{images/wireframe/register-real}
 \end{figure}
 
-\subsection{Architecture}
-% TODO an overview of the system architecture design
-TODO?
-
 \subsection{Development process}
 
 Development was split into four sprints, two larger sprints two weeks long to start development focusing on major core features essential for any success of the project: \keyword{smart contracts}, contract interaction, registration and restructure applications and user authentication. Followed up with two one week sprints focusing on secondary features and quality of life: disputes, search, synchronisation and account config.
 
 \begin{figure}[H]
 \hfil
-\begin{tabular}{|p{0.2\textwidth}|p{0.3\textwidth}|p{0.3\textwidth}|p{0.2\textwidth}|}
+\begin{tabular}{|p{0.1\textwidth}|p{0.3\textwidth}|p{0.3\textwidth}|p{0.1\textwidth}|}
 \hline
 Sprint & Start            & End              & Length  \\ \hline
 1      & 19 January 2022  & 2 February 2022  & 2 weeks \\ \hline

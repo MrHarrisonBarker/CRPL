@@ -27,9 +27,8 @@ In conjunction with agile development I also initially planned to use a developm
 \end{figure}
 
 \subsubsection{Was it agile?}
-% TODO is this needed
 
-To assess if my process has been agile Ill being using the 4 values from the agile manifesto\cite{agile}
+To assess if my process has been agile I'll being using the 4 values from the agile manifesto\cite{agile}
 
 \begin{description}
 	\item[Individuals and interactions over processes and tools] isn't very applicable as this is an individual project.
@@ -72,14 +71,10 @@ First is complexity, by removing as much legal jargon from the process and a cus
 
 Next is jurisdiction dependence which is an escapable fact of the legal and governmental world that can cause issue and confusion when faced with a global internet culture. My system is global both because of \keyword{Ethereum} and its independence from any government.
 
-% TODO doesn't get the point across enough
-Lastly digitalisation/computerisation, my entire system is essentially computerisation of \keyword{copyright} law which helps to solve my last two points but more importantly it's built for copyrightable digital work which traditional \keyword{copyright} is lacking in. Standardised digital signing and verification is proof of this ambition.
-
-% TODO Is this implementation ethical? (more ethical than traditional)
+Lastly digitalisation/computerisation, my system is computerisation of \keyword{copyright} law which solves my last two points but more importantly it's built for copyrightable digital work which traditional \keyword{copyright} is lacking in. Standardised digital signing and verification is proof of this ambition.
 
 \subsubsection{Testing}
 
-% How was the project tested (smart contracts, backend, frontend middleware, no ui frontend tests)
 The system has been extensively unit tested at three levels: \keyword{smart contract}, back-end and front-end middleware.
 
 Because contracts run within the \keyword{EVM} a testing environment is needed in this case \href{https://hardhat.org/}{Hardhat} which allows me to deploy and run tests on a \keyword{smart contract}.
@@ -100,7 +95,7 @@ it('Should REVERT when invalid shareholders', async function ()
 \end{lstlisting}
 \end{figure}
 
-This is what the tests look like there're then run outputting statistics for each payable transaction on the contract including deployment.
+This is what the tests look like there're then run outputting statistics for each payable transaction on the contract including deployment. all \keyword{smart contract} test can be found \href{https://github.com/MrHarrisonBarker/CRPL/tree/main/CRPL.Contracts/test}{here}.
 
 \begin{figure}[H]
 \caption{contract statistics from Hardhat}
@@ -109,7 +104,7 @@ This is what the tests look like there're then run outputting statistics for eac
 \centering
 \end{figure}
 
-Back-end tests are written in the \textit{CRPL.Tests} project separated by domain all using \href{https://nunit.org/}{NUnit} test framework and runner.
+Back-end tests are written in the \href{https://github.com/MrHarrisonBarker/CRPL/tree/main/CRPL.Tests}{CRPL.Tests} project separated by domain all using \href{https://nunit.org/}{NUnit} test framework and runner.
 
 \begin{figure}[H]
 \caption{Back-end test directory structure}
@@ -151,7 +146,5 @@ it('should fetch nonce', inject(
 \end{figure}
 
 \textbf{All test reuslts can be found in appendix \ref{sec:test-results}}
-
-% What is the result of the tests
 
 

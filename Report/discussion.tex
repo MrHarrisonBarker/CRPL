@@ -8,10 +8,28 @@ At every point in this projects design and development limitations of scope have
 \subsubsection{Implementation}
 % TODO technical limitations, transfer and delete wallet ?
 
-As a result of limited scope the final product is therefore limited in some of its implementation, this is functionality thats been built but hampered by scope and complexity. First is \textbf{gas}\footnote{gas is the cost in computation to process and complete a transaction on the \keyword{Ethereum} network which is taken from the senders account at the time of transaction, this is effectively a transaction fee like Visas roughly 1\% fee on debit transactions but based on work instead of transaction \textit{value}} which for simplicity is covered completely by the system meaning all transaction fees are paid by one account and users registering don't have to worry about paying to register, this is an attractive moral/ethical position but not business decision. Because this point is under discussion it can be seen as a limitation if the intent is for the system to charge for registration or a feature of a completely free and open system providing an essential utility coving all costs.
+As a result of limited scope the final product is therefore limited in some of its implementation, this is functionality thats been built but hampered by scope and complexity. First is \textbf{gas}\footnote{gas is the cost in computation to process and complete a transaction on the \keyword{Ethereum} network which is taken from the senders account at the time of transaction, this is effectively a transaction fee like \textbf{Visas} roughly 1\% fee on debit transactions but based on work instead of transaction value.} which for simplicity is covered completely by the system meaning all transaction fees are paid by one account and users registering don't have to worry about paying to register, this is an attractive moral/ethical position but not business decision. Because this point is under discussion it can be seen as a limitation if the intent is for the system to charge for registration or a feature of a completely free and open system providing an essential utility coving all costs.
 
-% TODO I have already talked about this is design and implementation do I need this?
-Next is data consistency which is a problem faced by all distributed systems however severely more in a system that's distributed across domains the system doesn't control. This is exactly the situation this system is in, I can't control or own the \keyword{blockchain} just interact and ask it to do things. This is doubly compounded by the fact that everyone else has the exact level of power and control over the \keyword{blockchain} as I do, meaning anyone can interact with my \keyword{smart contract} directly without me. I discussed designing and implementing my \textit{ChainSync} solution for this in \ref{sec:chain-parity} and \ref{sec:chainSync}. % TODO Come back to this
+The live version of this \href{https://crpl.azurewebsites.net/}{project} is deployed to the \href{https://ethereum.org/en/developers/docs/networks/}{Ropsten Testnet} at \href{https://ropsten.etherscan.io/tx/0x427c6335df3af15aa9d6ba0da22a2e25025badb3f8f5c38d8399d10d1e7db3c6}{0x427c6335...} costing a total of \textit{0.004893532690548546 Ether} and using \textit{2,409,858 gas} which works out to £11.28 (based on a £2,304.45 per Ether). Although this is not representative of costs on \textbf{Mainnet}, to calculate this cost I can however use the gas used\footnote{\textbf{Ropsten} uses the same proof-of-work system as \textbf{Mainnet} so gas calculations will be very similar.} in conjunction with the current gas price.
+
+\begin{figure}[H]
+\caption{Contract deployment cost at different gas prices based on \href{https://etherscan.io/gastracker}{gastracker}}
+\begin{table}[H]
+\centering
+\begin{tabular}{p{0.2\textwidth}p{0.2\textwidth}p{0.2\textwidth}p{0.2\textwidth}}
+\hline
+\multicolumn{2}{|l|}{\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Gas used\\  2,409,858\end{tabular}}} & \multicolumn{2}{l|}{\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Price per Ether\\  £2,304.45\end{tabular}}} \\
+\multicolumn{2}{|l|}{} & \multicolumn{2}{l|}{} \\ \hline
+ &  &  &  \\ \cline{2-4} 
+\multicolumn{1}{l|}{} & \multicolumn{1}{l|}{Gas price} & \multicolumn{1}{l|}{Fee (Eth)} & \multicolumn{1}{l|}{Fee (£)} \\ \hline
+\multicolumn{1}{|l|}{Low} & \multicolumn{1}{l|}{12} & \multicolumn{1}{l|}{0.028918296} & \multicolumn{1}{l|}{£66.64} \\ \hline
+\multicolumn{1}{|l|}{Average} & \multicolumn{1}{l|}{50} & \multicolumn{1}{l|}{0.1204929} & \multicolumn{1}{l|}{£277.67} \\ \hline
+\multicolumn{1}{|l|}{High} & \multicolumn{1}{l|}{200} & \multicolumn{1}{l|}{0.4819716} & \multicolumn{1}{l|}{£1,110.68} \\ \hline                                    
+\end{tabular}
+\end{table}
+\end{figure}
+
+Next is data consistency which is a problem faced by all distributed systems however severely more in a system that's distributed across domains the system doesn't control. This is exactly the situation this system is in, I can't control or own the \keyword{blockchain} just interact and ask it to do things. This is doubly compounded by the fact that everyone else has the exact level of power and control over the \keyword{blockchain} as I do, meaning anyone can interact with my \keyword{smart contract} directly without me. I discussed designing and implementing my \textit{ChainSync} solution for this in \ref{sec:chain-parity} and \ref{sec:chainSync}.
 
 \subsubsection{Social consensus/acceptance}
 
@@ -35,4 +53,4 @@ No my \keyword{smart contract} is not compatible with the \nft standard and ther
 
 \subsubsection{How long will the blockchain last?}
 
-The realist answer to this would be; probably not forever and almost definitely less time than a single \keyword{copyright} protection (100 years in this case). This is a pretty bleak outlook for my system, \keyword{blockchain} is still an infant technology even though by tech standards should be days past by now. Just like AI and machine learning I believe \keyword{blockchain} is at an incredible hight but also a make or break point, either the technology is completely accepted and integrated into the world or it's abandoned never to be seen again. After working with the technology for a couple months now I would bet on the latter outcome over engineering concerns but I've been wrong in the past.
+The realist answer to this would be; probably not forever and almost definitely less time than a single \keyword{copyright} protection (100 years in this case). This is a pretty bleak outlook for my system, \keyword{blockchain} is still an infant technology even though by tech standards should be days past by now. Just like AI and machine learning I believe \keyword{blockchain} is at an incredible height but also a make or break point, either the technology is completely accepted and integrated into the world or it's abandoned never to be seen again. After working with the technology for a couple months now I would bet on the latter outcome over engineering concerns but I've been wrong in the past.

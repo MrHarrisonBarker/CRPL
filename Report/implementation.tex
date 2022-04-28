@@ -124,7 +124,7 @@ The events emitted from this function are "listened" to and processed in the bac
 
 \subsubsection{Ownership restructure}
 
-As discussed in \keyword{smart contract} design I had to build a shareholder consensus function for making changes to the \keyword{copyright}, therefore changing the ownership structure is split into two functions/steps, first you propose a new structure then each shareholder must vote or \textit{"bind"} the new structure, when all the shareholders have agreed to the new structure mappings are updated to reflect the new ownership.
+As discussed in \keyword{smart contract} design I had to build a shareholder consensus function from scratch for making changes to the \keyword{copyright}, therefore changing the ownership structure is split into two functions/steps, first you propose a new structure then each shareholder must vote or \textit{"bind"} the new structure, when all the shareholders have agreed to the new structure mappings are updated to reflect the new ownership.
 
 \begin{figure}[H]
 \caption{ProposeRestructure function from \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Contracts/contracts/Copyrights/CopyrightBase.sol}{CopyrightBase.sol}}
@@ -436,7 +436,6 @@ registeredWork.Meta = meta != null ? meta.ReturnValue1 : null;
 This is a snippet of a function called \textit{injectFromChain} found in the \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/QueryService.cs}{query service} and is called when work is requested from the service, it queries the \keyword{blockchain} for data then "injects" the result into the existing registered work data model.
 
 \subsubsection{Dispute handling}
-% TODO filing disputes
 % TODO resolving disputes: payment, change of ownership
 
 \begin{figure}[H]
@@ -445,7 +444,7 @@ This is a snippet of a function called \textit{injectFromChain} found in the \hr
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/dispute-workflow}
 \end{figure}
 
-TODO
+Disputes are applications with an \textit{ExpectedRecourse} and will not complete until the attached recourse is handled. Disputes are publicly viewable once submitted to maintain transparency and reduce exploitation. 
 
 \subsubsection{Blockchain event listeners}
 \label{sec:blockchain-event-listeners}
@@ -521,10 +520,26 @@ For hashing the uploaded work I stream the file into a byte array and compute th
 
 Although \textbf{MD5} is mostly commonly used for very quick file duplicity checks these checks are usually just checksums to check file integrity of downloaded files. In terms of cryptographic security \textbf{SHA-512} is far better, \textbf{MD5} has been `broken' for years so should never be used for any sensitive or secure data hashing where as the latest \textbf{SHA} algorithms are considered secure and used in conjunction with "salt" for passwords in many systems.
 
-\subsubsection{Account management}
-% TODO issues with transfer and delete account
 \subsubsection{Digital signing}
-% TODO digital signing
+
+Digital signing is handled at the point of registration by \href{https://github.com/MrHarrisonBarker/CRPL/tree/main/CRPL.Web/Core/WorkSigners}{WorkSigners} built for specific file types. Additionally there's a universal signer applied to all works and simply concatenates a series of unique bytes to the end of the file stream.
+
+\begin{figure}[H]
+\caption{\href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Core/WorkSigners/UniversalSigner.cs}{UniversalSigner.cs}}
+\centering
+\begin{lstlisting}[language=CSharp]
+public CachedWork Sign(CachedWork work)
+{
+	byte[] signature = Encoding.UTF8.GetBytes(Signature);
+
+	return new CachedWork
+	{
+		Work = work.Work.Concat(signature).ToArray(),
+		ContentType = work.ContentType
+	};
+}
+\end{lstlisting}
+\end{figure}
 
 \subsection{Database}
 
