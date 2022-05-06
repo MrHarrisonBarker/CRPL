@@ -501,7 +501,7 @@ The verification pipeline uses my background service architecture with a \textit
 \includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{images/operational/verification-pipe}
 \end{figure}
 
-When a work is dequeued it is verified using the \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/WorksVerificationService.cs}{WorksVerificationService} method \textit{VerifyWork} that searches the database for existing works with the same hash. If no collisions are found the works status is updated to \textit{Verified}, if collision are found then the work is set to \textit{Rejected}
+When a work is dequeued it is verified using the \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/WorksVerificationService.cs}{WorksVerificationService} method \textit{VerifyWork} that searches the database for existing works with the same hash. If no collisions are found the works status is updated to \textit{Verified}, if collision are found then the work is set to \textit{Rejected}.
 
 \begin{figure}[H]
 \caption{hashing a work \href{https://github.com/MrHarrisonBarker/CRPL/blob/main/CRPL.Web/Services/WorksVerificationService.cs}{Line 146:151}}
