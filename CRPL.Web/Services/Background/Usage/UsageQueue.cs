@@ -9,6 +9,7 @@ public interface IUsageQueue
     Task<WorkUsage> DequeueAsync(CancellationToken cancellationToken);
 }
 
+// Queue to hold work usages
 public class UsageQueue : IUsageQueue
 {
     private readonly ILogger<UsageQueue> Logger;
@@ -20,6 +21,7 @@ public class UsageQueue : IUsageQueue
         Logger = logger;
     }
     
+    // Queue usage
     public void QueueUsage(WorkUsage usage)
     {
         Logger.LogInformation("queuing work usage {WorkId}", usage.WorkId);

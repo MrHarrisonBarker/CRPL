@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.Core;
 
+// A piece of middleware that reverse proxies IPFS requests and records the usage
 public class UsageProxyMiddleware
 {
     private readonly RequestDelegate Next;
@@ -19,6 +20,7 @@ public class UsageProxyMiddleware
 
     public async Task Invoke(HttpContext context)
     {
+        // Only proxy with correct url
         if (context.Request.Path.StartsWithSegments("/proxy/cpy"))
         {
             using var scope = ServiceProvider.CreateScope();
@@ -62,6 +64,7 @@ public class UsageProxyMiddleware
         await Next(context);
     }
 
+    // Scrubs any headers with the ignored keyword (IPFS CID)
     private void ScrubRequestHeaders(HttpContext context, string ignore)
     {
         foreach (var header in context.Request.Headers)
@@ -70,6 +73,7 @@ public class UsageProxyMiddleware
         }
     }
 
+    // Copy all response headers from the target response to the proxied response
     private void CopyFromTargetResponseHeaders(HttpContext context, HttpResponseMessage responseMessage, string ignore)
     {
         foreach (var header in responseMessage.Headers)

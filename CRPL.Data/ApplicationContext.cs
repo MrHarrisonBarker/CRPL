@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Data.Account;
 
+// A database context used by EfCore to create and interact with tables
+// and model all relationships
 public class ApplicationContext : DbContext
 {
     public DbSet<UserAccount> UserAccounts { get; set; }
@@ -25,6 +27,8 @@ public class ApplicationContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Modeling many to many relationships
+        
         //// UserAccount <-> Work
         
         modelBuilder.Entity<UserWork>()

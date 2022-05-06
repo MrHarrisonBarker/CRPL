@@ -5,6 +5,7 @@ using iTextSharp.xmp;
 
 namespace CRPL.Web.WorkSigners;
 
+// Digital signer for PDF files by adding XMP data to the file
 public class TextSigner : WorkSigner, IWorkSigner
 {
     public TextSigner(string signature) : base(signature)

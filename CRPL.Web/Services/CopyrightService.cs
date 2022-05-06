@@ -16,6 +16,7 @@ using Nethereum.ABI.FunctionEncoding;
 
 namespace CRPL.Web.Services;
 
+// A service for managing copyrights
 public class CopyrightService : ICopyrightService
 {
     private readonly ILogger<CopyrightService> Logger;
@@ -41,6 +42,7 @@ public class CopyrightService : ICopyrightService
         ExpiryQueue = expiryQueue;
     }
 
+    // Create a database relationship between an application and registered work
     public async Task AttachWorkToApplicationAndCheckValid(Guid id, Application application)
     {
         var work = await Context.RegisteredWorks.Include(x => x.AssociatedApplication).FirstOrDefaultAsync(x => x.Id == id);
@@ -56,6 +58,7 @@ public class CopyrightService : ICopyrightService
         work.AssociatedApplication.Add(application);
     }
 
+    // Send a restructure proposal to the smart contract
     public async Task<OwnershipRestructureApplication> ProposeRestructure(OwnershipRestructureApplication application)
     {
         if (application.AssociatedWork == null) throw new WorkNotFoundException();
@@ -110,6 +113,7 @@ public class CopyrightService : ICopyrightService
         }
     }
 
+    // Bind proposal from application
     public async Task BindProposal(BindProposalInput proposalInput)
     {
         Logger.LogInformation("Binding proposal using application {Id}", proposalInput.ApplicationId);
@@ -120,6 +124,7 @@ public class CopyrightService : ICopyrightService
         await sendBind(application.AssociatedWork, proposalInput.Accepted);
     }
 
+    // Bind proposal from work
     public async Task BindProposal(BindProposalWorkInput proposalInput)
     {
         Logger.LogInformation("Binding proposal using work {Id}", proposalInput.WorkId);
@@ -129,8 +134,10 @@ public class CopyrightService : ICopyrightService
         await sendBind(work, proposalInput.Accepted);
     }
 
+    // Send proposal bind to the smart contract
     private async Task<string> sendBind(RegisteredWork work, bool accepted)
     {
+        // Transaction message
         Logger.LogInformation("Sending proposal bind transaction for {Id} with the answer {accpted}", work.RightId, accepted);
         var bind = new BindRestructureFunction()
         {
@@ -140,6 +147,7 @@ public class CopyrightService : ICopyrightService
 
         try
         {
+            // Send transaction
             var transactionId = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                 .BindRestructureRequestAsync(bind);
 
@@ -147,6 +155,7 @@ public class CopyrightService : ICopyrightService
 
             return transactionId;
         }
+        // Catch expired copyright and update
         catch (SmartContractRevertException revertException)
         {
             if (revertException.RevertMessage == "EXPIRED")

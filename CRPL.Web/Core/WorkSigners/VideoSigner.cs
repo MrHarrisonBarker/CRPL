@@ -2,6 +2,7 @@ using CRPL.Data.Works;
 
 namespace CRPL.Web.WorkSigners;
 
+// Digital singer for video files by adding metadata to the file
 public class VideoSigner : WorkSigner, IWorkSigner
 {
     public VideoSigner(string signature) : base(signature)

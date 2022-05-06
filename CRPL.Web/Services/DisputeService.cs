@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.Services;
 
+// A service for filing and resolving disputes
 public class DisputeService : IDisputeService
 {
     private readonly ApplicationContext Context;
@@ -43,6 +44,7 @@ public class DisputeService : IDisputeService
         Logger = logger;
     }
 
+    // Accept the recourse defined in the dispute
     public async Task<DisputeViewModel> AcceptRecourse(Guid disputeId, string message)
     {
         Logger.LogInformation("Accepting recourse for dispute {Id}", disputeId);
@@ -56,19 +58,23 @@ public class DisputeService : IDisputeService
 
         Context.Update(dispute);
 
+        // Setting resolve status
         dispute.ResolveResult.Rejected = false;
         dispute.ResolveResult.Message = message;
         dispute.ResolveResult.ResolvedStatus = ResolveStatus.NeedsOnChainAction;
 
         await Context.SaveChangesAsync();
 
+        // Create restructure proposal
         if (dispute.ExpectedRecourse == ExpectedRecourse.ChangeOfOwnership) await RestructureAndResolve(disputeId);
 
+        // Push application updates to websocket
         await ResonanceService.PushApplicationUpdates(dispute);
 
         return Mapper.Map<DisputeViewModel>(dispute);
     }
 
+    // Reject the recourse defined in the dispute
     public async Task<DisputeViewModel> RejectRecourse(Guid disputeId, string message)
     {
         Logger.LogInformation("Rejecting recourse for dispute {Id}", disputeId);
@@ -80,6 +86,7 @@ public class DisputeService : IDisputeService
 
         Context.Update(dispute);
 
+        // Reject the resolve and complete the application
         dispute.ResolveResult.Rejected = true;
         dispute.ResolveResult.Message = message;
         dispute.ResolveResult.ResolvedStatus = ResolveStatus.Resolved;
@@ -87,11 +94,13 @@ public class DisputeService : IDisputeService
 
         await Context.SaveChangesAsync();
         
+        // Push application updates to websocket
         await ResonanceService.PushApplicationUpdates(dispute);
 
         return Mapper.Map<DisputeViewModel>(dispute);
     }
 
+    // Save a payment transaction and update status
     public async Task RecordPaymentAndResolve(Guid disputeId, string transaction)
     {
         Logger.LogInformation("Recording payment and resolving dispute {Id}", disputeId);
@@ -112,11 +121,13 @@ public class DisputeService : IDisputeService
         dispute.ResolveResult.ResolvedStatus = ResolveStatus.Resolved;
         dispute.Status = ApplicationStatus.Complete;
         
+        // Push application updates to websocket
         await ResonanceService.PushApplicationUpdates(dispute);
 
         await Context.SaveChangesAsync();
     }
 
+    // Propose ownership restructure transferring ownership to the disputing user  
     public async Task<OwnershipRestructureViewModel> RestructureAndResolve(Guid disputeId)
     {
         Logger.LogInformation("Creating a restructure proposal to satisfy a dispute expected recourse");
@@ -154,6 +165,7 @@ public class DisputeService : IDisputeService
             Origin = dispute
         });
         
+        // Push application updates to websocket
         await ResonanceService.PushApplicationUpdates(dispute);
 
         return await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(form.Id);

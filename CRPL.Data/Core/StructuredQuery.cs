@@ -1,5 +1,6 @@
 namespace CRPL.Data;
 
+// A class representing a query for searching through registered works
 public class StructuredQuery
 {
     public string? Keyword { get; set; }

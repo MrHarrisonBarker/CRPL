@@ -4,8 +4,10 @@ using CRPL.Data.Applications.ViewModels;
 
 namespace CRPL.Web.Core.Query;
 
+// Query extensions for searching registered works
 public static class WorkFilterApplies
 {
+    // Apply a different search based on the input filter
     public static IQueryable<RegisteredWork> Apply(this IQueryable<RegisteredWork> registeredWorks, WorkFilter filter, string data)
     {
         switch (filter)

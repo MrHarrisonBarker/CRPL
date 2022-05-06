@@ -9,6 +9,7 @@ public interface IEventQueue
     Task<IEventLog> DequeueAsync(CancellationToken cancellationToken);
 }
 
+// Queue holding blockchain events
 public class EventQueue : IEventQueue
 {
     private readonly ILogger<EventQueue> Logger;

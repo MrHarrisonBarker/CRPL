@@ -4,6 +4,7 @@ using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 
 namespace CRPL.Web.WorkSigners;
 
+// Digital signer for image files by adding EXIF data
 public class ImageSigner : WorkSigner, IWorkSigner
 {
     public ImageSigner(string signature) : base(signature)

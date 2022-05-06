@@ -11,8 +11,10 @@ using Nethereum.Contracts;
 
 namespace CRPL.Web.Services.Background.EventProcessors;
 
+// Blockchain event processor for the Proposed Restructure event
 public static class ProposedRestructureEventProcessor
 {
+    // When a restructure is proposed update status
     public static async Task ProcessEvent(this EventLog<ProposedRestructureEventDTO> proposedRestructure, IServiceProvider serviceProvider, ILogger<EventProcessingService> logger)
     {
         logger.LogInformation("Processing proposed event for {Id}", proposedRestructure.Event.RightId);
@@ -32,6 +34,7 @@ public static class ProposedRestructureEventProcessor
         
         context.Update(application);
 
+        // If the restructure is a result of a delete account application then automatically bind the proposal
         if (application.RestructureReason == RestructureReason.DeleteAccount)
         {
             var copyrightService = scope.ServiceProvider.GetRequiredService<ICopyrightService>();
@@ -46,6 +49,7 @@ public static class ProposedRestructureEventProcessor
 
         await context.SaveChangesAsync();
         
+        // Send application updates to websocket subscribers
         var resonanceService = scope.ServiceProvider.GetRequiredService<IResonanceService>();
         await resonanceService.PushApplicationUpdates(application);
     }

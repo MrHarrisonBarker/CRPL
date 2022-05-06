@@ -5,6 +5,7 @@ using Nethereum.BlockchainProcessing;
 
 namespace CRPL.Web.Services.Background;
 
+// A background service for processing blockchain events
 public class BlockchainEventListener : BackgroundService
 {
     private readonly ILogger<BlockchainEventListener> Logger;
@@ -27,7 +28,8 @@ public class BlockchainEventListener : BackgroundService
         Logger.LogInformation("Starting blockchain event listener");
         var latestBlock = await BlockchainConnection.Web3().Eth.Blocks.GetBlockNumber.SendRequestAsync();
 
-        List<BlockchainProcessor> processors = new List<BlockchainProcessor>()
+        // Register listeners and callback
+        List<BlockchainProcessor> processors = new List<BlockchainProcessor>
         {
             BlockchainConnection.Web3().Processing.Logs
                 .CreateProcessorForContract<RegisteredEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log)),
@@ -41,6 +43,7 @@ public class BlockchainEventListener : BackgroundService
                 .CreateProcessorForContract<FailedProposalEventDTO>(ContractRepository.DeployedContract(CopyrightContract.Copyright).Address, log => EventQueue.QueueEvent(log))
         };
 
+        // Start processors in a thread
         processors.ForEach(x => Task.Run(async () =>
         {
             Logger.LogInformation("processing logs from block {Block}", latestBlock);

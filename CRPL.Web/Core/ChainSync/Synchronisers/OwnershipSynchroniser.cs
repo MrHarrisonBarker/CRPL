@@ -10,6 +10,7 @@ using Nethereum.ABI.FunctionEncoding;
 
 namespace CRPL.Web.Core.ChainSync.Synchronisers;
 
+// A Synchroniser for keeping ownership structures synchronised
 public class OwnershipSynchroniser : ISynchroniser
 {
     private readonly ILogger<OwnershipSynchroniser> Logger;
@@ -58,21 +59,26 @@ public class OwnershipSynchroniser : ISynchroniser
 
     private async Task sync(RegisteredWork work)
     {
+        // Expired contract exception catching
         try
         {
+            // get the current ownership structure from the blockchain (point of truth)
             var ownershipOf = (await new CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                 .OwnershipOfQueryAsync(BigInteger.Parse(work.RightId))).ReturnValue1;
 
             if (ownershipOf == null) throw new Exception($"The ownership of {work.RightId} cannot be found on the blockchain");
 
+            // Ethereum hashes are case insensitive so for comparison I set all hashes to lower
             var ownerships = ownershipOf.Select(x => x.Owner.ToLower()).ToList();
 
+            // if the counts or addresses mismatch it is declared as out of sync
             if (ownerships.Count != work.UserWorks.Count || !work.UserWorks.All(x => ownerships.Contains(x.UserAccount.Wallet.PublicAddress.ToLower())))
             {
                 Logger.LogInformation("The ownership differs from the blockchain!");
 
                 Context.Update(work);
 
+                // remove all relationships and use the queried blockchain values to recreate correct relationships 
                 work.UserWorks.Clear();
                 ownerships.ForEach(async owner =>
                 {
@@ -92,6 +98,7 @@ public class OwnershipSynchroniser : ISynchroniser
             Logger.LogInformation("The ownership is in sync with the blockchain");
         } catch (SmartContractRevertException revertException)
         {
+            // If the copyright has expired then send it to the expired queue for processing
             if (revertException.RevertMessage == "EXPIRED")
             {
                 if (work.Status != RegisteredWorkStatus.Expired)

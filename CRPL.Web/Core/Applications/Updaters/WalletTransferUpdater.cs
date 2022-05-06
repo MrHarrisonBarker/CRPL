@@ -7,8 +7,10 @@ using Nethereum.Util;
 
 namespace CRPL.Web.Services.Updaters;
 
+// An updater class for wallet transfer applications
 public static class WalletTransferUpdater
 {
+    // Update the wallet address, check if the supplied address is valid, assign the user to the application
     public static async Task<WalletTransferApplication> Update(this WalletTransferApplication application, WalletTransferInputModel inputModel, IServiceProvider serviceProvider)
     {
         var blockchainConnection = serviceProvider.GetRequiredService<IBlockchainConnection>();

@@ -2,6 +2,7 @@ using CRPL.Web.Services.Interfaces;
 
 namespace CRPL.Web.Services.Background.VerificationPipeline;
 
+// A background service for processing work verification
 public class VerificationPipelineService : BackgroundService
 {
     private readonly ILogger<VerificationPipelineService> Logger;
@@ -15,6 +16,7 @@ public class VerificationPipelineService : BackgroundService
         VerificationQueue = verificationQueue;
     }
 
+    // Dequeue work and verify
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)

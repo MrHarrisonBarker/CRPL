@@ -18,7 +18,7 @@ using Nethereum.Signer;
 
 namespace CRPL.Web.Services;
 
-// all methods effecting user accounts and user wallets
+// A service creating, updating and interacting with user accounts
 public class UserService : IUserService
 {
     private readonly ILogger<UserService> Logger;
@@ -34,6 +34,7 @@ public class UserService : IUserService
         Options = options.Value;
     }
 
+    // Get a user account with all missing fields
     public async Task<UserAccountStatusModel> GetAccount(Guid id)
     {
         Logger.LogInformation("Getting account {Id}", id);
@@ -49,31 +50,37 @@ public class UserService : IUserService
         };
     }
 
+    // Check if the input phone number is already in the database
     public async Task<bool> IsUniquePhoneNumber(Guid id, string phoneNumber)
     {
         Logger.LogInformation("Checking is phone number '{Phone}' exists", phoneNumber);
         return !(await Context.UserAccounts.Where(x => x.Id != id).AnyAsync(x => x.PhoneNumber == phoneNumber));
     }
 
+    // Check if the input email is already in the database
     public async Task<bool> IsUniqueEmail(Guid id, string email)
     {
         Logger.LogInformation("Checking is email '{Email}' exists", email);
         return !(await Context.UserAccounts.Where(x => x.Id != id).AnyAsync(x => x.Email == email));
     }
 
+    // Check if all the users exist in the database
     public bool AreUsersReal(List<string> userAddresses)
     {
         Logger.LogInformation("are these users real? {Users}", string.Join(",", userAddresses));
         var userAccounts = Context.UserAccounts.Where(x => userAddresses.Select(a => a.ToLower()).Contains(x.Wallet.PublicAddress.ToLower())).ToList();
+        // Number of users matches query
         return userAccounts.Count == userAddresses.Count;
     }
 
+    // Search for a user based on wallet address
     public async Task<List<UserAccountMinimalViewModel>> SearchUsers(string address)
     {
         Logger.LogInformation("Searching for users with address like: {Address}", address);
         return await Context.UserAccounts.Where(x => x.Wallet.PublicAddress.Contains(address.ToLower())).Select(x => Mapper.Map<UserAccountMinimalViewModel>(x)).ToListAsync();
     }
 
+    // Update a users data model based on input model
     public async Task<UserAccountStatusModel> UpdateAccount(Guid accountId, AccountInputModel accountInputModel)
     {
         Logger.LogInformation("Updating account {Id}", accountId);
@@ -95,6 +102,7 @@ public class UserService : IUserService
             }
         }
 
+        // Update date of birth
         if (accountInputModel.DateOfBirth != null)
         {
             user.DateOfBirth = new UserAccount.DOB()
@@ -105,6 +113,7 @@ public class UserService : IUserService
             };
         }
 
+        // Set status of user account if complete
         if (user.Status == UserAccount.AccountStatus.Created) user.Status = UserAccount.AccountStatus.Incomplete;
         user.Status = isComplete(user) ? UserAccount.AccountStatus.Complete : UserAccount.AccountStatus.Incomplete;
 
@@ -117,6 +126,7 @@ public class UserService : IUserService
         };
     }
 
+    // Gets all fields without a value 
     private List<PartialField> getPartials(UserAccount userAccount)
     {
         var ignoredProperties = new List<string> { "Wallet", "UserWorks", "AuthenticationToken", "Applications" };
@@ -137,10 +147,14 @@ public class UserService : IUserService
         return partials;
     }
 
+    // Returns true if all the required fields have been filled for a complete user
     private bool isComplete(UserAccount userAccount)
     {
         Logger.LogInformation("Checking if a user has completed sign up, {Id}", userAccount.Id);
+        
+        // All properties ignored from the null check
         var ignoredProperties = new List<string> { "Email", "PhoneNumber", "DialCode", "Wallet", "UserWorks", "AuthenticationToken", "Applications" };
+        
         // checks each property is not null
         foreach (var property in typeof(UserAccount).GetProperties())
         {
@@ -152,12 +166,14 @@ public class UserService : IUserService
             }
         }
 
+        // Make sure the user has at least one form of contact
         if (userAccount.Email != null) return true;
         if (userAccount.PhoneNumber != null && userAccount.DialCode != null) return true;
 
         return false;
     }
 
+    // Create a database relationship between an application and user, using wallet address
     public void AssignToApplication(string address, Guid applicationId)
     {
         Logger.LogInformation("Assigning {Address} to application {Id}", address, applicationId);
@@ -172,6 +188,7 @@ public class UserService : IUserService
         Context.SaveChanges();
     }
 
+    // Create a database relationship between an application and user, using id
     public void AssignToApplication(Guid id, Guid applicationId)
     {
         Logger.LogInformation("Assigning {Id} to application {Id}", id, applicationId);
@@ -186,6 +203,7 @@ public class UserService : IUserService
         Context.SaveChanges();
     }
 
+    // Create a database relationship between an application and user
     private void AssignUserToApplication(UserAccount user, Guid applicationId)
     {
         if (user.Applications == null) user.Applications = new List<UserApplication>();
@@ -196,20 +214,21 @@ public class UserService : IUserService
             return;
         }
 
+        // Create relationship using junction table
         user.Applications.Add(new UserApplication()
         {
             ApplicationId = applicationId
         });
     }
 
-    // when no account exists create and save
+    // First stage of authentication, If no user create a new user and generate a nonce
     public async Task<string> FetchNonce(string walletAddress)
     {
         Logger.LogInformation("Fetching {Address}'s nonce", walletAddress);
 
         var user = await Context.UserAccounts.Include(x => x.Wallet).FirstOrDefaultAsync(x => x.Wallet.PublicAddress == walletAddress);
 
-        // if new user
+        // if no user exists create a new one
         if (user == null)
         {
             Logger.LogInformation("New user {Address} found when fetching nonce", walletAddress);
@@ -230,6 +249,7 @@ public class UserService : IUserService
         return user.Wallet.Nonce;
     }
 
+    // Generate random 32 byte string (256 bit)
     private string generateNonce()
     {
         Logger.LogInformation("Generating new nonce");
@@ -240,6 +260,7 @@ public class UserService : IUserService
         return Convert.ToHexString(arr);
     }
 
+    // Second step of authentication, Compare signature derived address with actual address
     public async Task<AuthenticateResult> AuthenticateSignature(AuthenticateSignatureInputModel authenticateInputModel)
     {
         Logger.LogInformation("Authenticating the signature: {Sig} for {Address}", authenticateInputModel.Signature, authenticateInputModel.WalletAddress);
@@ -273,6 +294,7 @@ public class UserService : IUserService
         };
     }
 
+    // Check the JWT is valid
     public async Task<UserAccountViewModel> Authenticate(string token)
     {
         Logger.LogInformation("Authenticating a token {Token}", token);
@@ -281,6 +303,7 @@ public class UserService : IUserService
         return Mapper.Map<UserAccountViewModel>(user);
     }
 
+    // Generate JWT for a user
     private string generateToken(UserAccount user, int days)
     {
         Logger.LogInformation("Generating auth token for {Id}, lasting {Days} days", user.Wallet.PublicAddress, days);
@@ -301,6 +324,7 @@ public class UserService : IUserService
         return tokenHandler.WriteToken(token);
     }
 
+    // Remove JWT from database
     public async Task RevokeAuthentication(string token)
     {
         Logger.LogInformation("Revoking authentication to {Token}", token);
@@ -314,6 +338,7 @@ public class UserService : IUserService
         await Context.SaveChangesAsync();
     }
 
+    // Check if the user exists in ownership structure for a work
     public async Task<bool> IsShareholder(string address, string rightId)
     {
         Logger.LogInformation("Checking if shareholder {Address}", address);

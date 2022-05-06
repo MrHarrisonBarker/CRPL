@@ -15,6 +15,7 @@ public static class Utils
         return expires != null && expires > DateTime.Now;
     }
 
+    // Remove application not submitted from the work
     public static IQueryable<RegisteredWork> PruneApplications(this IQueryable<RegisteredWork> registeredWorks)
     {
         return registeredWorks.AsNoTracking().Select(x => new RegisteredWork()

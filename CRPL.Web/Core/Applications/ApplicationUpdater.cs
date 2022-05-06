@@ -6,6 +6,7 @@ using CRPL.Web.Services.Updaters;
 
 namespace CRPL.Web.Services;
 
+// Class used for casting incoming application updates to the correct updater
 public static class ApplicationUpdater
 {
     public static async Task<Application> UpdateApplication(this Application application, ApplicationInputModel inputModel, IServiceProvider serviceProvider)

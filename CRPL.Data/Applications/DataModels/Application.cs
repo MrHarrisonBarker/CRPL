@@ -1,5 +1,4 @@
 using CRPL.Data.Account;
-using CRPL.Data.Applications.ViewModels;
 
 namespace CRPL.Data.Applications;
 
@@ -11,8 +10,15 @@ public abstract class Application
     public DateTime Created { get; set; }
     public DateTime Modified { get; set; }
     public ApplicationStatus Status { get; set; }
+    
+    // Many to many relationship, User <-> Application
     public List<UserApplication> AssociatedUsers { get; set; }
+    
+    // One to many relationship, Application <- Work
+    // works have many application
     public RegisteredWork? AssociatedWork { get; set; }
+    
+    // Ethereum transaction hash
     public string? TransactionId { get; set; }
 
     public Application(ApplicationType applicationType)

@@ -8,6 +8,7 @@ public interface IExpiryQueue
     Task<Guid> DequeueAsync(CancellationToken cancellationToken);
 }
 
+// Queue to hold works that have been expired
 public class ExpiryQueue : IExpiryQueue
 {
     private readonly ILogger<ExpiryQueue> Logger;
@@ -20,6 +21,7 @@ public class ExpiryQueue : IExpiryQueue
         Logger = logger;
     }
 
+    // Queue work
     public void QueueExpire(Guid id)
     {
         if (id == null) throw new ArgumentNullException();

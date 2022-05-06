@@ -7,6 +7,8 @@ public class ResolveResult
 {
     public bool Rejected { get; set; }
     public ResolveStatus ResolvedStatus { get; set; }
+    
+    // Ethereum transaction hash of the resolving transaction
     public string? Transaction { get; set; }
     public string? Message { get; set; }
 }

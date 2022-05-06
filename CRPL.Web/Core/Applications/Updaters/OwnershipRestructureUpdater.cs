@@ -5,8 +5,11 @@ using CRPL.Web.Services.Interfaces;
 
 namespace CRPL.Web.Services.Updaters;
 
+// An updater class for ownership restructure applications
 public static class OwnershipRestructureUpdater
 {
+    // Attach the work to the restructure application, assign all users from the current and proposed ownership structures
+    // save origin and restructure reason if they exist (when disputing)
     public static async Task<OwnershipRestructureApplication> Update(this OwnershipRestructureApplication application, OwnershipRestructureInputModel inputModel, IServiceProvider serviceProvider)
     {
         var userService = serviceProvider.GetRequiredService<IUserService>();

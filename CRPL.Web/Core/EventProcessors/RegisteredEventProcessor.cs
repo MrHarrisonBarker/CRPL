@@ -9,8 +9,10 @@ using Nethereum.Contracts;
 
 namespace CRPL.Web.Services.Background.EventProcessors;
 
+// Blockchain event processor for the Registered event
 public static class RegisteredEventProcessor
 {
+    // When a work is registered update status and digitally sign the work
     public static async Task ProcessEvent(this EventLog<RegisteredEventDTO> registeredEvent, IServiceProvider serviceProvider, ILogger<EventProcessingService> logger)
     {
         logger.LogInformation("Processing registered event for {Id}", registeredEvent.Event.RightId);
@@ -26,17 +28,21 @@ public static class RegisteredEventProcessor
 
         context.Update(registeredWork);
 
+        // Set statuses
+        
         registeredWork.RightId = registeredEvent.Event.RightId.ToString();
         registeredWork.Registered = DateTime.Now;
         registeredWork.Status = RegisteredWorkStatus.Registered;
 
         registeredWork.AssociatedApplication.First(x => x.ApplicationType == ApplicationType.CopyrightRegistration).Status = ApplicationStatus.Complete;
         
+        // Digitally signing the registered work
         var worksVerificationService = scope.ServiceProvider.GetRequiredService<IWorksVerificationService>();
         await worksVerificationService.Sign(registeredWork);
         
         await context.SaveChangesAsync();
         
+        // Send application and work updates to websocket subscribers
         var resonanceService = scope.ServiceProvider.GetRequiredService<IResonanceService>();
         await resonanceService.PushWorkUpdates(registeredWork);
         await resonanceService.PushApplicationUpdates(registeredWork.AssociatedApplication.First(x => x.ApplicationType == ApplicationType.CopyrightRegistration));

@@ -14,8 +14,10 @@ public interface IContractRepository
     public DeployedContract DeployedContract(CopyrightContract contract);
 }
 
+// A repository class to add and access smart contracts
 public class ContractRepository : IContractRepository
 {
+    // Send deployment message based on the contract type
     private async Task<TransactionReceipt> deploymentMessage(CopyrightContract contractType, Web3 connection, CancellationTokenSource cancellationTokenSource = null)
     {
         switch (contractType)
@@ -49,7 +51,7 @@ public class ContractRepository : IContractRepository
 
         getContracts(context);
 
-        // If no contracts are deployed then init and deploy all contracts
+        // If no contracts are deployed then init and deploy contract
         if (!context.DeployedContracts.Any())
         {
             Logger.LogInformation("No contracts found! deploying");
@@ -60,6 +62,7 @@ public class ContractRepository : IContractRepository
         }
     }
 
+    // Method for getting a deployed contract from the repo
     public DeployedContract DeployedContract(CopyrightContract contract)
     {
         if (!DeployedContracts.ContainsKey(contract)) throw new Exception("That contract doesn't exist");

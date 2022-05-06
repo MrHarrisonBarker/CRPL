@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.Services;
 
+// A service for registering copyrights on the blockchain
 public class RegistrationService : IRegistrationService
 {
     private readonly ILogger<UserService> Logger;
@@ -44,6 +45,7 @@ public class RegistrationService : IRegistrationService
         ResonanceService = resonanceService;
     }
 
+    // Save work in database and verify originality
     public async Task<RegisteredWork> StartRegistration(CopyrightRegistrationApplication application)
     {
         Logger.LogInformation("Started a copyright registration {Id}", application.Id);
@@ -67,13 +69,16 @@ public class RegistrationService : IRegistrationService
         await Context.RegisteredWorks.AddAsync(registeredWork);
         await Context.SaveChangesAsync();
         
+        // Push work updates to websocket
         await ResonanceService.PushWorkUpdates(registeredWork);
         
+        // Queue work for verification
         VerificationQueue.QueueWork(registeredWork.Id);
 
         return registeredWork;
     }
 
+    // Send register transaction and update work status
     public async Task<RegisteredWork> CompleteRegistration(Guid applicationId)
     {
         Logger.LogInformation("Completing registration for {Id}", applicationId);
@@ -85,6 +90,7 @@ public class RegistrationService : IRegistrationService
         if (application.AssociatedWork.Status != RegisteredWorkStatus.Verified) throw new WorkNotVerifiedException();
         if (application.Status != ApplicationStatus.Submitted) throw new Exception("Application not in correct state!");
 
+        // Create register transaction message
         var register = new RegisterFunction()
         {
             To = application.OwnershipStakes.Decode().Select(x => Mapper.Map<OwnershipStakeContract>(x)).ToList(),
@@ -103,6 +109,7 @@ public class RegistrationService : IRegistrationService
         
         try
         {
+            // Send register transaction
             var transactionId = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                 .RegisterRequestAsync(register);
 
@@ -115,11 +122,13 @@ public class RegistrationService : IRegistrationService
 
             await Context.SaveChangesAsync();
 
+            // Push work and application updates to websocket
             await ResonanceService.PushApplicationUpdates(application);
             await ResonanceService.PushWorkUpdates(application.AssociatedWork);
 
             return application.AssociatedWork;
         }
+        // Catch failed transactions and update status
         catch (Exception e)
         {
             application.Status = ApplicationStatus.Failed;

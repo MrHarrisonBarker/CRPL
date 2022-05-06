@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.Services;
 
+// A service for user account management
 public class AccountManagementService : IAccountManagementService
 {
     private readonly ILogger<AccountManagementService> Logger;
@@ -51,17 +52,20 @@ public class AccountManagementService : IAccountManagementService
         
         if (user == null) throw new UserNotFoundException(deleteAccountApplication.AccountId);
         
+        // Loop through all the users works
         foreach (var userWork in user.UserWorks)
         {
+            // If the work is registered on the blockchain
             if (userWork.RegisteredWork.Status == RegisteredWorkStatus.Registered)
             {
                 var ownershipOf = await new Contracts.Copyright.CopyrightService(BlockchainConnection.Web3(), ContractRepository.DeployedContract(CopyrightContract.Copyright).Address)
                     .OwnershipOfQueryAsync(BigInteger.Parse(userWork.RegisteredWork.RightId));
 
+                // If sole owner remove relationship to work
                 if (ownershipOf.ReturnValue1.Count == 1)
                 {
                     Logger.LogInformation("Single owner copyright so burning!"); 
-                    // TODO: burn copyright
+                    
                     Context.Applications.RemoveRange(userWork.RegisteredWork.AssociatedApplication);
                     Context.RegisteredWorks.Remove(userWork.RegisteredWork);
                 }
@@ -69,6 +73,7 @@ public class AccountManagementService : IAccountManagementService
                 {
                     Logger.LogInformation("Multi ownership copyright so creating proposal");
                 
+                    // For multi owner copyrights create a proposal with the current structure minus the deleting user
                     var application = await FormsService.Update<OwnershipRestructureViewModel>(new OwnershipRestructureInputModel
                     {
                         Origin = deleteAccountApplication,
@@ -80,17 +85,20 @@ public class AccountManagementService : IAccountManagementService
                         WorkId = userWork.WorkId
                     });
             
+                    // Submit proposal. This application will automatically send a bind from the deleting user
                     await FormsService.Submit<OwnershipRestructureApplication, OwnershipRestructureViewModel>(application.Id);
                 }
             }
             else
             {
+                // If not registered just remove application and work
                 Logger.LogInformation("Removing non-registered work");
                 Context.Applications.RemoveRange(userWork.RegisteredWork.AssociatedApplication);
                 Context.RegisteredWorks.Remove(userWork.RegisteredWork);
             }
         }
 
+        // Remove relationships
         Context.Applications.RemoveRange(user.Applications.Select(x => x.Application));
         Context.UserApplications.RemoveRange(user.Applications);
         Context.UserAccounts.Remove(user);

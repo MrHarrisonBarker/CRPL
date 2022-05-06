@@ -9,8 +9,10 @@ using Nethereum.Contracts;
 
 namespace CRPL.Web.Services.Background.EventProcessors;
 
+// Blockchain event processor for the Restructured event
 public static class RestructuredEventProcessor
 {
+    // When an ownership is restructured remove old shareholders and assign new
     public static async Task ProcessEvent(this EventLog<RestructuredEventDTO> restructuredEvent, IServiceProvider serviceProvider, ILogger<EventProcessingService> logger)
     {
         logger.LogInformation("Processing restructured event for {Id}", restructuredEvent.Event.RightId);
@@ -27,13 +29,14 @@ public static class RestructuredEventProcessor
         if (work.Status != RegisteredWorkStatus.Registered) throw new WorkNotRegisteredException();
 
         context.Update(work);
-
-        // assigning new shareholders to the work and removing old ones
+        
         logger.LogInformation("Assigning new shareholders and removing old");
         
+        // Remove old relationships 
         context.UserWorks.RemoveRange(work.UserWorks);
         work.UserWorks.Clear();
         
+        // Assign new shareholders
         foreach (var ownershipStake in restructuredEvent.Event.Proposal.NewStructure)
         {
             await AssignWorkToUser(logger, context, ownershipStake, work);
@@ -45,11 +48,13 @@ public static class RestructuredEventProcessor
 
         await context.SaveChangesAsync();
         
+        // Send application and work updates to websocket subscribers
         var resonanceService = scope.ServiceProvider.GetRequiredService<IResonanceService>();
         await resonanceService.PushWorkUpdates(work);
         await resonanceService.PushApplicationUpdates(work.AssociatedApplication.First(x => x.ApplicationType == ApplicationType.OwnershipRestructure));
     }
 
+    // Set application status plus any origin application to complete
     private static async Task SetApplicationStatus(RegisteredWork work, ApplicationContext context)
     {
         var application = (OwnershipRestructureApplication)work.AssociatedApplication.FirstOrDefault(x => x.Status == ApplicationStatus.Submitted && x.ApplicationType == ApplicationType.OwnershipRestructure);
@@ -70,6 +75,7 @@ public static class RestructuredEventProcessor
         if (application.Origin != null) application.Origin.Status = ApplicationStatus.Complete;
     }
 
+    // Create new database relationship using the UserWorks junction table
     private static async Task AssignWorkToUser(ILogger<EventProcessingService> logger, ApplicationContext context, OwnershipStakeContract x, RegisteredWork work)
     {
         var user = await context.UserAccounts.FirstOrDefaultAsync(u => u.Wallet.PublicAddress.ToLower() == x.Owner.ToLower());

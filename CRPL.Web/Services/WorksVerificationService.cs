@@ -14,6 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace CRPL.Web.Services;
 
+// A service for verifying and signing works
 public class WorksVerificationService : IWorksVerificationService
 {
     private readonly ILogger<WorksVerificationService> Logger;
@@ -39,6 +40,7 @@ public class WorksVerificationService : IWorksVerificationService
         AppSettings = appSettings.Value;
     }
 
+    // Find collisions by comparing work hashes
     public async Task VerifyWork(Guid workId)
     {
         Logger.LogInformation("Verifying {Id}", workId);
@@ -57,6 +59,7 @@ public class WorksVerificationService : IWorksVerificationService
         var collision = await Context.RegisteredWorks
             .FirstOrDefaultAsync(x => x.Hash == work.Hash && x.Id != workId);
 
+        // If collision found update work and appliaction status
         if (collision != null)
         {
             Logger.LogInformation("Found a collision when verifying work {Id}", workId);
@@ -69,6 +72,7 @@ public class WorksVerificationService : IWorksVerificationService
             work.Status = RegisteredWorkStatus.Verified;
         }
 
+        // Save work id of collision 
         work.VerificationResult = new VerificationResult
         {
             Collision = collision?.Id,
@@ -77,10 +81,12 @@ public class WorksVerificationService : IWorksVerificationService
 
         await Context.SaveChangesAsync();
         
+        // Push work and application updates to websockets
         await ResonanceService.PushWorkUpdates(work);
         await ResonanceService.PushApplicationUpdates(application);
     }
 
+    // Upload a digital work for signing and distribution
     public async Task<byte[]> Upload(IFormFile file)
     {
         Logger.LogInformation("Uploading file {FileName}", file.FileName);
@@ -88,15 +94,17 @@ public class WorksVerificationService : IWorksVerificationService
         if (file.Length == 0) throw new Exception("File needs to have content");
 
         await using var stream = new MemoryStream();
-
+        
         await file.CopyToAsync(stream);
 
         Logger.LogInformation("Uploaded file of length {Length}", stream.Length);
 
+        // Stream file into byte array
         var work = stream.GetBuffer();
 
         var hash = HashWork(work);
 
+        // Save work in the cached work repository
         CachedWorkRepository.Set(hash, work, file.ContentType, file.FileName);
 
         Logger.LogInformation("hashed {Name} into {Hash}", file.FileName, hash);
@@ -104,6 +112,7 @@ public class WorksVerificationService : IWorksVerificationService
         return hash;
     }
 
+    // Digitally sign an uploaded work
     public async Task<RegisteredWork> Sign(RegisteredWork work)
     {
         Logger.LogInformation("Signing work for {Id}", work.Id);
@@ -112,11 +121,13 @@ public class WorksVerificationService : IWorksVerificationService
 
         Logger.LogInformation("Signing work {Hash}", work.Hash);
 
+        // Signature to insert into the file
         var signature =
             $"CRPL COPYRIGHT SIGNATURE ({work.Registered.Value.ToLongDateString()} at {work.Registered.Value.ToLongTimeString()}) // {work.Id} // registered on the chain at {work.RegisteredTransactionId} // right id {work.RightId}";
 
         var cachedWork = CachedWorkRepository.Get(work.Hash);
 
+        // Sign a file based on file type
         switch (cachedWork.ContentType)
         {
             case var type when type.Contains("image"):
@@ -133,8 +144,10 @@ public class WorksVerificationService : IWorksVerificationService
                 break;
         }
 
+        // Sign every file type using the universal signer
         var signedWork = new UniversalSigner(signature).Sign(cachedWork);
         
+        // Add the file to IPFS and save CID to database
         var cid = await IpfsConnection.AddFile(new MemoryStream(signedWork.Work), signedWork.FileName);
 
         work.Cid = cid.ToString();
@@ -143,6 +156,7 @@ public class WorksVerificationService : IWorksVerificationService
         return work;
     }
 
+    // Hash a file using dotnet's SHA512 builtin algorithm
     private byte[] HashWork(byte[] work)
     {
         using var hashAlgorithm = SHA512.Create();

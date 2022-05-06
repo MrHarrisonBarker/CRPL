@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.Services.Background.Usage;
 
+// A background service for processing work usages
 public class UsageTrackingService : BackgroundService
 {
     private readonly ILogger<UsageTrackingService> Logger;
@@ -18,7 +19,7 @@ public class UsageTrackingService : BackgroundService
         UsageQueue = usageQueue;
     }
 
-
+    // dequeue usage and update stats
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         Logger.LogInformation("Starting usage tracking service");
@@ -36,6 +37,7 @@ public class UsageTrackingService : BackgroundService
 
             context.Update(work);
 
+            // Update based on type of usage
             switch (workUsage.UsageType)
             {
                 case UsageType.Proxy:

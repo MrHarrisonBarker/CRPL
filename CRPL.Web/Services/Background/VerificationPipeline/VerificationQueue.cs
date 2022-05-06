@@ -8,6 +8,7 @@ public interface IVerificationQueue
     Task<Guid> DequeueAsync(CancellationToken cancellationToken);
 }
 
+// Queue to hold works for verification
 public class VerificationQueue : IVerificationQueue
 {
     private readonly ILogger<VerificationQueue> Logger;

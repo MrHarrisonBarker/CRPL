@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace CRPL.Web.Services;
 
+// A service for creating, updating and submitting applications
 public class FormsService : IFormsService
 {
     private readonly ILogger<FormsService> Logger;
@@ -38,6 +39,7 @@ public class FormsService : IFormsService
         ResonanceService = resonanceService;
     }
 
+    // Get a single application
     public async Task<ApplicationViewModel> GetApplication(Guid id)
     {
         Logger.LogInformation("Getting application '{Id}'", id);
@@ -46,9 +48,12 @@ public class FormsService : IFormsService
             .Include(x => x.AssociatedUsers).ThenInclude(x => x.UserAccount)
             .FirstOrDefaultAsync(x => x.Id == id);
         if (application == null) throw new ApplicationNotFoundException(id);
+        
+        // Map the application to its view model
         return application.Map(Mapper);
     }
 
+    // Cancel an application
     public async Task CancelApplication(Guid id)
     {
         Logger.LogInformation("Canceling application '{Id}'", id);
@@ -56,11 +61,13 @@ public class FormsService : IFormsService
             .Include(x => x.AssociatedWork)
             .FirstOrDefaultAsync(x => x.Id == id);
         if (application == null) throw new ApplicationNotFoundException(id);
-        // if (application.AssociatedWork != null) Context.RegisteredWorks.Remove(application.AssociatedWork);
+        
+        // Remove from the database
         Context.Applications.Remove(application);
         await Context.SaveChangesAsync();
     }
 
+    // Get all applications with a relationship to a specific user
     public async Task<List<ApplicationViewModel>> GetMyApplications(Guid userId)
     {
         Logger.LogInformation("Getting all application for {Id}", userId);
@@ -71,12 +78,14 @@ public class FormsService : IFormsService
             .Select(x => x.Map(Mapper)).ToListAsync();
     }
 
+    // Generic function for updating an application
     public async Task<T> Update<T>(ApplicationInputModel inputModel) where T : ApplicationViewModel
     {
         Logger.LogInformation("Updating application '{Id}'", inputModel.Id);
 
         var application = inputModel.Id == Guid.Empty ? null : await Context.Applications.FirstOrDefaultAsync(x => x.Id == inputModel.Id);
 
+        // If the application doesn't exist create a new one
         if (application == null)
         {
             Logger.LogInformation("Didn't find application so making a new one");
@@ -103,16 +112,19 @@ public class FormsService : IFormsService
         }
         else Context.Applications.Update(application);
 
+        // Update application
         application = await application.UpdateApplication(inputModel, ServiceProvider);
         application.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();
 
+        // Push application updates to websocket
         await ResonanceService.PushApplicationUpdates(application);
 
         return (T)application.Map(Mapper);
     }
 
+    // Generic function for submitting an application
     public async Task<O> Submit<T, O>(Guid id) where T : Application where O : ApplicationViewModel
     {
         Logger.LogInformation("Submitting {ApplicationType}", typeof(T).Name);
@@ -122,15 +134,18 @@ public class FormsService : IFormsService
             .FirstOrDefaultAsync(x => x.Id == id))!;
 
         if (application == null) throw new ApplicationNotFoundException(id);
-
+        
+        // Check application state
         if (application.Status == ApplicationStatus.Complete) throw new Exception("The application has already been complete!");
         if (application.Status == ApplicationStatus.Submitted) throw new Exception("The application has already been submitted!");
 
+        // Submit
         var submittedApplication = (T)await application.SubmitApplication(ServiceProvider);
         submittedApplication.Modified = DateTime.Now;
 
         await Context.SaveChangesAsync();
 
+        // Push application updates to websocket
         await ResonanceService.PushApplicationUpdates(submittedApplication);
 
         return (O)submittedApplication.Map(Mapper);

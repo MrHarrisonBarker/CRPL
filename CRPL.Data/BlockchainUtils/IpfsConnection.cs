@@ -11,6 +11,7 @@ public interface IIpfsConnection
     public Task<Cid> AddFile(MemoryStream data, string fileName);
 }
 
+// A class for connecting to the IPFS API and adding a file 
 public class IpfsConnection : IIpfsConnection
 {
     private readonly ILogger<IpfsConnection> Logger;

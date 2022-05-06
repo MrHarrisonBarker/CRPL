@@ -4,6 +4,7 @@ using Nethereum.Contracts;
 
 namespace CRPL.Web.Services.Background;
 
+// A background service for processing blockchain events
 public class EventProcessingService : BackgroundService
 {
     private readonly ILogger<EventProcessingService> Logger;
@@ -17,6 +18,7 @@ public class EventProcessingService : BackgroundService
         EventQueue = eventQueue;
     }
 
+    // Dequeue event and process
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         Logger.LogInformation("Starting event processing queue");
@@ -29,6 +31,7 @@ public class EventProcessingService : BackgroundService
             {
                 Logger.LogInformation("Processing next event");
 
+                // switch for casting to the correct event type
                 switch (nextEvent.GetType().FullName)
                 {
                     case var name when name.Contains("RegisteredEvent"):

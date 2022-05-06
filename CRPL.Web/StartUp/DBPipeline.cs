@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CRPL.Web.StartUp;
 
+// Extensions for registering database connections and services
 public static class DbExtensions
 {
     public static DbPipelineBuilder AddDbPipeline(this IServiceCollection services, AppSettings settings) => new DbPipelineBuilder(services, settings);
@@ -22,6 +23,7 @@ public static class DbExtensions
 
 public class UseSeedingBuilder
 {
+    // Automatic seeding used for development
     public UseSeedingBuilder(WebApplication app)
     {
         using var scope = app.Services.CreateScope();
@@ -59,6 +61,7 @@ public class UseSeedingBuilder
 
 public class UseWakeServices
 {
+    // Wake all singleton services
     public UseWakeServices(WebApplication app)
     {
         app.Services.GetService<IContractRepository>();
@@ -74,16 +77,19 @@ public class DbPipelineBuilder
 {
     public DbPipelineBuilder(IServiceCollection services, AppSettings appSettings)
     {
+        // Add contract database context using connection string from the app settings
         services.AddDbContextPool<ContractContext>(builder =>
             builder.UseMySql(appSettings.ConnectionString, new MySqlServerVersion(ServerVersion.AutoDetect(appSettings.ConnectionString)),
                 optionsBuilder => optionsBuilder.MigrationsAssembly("CRPL.Web"))
         );
-
+        
+        // Add application database context
         services.AddDbContextPool<ApplicationContext>(builder =>
             builder.UseMySql(appSettings.ConnectionString, new MySqlServerVersion(ServerVersion.AutoDetect(appSettings.ConnectionString)),
                 optionsBuilder => optionsBuilder.MigrationsAssembly("CRPL.Web"))
         );
 
+        // Register all singleton services in service collection
         services.AddSingleton<IContractRepository, ContractRepository>();
         services.AddSingleton<ICachedWorkRepository, CachedWorkRepository>();
         services.AddSingleton<IEventQueue, EventQueue>();

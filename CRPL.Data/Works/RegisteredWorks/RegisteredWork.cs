@@ -19,13 +19,24 @@ public class RegisteredWork
     public DateTime? Registered { get; set; }
     public RegisteredWorkStatus Status { get; set; }
     public VerificationResult? VerificationResult { get; set; }
-    // maps from a bigInt aka uin256
     public string? RightId { get; set; }
+    
+    // Hash of the uploaded work
     public byte[]? Hash { get; set; }
+    
+    // Unique id used by IPFS to retrieve files from the network
     public string? Cid { get; set; }
+    
+    // Work registration transaction hash
     public string? RegisteredTransactionId { get; set; }
+    
+    // Latest proposal transaction hash
     public string? ProposalTransactionId { get; set; }
+    
+    // Many to many, User <-> RegisteredWork
     public List<UserWork> UserWorks { get; set; }
+    
+    // Many to many, User <-> Application
     public List<Application> AssociatedApplication { get; set; }
     
     public long TimesProxyUsed { get; set; }

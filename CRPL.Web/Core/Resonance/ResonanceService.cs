@@ -8,12 +8,14 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace CRPL.Web.Core;
 
+// A service for handling all websocket updates and subscriptions
 public class ResonanceService : IResonanceService
 {
     private readonly ILogger<ResonanceService> Logger;
     private readonly IMapper Mapper;
     private readonly IServiceProvider ServiceProvider;
 
+    // Subscription hash tables
     public readonly Dictionary<Guid, List<string>> WorkToConnection;
     public readonly Dictionary<Guid, List<string>> ApplicationToConnection;
     public readonly Dictionary<Guid, List<string>> UserToConnection;
@@ -31,9 +33,10 @@ public class ResonanceService : IResonanceService
     public Task PushWorkUpdates(Guid id)
     {
         Logger.LogInformation("Pushing work updates");
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
+    // Pushes the registered work to all connections subscribed to the specific work
     public async Task PushWorkUpdates(RegisteredWork work)
     {
         Logger.LogInformation("Pushing work updates");
@@ -41,6 +44,7 @@ public class ResonanceService : IResonanceService
         using var scope = ServiceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<IHubContext<ResonanceHub, IResonanceHub>>();
 
+        // If the work is not already in the dictionary add it
         if (!WorkToConnection.ContainsKey(work.Id))
         {
             Logger.LogInformation("Work was not in the listen table");
@@ -52,9 +56,11 @@ public class ResonanceService : IResonanceService
         var queryService = scope.ServiceProvider.GetRequiredService<IQueryService>();
         var freshWork = await queryService.GetWork(work.Id);
         
+        // Send work to all connections subscribed
         await context.Clients.Clients(WorkToConnection[work.Id]).PushWork(freshWork);
     }
 
+    // Subscribes users to works based on database relationships
     private void makeUserListenToWork(List<UserWork>? userWorks)
     {
         if (userWorks != null)
@@ -71,9 +77,10 @@ public class ResonanceService : IResonanceService
 
     public Task PushApplicationUpdates(Guid id)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
+    // Pushes the application to all connections subscribed to the specific application
     public async Task PushApplicationUpdates(Application application)
     {
         Logger.LogInformation("Pushing application updates");
@@ -81,6 +88,7 @@ public class ResonanceService : IResonanceService
         using var scope = ServiceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<IHubContext<ResonanceHub, IResonanceHub>>();
 
+        // If the application doesn't exist in the dictionary add it
         if (!ApplicationToConnection.ContainsKey(application.Id))
         {
             Logger.LogInformation("Application was not in the listen table");
@@ -92,9 +100,11 @@ public class ResonanceService : IResonanceService
         var formsService = scope.ServiceProvider.GetRequiredService<IFormsService>();
         var freshApplication = await formsService.GetApplication(application.Id);
 
+        // Send application to all connections subscribed
         await context.Clients.Clients(ApplicationToConnection[application.Id]).PushApplication(Mapper.Map<ApplicationViewModel>(freshApplication));
     }
 
+    // Subscribes users to applications based on database relationships
     private void makeUserListenToApplication(List<UserApplication>? userApplications)
     {
         if (userApplications != null)
@@ -109,8 +119,10 @@ public class ResonanceService : IResonanceService
             }
     }
 
+    // Subscribe a connection to a work
     public void ListenToWork(Guid workId, string connectionId)
     {
+        // If the work is not in the dictionary add it
         if (!WorkToConnection.ContainsKey(workId))
         {
             Logger.LogInformation("Work {Id} was not in the listen table", workId);
@@ -118,14 +130,17 @@ public class ResonanceService : IResonanceService
         }
         else
         {
+            // Add connection to list of connection ids
             WorkToConnection[workId] = WorkToConnection[workId].Concat(new List<string> { connectionId }).Distinct().ToList();
         }
 
         Logger.LogInformation("{Connection} is now listening to work {Id}", connectionId, workId);
     }
 
+    // Subscribe a connection to a application
     public void ListenToApplication(Guid applicationId, string connectionId)
     {
+        // If the application is not in the dictionary add it
         if (!ApplicationToConnection.ContainsKey(applicationId))
         {
             Logger.LogInformation("Application {Id} was not in the listen table", applicationId);
@@ -133,12 +148,14 @@ public class ResonanceService : IResonanceService
         }
         else
         {
+            // Add connection to list of connection ids
             ApplicationToConnection[applicationId] = ApplicationToConnection[applicationId].Concat(new List<string> { connectionId }).Distinct().ToList();
         }
 
         Logger.LogInformation("{Connection} is now listening to application {Id}", connectionId, applicationId);
     }
 
+    // Used to self identify connections as a user
     public void RegisterUser(Guid userId, string connectionId)
     {
         if (!UserToConnection.ContainsKey(userId))
@@ -154,6 +171,7 @@ public class ResonanceService : IResonanceService
         Logger.LogInformation("{Connection} is now register to {Id}", connectionId, userId);
     }
 
+    // Removes connection id from all dictionaries
     public void RemoveConnection(string connectionId)
     {
         if (WorkToConnection.Values.Any(x => x.Contains(connectionId)))

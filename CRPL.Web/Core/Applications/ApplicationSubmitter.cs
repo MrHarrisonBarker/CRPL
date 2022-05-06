@@ -5,6 +5,7 @@ using CRPL.Web.Services.Submitters;
 
 namespace CRPL.Web.Services;
 
+// Class used for casting incoming application submits to the correct submitter
 public static class ApplicationSubmitter
 {
     public static async Task<Application> SubmitApplication(this Application submittedApplication, IServiceProvider serviceProvider)

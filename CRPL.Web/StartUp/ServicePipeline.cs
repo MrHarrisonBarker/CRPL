@@ -15,6 +15,7 @@ public static class ServiceExtensions
 
     public class ServicePipeline
     {
+        // Register all scoped and background services in the service collection
         public ServicePipeline(IServiceCollection services, AppSettings appSettings)
         {
             services.AddScoped<IUserService, UserService>();

@@ -2,6 +2,7 @@ using CRPL.Data.Works;
 
 namespace CRPL.Web.WorkSigners;
 
+// Digital signer for sound files by adding metadata to the file
 public class SoundSigner : WorkSigner, IWorkSigner
 {
     public SoundSigner(string signature) : base(signature)

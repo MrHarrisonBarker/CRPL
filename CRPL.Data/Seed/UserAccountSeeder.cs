@@ -15,27 +15,27 @@ public class UserAccountSeeder
     {
         List<UserAccount> userAccounts = new List<UserAccount>
         {
-            new()
-            {
-                Id = Guid.NewGuid(),
-                Email = null,
-                Status = UserAccount.AccountStatus.Complete,
-                FirstName = "Harrison",
-                LastName = "Barker",
-                PhoneNumber = "07852276048",
-                RegisteredJurisdiction = "GBR",
-                DateOfBirth = new UserAccount.DOB
-                {
-                    Day = 24,
-                    Month = 7,
-                    Year = 2000
-                },
-                DialCode = "+44",
-                Wallet = new UserWallet
-                {
-                    PublicAddress = "0x3Aaf677eA4e72eEbB92d2D5c3A92307EE789E24c"
-                }
-            },
+            // new()
+            // {
+            //     Id = Guid.NewGuid(),
+            //     Email = null,
+            //     Status = UserAccount.AccountStatus.Complete,
+            //     FirstName = "Harrison",
+            //     LastName = "Barker",
+            //     PhoneNumber = "07852276048",
+            //     RegisteredJurisdiction = "GBR",
+            //     DateOfBirth = new UserAccount.DOB
+            //     {
+            //         Day = 24,
+            //         Month = 7,
+            //         Year = 2000
+            //     },
+            //     DialCode = "+44",
+            //     Wallet = new UserWallet
+            //     {
+            //         PublicAddress = "0x3Aaf677eA4e72eEbB92d2D5c3A92307EE789E24c"
+            //     }
+            // },
             new()
             {
                 Id = Guid.NewGuid(),
